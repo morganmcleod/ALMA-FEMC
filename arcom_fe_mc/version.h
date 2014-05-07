@@ -6,7 +6,7 @@
 
     <b> CVS informations: </b><br>
 
-    \$Id: version.h,v 1.36 2009/04/24 22:37:32 avaccari Exp $
+    \$Id: version.h,v 1.42 2009/10/13 16:17:16 avaccari Exp $
 
     This files contains all the informations about the current version of the
     software and its revision history.
@@ -22,6 +22,49 @@
             - ...
 
     REVISION HISTORY
+    2009-10-13  002.002.000     (fe_mc.exe or 02-02-00.exe or 2k91013.exe
+        Official Release
+        This version is tagged Ver_02_02_00(ALMA-40_00_00_00-75_35_25_00_B_ICD).
+        - Modified scaling factor for LPR temperature sensors
+        - Added timer to prevent band 9 heater from being turned on more than
+          once every 10 second.
+        - Added console switch to turn on and off async processes to allow
+          easier console debugging.
+        - Added 'EDFA driver status' monitor point. This will return a can
+          status of -15 until the hardware is implemented
+        - Changed scaling factor for the SIS heater current monitor to adapt to
+          new BIAS module hardware.
+        - Removed the SIS Heater Enable monitor point. This because the change
+          in the BIAS module that introduced the auto shutoff causes the
+          software to loose synchronization with the hardware state.
+        - Reading WCA photmixer current twice (~100us) to get stable reading
+        - Lowered to 5ms the timeout from power on to initialization of the CC
+          and WCA
+        - Implemented the error CAN interface.
+        - The GET_ESN_FOUND monitor point will now reset the device index to the
+          first device found.
+        - The analog monitor for the BIAS and WCA now have a 40us delay between
+          the selection of the channel and the beginning of the conversion. This
+          was needed to fix an issue with speed of the analog circuits.
+        - An asynchronous framework is in place to allow asyncronous operations
+          to be performed in the background.
+        - The cryostat analog monitoring is now attached to the asynchronous
+          frame.
+          Monitored data is stored in memory where it can be gathered with the
+          standard CAN access.
+
+    2009-05-13  002.001.003     (02-01-03.exe)
+        Debug Release.
+        This release is equivalent to 002.001.001. The only difference is that
+        it uses the cryostat interface from revision 001.000.000.
+        Tis version is tagged Ver_02_01_03
+
+    2009-05-13  002.001.002     (02-01-02.exe)
+        Debug Release.
+        This release is equivalent to 002.001.000. The only difference is that
+        it uses the cryostat interface from revision 001.000.000.
+        This version is tagged Ver_02_01_02
+
     2009-04-24  002.001.001     (02-01-00.exe)
         Debug Release.
         This release contains a fix to prevent the CIPT from operating the mixer
@@ -134,18 +177,18 @@
 
 /*! \mainpage
     \section    sectionVersion  Version
-    Documentation relative to Version: 002.001.000 */
+    Documentation relative to Version: 002.002.000 */
 
 #ifndef _VERSION_H
     #define _VERSION_H
 
     /* Defines */
     #define VERSION_MAJOR   002  //!< Major version
-    #define VERSION_MINOR   001  //!< Minor version
+    #define VERSION_MINOR   002  //!< Minor version
     #define VERSION_PATCH   000  //!< Patch level
 
-    #define VERSION_DATE    "2009-04-24" //!< Version Date
-    #define VERSION_NOTES   "" //!<Version Notes
+    #define VERSION_DATE    "2009-10-13" //!< Version Date
+    #define VERSION_NOTES   "\n- 40us delay in bias and WCA\n- Double read for the photmixer monitor\n- 5ms delay after band power up before band initialization\n- error report off" //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Andrea Vaccari - NRAO (avaccari@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"

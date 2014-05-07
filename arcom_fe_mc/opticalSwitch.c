@@ -5,7 +5,7 @@
     Created: 2007/06/02 15:50:13 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: opticalSwitch.c,v 1.3 2007/06/22 22:03:00 avaccari Exp $
+    \$Id: opticalSwitch.c,v 1.4 2009/10/13 15:01:49 avaccari Exp $
 
     This file contains all the function necessary to handle the optical switch
     events. */
@@ -328,8 +328,8 @@ static void stateHandler(void){
         return;
     }
 
-    /* Get the optical switch error state */
-    if(getOpticalSwitchStates()==ERROR){
+    /* Get the LPR states */
+    if(getLprStates()==ERROR){
         /* If error during monitoring, store the ERROR state in the outgoing
            CAN message state. */
         CAN_STATUS = ERROR;
@@ -412,8 +412,8 @@ static void busyHandler(void){
         return;
     }
 
-    /* Monitor the optical switch busy state */
-    if(getOpticalSwitchStates()==ERROR){
+    /* Monitor the LPR states */
+    if(getLprStates()==ERROR){
         /* If error during monitoring, store the ERROR state in the outgoing
            CAN message state. */
         CAN_STATUS = ERROR;

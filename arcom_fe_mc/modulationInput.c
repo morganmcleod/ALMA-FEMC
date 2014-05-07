@@ -5,7 +5,7 @@
     Created:  2007/06/02 10:29:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: modulationInput.c,v 1.4 2007/10/02 22:04:58 avaccari Exp $
+    \$Id: modulationInput.c,v 1.6 2009/08/25 21:39:39 avaccari Exp $
 
     This file contains all the functions necessary to handle the EDFA modulation
     input port. */
@@ -81,8 +81,7 @@ static void valueHandler(void){
              status=NO_ERROR;
 
         /* Extract the float from the can message. */
-        changeEndian(convert.
-                      chr,
+        changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
 
         /* Check the value against the store limits. The limits are read from
@@ -93,7 +92,7 @@ static void valueHandler(void){
                             edfa.
                              modulationInput.
                               value[MIN_SET_VALUE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            lpr.
                             edfa.
@@ -154,8 +153,7 @@ static void valueHandler(void){
        updated when a new modulation input value is sent with a control
        message. */
     /* Extract the float from the last CAN message data. */
-    changeEndian(convert.
-                  chr,
+    changeEndian(CONV_CHR_ADD,
                  frontend.
                   lpr.
                    edfa.
@@ -167,9 +165,9 @@ static void valueHandler(void){
      lpr.
       edfa.
        modulationInput.
-        value[CURRENT_VALUE]=convert.
-                              flt;
-    CAN_FLOAT=frontend.
+        value[CURRENT_VALUE]=CONV_FLOAT;
+
+    CONV_FLOAT=frontend.
                lpr.
                 edfa.
                  modulationInput.
@@ -180,8 +178,7 @@ static void valueHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 

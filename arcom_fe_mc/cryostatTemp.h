@@ -11,7 +11,7 @@
     Created: 2004/10/25 16:45:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cryostatTemp.h,v 1.8 2007/08/28 21:46:47 avaccari Exp $
+    \$Id: cryostatTemp.h,v 1.9 2009/10/13 15:01:49 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the dewar temperature sensor. */
@@ -65,8 +65,8 @@
     /* PRT sensors */
     #define PRT_GAIN            125.0       // PRT sensor gain
     /* PRT sensor interpolation curve. There are 2 curves, the first
-       (PRT_A_SCALE) works for values greater than 124 ohm (~60K), the other
-       (PRT_B_SCALE) works for values smaller than 124 ohm. */
+       (PRT_A_SCALE) works for values smaller than 124 ohm (~60K), the other
+       (PRT_B_SCALE) works for values greater than 124 ohm. */
     #define PRT_A_SCALE         124.0
     #define PRT_A0              (0.513971)
     #define PRT_A1              (276.222931)

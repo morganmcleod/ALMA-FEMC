@@ -6,7 +6,7 @@
     Created: 2007/06/02 10:38:01 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lprSerialInterface.h,v 1.6 2008/05/01 14:16:24 avaccari Exp $
+    \$Id: lprSerialInterface.h,v 1.8 2009/10/22 14:52:09 avaccari Exp $
 
     This file contains all the informations necessary to define the
     characteristics and operate the LPR serial interface. */
@@ -107,19 +107,21 @@
 
 
     /* --- ADC definitions (16-bit) --- */
-    #define LPR_ADC_STROBE_SIZE             3           // Bit size of the LPR ADC convert strobe
-    #define LPR_ADC_STROBE_SHIFT_SIZE       NO_SHIFT    // The strobe outgoing data is not shifted
-    #define LPR_ADC_STROBE_SHIFT_DIR        NO_SHIFT    // The strobe outgoing data is not shifted
-    #define LPR_ADC_RANGE                   65536       // Full ADC range
-    #define LPR_ADC_DATA_SIZE               18          // Read only: 2 for internal use + 16-bit
-    #define LPR_ADC_DATA_SHIFT_SIZE         NO_SHIFT    // The incoming ADC data is not shifted
-    #define LPR_ADC_DATA_SHIFT_DIR          NO_SHIFT    // The incoming ADC data is not shifted
-    #define LPR_ADC_BUSY                    0           // Busy state signal
-    #define LPR_ADC_TEMP_SCALE              500.0       // Scale factor for the LPR temperature sensors
-    #define LPR_ADC_DRIVE_CURRENT_SCALE     800.0       // Scale factor for the laser drive current
-    #define LPR_ADC_LASER_PD_CURRENT_SCALE  5000.0      // Scale factor for the laser photo detector current
-    #define LPR_ADC_EDFA_PD_CURRENT_SCALE   500.0       // Scale factor for the EDFA photo detector current
-    #define LPR_ADC_VOLTAGE_IN_SCALE        5.0         // Scale factor for the standard voltage monitoring
+    #define LPR_ADC_STROBE_SIZE                 3           // Bit size of the LPR ADC convert strobe
+    #define LPR_ADC_STROBE_SHIFT_SIZE           NO_SHIFT    // The strobe outgoing data is not shifted
+    #define LPR_ADC_STROBE_SHIFT_DIR            NO_SHIFT    // The strobe outgoing data is not shifted
+    #define LPR_ADC_RANGE                       65536       // Full ADC range
+    #define LPR_ADC_DATA_SIZE                   18          // Read only: 2 for internal use + 16-bit
+    #define LPR_ADC_DATA_SHIFT_SIZE             NO_SHIFT    // The incoming ADC data is not shifted
+    #define LPR_ADC_DATA_SHIFT_DIR              NO_SHIFT    // The incoming ADC data is not shifted
+    #define LPR_ADC_BUSY                        0           // Busy state signal
+    #define LPR_ADC_TEMP_SCALE                  978.4736    // Scale factor for the LPR temperature sensors
+    #define LPR_ADC_DRIVE_CURRENT_SCALE         800.0       // Scale factor for the laser drive current
+    #define LPR_ADC_LASER_PD_CURRENT_SCALE      5000.0      // Scale factor for the laser photo detector current
+    #define LPR_ADC_LASER_PD_CURRRENT_OFFSET    2.5         // Offset value for the laser photo detector current
+    #define LPR_ADC_EDFA_PD_CURRENT_SCALE       500.0       // Scale factor for the EDFA photo detector current
+    #define LPR_ADC_VOLTAGE_IN_SCALE            5.0         // Scale factor for the standard voltage monitoring
+
 
 
 
@@ -217,12 +219,16 @@
     //! LPR status register bitfield (4-bit+12 -> 16-bit)
     /*! The LPR status register defined the current state of ADC and optical
         switch:
+        \param edfaDriverState      an unsigned int     :1
         \param opticalSwitchState   an unsigned int     :1
         \param opticalSwitchError   an unsigned int     :1
         \param adcReady             an unsigned int     :1 */
     typedef struct {
-        /* bit 0 of the LPR status register is not used */
-        unsigned int                    :1;
+        //! EDFA Error status
+        /*! This 1-bit field return the current state of the EDFA driver:
+                - 0 -> OK
+                - 1 -> Error */
+        unsigned int edfaDriverState    :1;
         //! Optical switch state
         /*! This 1-bit field return the current state of the optical switch:
                 - 0 -> Idle
@@ -355,7 +361,7 @@
     extern int getLprTemp(void); //!< This function monitors the LPR temperature sensors
     extern int setOpticalSwitchPort(void); //!< This function controls the port selection for the optical switch
     extern int setOpticalSwitchShutter(unsigned char mode); //!< This function enables the LPR optical switch shutter
-    extern int getOpticalSwitchStates(void); //!< This function monitors the states of the optical switch
+    extern int getLprStates(void); //!< This function monitors the states of several LPR hardware
     extern int getLaserPumpTemperature(void); //!< This function monitors the temperature of the laser pump
     extern int setLaserDriveCurrent(void); //!< This function controls the EDFA laser drive current
     extern int getLaserDriveCurrent(void); //!< This function monitors the EDFA laser drive current

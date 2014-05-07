@@ -5,7 +5,7 @@
     Created: 2007/06/02 17:01:27 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lpr.c,v 1.13 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: lpr.c,v 1.15 2009/08/25 21:39:39 avaccari Exp $
 
     This file contains all the functions necessary to handle LPR events. */
 
@@ -216,11 +216,12 @@ int lprStartup(void){
     /* Initialize the optical switch. */
     printf("  - Initializing the optical switch...\n");
 
+
     /* Set optical modulation input to 0V. This will ensure that only minimum
        optical radiation escaped the LPR should the switch not be shuttered. */
     printf("    - Setting modulation input value to 0.0V...\n");
     /* Load the CAN float to 0.0V */
-    CAN_FLOAT=0.0;
+    CONV_FLOAT=0.0;
     /* Call the setModulationInputValue() function to set the value in
        hardware. If error, return error and abort initialization. */
     if(setModulationInputValue()==ERROR){

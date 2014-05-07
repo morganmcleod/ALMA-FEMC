@@ -5,7 +5,7 @@
     Created: 2007/03/14 16:44:04 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cryostatTemp.c,v 1.8 2008/02/07 16:21:24 avaccari Exp $
+    \$Id: cryostatTemp.c,v 1.13 2009/10/13 15:01:49 avaccari Exp $
 
     This files contains all the functions necessary to handle cryostat
     temperature sensors events. */
@@ -20,6 +20,7 @@
 #include "database.h"
 #include "cryostatSerialInterface.h"
 #include "globalDefinitions.h"
+#include "async.h"
 
 /* Globals */
 /* Externs */
@@ -93,19 +94,27 @@ static void tempHandler(void){
     }
 
     /* Monitor cryostat temperature */
-    if(getCryostatTemp()==ERROR){
-        /* If error during monitoring, the error state was stored in the
-           outgoing CAN message state during the previous statement. This
-           different format is used because getCryostatTemp might return
-           two different error state depending on error conditions. */
+    if(asyncCryoTempError[currentCryostatModule]==ERROR){
+
+        /* If error during monitoring, store the ERROR state in the outgoing
+           CAN message state. */
+        CAN_STATUS = ERROR;
+
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cryostat.
                     cryostatTemp[currentCryostatModule].
                      temp[CURRENT_VALUE];
+
+        /* If the error was a conversion error, store the status in the CAN
+           message. */
+        if(CONV_FLOAT==CRYOSTAT_TEMP_CONV_ERR){
+            CAN_STATUS = HARDW_CON_ERR;
+        }
+
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cryostat.
                     cryostatTemp[currentCryostatModule].
                      temp[CURRENT_VALUE];
@@ -118,7 +127,7 @@ static void tempHandler(void){
                            cryostat.
                             cryostatTemp[currentCryostatModule].
                              temp[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cryostat.
                             cryostatTemp[currentCryostatModule].
@@ -127,7 +136,7 @@ static void tempHandler(void){
                                cryostat.
                                 cryostatTemp[currentCryostatModule].
                                  temp[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cryostat.
                                 cryostatTemp[currentCryostatModule].
@@ -144,11 +153,15 @@ static void tempHandler(void){
         #endif /* DATABASE_RANGE */
     }
 
+    /* If the async monitoring is disabled, notify the monitored message */
+    if(asyncState==ASYNC_OFF){
+        CAN_STATUS = HARDW_BLKD_ERR;
+    }
+
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big endian
        (CAN). */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }

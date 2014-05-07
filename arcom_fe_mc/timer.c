@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: timer.c,v 1.17 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: timer.c,v 1.18 2009/08/25 21:39:39 avaccari Exp $
 
     This files contains all the functions necessary to handle time events.
     There are two different timers available:
@@ -20,7 +20,7 @@
 
 /* Includes */
 #include <time.h>   /* clock */
-#include <dos.h>    /* sleep */
+#include <i86.h>    /* delay */
 
 #include "timer.h"
 #include "error.h"
@@ -31,10 +31,10 @@ static clock_t asyncStartTime[MAX_TIMERS_NUMBER]; // A global for the async time
 static unsigned char asyncRunning[MAX_TIMERS_NUMBER]; // A global for the async timer current state
 static unsigned long asyncMSeconds[MAX_TIMERS_NUMBER]; // A global for the async timer wait time
 
-/*! This function will wait \p seconds seconds before returning.
-    \param  seconds     The amount of second to wait */
-void waitSeconds(unsigned int seconds){
-    sleep(seconds);
+/*! This function will wait \p milliseconds seconds before returning.
+    \param  milliSeconds     The amount of milliseconds to wait */
+void waitMilliseconds(unsigned int milliseconds){
+    delay(milliseconds);
 }
 
 /*! This function will initialize and start the asynchronous timer. The timer

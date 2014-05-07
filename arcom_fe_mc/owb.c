@@ -5,7 +5,7 @@
     Created: 2007/09/05 14:33:02 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: owb.c,v 1.6 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: owb.c,v 1.10 2009/09/23 22:30:57 avaccari Exp $
 
     This files contains all the functions necessary to handle the one wire bus
     communication. */
@@ -45,7 +45,7 @@ int owbInit(void){
     unsigned char storedESNS[MAX_DEVICES_NUMBER][SERIAL_NUMBER_SIZE];
     unsigned char device;
     unsigned char loop;
-    unsigned char swap;
+//    unsigned char swap;
     char base[6]; // 5 char for up to 65535 + 1 NULL
     int TData[SEARCH_BYTES_LENGTH];
     int RData[SEARCH_BYTES_LENGTH];
@@ -108,11 +108,9 @@ int owbInit(void){
          Name=ESNS_SIM_BASE_KEY;
         dataIn.
          VarType=Cfg_Ushort;
-        convert.
-         uint[0]=0; // zero the data
+        CONV_UINT(0)=0; // zero the data
         dataIn.
-         DataPtr=&convert.
-                   uint[0];
+         DataPtr=&CONV_UINT(0);
         /* Access configuration file. */
         do{
             printf(" - Loading base\n");
@@ -128,16 +126,12 @@ int owbInit(void){
                     break;
                 /* If data missmatch error or zero value, create data */
                 case NO_ERROR:
-                    if(convert.
-                        uint[0]!=0){
+                    if(CONV_UINT(0)!=0){
                         /* Reload base with the HEX data */
-                        base[0]=convert.
-                                 chr[0];
-                        base[1]=convert.
-                                 chr[1];
+                        base[0]=CONV_CHR(0);
+                        base[1]=CONV_CHR(1);
                                  printf(" - Base: %u (%X %X)\n",
-                                        convert.
-                                         uint[0],
+                                        CONV_UINT(0),
                                         base[1],
                                         base[0]);
                         break;
@@ -170,19 +164,16 @@ int owbInit(void){
                     useSimulator = 0;
                     break;
             }
-        } while (useSimulator&&(convert.
-                                 uint[0]==0));
+        } while (useSimulator&&(CONV_UINT(0)==0));
     }
 
     /* Get the serial number of the drive. This will be as well in the base
        for the ESNs. */
     if(useSimulator){
-        convert.
-         longint=getVolSerial();
+        CONV_LONGINT=getVolSerial();
 
         /* If error, assume no simulator */
-        if(convert.
-            longint==ERROR){
+        if(CONV_LONGINT==ERROR){
             printf(" - Aborting simulator\n");
             useSimulator=0;
         }
@@ -200,14 +191,10 @@ int owbInit(void){
             ESNS[device][1]=base[1];
             ESNS[device][2]=base[0];
             /* Set the next 4 number to the drive serial number */
-            ESNS[device][3]=convert.
-                             chr[3];
-            ESNS[device][4]=convert.
-                             chr[2];
-            ESNS[device][5]=convert.
-                             chr[1];
-            ESNS[device][6]=convert.
-                             chr[0];
+            ESNS[device][3]=CONV_CHR(3);
+            ESNS[device][4]=CONV_CHR(2);
+            ESNS[device][5]=CONV_CHR(1);
+            ESNS[device][6]=CONV_CHR(0);
             /* Set LSB to progressive */
             ESNS[device][7]=device;
         }
@@ -368,25 +355,6 @@ int owbInit(void){
 
     printf("   - Devices found: %d\n",
            esnDevicesFound);
-
-    /* Set the ESN of the FEMC at index 0 */
-/** This will need revision because Rev.B mux boards have extra OWB devices.
-    Probably the best thing is to just return the ESNs of the attached hardware
-    and don't return any of the internal FEMC's. **/
-    for(device=1;
-        device<esnDevicesFound;
-        device++){
-        if(ESNS[device][0]==0x10){
-            for(loop=0;
-                loop<SERIAL_NUMBER_SIZE;
-                loop++){
-                swap=ESNS[0][loop];
-                ESNS[0][loop]=ESNS[device][loop];
-                ESNS[device][loop]=swap;
-            }
-            break; // There should be only one 0x10 in the group, the one on the FEMC
-        }
-    }
 
     /* Print devices list */
     for(device=0;

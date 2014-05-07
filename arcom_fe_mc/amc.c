@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: amc.c,v 1.17 2008/02/07 16:21:23 avaccari Exp $
+    \$Id: amc.c,v 1.19 2009/08/25 21:39:39 avaccari Exp $
 
     This files contains all the functions necessary to handle the MC events. */
 
@@ -97,14 +97,14 @@ static void gateAVoltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      amc.
                       gateAVoltage[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT = frontend.
+        CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        amc.
@@ -119,7 +119,7 @@ static void gateAVoltageHandler(void){
                             lo.
                              amc.
                               gateAVoltage[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -130,7 +130,7 @@ static void gateAVoltageHandler(void){
                                 lo.
                                  amc.
                                   gateAVoltage[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -153,8 +153,7 @@ static void gateAVoltageHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
 }
@@ -193,14 +192,14 @@ static void drainAVoltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      amc.
                       drainAVoltage[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT = frontend.
+        CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        amc.
@@ -215,7 +214,7 @@ static void drainAVoltageHandler(void){
                             lo.
                              amc.
                               drainAVoltage[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -226,7 +225,7 @@ static void drainAVoltageHandler(void){
                                 lo.
                                  amc.
                                   drainAVoltage[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -249,8 +248,7 @@ static void drainAVoltageHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 
@@ -288,14 +286,14 @@ static void drainACurrentHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      amc.
                       drainACurrent[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT = frontend.
+        CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        amc.
@@ -310,7 +308,7 @@ static void drainACurrentHandler(void){
                             lo.
                              amc.
                               drainACurrent[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -321,7 +319,7 @@ static void drainACurrentHandler(void){
                                 lo.
                                  amc.
                                   drainACurrent[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -344,8 +342,7 @@ static void drainACurrentHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 
@@ -383,14 +380,14 @@ static void gateBVoltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      amc.
                       gateBVoltage[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT = frontend.
+        CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        amc.
@@ -405,7 +402,7 @@ static void gateBVoltageHandler(void){
                             lo.
                              amc.
                               gateBVoltage[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -416,7 +413,7 @@ static void gateBVoltageHandler(void){
                                 lo.
                                  amc.
                                   gateBVoltage[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -439,8 +436,7 @@ static void gateBVoltageHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
 }
@@ -475,8 +471,7 @@ static void drainBVoltageHandler(void){
              status=NO_ERROR;
 
         /* Extract the float from the can message */
-        changeEndian(convert.
-                      chr,
+        changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
 
         /* Check the value against the store limits. The limits are read from
@@ -487,7 +482,7 @@ static void drainBVoltageHandler(void){
                             lo.
                              amc.
                               drainBVoltage[MIN_SET_VALUE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -547,7 +542,7 @@ static void drainBVoltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      amc.
@@ -555,7 +550,7 @@ static void drainBVoltageHandler(void){
     } else {
 
         /* If no error during the monitor process gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      amc.
@@ -571,7 +566,7 @@ static void drainBVoltageHandler(void){
                             lo.
                              amc.
                               drainBVoltage[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -582,7 +577,7 @@ static void drainBVoltageHandler(void){
                                 lo.
                                  amc.
                                   drainBVoltage[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -606,8 +601,7 @@ static void drainBVoltageHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 
@@ -646,14 +640,14 @@ static void drainBCurrentHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      amc.
                       drainBCurrent[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT = frontend.
+        CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        amc.
@@ -668,7 +662,7 @@ static void drainBCurrentHandler(void){
                             lo.
                              amc.
                               drainBCurrent[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -679,7 +673,7 @@ static void drainBCurrentHandler(void){
                                 lo.
                                  amc.
                                   drainBCurrent[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -702,8 +696,7 @@ static void drainBCurrentHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 
@@ -845,7 +838,7 @@ static void multiplierDCurrentHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      amc.
@@ -853,7 +846,7 @@ static void multiplierDCurrentHandler(void){
     } else {
 
         /* If no error during the monitor process gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      amc.
@@ -868,7 +861,7 @@ static void multiplierDCurrentHandler(void){
                             lo.
                              amc.
                               multiplierDCurrent[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -879,7 +872,7 @@ static void multiplierDCurrentHandler(void){
                                 lo.
                                  amc.
                                   multiplierDCurrent[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -903,8 +896,7 @@ static void multiplierDCurrentHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 
@@ -938,8 +930,7 @@ static void gateEVoltageHandler(void){
              status=NO_ERROR;
 
         /* Extract the float from the can message */
-        changeEndian(convert.
-                      chr,
+        changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
 
         /* Check the value against the store limits. The limits are read from
@@ -950,7 +941,7 @@ static void gateEVoltageHandler(void){
                             lo.
                              amc.
                               gateEVoltage[MIN_SET_VALUE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -1010,7 +1001,7 @@ static void gateEVoltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      amc.
@@ -1018,7 +1009,7 @@ static void gateEVoltageHandler(void){
     } else {
 
         /* If no error during the monitor process gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      amc.
@@ -1033,7 +1024,7 @@ static void gateEVoltageHandler(void){
                             lo.
                              amc.
                               gateEVoltage[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -1044,7 +1035,7 @@ static void gateEVoltageHandler(void){
                                 lo.
                                  amc.
                                   gateEVoltage[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -1068,8 +1059,7 @@ static void gateEVoltageHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 
@@ -1103,8 +1093,7 @@ static void drainEVoltageHandler(void){
              status=NO_ERROR;
 
         /* Extract the float from the can message */
-        changeEndian(convert.
-                      chr,
+        changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
 
         /* Check the value against the store limits. The limits are read from
@@ -1115,7 +1104,7 @@ static void drainEVoltageHandler(void){
                             lo.
                              amc.
                               drainEVoltage[MIN_SET_VALUE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -1175,7 +1164,7 @@ static void drainEVoltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      amc.
@@ -1183,7 +1172,7 @@ static void drainEVoltageHandler(void){
     } else {
 
         /* If no error during the monitor process gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      amc.
@@ -1198,7 +1187,7 @@ static void drainEVoltageHandler(void){
                             lo.
                              amc.
                               drainEVoltage[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -1209,7 +1198,7 @@ static void drainEVoltageHandler(void){
                                 lo.
                                  amc.
                                   drainEVoltage[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -1233,8 +1222,7 @@ static void drainEVoltageHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 
@@ -1272,14 +1260,14 @@ static void drainECurrentHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      amc.
                       drainECurrent[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT = frontend.
+        CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        amc.
@@ -1294,7 +1282,7 @@ static void drainECurrentHandler(void){
                             lo.
                              amc.
                               drainECurrent[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -1305,7 +1293,7 @@ static void drainECurrentHandler(void){
                                 lo.
                                  amc.
                                   drainECurrent[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -1328,8 +1316,7 @@ static void drainECurrentHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 
@@ -1368,14 +1355,14 @@ static void supplyVoltage5VHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      amc.
                       supplyVoltage5V[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT = frontend.
+        CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        amc.
@@ -1390,7 +1377,7 @@ static void supplyVoltage5VHandler(void){
                             lo.
                              amc.
                               supplyVoltage5V[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -1401,7 +1388,7 @@ static void supplyVoltage5VHandler(void){
                                 lo.
                                  amc.
                                   supplyVoltage5V[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -1424,8 +1411,7 @@ static void supplyVoltage5VHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 

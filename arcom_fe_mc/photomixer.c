@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: photomixer.c,v 1.14 2006/09/19 14:51:13 avaccari Exp $
+    \$Id: photomixer.c,v 1.17 2009/10/13 15:01:49 avaccari Exp $
 
     This files contains all the functions necessary to handle the 1st LO
     photomixer events. */
@@ -165,14 +165,14 @@ static void voltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      photomixer.
                       voltage[CURRENT_VALUE];
     } else {
         /* If no error during the monitor process, gather the stored data. */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      photomixer.
@@ -187,7 +187,7 @@ static void voltageHandler(void){
                             lo.
                              photomixer.
                               voltage[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -198,7 +198,7 @@ static void voltageHandler(void){
                                 lo.
                                  photomixer.
                                   voltage[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -223,8 +223,7 @@ static void voltageHandler(void){
        big endian (CAN). This affect the first 4 char of the message, the status
        byte is left unaffected. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
 }
@@ -258,20 +257,27 @@ static void currentHandler(void){
         return;
     }
 
-    /* Monitor the photomixer voltage */
+    /* Monitor the photomixer current */
+    /** This is a fix to enable a stable reading of the photmixer current.
+        once (if ever) the hardware is going to be able to return a stable
+        reading within the allocated time, this should be removed. For this
+        fix, the first readout will not check for errors. **/
+    getPhotomixer(PHOTOMIXER_BIAS_C);
+    /** End Fix **/
+
     if(getPhotomixer(PHOTOMIXER_BIAS_C)==ERROR){
         /* If error during monitoring, store the ERROR state in the outgoing
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      photomixer.
                       current[CURRENT_VALUE];
     } else {
         /* If no error during the monitor process, gather the stored data. */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      photomixer.
@@ -286,7 +292,7 @@ static void currentHandler(void){
                             lo.
                              photomixer.
                               current[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -297,7 +303,7 @@ static void currentHandler(void){
                                 lo.
                                  photomixer.
                                   current[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -322,8 +328,7 @@ static void currentHandler(void){
        big endian (CAN). This affect the first 4 char of the message, the status
        byte is left unaffected. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 

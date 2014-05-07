@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: yto.c,v 1.15 2007/06/22 22:03:00 avaccari Exp $
+    \$Id: yto.c,v 1.17 2009/09/22 14:46:10 avaccari Exp $
 
     This files contains all the functions necessary to handle YIG tuned
     oscillator events. */
@@ -79,9 +79,8 @@ static void ytoCoarseTuneHandler(void){
              status=NO_ERROR;
 
         /* Extract the unsigned int from the CAN message. */
-        changeEndian(convert.
-                      chr,
-                     CAN_DATA_ADD);
+        changeEndianInt(CONV_CHR_ADD,
+                        CAN_DATA_ADD);
 
         /* Check the value against the store limits. The limits are read from
            the configuration database at configuration time. */
@@ -91,7 +90,7 @@ static void ytoCoarseTuneHandler(void){
                             lo.
                              yto.
                               ytoCoarseTune[MIN_SET_VALUE],
-                          CAN_UINT,
+                          CONV_UINT(0),
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -151,16 +150,15 @@ static void ytoCoarseTuneHandler(void){
        current status that is stored in memory. The memory status is
        update when the state of the YTO coarse tune is changed by a
        control command. */
-    CAN_UINT=frontend.
+    CONV_UINT(0)=frontend.
               cartridge[currentModule].
                lo.
                 yto.
                  ytoCoarseTune[CURRENT_VALUE];
 
     /* Turn the bytes around! la-la-la-la-la-la */
-    changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+    changeEndianInt(CAN_DATA_ADD,
+                    CONV_CHR_ADD);
     CAN_SIZE=CAN_INT_SIZE;
 }
 

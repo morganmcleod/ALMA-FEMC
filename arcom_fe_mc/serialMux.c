@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: serialMux.c,v 1.18 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: serialMux.c,v 1.19 2009/06/19 21:42:38 avaccari Exp $
 
     This files contains all the functions necessary to control the serial
     multiplexing board.
@@ -265,7 +265,7 @@ static int waitOnBusy(void){
     }
 
     /* Wait for the mux board to be ready or for the timer to expire. */
-    while((inpw(MUX_BUSY_ADD)&MUX_BUSY_MASK)&&!timedOut){
+    do {
         #ifdef DEBUG_SERIAL
             printf("             Waiting on mux board to get ready...\n");
         #endif /* DEBUG_SERIAL */
@@ -273,7 +273,7 @@ static int waitOnBusy(void){
         if(timedOut==ERROR){
             return ERROR;
         }
-    }
+    } while((inpw(MUX_BUSY_ADD)&MUX_BUSY_MASK)&&!timedOut);
 
 
     /* If the timer has expired signal the error */

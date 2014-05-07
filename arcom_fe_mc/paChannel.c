@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: paChannel.c,v 1.21 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: paChannel.c,v 1.23 2009/08/25 21:39:39 avaccari Exp $
 
     This files contains all the functions necessary to handle the PA Channel
     events.
@@ -107,8 +107,7 @@ static void gateVoltageHandler(void){
               status=NO_ERROR;
 
         /* Extract the float from the can message */
-        changeEndian(convert.
-                      chr,
+        changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
 
         /* Check the value against the store limits. The limits are read from
@@ -120,7 +119,7 @@ static void gateVoltageHandler(void){
                              pa.
                               paChannel[currentPaChannel()].
                                gateVoltage[MIN_SET_VALUE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -197,7 +196,7 @@ static void gateVoltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      pa.
@@ -206,7 +205,7 @@ static void gateVoltageHandler(void){
     } else {
 
         /* If no error during the monitor process gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      pa.
@@ -223,7 +222,7 @@ static void gateVoltageHandler(void){
                              pa.
                               paChannel[currentPaChannel()].
                                gateVoltage[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -236,7 +235,7 @@ static void gateVoltageHandler(void){
                                  pa.
                                   paChannel[currentPaChannel()].
                                    gateVoltage[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -270,8 +269,7 @@ static void gateVoltageHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
 }
@@ -308,8 +306,7 @@ static void drainVoltageHandler(void){
               status=NO_ERROR;
 
         /* Extract the float from the can message */
-        changeEndian(convert.
-                      chr,
+        changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
 
         /* Check the value against the store limits. The limits are read from
@@ -321,7 +318,7 @@ static void drainVoltageHandler(void){
                              pa.
                               paChannel[currentPaChannel()].
                                drainVoltage[MIN_SET_VALUE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -398,7 +395,7 @@ static void drainVoltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      pa.
@@ -407,7 +404,7 @@ static void drainVoltageHandler(void){
     } else {
 
         /* If no error during the monitor process gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      pa.
@@ -424,7 +421,7 @@ static void drainVoltageHandler(void){
                              pa.
                               paChannel[currentPaChannel()].
                                drainVoltage[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -437,7 +434,7 @@ static void drainVoltageHandler(void){
                                  pa.
                                   paChannel[currentPaChannel()].
                                    drainVoltage[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -471,8 +468,7 @@ static void drainVoltageHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
 }
@@ -512,7 +508,7 @@ static void drainCurrentHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      pa.
@@ -520,7 +516,7 @@ static void drainCurrentHandler(void){
                        drainCurrent[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT = frontend.
+        CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        pa.
@@ -537,7 +533,7 @@ static void drainCurrentHandler(void){
                              pa.
                               paChannel[currentPaChannel()].
                                drainCurrent[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -550,7 +546,7 @@ static void drainCurrentHandler(void){
                                  pa.
                                   paChannel[currentPaChannel()].
                                    drainCurrent[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -582,8 +578,7 @@ static void drainCurrentHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
 }

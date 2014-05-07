@@ -18,7 +18,7 @@
     Created: 2004/08/24 16:16:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: can.c,v 1.43 2009/04/24 22:37:32 avaccari Exp $
+    \$Id: can.c,v 1.46 2009/09/22 14:46:10 avaccari Exp $
 
     This file contains the functions necessary to deal with the received CAN
     messages. */
@@ -40,6 +40,7 @@
 #include "console.h"
 #include "owb.h"
 #include "globalOperations.h"
+#include "globalDefinitions.h"
 
 /* Globals */
 /* Externs */
@@ -216,15 +217,6 @@ static void standardRCAsHandler(void){
 
 /* Special messages handler */
 static void specialRCAsHandler(void){
-    /* A union to deal with the FPGA version */
-    union {
-        unsigned int        integer;
-        struct {
-            unsigned int patch  :8;
-            unsigned int minor  :4;
-            unsigned int major  :4;
-        }                   bitField;
-    } fpgaVersion;
 
     /* A static to take care of the ESNs monitoring */
     static unsigned char device=0;
@@ -342,31 +334,43 @@ static void specialRCAsHandler(void){
                     CAN_SIZE=CAN_FULL_SIZE;
                     break;
                 case GET_FPGA_VERSION_INFO: // 0x20008 -> Get FPGA firmware info
-                    #ifdef DEBUG_CAN
-                        printf("  0x%lX->GET_FPGA_VERSION_INFO\n\n",
-                               GET_FPGA_VERSION_INFO);
-                    #endif /* DEBUG_CAN */
+                    {
+                        /* A union to deal with the FPGA version */
+                        union {
+                            unsigned int        integer;
+                            struct {
+                                unsigned int patch  :8;
+                                unsigned int minor  :4;
+                                unsigned int major  :4;
+                            }                   bitField;
+                        } fpgaVersion;
 
-                    /* The ADD-4 part can be dropped once all the FPGA versions
-                       are consistent. */
-                    if(inpw(MUX_FPGA_RDY_ADD)==FPGA_READY){
-                        fpgaVersion.
-                         integer=inpw(MUX_FPGA_VERSION);
-                    } else {
-                        fpgaVersion.
-                         integer=inpw(MUX_FPGA_VERSION-2);
+                        #ifdef DEBUG_CAN
+                            printf("  0x%lX->GET_FPGA_VERSION_INFO\n\n",
+                                   GET_FPGA_VERSION_INFO);
+                        #endif /* DEBUG_CAN */
+
+                        /* The ADD-4 part can be dropped once all the FPGA versions
+                           are consistent. */
+                        if(inpw(MUX_FPGA_RDY_ADD)==FPGA_READY){
+                            fpgaVersion.
+                             integer=inpw(MUX_FPGA_VERSION);
+                        } else {
+                            fpgaVersion.
+                             integer=inpw(MUX_FPGA_VERSION-2);
+                        }
+
+                        CAN_DATA(0)=fpgaVersion.
+                                     bitField.
+                                      major;
+                        CAN_DATA(1)=fpgaVersion.
+                                     bitField.
+                                      minor;
+                        CAN_DATA(2)=fpgaVersion.
+                                     bitField.
+                                      patch;
+                        CAN_SIZE=CAN_REV_SIZE;
                     }
-
-                    CAN_DATA(0)=fpgaVersion.
-                                 bitField.
-                                  major;
-                    CAN_DATA(1)=fpgaVersion.
-                                 bitField.
-                                  minor;
-                    CAN_DATA(2)=fpgaVersion.
-                                 bitField.
-                                  patch;
-                    CAN_SIZE=CAN_REV_SIZE;
                     break;
                 case GET_CONSOLE_ENABLE: // 0x20009 -> Enables/Disables the console
                     #ifdef DEBUG_CAN
@@ -381,6 +385,7 @@ static void specialRCAsHandler(void){
                         printf("  0x%lX->GET_ESNS_FOUND\n\n",
                                GET_ESNS_FOUND);
                     #endif /* DEBUG_CAN */
+                    device=0; // Reset the device index to the beginning of the list
                     CAN_BYTE=esnDevicesFound;
                     CAN_SIZE=CAN_BOOLEAN_SIZE;
                     break;
@@ -431,20 +436,30 @@ static void specialRCAsHandler(void){
                     CAN_SIZE=CAN_FULL_SIZE;
                     device++;
                     break;
-/* This needs to be implemented
                 case GET_ERRORS_NUMBER: // 0x2000C -> Returns the number of unread errors
                     #ifdef DEBUG_CAN
                         printf("  0x%lX->GET_ERROR_NUMBER\n\n",
                                GET_ERRORS_NUMBER);
                     #endif // DEBUG_CAN
+                    CAN_SIZE=CAN_BYTE_SIZE;
+                    CAN_BYTE=(errorNewest>=errorOldest)?errorNewest-errorOldest:
+                                                        ERROR_HISTORY_LENGTH-(errorNewest-errorOldest);
                     break;
                 case GET_NEXT_ERROR: // 0x2000D -> Returns the next unread error
                     #ifdef DEBUG_CAN
                         printf("  0x%lX->GET_NEXT_ERROR\n\n",
                                GET_NEXT_ERROR);
                     #endif // DEBUG_CAN
+                    CAN_SIZE=CAN_INT_SIZE;
+                    if(errorNewest==errorOldest){
+                        CONV_UINT(0)=0xFFFF;
+                    } else {
+                        CONV_UINT(0)=errorHistory[errorOldest];
+                        errorOldest++;
+                    }
+                    CAN_DATA(0)=CONV_CHR(1);
+                    CAN_DATA(1)=CONV_CHR(0);
                     break;
-*/
                 case GET_FE_MODE: // 0x2000E -> Returns the FE operating mode
                     #ifdef DEBUG_CAN
                         printf("  0x%lX->GET_FE_MODE\n\n",
@@ -611,43 +626,44 @@ static void sendCANMessage(void){
     /* If it was a request coming from the CAN bus, send back the data. */
     if(newCANMsg==TRUE){
         PPWrite(CAN_SIZE);
-    } else {
-        switch(CAN_SIZE){
-            case CAN_FLOAT_SIZE+1:
-                if(currentClass==CONTROL_CLASS){ // If it was a monitor on a control RCA
-                    changeEndian(convert.
-                                  chr,
-                                 CAN_DATA_ADD);
-                }
-                printf("%f",
-                       CAN_FLOAT);
-                break;
-            case CAN_INT_SIZE+1:
-                if(currentClass==CONTROL_CLASS){ // If it was a monitor on a control RCA
-                    changeEndian(convert.
-                                  chr,
-                                 CAN_DATA_ADD);
-                }
-                printf("%d",
-                       CAN_UINT);
-                break;
-            case CAN_BYTE_SIZE+1:
-                printf("%d",
-                       CAN_BYTE);
-                break;
-            default:
-                for(cnt=0;
-                    cnt<CAN_SIZE;
-                    cnt++){
-                    printf("%#x ",
-                           CAN_DATA(cnt));
-                }
-                break;
-        }
-        printf(" (status: %#x)\n",
-               CAN_STATUS);
-
+        return;
     }
+
+    /* If it was coming from console, deal with the console */
+    switch(CAN_SIZE){
+        case CAN_FLOAT_SIZE+1:
+            if(currentClass==CONTROL_CLASS){ // If it was a monitor on a control RCA
+                changeEndian(CONV_CHR_ADD,
+                             CAN_DATA_ADD);
+            }
+            printf("%f",
+                   CONV_FLOAT);
+            break;
+        case CAN_INT_SIZE+1:
+            if(currentClass==CONTROL_CLASS){ // If it was a monitor on a control RCA
+                changeEndianInt(CONV_CHR_ADD,
+                                CAN_DATA_ADD);
+            }
+            printf("%d",
+                   CONV_UINT(0));
+            break;
+        case CAN_BYTE_SIZE+1:
+            printf("%d",
+                   CAN_BYTE);
+            break;
+        default:
+            for(cnt=0;
+                cnt<CAN_SIZE;
+                cnt++){
+                printf("%#x ",
+                       CAN_DATA(cnt));
+            }
+            break;
+    }
+
+    printf(" (status: %#x)\n",
+           CAN_STATUS);
+
 
 
 }

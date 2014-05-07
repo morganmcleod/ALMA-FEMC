@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: pa.c,v 1.11 2006/11/20 22:56:40 avaccari Exp $
+    \$Id: pa.c,v 1.13 2009/08/25 21:39:39 avaccari Exp $
 
     This files contains all the functions necessary to handle the PA events. */
 
@@ -88,14 +88,14 @@ void supplyVoltage3VHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      pa.
                       supplyVoltage3V[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT = frontend.
+        CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        pa.
@@ -110,7 +110,7 @@ void supplyVoltage3VHandler(void){
                             lo.
                              pa.
                               supplyVoltage3V[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -121,7 +121,7 @@ void supplyVoltage3VHandler(void){
                                 lo.
                                  pa.
                                   supplyVoltage3V[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -144,8 +144,7 @@ void supplyVoltage3VHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 
@@ -184,14 +183,14 @@ void supplyVoltage5VHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      pa.
                       supplyVoltage5V[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT = frontend.
+        CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        pa.
@@ -206,7 +205,7 @@ void supplyVoltage5VHandler(void){
                             lo.
                              pa.
                               supplyVoltage5V[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -217,7 +216,7 @@ void supplyVoltage5VHandler(void){
                                 lo.
                                  pa.
                                   supplyVoltage5V[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -240,8 +239,7 @@ void supplyVoltage5VHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 

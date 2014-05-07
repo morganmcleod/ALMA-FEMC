@@ -6,7 +6,7 @@
     Created: 2004/08/24 16:46:19 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: main.c,v 1.34 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: main.c,v 1.36 2009/06/19 21:42:38 avaccari Exp $
 
     This is \ref main.c
 
@@ -62,19 +62,17 @@ int main(void){
             }
 
             /* Perform the required asynchronous operations */
-            if(asyncRequired){
-                async();
-            }
+            async();
 
             /* Query the RSS update timer. */
 //            if(queryAsyncTimer(TIMER_RSS)){
-                #ifdef DEBUG
-                    printf("Updating RSS...");
-                #endif /* DEBUG */
+//                #ifdef DEBUG
+//                    printf("Updating RSS...");
+//                #endif /* DEBUG */
                 // UPDATE RSS
-                #ifdef DEBUG
-                    printf("...done!\n");
-                #endif /* DEBUG */
+//                #ifdef DEBUG
+//                    printf("...done!\n");
+//                #endif /* DEBUG */
 /*
                 startAsyncTimer(TIMER_RSS,
                                 TIMER_TO_RSS,

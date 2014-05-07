@@ -5,7 +5,7 @@
     Created: 2007/06/02 12:15:18 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: laser.c,v 1.4 2008/02/07 16:21:24 avaccari Exp $
+    \$Id: laser.c,v 1.7 2009/10/21 22:24:22 avaccari Exp $
 
     This files contains all the function necessary to handler the EDFA laser
     events. */
@@ -86,14 +86,14 @@ static void pumpTempHandler(void){
            different format is used because getCryostatTemp might return
            two different error state depending on error conditions. */
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    lpr.
                     edfa.
                      laser.
                       pumpTemp[CURRENT_VALUE];
     } else {
         /* If no error during the monitor process gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    lpr.
                     edfa.
                      laser.
@@ -108,7 +108,7 @@ static void pumpTempHandler(void){
                             edfa.
                              laser.
                               pumpTemp[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            lpr.
                             edfa.
@@ -119,7 +119,7 @@ static void pumpTempHandler(void){
                                 edfa.
                                  laser.
                                   pumpTemp[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                lpr.
                                 edfa.
@@ -143,8 +143,7 @@ static void pumpTempHandler(void){
        The value has to be converted from little endian (Intel) to big endian
        (CAN). */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
     return;
@@ -183,14 +182,14 @@ static void driveCurrentHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT = frontend.
+        CONV_FLOAT = frontend.
                      lpr.
                       edfa.
                        laser.
                         driveCurrent[CURRENT_VALUE];
     } else {
         /* If no error during the monitor process gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    lpr.
                     edfa.
                      laser.
@@ -205,7 +204,7 @@ static void driveCurrentHandler(void){
                             edfa.
                              laser.
                               driveCurrent[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            lpr.
                             edfa.
@@ -216,7 +215,7 @@ static void driveCurrentHandler(void){
                                 edfa.
                                  laser.
                                   driveCurrent[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                lpr.
                                 edfa.
@@ -240,8 +239,7 @@ static void driveCurrentHandler(void){
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
     return;
@@ -278,14 +276,14 @@ static void photoDetectCurrentHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    lpr.
                     edfa.
                      laser.
                       photoDetectCurrent[CURRENT_VALUE];
     } else {
         /* If no error during monitor process gather the staored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    lpr.
                     edfa.
                      laser.
@@ -300,7 +298,7 @@ static void photoDetectCurrentHandler(void){
                             edfa.
                              laser.
                               photoDetectCurrent[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            lpr.
                             edfa.
@@ -311,7 +309,7 @@ static void photoDetectCurrentHandler(void){
                                 edfa.
                                  laser.
                                   photoDetectCurrent[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                lpr.
                                 edfa.
@@ -331,12 +329,17 @@ static void photoDetectCurrentHandler(void){
         #endif /* DATABASE_RANGE */
     }
 
+    /*** This feature is not yet working in the LPR hardware. For the time
+         being a error indicating this situation is returned along with the
+         data. This should be removed once the hardware is available. ***/
+    CAN_STATUS=MON_HARDW_FUT;
+
+
     /* Load the CAN message payload with th returned value and set the size.
        The value has to be converted from little endian (Intel) to big endian
        (CAN). */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
     return;

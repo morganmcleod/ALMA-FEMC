@@ -6,7 +6,7 @@
 
     <b> CVS informations: </b><br>
 
-    \$Id: cryostat.c,v 1.21 2009/03/25 14:44:14 avaccari Exp $
+    \$Id: cryostat.c,v 1.26 2009/10/13 15:01:49 avaccari Exp $
 
     This files contains all the functions necessary to handle cryostat events. */
 
@@ -19,10 +19,35 @@
 #include "cryostatSerialInterface.h"
 #include "iniWrapper.h"
 #include "database.h"
+#include "async.h"
 
 /* Globals */
 /* Externs */
-unsigned char   currentCryostatModule=0;
+unsigned char currentCryostatModule=0;
+unsigned char currentAsyncCryoTempModule = 0; /*!< This global keeps track of
+                                               the cryostat temperature module
+                                               currently addressed by the
+                                               asynchronous routine. */
+int asyncCryoTempError[CRYOSTAT_TEMP_SENSORS_NUMBER]; /*!< A global to keep
+                                                           track of the async
+                                                           error while
+                                                           monitoring cryostat
+                                                           temperatures */
+unsigned char currentAsyncVacuumControllerModule = 0; /*!< This global keeps
+                                                           track of the cryostat
+                                                           pressure module
+                                                           currently addressed
+                                                           by the asynchronous
+                                                           routine. */
+int asyncVacuumControllerError[VACUUM_SENSORS_NUMBER]; /*!< A global to keep
+                                                            track of the async
+                                                            error while
+                                                            monitoring cryostat
+                                                            pressures */
+int asyncSupplyCurrent230VError; /*!< A global to keep track of the async error
+                                      while monitoring the cryostat supply
+                                      voltage current */
+
 /* Statics */
 static HANDLER  cryostatModulesHandler[CRYOSTAT_MODULES_NUMBER]={cryostatTempHandler,
                                                                  cryostatTempHandler,
@@ -303,18 +328,18 @@ void supplyCurrent230VHandler(void){
     }
 
     /* Monitor the 230V supply current */
-    if(getSupplyCurrent230V()==ERROR){
-        /* If error during monitoring, the error state was stored in the
-           outgoing CAN message state during the previous statement. This
-           different format is used because getSupplyCurrent230V might return
-           two different error state depending on error conditions. */
+    if(asyncSupplyCurrent230VError==ERROR){
+        /* If error during monitoring, store the ERROR state in the outgoing
+           CAN message state. */
+        CAN_STATUS = ERROR;
+
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cryostat.
                     supplyCurrent230V[CURRENT_VALUE];
     } else {
         /* If no error during the monitor process, gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cryostat.
                     supplyCurrent230V[CURRENT_VALUE];
 
@@ -325,14 +350,14 @@ void supplyCurrent230VHandler(void){
             if(checkRange(frontend.
                            cryostat.
                             supplyCurrent230V[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cryostat.
                             supplyCurrent230V[HI_WARNING_RANGE])){
                 if(checkRange(frontend.
                                cryostat.
                                 supplyCurrent230V[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cryostat.
                                 supplyCurrent230V[HI_ERROR_RANGE])){
@@ -348,13 +373,125 @@ void supplyCurrent230VHandler(void){
         #endif /* DATABASE_RANGE */
     }
 
+    /* If the async monitoring is disabled, notify the monitored message */
+    if(asyncState==ASYNC_OFF){
+        CAN_STATUS = HARDW_BLKD_ERR;
+    }
+
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big endian
        (CAN). */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
 }
 
+/* Cryostat async */
+/*! This function deals with the asynchronous monitor of the analog values in
+    the cryostat.
+    \return
+        - \ref NO_ERROR     -> if no error occured
+        - \ref ASYNC_DONE   -> once all the async operations are done
+        - \ref ERROR        -> if something*/
+int cryostatAsync(void){
+
+    /* A static enum to track the state of the async function */
+    static enum {
+        ASYNC_CRYO_GET_TEMP,
+        ASYNC_CRYO_GET_PRES,
+        ASYNC_CRYO_GET_230V
+    } asyncCryoGetState = ASYNC_CRYO_GET_TEMP;
+
+    /* Cryostat */
+    currentModule=CRYO_MODULE;
+
+    /* Switch to the correct module */
+    switch(asyncCryoGetState){
+        /* Monitor all the temperatures one at the time asynchronously */
+        case ASYNC_CRYO_GET_TEMP:
+            /* Get cryostat temperatures */
+            asyncCryoTempError[currentAsyncCryoTempModule]=getCryostatTemp();
+
+            /* If done or error, go to next sensor */
+            switch(asyncCryoTempError[currentAsyncCryoTempModule]){
+                case NO_ERROR:
+                    return NO_ERROR;
+                    break;
+                case ASYNC_DONE:
+                    asyncCryoTempError[currentAsyncCryoTempModule]=NO_ERROR;
+                    break;
+                case ERROR:
+                    break;
+                default:
+                    break;
+            }
+
+            /* Next sensor, if wrap around, then next monitor next thing */
+            if(++currentAsyncCryoTempModule==CRYOSTAT_TEMP_SENSORS_NUMBER){
+                currentAsyncCryoTempModule-=CRYOSTAT_TEMP_SENSORS_NUMBER;
+                asyncCryoGetState = ASYNC_CRYO_GET_PRES;
+            }
+
+            break;
+
+        /* Monitor all the pressures one at the time asynchronously */
+        case ASYNC_CRYO_GET_PRES:
+            /* Get cryostat pressures */
+            asyncVacuumControllerError[currentAsyncVacuumControllerModule]=getVacuumSensor();
+
+            /* If done or error, go to next sensor */
+            switch(asyncVacuumControllerError[currentAsyncVacuumControllerModule]){
+                case NO_ERROR:
+                    return NO_ERROR;
+                    break;
+                case ASYNC_DONE:
+                    asyncVacuumControllerError[currentAsyncVacuumControllerModule]=NO_ERROR;
+                    break;
+                case ERROR:
+                    break;
+                default:
+                    break;
+            }
+
+            /* Next sensor, if wrap around, then next monitor next thing */
+            if(++currentAsyncVacuumControllerModule==VACUUM_SENSORS_NUMBER){
+                currentAsyncVacuumControllerModule-=VACUUM_SENSORS_NUMBER;
+                asyncCryoGetState = ASYNC_CRYO_GET_230V;
+            }
+
+            break;
+
+        /* Monitor the 230V asynchronously */
+        case ASYNC_CRYO_GET_230V:
+
+            /* Get cryostat 230V supply */
+            asyncSupplyCurrent230VError=getSupplyCurrent230V();
+
+            /* If done or error, go to next sensor */
+            switch(asyncSupplyCurrent230VError){
+                case NO_ERROR:
+                    return NO_ERROR;
+                    break;
+                case ASYNC_DONE:
+                    asyncSupplyCurrent230VError=NO_ERROR;
+                    break;
+                case ERROR:
+                    break;
+                default:
+                    break;
+            }
+
+            asyncCryoGetState = ASYNC_CRYO_GET_TEMP;
+
+            return ASYNC_DONE;
+
+            break;
+
+        default:
+            return ERROR;
+            break;
+    }
+
+    return NO_ERROR;
+}

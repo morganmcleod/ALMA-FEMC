@@ -5,7 +5,7 @@
     Created: 2006/09/06 11:52:38 by avaccari
 
     <b> CVS Informations: </b><br>
-    \$Id: loSerialInterface.c,v 1.11 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: loSerialInterface.c,v 1.13 2009/08/25 21:39:39 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     LO serial interface.
@@ -26,7 +26,6 @@
 #include "debug.h"
 #include "error.h"
 #include "loSerialInterface.h"
-#include "can.h"
 #include "serialInterface.h"
 #include "frontend.h"
 #include "timer.h"
@@ -230,7 +229,7 @@ int setYtoCoarseTune(void){
     loRegisters[currentModule].
      aReg.
       bitField.
-       ytoCoarseTune=CAN_UINT;
+       ytoCoarseTune=CONV_UINT(0);
 
     /* 1 - Parallel write AREG */
     #ifdef DEBUG
@@ -259,7 +258,7 @@ int setYtoCoarseTune(void){
      cartridge[currentModule].
       lo.
        yto.
-        ytoCoarseTune[CURRENT_VALUE]=CAN_UINT;
+        ytoCoarseTune[CURRENT_VALUE]=CONV_UINT(0);
 
     return NO_ERROR;
 }
@@ -1081,13 +1080,13 @@ int setAmc(unsigned char port){
 
     /* 2 - Scale the data according to the selected pot */
     switch(port){
-        /* The drain B voltage is given by: (v=CAN_FLOAT)
+        /* The drain B voltage is given by: (v=CONV_FLOAT)
            - 51*v */
         case AMC_DRAIN_B_VOLTAGE:
             loRegisters[currentModule].
              amcPotReg.
               bitField.
-               pot3=LO_AMC_POT_DRAIN_B_V_SCALE(CAN_FLOAT);
+               pot3=LO_AMC_POT_DRAIN_B_V_SCALE(CONV_FLOAT);
             break;
         /* The multiplier D voltage is given by the straight count */
         case AMC_MULTIPLIER_D_VOLTAGE:
@@ -1095,21 +1094,21 @@ int setAmc(unsigned char port){
              amcPotReg.
               bitField.
                pot2=CAN_BYTE;
-        /* The gate E voltage is given by: (v=CAN_FLOAT)
+        /* The gate E voltage is given by: (v=CONV_FLOAT)
            - 0 if v = 0.15
            - round(51*(5*v+4.25-((5*v+4.25)^2-4*(v-0.15)*(3.75-25*v))^0.5)/(2*(v-0.15))) (otherwise) */
         case AMC_GATE_E_VOLTAGE:
             loRegisters[currentModule].
              amcPotReg.
               bitField.
-               pot0=LO_AMC_POT_GATE_E_V_SCALE(CAN_FLOAT);
-        /* The drain E voltage is given by: (v=CAN_FLOAT)
+               pot0=LO_AMC_POT_GATE_E_V_SCALE(CONV_FLOAT);
+        /* The drain E voltage is given by: (v=CONV_FLOAT)
            - 102*v */
         case AMC_DRAIN_E_VOLTAGE:
             loRegisters[currentModule].
              amcPotReg.
               bitField.
-               pot1=LO_AMC_POT_DRAIN_E_V_SCALE(CAN_FLOAT);
+               pot1=LO_AMC_POT_DRAIN_E_V_SCALE(CONV_FLOAT);
             break;
         default:
             break;
@@ -1353,16 +1352,16 @@ int setPaChannel(void){
 
     /* 2 - Scale the data according to the selected pot. */
     switch(currentPaChannelModule){
-        /* The gate voltage is given by: (v=CAN_FLOAT)
+        /* The gate voltage is given by: (v=CONV_FLOAT)
            - 0 if v = 0.15
            - round(51*(5*v+4.25-((5*v+4.25)^2-4*(v-0.15)*(3.75-25*v))^0.5)/(2*(v-0.15))) (otherwise) */
         case PA_CHANNEL_GATE_VOLTAGE:
-            scaledData=LO_PA_POT_GATE_V_SCALE(CAN_FLOAT);
+            scaledData=LO_PA_POT_GATE_V_SCALE(CONV_FLOAT);
             break;
-        /* The drain voltage is given by: (v=CAN_FLOAT)
+        /* The drain voltage is given by: (v=CONV_FLOAT)
            - 102*v */
         case PA_CHANNEL_DRAIN_VOLTAGE:
-            scaledData=LO_PA_POT_DRAIN_V_SCALE(CAN_FLOAT);
+            scaledData=LO_PA_POT_DRAIN_V_SCALE(CONV_FLOAT);
             break;
         default:
             break;

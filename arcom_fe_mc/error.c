@@ -6,7 +6,7 @@
     Created: 2004/08/24 16:16:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: error.c,v 1.76 2009/03/25 14:44:36 avaccari Exp $
+    \$Id: error.c,v 1.81 2009/10/13 15:01:49 avaccari Exp $
 
     This file contains the functions necessary to handle the errors that might
     occour during the operation of the ARCOM Pegasus board.*/
@@ -21,12 +21,21 @@
 #include "frontend.h"
 #include "globalOperations.h"
 
+/* Globals */
+/* Externs */
+unsigned char errorNewest=0; /*!< This variable stores the current index to the
+                                  location for the next newest error. */
+unsigned char errorOldest=0; /*!< This variable stores the current index to the
+                                  location of oldest unread error. */
+unsigned int * errorHistory; /*!< This is a pointer to the array that will
+                                  contain the error history if the malloc
+                                  succeeds. */
+
 /* Statics */
-static unsigned int  * errorHistory;
-static unsigned char errorNewest=0;
-static unsigned char errorOldest=0;
+static unsigned int errorNoErrorHistory=1;
 static unsigned char errorOn=0;
 static unsigned long errorTotal=1;
+
 
 /*! Initializes the error routines trying to allocate enough space in memory for
     the circular buffer containing the latest 255 errors. If there isn't enough
@@ -42,6 +51,11 @@ int errorInit(void){
     errorHistory=(unsigned int *)malloc(ERROR_HISTORY_LENGTH*sizeof(unsigned int));
     if(errorHistory==NULL){
         errorOn = 0;
+
+        /* If there is no error reporting, we need to store that fact in the
+           error history so that the can message can read it. */
+        errorHistory=&errorNoErrorHistory;
+        ++errorNewest;
 
         #ifdef ERROR_REPORT
             reportErrorConsole(ERR_ERROR,
@@ -119,24 +133,24 @@ void storeError(unsigned char moduleNo,
 
     /* Check if the error reporting is turned on */
     if(errorOn){
+        /* Stores the error at the current start index */
+        errorHistory[errorNewest]=(((unsigned int)moduleNo)<<8)+((unsigned int)errorNo);
+
         ++errorNewest; // Increase the start index
 
-        /* If error buffer overflow, increase the errorOldest to contain the most recent 255 errors */
+        /* If error buffer overflow, increase the errorOldest to contain a full
+           buffer of the most recent errors */
         if(errorNewest==errorOldest){
             errorOldest++;
         }
 
-        errorHistory[errorNewest]=(((unsigned int)moduleNo)<<8)+((unsigned int)errorNo); // Stores the new unread error
         #ifdef ERROR_REPORT
             reportErrorConsole(moduleNo,
                                errorNo); // Print error on COM1 for debugging purposes
         #endif /* ERROR_REPORT */
+    }
 
-/************** This has to go in the readError routine ****************/
-        errorOldest++; // Error reported. Point to next oldest.
-     }
-
-     errorTotal++; // Increase the global error counter
+    errorTotal++; // Increase the global error counter
 }
 
 #ifdef ERROR_REPORT
@@ -366,14 +380,14 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored cartridge temperature (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x05: // Monitored cartrdige temperature in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored cartrdige temperature (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     default: // Undefined error
@@ -443,84 +457,84 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored PLL lock detect voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x05: // Monitored PLL lock detect voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored PLL lock detect voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x06: // Monitored PLL correction voltage in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored PLL correction voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x07: // Monitored PLL correction voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored PLL correction voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x08: // Monitored PLL assembly temperature in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored PLL assembly temperature (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x09: // Monitored PLL assembly temperature in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored PLL assembly temperature (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x0A: // Monitored YIG heater current in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored YIG heater current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x0B: // Monitored YIG heater current in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored YIG heater current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x0C: // Monitored PLL reference total power in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored PLL reference total power (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x0D: // Monitored PLL reference total power in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored PLL reference total power (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x0E: // Monitored PLL if total power in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored PLL if total power (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x0F: // Monitored PLL if total power in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored PLL if total power (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x10: // Monitored unlock detect latch bit in error range
@@ -557,22 +571,21 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The commanded YTO coarse tune set point (",
-                                convert.
-                                 uint[1],
+                                CONV_UINT(0),
                                 ") is out of the allowed range");
                         break;
                     case 0x02: // Monitored YTO coarse tune in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored YTO coarse tune (",
-                                CAN_UINT,
+                                CONV_UINT(0),
                                 ") is in the error range");
                         break;
                     case 0x03: // Monitored YTO coarse tune in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored YTO coarse tune (",
-                                CAN_UINT,
+                                CONV_UINT(0),
                                 ") is in the warning range");
                         break;
                     default: // Undefined error
@@ -610,28 +623,28 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored photomixer voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x05: // Monitored photomixer voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored photomixer voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x06: // Monitored photomixer current in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored photomixer current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x07: // Monitored photomixer current in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored photomixer current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     default: // Undefined error
@@ -669,91 +682,91 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored AMC gate A voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x05: // Monitored AMC gate A voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored AMC gate A voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x06: // Monitored AMC drain A voltage in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored AMC drain A voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x07: // Monitored AMC drain A voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored AMC drain A voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x08: // Monitored AMC drain A current in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored AMC drain A current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x09: // Monitored AMC drain A current in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored AMC drain A current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x0A: // Monitored AMC gate B voltage in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored AMC gate B voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x0B: // Monitored AMC gate B voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored AMC gate B voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x0C: // Set AMC drain B voltage out of range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The commanded AMC drain B voltage set point (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is out of the allowed range");
                         break;
                     case 0x0D: // Monitored AMC drain B voltage in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored AMC drain B voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x0E: // Monitored AMC drain B voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored AMC drain B voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x0F: // Monitored AMC drain B current in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored AMC drain B current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x10: // Monitored AMC drain B current in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored AMC drain B current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x11: // Set AMC multiplier D voltage out of range
@@ -767,98 +780,98 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored AMC multiplier D current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x13: // Monitored AMC multiplier D current in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored AMC multiplier D current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x14: // Set AMC gate E voltage out of range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The commanded AMC gate E voltage set point (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is out of the allowed range");
                         break;
                     case 0x15: // Monitored AMC gate E voltage in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored AMC gate E voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x16: // Monitored AMC gate E voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored AMC gate E voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x17: // Set AMC drain E voltage out of range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The commanded AMC drain E voltage set point (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is out of the allowed range");
                         break;
                     case 0x18: // Monitored AMC drain E voltage in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored AMC drain E voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x19: // Monitored AMC drain E voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored AMC drain E voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x1A: // Monitored AMC drain E current in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored AMC drain E current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x1B: // Monitored AMC drain E current in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored AMC drain E current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x1C: // Monitored AMC 3V supply voltage in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored AMC 3V supply voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x1D: // Monitored AMC 3V supply voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored AMC 3V supply voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x1E: // Monitored AMC 5V supply voltage in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored AMC 5V supply voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x1F: // Monitored AMC 5V supply voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored AMC 5V supply voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     default: // Undefined error
@@ -896,14 +909,14 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored PA 3V power supply voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x05: // Monitored PA 5V power supply voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored PA 5V power supply voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     default: // Undefined error
@@ -933,42 +946,42 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The commanded PA gate voltage set point (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is out of the allowed range");
                         break;
                     case 0x03: // Monitored PA channel gate voltage in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored PA channel gate voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x04: // Monitored PA channel gate voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored PA channel gate voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x05: // Set PA channel drain voltage out of range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The commanded PA drain voltage set point (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is out of the allowed range");
                         break;
                     case 0x06: // Monitored PA channel drain voltage in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored PA channel drain voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x07: // Monitored PA channel drain voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored PA channel drain voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x08: // Control message out of range
@@ -983,14 +996,14 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored PA channel drain current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x0B: // Monitored PA channel drain current in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored PA channel drain current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x0C: // Warning: The addressed hardware is not properly defined yet
@@ -1114,14 +1127,14 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored SIS heater current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x04: // Monitored SIS heater current in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored SIS heater current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x05: // Control message out of range
@@ -1131,6 +1144,10 @@ void storeError(unsigned char moduleNo,
                     case 0x06: // Monitor message out of range
                         sprintf(error,
                                 "Error: The monitor message is out of range");
+                        break;
+                    case 0x07: // Band9 heater on blocked
+                        sprintf(error,
+                                "Error: The heater on band9 cannot be turned on until the timer has expired");
                         break;
                     default: // Undefined error
                         sprintf(error,
@@ -1189,35 +1206,35 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The commanded SIS voltage set point (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is out of the allowed range");
                         break;
                     case 0x04: // Monitored SIS voltage in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored SIS voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x05: // Monitored SIS voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored SIS voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x06: // Monitored SIS current in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored SIS current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x07: // Monitored SIS current in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored SIS current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x08: // Control message out of range
@@ -1262,35 +1279,35 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored SIS Magnet voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x04: // Monitored SIS Magnet voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored SIS Magnet voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x05: // Monitored SIS Magnet current in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored SIS Magnet current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x06: // Monitored SIS Magnet current in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored SIS Magnet current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x07: // Set SIS Magnet current out of range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The commanded SIS Magnet current set point (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is out of the allowed range");
                         break;
                     case 0x08: // Control message out of range
@@ -1365,56 +1382,56 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored LNA stage gate voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x04: // Monitored LNA stage gate voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored LNA stage gate voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x05: // Monitored LNA stage drain voltage in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored LNA stage drain voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x06: // Monitored LNA stage drain voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored LNA stage drain voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x07: // Monitored LNA stage drain current in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored LNA stage drain current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x08: // Monitored LNA stage drain current in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored LNA stage drain current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x09: // Set LNA stage drain voltage out of range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The commanded LNA stage drain voltage set point (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is out of the allowed range");
                         break;
                     case 0x0A: // Set LNA stage drain current out of range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The commanded LNA stage drain current set point (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is out of the allowed range");
                         break;
                     case 0x10: // Control message out of range
@@ -1697,28 +1714,28 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored power distribution channel voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x05: // Monitored power distribution channel voltage in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored power distribution channel voltage (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x06: // Monitored power distribution channel current in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored power distribution channel current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x07: // Monitored power distribution channel current in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored power distribution current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     default: // Undefined error
@@ -1774,14 +1791,14 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored IF channel assembly temperaure (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x05: // Monitored IF channel assembly temperature in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored IF channel assembly temperaturet (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x06: // Set IF channel attenuation out of range
@@ -1876,14 +1893,14 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored 230V supply current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x05: // Monitored 230V supply current in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored 230V supply current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x06: // Warning: Backing pump OFF
@@ -2088,14 +2105,14 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%d%s",
                                 "Error: The monitored vacuum sensor pressure (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x04: // Monitored vacuum sensor pressure in warning range
                         sprintf(error,
                                 "%s%d%s",
                                 "Warning: The monitored vacuum sensor pressure (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     default: // Undefined error
@@ -2124,14 +2141,14 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%d%s",
                                 "Error: The monitored cryostat temperature (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x04: // Monitored cryostat temperature pressure
                         sprintf(error,
                                 "%s%d%s",
                                 "Warning: The monitored cryostat temperature (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     default: // Undefined error
@@ -2149,9 +2166,9 @@ void storeError(unsigned char moduleNo,
                 sprintf(module,
                         "Cryostat Serial Interface");
                 switch(errorNo){
-                    case 0x01: // Timeout while waiting for the Cryostat ADC to become ready
+                    case 0x01: // Timeout while waiting for the CRYO ADC to become ready
                         sprintf(error,
-                                "Error: Timeout while waiting for the Cryostat ADC to become ready");
+                                "Error: Timeout while waiting for the CRYO ADC to become ready");
                         break;
                     default: // Undefined error
                         sprintf(error,
@@ -2172,7 +2189,7 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The commanded EDFA modulation input value (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is out of the allowed range");
                         break;
                     case 0x02: // Modulation input submodule out of range
@@ -2217,28 +2234,28 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored EDFA photodetector current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x05: // Monitored EDFA photodetector current in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored EDFA photodetector current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x06: // Monitored EDFA photodetector power in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored EDFA photodetector power (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x07: // Monitored EDFA photodetector power in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored EDFA photodetector power (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     default: // Undefined error
@@ -2275,49 +2292,49 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored pump temperature (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x05: // Monitored laser pump temperature in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored pump temperature (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x06: // Set laser drive current out of range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The commanded laser drive current set point (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is out of the allowed range");
                         break;
                     case 0x07: // Monitored laser drive current in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored laser drive current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x08: // Monitored laser drive current in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored laser drive current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     case 0x09: // Monitored laser photo detector current in error range
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored laser photo detector current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x0A: // Monitored laser photo detector current in warning range
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored laser photo detector current (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     default: // Undefined error
@@ -2341,6 +2358,28 @@ void storeError(unsigned char moduleNo,
                                 "Error: The addressed EDFA submodule (",
                                 currentEdfaModule,
                                 ") is out of range");
+                        break;
+                    case 0x02: // Control message out of range
+                        sprintf(error,
+                                "Error: The control message is out of range");
+                        break;
+                    case 0x03: // Monitor message out of range
+                        sprintf(error,
+                                "Error: The monitor message is out of range");
+                        break;
+                    case 0x04: // Monitored EDFA driver status in error range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The monitored EDFA driver status (",
+                                CAN_BYTE,
+                                ") is in the error range");
+                        break;
+                    case 0x05: // Monitored EDFA driver status in warning range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Warning: The monitored EDFA driver status (",
+                                CAN_BYTE,
+                                ") is in the warning range");
                         break;
                     default: // Undefined error
                         sprintf(error,
@@ -2460,14 +2499,14 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%f%s",
                                 "Error: The monitored LPR temperature (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the error range");
                         break;
                     case 0x04: // Monitored LPR temperature pressure
                         sprintf(error,
                                 "%s%f%s",
                                 "Warning: The monitored LPR temperature (",
-                                CAN_FLOAT,
+                                CONV_FLOAT,
                                 ") is in the warning range");
                         break;
                     default: // Undefined error
@@ -2610,9 +2649,9 @@ void storeError(unsigned char moduleNo,
         printf("\nError %lu (%d/255): 0x%02X (module: %d, error: %d)\n Message from module %s:\n %s\n\n",
                errorTotal,
                errorNewest,
-               errorHistory[errorNewest],
-               (unsigned char)(errorHistory[errorNewest]>>8),
-               (unsigned char)errorHistory[errorNewest],
+               errorHistory[errorNewest-1],
+               (unsigned char)(errorHistory[errorNewest-1]>>8),
+               (unsigned char)errorHistory[errorNewest-1],
                module,
                error);
     }

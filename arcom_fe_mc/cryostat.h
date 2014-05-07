@@ -6,7 +6,7 @@
     Created: 2004/10/25 15:39:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cryostat.h,v 1.21 2009/03/23 19:22:04 avaccari Exp $
+    \$Id: cryostat.h,v 1.22 2009/08/03 21:59:07 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the cryostat system. */
@@ -168,6 +168,11 @@
     /* Globals */
     /* Externs */
     extern unsigned char currentCryostatModule; //!< Currently addressed cryostat submodule
+    extern unsigned char currentAsyncCryoTempModule; //!< A global to keep track of the cryostat temperature module currently addressed by the async routine
+    extern int asyncCryoTempError[CRYOSTAT_TEMP_SENSORS_NUMBER]; //!< A global to keep track of the async error while monitoring cryostat temperatures
+    extern unsigned char currentAsyncVacuumControllerModule; //!< A global to keep track of the cryostat pressure module currently addressed by the async routine
+    extern int asyncVacuumControllerError[VACUUM_SENSORS_NUMBER]; //!< A global to keep track of the async error while monitoring cryostat pressures
+    extern int asyncSupplyCurrent230VError; //!< A global to keep track of the async error while monitoring the cryostat supply voltage current
 
     /* Prototypes */
     /* Statics */
@@ -175,5 +180,6 @@
     /* Externs */
     extern void cryostatHandler(void); //!< This function deals with the incoming CAN messages
     extern int cryostatStartup(void); //!< This function deals with the initialization of the cryostat
+    extern int cryostatAsync(void); //!< This function deals with the asychronous monitoring of the cryostat
 
 #endif /* _CRYTOSTAT_H */

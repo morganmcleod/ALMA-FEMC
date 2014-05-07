@@ -6,7 +6,7 @@
     Created: 2007/04/10 11:08:20 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cryostatSerialInterface.h,v 1.12 2008/02/28 22:15:05 avaccari Exp $
+    \$Id: cryostatSerialInterface.h,v 1.14 2009/09/22 14:46:10 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the cryostat serial interface. */
@@ -63,7 +63,6 @@
     #define GATE_VALVE_SENSORS_UNKNOWN      0x0
     #define GATE_VALVE_SENSORS_OPEN         0x5
     #define GATE_VALVE_SENSORS_CLOSE        0xA
-    #define CRYOSTAT_ANALOG_READOUTS        10
     #define CRYOSTAT_TEMP_CONV_ERR          FLOAT_ERROR
     #define CRYOSTAT_PRESS_CONV_ERR         FLOAT_ERROR
 
@@ -131,7 +130,7 @@
     #define CRYO_ADC_CRYO_PRESS_SCALE       0.75        // Scale factor for the cryostat pressure (includes the vactor 10 scaling for the voltage itself)
     #define CRYO_ADC_VAC_PORT_PRESS_OFFSET  (-6.143)    // Offset factor for the vacuum port pressure
     #define CRYO_ADC_VAC_PORT_PRESS_SCALE   1.286       // Scale factor for the vacuum port pressure (includes the vactor 10 scaling for the voltage itself)
-
+    #define CRYO_ADC_MAX_RETRIES            10          // Maximum number of retries on ADC_READY before trowing an error
 
     //! CRYO AREG bitfield (11-bit+5 -> 16-bit).
     /*! The AREG defines which monitor point is currently selected.

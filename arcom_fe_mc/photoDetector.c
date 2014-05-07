@@ -5,7 +5,7 @@
     Created: 2007/06/02 11:38:40 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: photoDetector.c,v 1.2 2007/06/08 22:48:57 avaccari Exp $
+    \$Id: photoDetector.c,v 1.4 2009/08/25 21:39:39 avaccari Exp $
 
     This files contains all the functions necessary to handler the EDFA photo
     detector. */
@@ -82,14 +82,14 @@ static void currentHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    lpr.
                     edfa.
                      photoDetector.
                       current[CURRENT_VALUE];
     } else {
         /* If no error during the monitor process gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    lpr.
                     edfa.
                      photoDetector.
@@ -104,7 +104,7 @@ static void currentHandler(void){
                             edfa.
                              photoDetector.
                               current[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            lpr.
                             edfa.
@@ -115,7 +115,7 @@ static void currentHandler(void){
                                 edfa.
                                  photoDetector.
                                   current[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                lpr.
                                 edfa.
@@ -139,8 +139,7 @@ static void currentHandler(void){
        The value has to be converted from little endian (Intel) to big endian
        (CAN). */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
     return;
@@ -177,14 +176,14 @@ static void powerHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    lpr.
                     edfa.
                      photoDetector.
                       power[CURRENT_VALUE];
     } else {
         /* If no error during the monitor process gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    lpr.
                     edfa.
                      photoDetector.
@@ -199,7 +198,7 @@ static void powerHandler(void){
                             edfa.
                              photoDetector.
                               power[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            lpr.
                             edfa.
@@ -210,7 +209,7 @@ static void powerHandler(void){
                                 edfa.
                                  photoDetector.
                                   power[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                lpr.
                                 edfa.
@@ -234,8 +233,7 @@ static void powerHandler(void){
        The value has to be converted from little endian (Intel) to big endian
        (CAN). */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
     return;

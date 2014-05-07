@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lo.c,v 1.19 2009/03/25 14:45:13 avaccari Exp $
+    \$Id: lo.c,v 1.20 2009/08/25 21:39:39 avaccari Exp $
 
     This files contains all the functions necessary to handle LO events. */
 
@@ -69,7 +69,7 @@ int loInit(void){
         printf("   - Setting PAs drain voltage to 0\n");
     #endif // DEBUG_INIT
 
-    CAN_FLOAT=0.0;
+    CONV_FLOAT=0.0;
     currentPaChannelModule=PA_CHANNEL_DRAIN_VOLTAGE;
 
     /* PA Channel A */
@@ -103,7 +103,7 @@ int loInit(void){
     #ifdef DEBUG_INIT
         printf("   - Setting PAs gate voltage to 0\n");
     #endif // DEBUG_INIT
-    CAN_FLOAT=0.0;
+    CONV_FLOAT=0.0;
     currentPaChannelModule=PA_CHANNEL_GATE_VOLTAGE;
 
     /* PA Channel A */

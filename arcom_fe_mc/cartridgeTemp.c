@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cartridgeTemp.c,v 1.18 2008/02/28 22:15:05 avaccari Exp $
+    \$Id: cartridgeTemp.c,v 1.20 2009/08/25 21:39:39 avaccari Exp $
 
     This files contains all the functions necessary to handle cartridge
     temperature sensors events. */
@@ -123,13 +123,13 @@ static void tempHandler(void){
            different format is used because getTemp might return
            two different error state depending on error conditions. */
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     cartridgeTemp[currentCartridgeTempSubsystemModule].
                      temp[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     cartridgeTemp[currentCartridgeTempSubsystemModule].
                      temp[CURRENT_VALUE];
@@ -142,7 +142,7 @@ static void tempHandler(void){
                            cartridge[currentModule].
                             cartridgeTemp[currentCartridgeTempSubsystemModule].
                              temp[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             cartridgeTemp[currentCartridgeTempSubsystemModule].
@@ -151,7 +151,7 @@ static void tempHandler(void){
                                cartridge[currentModule].
                                 cartridgeTemp[currentCartridgeTempSubsystemModule].
                                  temp[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 cartridgeTemp[currentCartridgeTempSubsystemModule].
@@ -173,8 +173,7 @@ static void tempHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 

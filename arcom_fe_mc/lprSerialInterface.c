@@ -5,7 +5,7 @@
     Created: 2007/06/05 14:59:17 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lprSerialInterface.c,v 1.7 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: lprSerialInterface.c,v 1.10 2009/10/22 14:52:09 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     LPR serial interface.
@@ -202,12 +202,12 @@ int getLprTemp(void){
     }
 
     /* 6 - Scale the data */
-    /* The temperature is given by: 500*(adcData/65536) */
+    /* The temperature is given by: 5.0e+6*(adcData/65536)/5110 */
     frontend.
      lpr.
       lprTemp[currentLprModule].
        temp[CURRENT_VALUE]=(LPR_ADC_TEMP_SCALE*lprRegisters.
-                                                adcData/LPR_ADC_RANGE);
+                                                adcData)/LPR_ADC_RANGE;
 
     return NO_ERROR;
 }
@@ -240,8 +240,8 @@ int setOpticalSwitchPort(void){
       bitField.
        port=LPR_AREG_SWITCH_PORT(CAN_BYTE);
 
-    /* Get the optical switch states. */
-    if(getOpticalSwitchStates()==ERROR){
+    /* Get the LPR states. */
+    if(getLprStates()==ERROR){
         return ERROR;
     }
 
@@ -337,8 +337,8 @@ int setOpticalSwitchShutter(unsigned char mode){
 
     /* If the shutter mode is not forced then check for the busy state */
     if(mode==STANDARD){
-        /* Get the optical switch states. */
-        if(getOpticalSwitchStates()==ERROR){
+        /* Get the LPR states. */
+        if(getLprStates()==ERROR){
             return ERROR;
         }
 
@@ -400,50 +400,6 @@ int setOpticalSwitchShutter(unsigned char mode){
 
 
 
-/* Get Optical Switch states */
-/*! This function monitors the current error and busy states of the optical
-    switch in the LPR. This is a read-back of real hardware status bits.
-
-    \return
-        - \ref NO_ERROR -> if no error occurred
-        - \ref ERROR    -> if something wrong happened */
-int getOpticalSwitchStates(void){
-
-    /* Read the status register, if an error occurs, notify the calling
-       function. */
-    if(serialAccess(LPR_PARALLEL_READ,
-                    &lprRegisters.
-                      statusReg.
-                       integer,
-                    LPR_STATUS_REG_SIZE,
-                    LPR_STATUS_REG_SHIFT_SIZE,
-                    LPR_STATUS_REG_SHIFT_DIR,
-                    SERIAL_READ)==ERROR){
-        return ERROR;
-    }
-
-    /* Store the optical switch error */
-    frontend.
-     lpr.
-      opticalSwitch.
-       state[CURRENT_VALUE]=lprRegisters.
-                             statusReg.
-                              bitField.
-                               opticalSwitchError;
-
-    /* Store the optical switch busy state */
-    frontend.
-     lpr.
-      opticalSwitch.
-       busy[CURRENT_VALUE]=lprRegisters.
-                            statusReg.
-                             bitField.
-                              opticalSwitchState;
-
-    return NO_ERROR;
-}
-
-
 
 
 /* Get laser drive current */
@@ -480,7 +436,7 @@ int getLaserDriveCurrent(void){
     }
 
     /* 6 - Scale the data */
-    /* The laser drive current is given by: 100*(adcData/65536) */
+    /* The laser drive current is given by: 800*(adcData/65536) */
     frontend.
      lpr.
       edfa.
@@ -528,13 +484,13 @@ int getLaserPhotoDetectCurrent(void){
     }
 
     /* 6 - Scale the data */
-    /* The laser drive current is given by: 1*(adcData/65536) */
+    /* The laser drive current is given by: 2.5-[5000.0*(adcData/65536)] */
     frontend.
      lpr.
       edfa.
        laser.
-        photoDetectCurrent[CURRENT_VALUE]=(LPR_ADC_LASER_PD_CURRENT_SCALE*lprRegisters.
-                                                                           adcData/LPR_ADC_RANGE);
+        photoDetectCurrent[CURRENT_VALUE]=LPR_ADC_LASER_PD_CURRRENT_OFFSET-(LPR_ADC_LASER_PD_CURRENT_SCALE*lprRegisters.
+                                                                                                            adcData)/LPR_ADC_RANGE;
 
     return NO_ERROR;
 }
@@ -577,13 +533,13 @@ int getPhotoDetectorCurrent(void){
     }
 
     /* 6 - Scale the data */
-    /* The laser drive current is given by: 1*(adcData/65536) */
+    /* The laser drive current is given by: 500.0*(adcData/65536) */
     frontend.
      lpr.
       edfa.
        photoDetector.
         current[CURRENT_VALUE]=(LPR_ADC_EDFA_PD_CURRENT_SCALE*lprRegisters.
-                                                               adcData/LPR_ADC_RANGE);
+                                                               adcData)/LPR_ADC_RANGE;
 
     return NO_ERROR;
 }
@@ -642,7 +598,7 @@ int setModulationInputValue(void){
     lprRegisters.
      dacReg.
       bitField.
-       data=LPR_DAC_MOD_INPUT_SCALE(CAN_FLOAT);
+       data=LPR_DAC_MOD_INPUT_SCALE(CONV_FLOAT);
 
     /* 2 - Write the data to the serial access function */
     #ifdef DEBUG
@@ -794,4 +750,60 @@ int getLaserPumpTemperature(void){
     return NO_ERROR;
 }
 
+
+
+
+
+
+/* Get LPR states */
+/*! This function monitors the states of several hardware in the LPR. This is a
+    read-back of real hardware status bits.
+
+    \return
+        - \ref NO_ERROR -> if no error occurred
+        - \ref ERROR    -> if something wrong happened */
+int getLprStates(void){
+
+    /* Read the status register, if an error occurs, notify the calling
+       function. */
+    if(serialAccess(LPR_PARALLEL_READ,
+                    &lprRegisters.
+                      statusReg.
+                       integer,
+                    LPR_STATUS_REG_SIZE,
+                    LPR_STATUS_REG_SHIFT_SIZE,
+                    LPR_STATUS_REG_SHIFT_DIR,
+                    SERIAL_READ)==ERROR){
+        return ERROR;
+    }
+
+    /* Store the optical switch error */
+    frontend.
+     lpr.
+      opticalSwitch.
+       state[CURRENT_VALUE]=lprRegisters.
+                             statusReg.
+                              bitField.
+                               opticalSwitchError;
+
+    /* Store the optical switch busy state */
+    frontend.
+     lpr.
+      opticalSwitch.
+       busy[CURRENT_VALUE]=lprRegisters.
+                            statusReg.
+                             bitField.
+                              opticalSwitchState;
+
+    /* Store the EDFA driver state */
+    frontend.
+     lpr.
+      edfa.
+       driverTempAlarm[CURRENT_VALUE]=lprRegisters.
+                                       statusReg.
+                                        bitField.
+                                         edfaDriverState;
+
+    return NO_ERROR;
+}
 

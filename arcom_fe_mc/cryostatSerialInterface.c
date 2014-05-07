@@ -5,7 +5,7 @@
     Created: 2007/04/10 11:26:37 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cryostatSerialInterface.c,v 1.12 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: cryostatSerialInterface.c,v 1.15 2009/09/22 14:46:10 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     cryostat serial interface.
@@ -33,21 +33,13 @@
 #include "frontend.h"
 #include "serialInterface.h"
 #include "timer.h"
+#include "async.h"
+#include "can.h"
 
 /* Globals */
 /* Externs */
 /* Statics */
 CRYO_REGISTERS cryoRegisters;
-/* The following statics are necessary to fix a problem with the way the ADC
-   circuitry work in the CRYO M&C boards.
-   When quickly switching between the multiplexed analog channels the
-   electronics lags behing and the first few value read are not correct.
-   To fix this problem, we make sure that a value is read a sufficient number
-   of time to assure that the read value is stable. If the electronics is
-   changes, this part of code can be removed. */
-static unsigned char lastCryostatModule;
-static unsigned char readouts=CRYOSTAT_ANALOG_READOUTS;
-
 
 /* CRYO analog monitor request core.
    This function performs the core operation that are common to all the analog
@@ -60,126 +52,207 @@ static unsigned char readouts=CRYOSTAT_ANALOG_READOUTS;
        - Execute an ADC read cycle that gets the raw data.
 
    If an error happens during the process it will return ERROR, otherwise
-   NO_ERROR will be returned. */
+   NO_ERROR will be returned. It will return ASYNC_DONE once all the step
+   necessary to measure the temperature are completed and the data is stored in
+   the fronted variable. */
 static int getCryoAnalogMonitor(void){
 
-    /* A temporary variable to deal with the timer. */
-    int timedOut;
+    /* A static enum to track the state of the asynchronous readout */
+    static enum {
+        ASYNC_CRYO_ANALOG_AREG,
+        ASYNC_CRYO_ANALOG_SET_WAIT,
+        ASYNC_CRYO_ANALOG_WAIT,
+        ASYNC_CRYO_ANALOG_ADC_CONV,
+        ASYNC_CRYO_ANALOG_ADC_READY,
+        ASYNC_CRYO_ANALOG_ADC_READ
+    } asyncCryoAnalogState = ASYNC_CRYO_ANALOG_AREG;
 
-    /* A temporary variable to hold the ADC value. This is necessary because
-       the returned ADC value is actually 18 bits of which the first two are
-       to be ignore. This variable allowes manipulation of data so that the
-       stored one is only the real 16 bit value. */
-    int tempAdcValue[2];
+    /* Switch to the correct current state. */
+    switch(asyncCryoAnalogState){
+        /* Performs a write to the AREG. This switches the multiplexor to the
+           right channel. */
+        case ASYNC_CRYO_ANALOG_AREG:
+            /* Parallel write AREG */
+            #ifdef DEBUG_CRYOSTAT_SERIAL
+                printf("         - Writing AREG\n");
+            #endif /* DEBUG_CRYOSTAT_SERIAL */
 
+            /* The function to write the data to the hardware is called passing the
+               intermediate buffer. If an error occurs, notify the calling function. */
+            if(serialAccess(CRYO_PARALLEL_WRITE(CRYO_AREG),
+                            &cryoRegisters.
+                              aReg.
+                               integer,
+                            CRYO_AREG_SIZE,
+                            CRYO_AREG_SHIFT_SIZE,
+                            CRYO_AREG_SHIFT_DIR,
+                            SERIAL_WRITE)==ERROR){
+                return ERROR;
+            }
 
-    /* Check if this is the last analog channel read. If not, then reload
-       the readouts count. */
-    if(currentCryostatModule!=lastCryostatModule){
-        lastCryostatModule=currentCryostatModule;
-        readouts=CRYOSTAT_ANALOG_READOUTS;
-    }
+            /* Set next state */
+            asyncCryoAnalogState=ASYNC_CRYO_ANALOG_SET_WAIT;
 
-    /* Parallel write AREG */
-    #ifdef DEBUG_CRYOSTAT_SERIAL
-        printf("         - Writing AREG\n");
-    #endif /* DEBUG_CRYOSTAT_SERIAL */
+            break;
 
-    /* The function to write the data to the hardware is called passing the
-       intermediate buffer. If an error occurs, notify the calling function. */
-    if(serialAccess(CRYO_PARALLEL_WRITE(CRYO_AREG),
-                    &cryoRegisters.
-                      aReg.
-                       integer,
-                    CRYO_AREG_SIZE,
-                    CRYO_AREG_SHIFT_SIZE,
-                    CRYO_AREG_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        return ERROR;
-    }
+        /* Setup the timer to wait before starting the ADC conversion. */
+        case ASYNC_CRYO_ANALOG_SET_WAIT:
+            #ifdef DEBUG_CRYOSTAT_SERIAL
+                printf("         - Wait for hardware");
+            #endif /* DEBUG_CRYOSTAT_SERIAL */
 
-    /* Initiate ADC conversion:
-       - send ADC convert strobe command */
-    #ifdef DEBUG_CRYOSTAT_SERIAL
-        printf("         - Initiating ADC conversion\n");
-    #endif /* DEBUG_CRYOSTAT_SERIAL */
+            /* Setup timer to wait for 50 ms before reading the temperature */
+            if(startAsyncTimer(TIMER_CRYO_ANALOG_WAIT,
+                               TIMER_CRYO_TO_ANALOG_WAIT,
+                               FALSE)==ERROR){
+                return ERROR;
+            }
 
-    /* If an error occurs, notify the calling function */
-    if(serialAccess(CRYO_ADC_CONVERT_STROBE,
-                    NULL,
-                    CRYO_ADC_STROBE_SIZE,
-                    CRYO_ADC_STROBE_SHIFT_SIZE,
-                    CRYO_ADC_STROBE_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        return ERROR;
-    }
+            /* Set next state */
+            asyncCryoAnalogState=ASYNC_CRYO_ANALOG_WAIT;
 
-    /* Wait on ADC ready status:
-       - parallel input */
-    /* Setup for 1 second and start th asynchronous timer */
-    if(startAsyncTimer(TIMER_CRYO_ADC_RDY,
-                       TIMER_CRYO_TO_ADC_RDY,
-                       FALSE)==ERROR){
-        return ERROR;
-    }
+            break;
 
-    do {
-        #ifdef DEBUG_CRYOSTAT_SERIAL
-            printf("         - Waiting on ADC ready\n");
-        #endif /* DEBUG_CRYOSTAT_SERIAL */
+        /* Waits until the timer expires. */
+        case ASYNC_CRYO_ANALOG_WAIT:
+            {
+                /* A temporary variable to deal with the timer. */
+                int timedOut;
 
-        /* If an error occurs, notify the calling function */
-        if(serialAccess(CRYO_PARALLEL_READ,
-                        &cryoRegisters.
-                          statusReg.
-                           integer,
-                        CRYO_STATUS_REG_SIZE,
-                        CRYO_STATUS_REG_SHIFT_SIZE,
-                        CRYO_STATUS_REG_SHIFT_DIR,
-                        SERIAL_READ)==ERROR){
+                #ifdef DEBUG_CRYOSTAT_SERIAL
+                    printf(".");
+                #endif /* DEBUG_CRYOSTAT_SERIAL */
+
+                /* Query the async timer */
+                timedOut=queryAsyncTimer(TIMER_CRYO_ANALOG_WAIT);
+
+                if(timedOut==ERROR){
+                    return ERROR;
+                }
+
+                /* Wait until timer expires. No need to clear the timer because
+                   it is done by the queryAsyncTimer function if expired. */
+                if(timedOut==TIMER_EXPIRED){
+                    /* Set next state */
+                    asyncCryoAnalogState=ASYNC_CRYO_ANALOG_ADC_CONV;
+                }
+
+                break;
+            }
+
+        /* Starts the ADC conversion. */
+        case ASYNC_CRYO_ANALOG_ADC_CONV:
+            /* Initiate ADC conversion:
+               - send ADC convert strobe command */
+            #ifdef DEBUG_CRYOSTAT_SERIAL
+                printf("\n         - Initiating ADC conversion\n");
+            #endif /* DEBUG_CRYOSTAT_SERIAL */
+
+            /* If an error occurs, notify the calling function */
+            if(serialAccess(CRYO_ADC_CONVERT_STROBE,
+                            NULL,
+                            CRYO_ADC_STROBE_SIZE,
+                            CRYO_ADC_STROBE_SHIFT_SIZE,
+                            CRYO_ADC_STROBE_SHIFT_DIR,
+                            SERIAL_WRITE)==ERROR){
+                return ERROR;
+            }
+
+            /* Set next state */
+            asyncCryoAnalogState=ASYNC_CRYO_ANALOG_ADC_READY;
+
+            break;
+
+        /* Waits for the ADC to get ready */
+        case ASYNC_CRYO_ANALOG_ADC_READY:
+            {
+                /* A static to keep track of how many times we check for the ADC
+                   to get ready. */
+                static unsigned char retries=0;
+
+                #ifdef DEBUG_CRYOSTAT_SERIAL
+                    printf("         - Waiting on ADC ready\n");
+                #endif /* DEBUG_CRYOSTAT_SERIAL */
+
+                /* If an error occurs, notify the calling function */
+                if(serialAccess(CRYO_PARALLEL_READ,
+                                &cryoRegisters.
+                                  statusReg.
+                                   integer,
+                                CRYO_STATUS_REG_SIZE,
+                                CRYO_STATUS_REG_SHIFT_SIZE,
+                                CRYO_STATUS_REG_SHIFT_DIR,
+                                SERIAL_READ)==ERROR){
+                    return ERROR;
+                }
+
+                /* Check if ADC done */
+                if(cryoRegisters.
+                    statusReg.
+                     bitField.
+                      adcReady!=CRYO_ADC_BUSY){
+
+                    /* Set next state and clear the retries counter */
+                    asyncCryoAnalogState=ASYNC_CRYO_ANALOG_ADC_READ;
+                    retries=0;
+                    break;
+                }
+
+                /* Increase the retries counter and if we tried too many times, return error. */
+                if(++retries>CRYO_ADC_MAX_RETRIES){
+                    storeError(ERR_CRYO_SERIAL,
+                               0x01); // Error 0x01 -> Too many retries waiting for ADC_READY
+                    retries=0;
+
+                    return ERROR;
+                }
+
+                break;
+            }
+
+        /* Reads back the converted value. */
+        case ASYNC_CRYO_ANALOG_ADC_READ:
+            {
+                /* A temporary variable to hold the ADC value. This is necessary because
+                   the returned ADC value is actually 18 bits of which the first two are
+                   to be ignore. This variable allowes manipulation of data so that the
+                   stored one is only the real 16 bit value. */
+                int tempAdcValue[2];
+
+                /* ADC read cycle */
+                #ifdef DEBUG_CRYOSTAT_SERIAL
+                    printf("         - Reading ADC value\n");
+                #endif /* DEBUG_CRYOSTAT_SERIAL */
+
+                /* If error return the state to the calling function */
+                if(serialAccess(CRYO_ADC_DATA_READ,
+                                &tempAdcValue,
+                                CRYO_ADC_DATA_SIZE,
+                                CRYO_ADC_DATA_SHIFT_SIZE,
+                                CRYO_ADC_DATA_SHIFT_DIR,
+                                SERIAL_READ)==ERROR){
+                    return ERROR;
+                }
+
+                /* Drop the not needed bits and store the data */
+                cryoRegisters.
+                 adcData = (unsigned int)tempAdcValue[0];
+
+                /* Set next state */
+                asyncCryoAnalogState=ASYNC_CRYO_ANALOG_AREG;
+
+                return ASYNC_DONE;
+
+                break;
+            }
+
+        default:
             return ERROR;
-        }
-        timedOut=queryAsyncTimer(TIMER_CRYO_ADC_RDY);
-        if(timedOut==ERROR){
-            return ERROR;
-        }
-    } while ((cryoRegisters.
-               statusReg.
-                bitField.
-                 adcReady==CRYO_ADC_BUSY)&&(timedOut==TIMER_RUNNING));
-
-    /* If timer has expired signal the error */
-    if(timedOut==TIMER_EXPIRED){
-        storeError(ERR_CRYO_SERIAL,
-                   0x01); // Error 0x01 -> Timeout while waiting for the ADC to become ready
-        return ERROR;
+            break;
     }
-
-    /* In case of no error, clear the asynchronous timer */
-    if(stopAsyncTimer(TIMER_CRYO_ADC_RDY)==ERROR){
-        return ERROR;
-    }
-
-    /* ADC read cycle */
-    #ifdef DEBUG_CRYOSTAT_SERIAL
-        printf("         - Reading ADC value\n");
-    #endif /* DEBUG_CRYOSTAT_SERIAL */
-
-    /* If error return the state to the calling function */
-    if(serialAccess(CRYO_ADC_DATA_READ,
-                    &tempAdcValue,
-                    CRYO_ADC_DATA_SIZE,
-                    CRYO_ADC_DATA_SHIFT_SIZE,
-                    CRYO_ADC_DATA_SHIFT_DIR,
-                    SERIAL_READ)==ERROR){
-        return ERROR;
-    }
-
-    /* Drop the not needed bits and store the data */
-    cryoRegisters.
-     adcData = (unsigned int)tempAdcValue[0];
 
     return NO_ERROR;
+
 }
 
 
@@ -263,8 +336,9 @@ int setBackingPumpEnable(unsigned char enable){
            result in the \ref frontend variable
 
     \return
-        - \ref NO_ERROR -> if no error occurred
-        - \ref ERROR    -> if something wrong happened */
+        - \ref NO_ERROR     -> if no error occurred
+        - \ref ERROR        -> if something wrong happened
+        - \ref ASYNC_DONE   -> if the async measurement is completed */
 int getSupplyCurrent230V(void){
 
     /* A float to hold the voltage in */
@@ -283,8 +357,18 @@ int getSupplyCurrent230V(void){
        monitorPoint=CRYO_AREG_SUPPLY_CURRENT_230V;
 
     /* 2->5 Call the getCryoAnalogMonitor function */
-    if(getCryoAnalogMonitor()==ERROR){
-        return ERROR;
+    switch(getCryoAnalogMonitor()){
+        case NO_ERROR:
+            return NO_ERROR;
+            break;
+        case ERROR:
+            return ERROR;
+            break;
+        case ASYNC_DONE:
+            break;
+        default:
+            return ERROR;
+            break;
     }
 
     /* 6 - Scale the data */
@@ -296,15 +380,7 @@ int getSupplyCurrent230V(void){
      cryostat.
       supplyCurrent230V[CURRENT_VALUE]=CRYO_ADC_SUPPLY_CURRENT_SCALE*vin;
 
-    /* If the total number of reads before the current reading is stable is
-       not reached then return the retry code. */
-    if(readouts){
-        --readouts;
-        CAN_STATUS = HARDW_RETRY;
-        return ERROR;
-    }
-
-    return NO_ERROR;
+    return ASYNC_DONE;
 }
 
 /* Set turbo pump enable */
@@ -671,12 +747,13 @@ int setSolenoidValveState(unsigned char state){
            result in the \ref frontend variable
 
     \return
-        - \ref NO_ERROR -> if no error occurred
-        - \ref ERROR    -> if something wrong happened */
+        - \ref NO_ERROR     -> if no error occurred
+        - \ref ERROR        -> if something wrong happened
+        - \ref ASYNC_DONE   -> if the async measurement is completed */
 int getVacuumSensor(void){
 
     /* A float to hold the voltage in and a temp */
-    float vin=0.0, temp=0.0;
+    float vin=0.0, pressure=0.0;
 
     /* Clear the CRYO AREG */
     cryoRegisters.
@@ -688,27 +765,37 @@ int getVacuumSensor(void){
     cryoRegisters.
      aReg.
       bitField.
-       monitorPoint=CRYO_AREG_PRESSURE(currentVacuumControllerModule);
+       monitorPoint=CRYO_AREG_PRESSURE(currentAsyncVacuumControllerModule);
 
     /* 2->5 Call the getCryoAnalogMonitor function */
-    if(getCryoAnalogMonitor()==ERROR){
-        return ERROR;
+    switch(getCryoAnalogMonitor()){
+        case NO_ERROR:
+            return NO_ERROR;
+            break;
+        case ERROR:
+            return ERROR;
+            break;
+        case ASYNC_DONE:
+            break;
+        default:
+            return ERROR;
+            break;
     }
 
     /* 6 - Scale the data */
     /* Scale the input voltage to the right value: vin=10*(adcData/65536) */
     vin=(CRYO_ADC_VOLTAGE_IN_SCALE*cryoRegisters.
                                     adcData)/CRYO_ADC_RANGE;
-    switch(currentVacuumControllerModule){
+    switch(currentAsyncVacuumControllerModule){
         case CRYOSTAT_PRESSURE:
             /* The cryostat pressure is given by: 10^[(vin-7.75)/0.75] */
-            temp=pow(10.0,
-                     (vin+CRYO_ADC_CRYO_PRESS_OFFSET)/CRYO_ADC_CRYO_PRESS_SCALE);
+            pressure=pow(10.0,
+                         (vin+CRYO_ADC_CRYO_PRESS_OFFSET)/CRYO_ADC_CRYO_PRESS_SCALE);
             break;
         case VACUUM_PORT_PRESSURE:
             /* The vacuum port pressure is given by: 10^[(vin-6.143)/1.286] */
-            temp=pow(10.0,
-                     (vin+CRYO_ADC_VAC_PORT_PRESS_OFFSET)/CRYO_ADC_VAC_PORT_PRESS_SCALE);
+            pressure=pow(10.0,
+                         (vin+CRYO_ADC_VAC_PORT_PRESS_OFFSET)/CRYO_ADC_VAC_PORT_PRESS_SCALE);
             break;
         default:
             break;
@@ -716,11 +803,10 @@ int getVacuumSensor(void){
 
     /* Check if a domain error occurred while evaluating the pow. */
     if(errno==EDOM){
-        CAN_STATUS = HARDW_CON_ERR;
         frontend.
          cryostat.
           vacuumController.
-           vacuumSensor[currentVacuumControllerModule].
+           vacuumSensor[currentAsyncVacuumControllerModule].
             pressure[CURRENT_VALUE]=CRYOSTAT_PRESS_CONV_ERR;
 
         return ERROR;
@@ -730,20 +816,10 @@ int getVacuumSensor(void){
     frontend.
      cryostat.
       vacuumController.
-       vacuumSensor[currentVacuumControllerModule].
-        pressure[CURRENT_VALUE]=temp;
+       vacuumSensor[currentAsyncVacuumControllerModule].
+        pressure[CURRENT_VALUE]=pressure;
 
-    /* If the total number of reads before the temperature reading is stable is
-       not reached then return the retry code. */
-    if(readouts){
-        --readouts;
-        CAN_STATUS = HARDW_RETRY;
-
-        return ERROR;
-    }
-
-
-    return NO_ERROR;
+    return ASYNC_DONE;
 }
 
 
@@ -874,8 +950,9 @@ int getVacuumControllerState(void){
            result in the \ref frontend variable
 
     \return
-        - \ref NO_ERROR -> if no error occurred
-        - \ref ERROR    -> if something wrong happened
+        - \ref NO_ERROR     -> if no error occurred
+        - \ref ERROR        -> if something wrong happened
+        - \ref ASYNC_DONE   -> if the async measurement is completed
 
     \todo Verify that point 2 is true. */
 int getCryostatTemp(void){
@@ -893,11 +970,21 @@ int getCryostatTemp(void){
     cryoRegisters.
      aReg.
       bitField.
-       monitorPoint=CRYO_AREG_TEMPERATURE(currentCryostatModule);
+       monitorPoint=CRYO_AREG_TEMPERATURE(currentAsyncCryoTempModule);
 
     /* 2->5 Call the getCryoAnalogMonitor function */
-    if(getCryoAnalogMonitor()==ERROR){
-        return ERROR;
+    switch(getCryoAnalogMonitor()){
+        case NO_ERROR:
+            return NO_ERROR;
+            break;
+        case ERROR:
+            return ERROR;
+            break;
+        case ASYNC_DONE:
+            break;
+        default:
+            return ERROR;
+            break;
     }
 
     /* 6 - Scale the data */
@@ -905,7 +992,7 @@ int getCryostatTemp(void){
     vin=(CRYO_ADC_VOLTAGE_IN_SCALE*cryoRegisters.
                                     adcData)/CRYO_ADC_RANGE;
 
-    switch(currentCryostatModule){
+    switch(currentAsyncCryoTempModule){
         case CRYOCOOLER_4K:
         case PLATE_4K_NEAR_LINK1:
         case PLATE_4K_NEAR_LINK2:
@@ -921,35 +1008,35 @@ int getCryostatTemp(void){
             resistance=TVO_RESISTOR_SCALE/resistance;
             temperature=frontend.
                          cryostat.
-                          cryostatTemp[currentCryostatModule].
+                          cryostatTemp[currentAsyncCryoTempModule].
                            coeff[TVO_COEFF_0]+
                         frontend.
                          cryostat.
-                          cryostatTemp[currentCryostatModule].
+                          cryostatTemp[currentAsyncCryoTempModule].
                            coeff[TVO_COEFF_1]*resistance+
                         frontend.
                          cryostat.
-                          cryostatTemp[currentCryostatModule].
+                          cryostatTemp[currentAsyncCryoTempModule].
                            coeff[TVO_COEFF_2]*pow(resistance,
                                                   2.0)+
                         frontend.
                          cryostat.
-                          cryostatTemp[currentCryostatModule].
+                          cryostatTemp[currentAsyncCryoTempModule].
                            coeff[TVO_COEFF_3]*pow(resistance,
                                                   3.0)+
                         frontend.
                          cryostat.
-                          cryostatTemp[currentCryostatModule].
+                          cryostatTemp[currentAsyncCryoTempModule].
                            coeff[TVO_COEFF_4]*pow(resistance,
                                                   4.0)+
                         frontend.
                          cryostat.
-                          cryostatTemp[currentCryostatModule].
+                          cryostatTemp[currentAsyncCryoTempModule].
                            coeff[TVO_COEFF_5]*pow(resistance,
                                                   5.0)+
                         frontend.
                          cryostat.
-                          cryostatTemp[currentCryostatModule].
+                          cryostatTemp[currentAsyncCryoTempModule].
                            coeff[TVO_COEFF_6]*pow(resistance,
                                                   6.0);
             break;
@@ -998,10 +1085,9 @@ int getCryostatTemp(void){
     /* Check if a domain error occurred while evaluating the power.
        If error, return a default value. */
     if(errno==EDOM){
-        CAN_STATUS = HARDW_CON_ERR;
         frontend.
          cryostat.
-          cryostatTemp[currentCryostatModule].
+          cryostatTemp[currentAsyncCryoTempModule].
            temp[CURRENT_VALUE]=CRYOSTAT_TEMP_CONV_ERR;
 
         return ERROR;
@@ -1010,20 +1096,10 @@ int getCryostatTemp(void){
     /* Store the data */
     frontend.
      cryostat.
-      cryostatTemp[currentCryostatModule].
+      cryostatTemp[currentAsyncCryoTempModule].
        temp[CURRENT_VALUE]=temperature;
 
-    /* If the total number of reads before the temperature reading is stable is
-       not reached then return the retry code. */
-    if(readouts){
-        --readouts;
-        CAN_STATUS = HARDW_RETRY;
-
-        return ERROR;
-    }
-
-
-    return NO_ERROR;
+    return ASYNC_DONE;
 }
 
 

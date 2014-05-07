@@ -5,7 +5,7 @@
     Created: 2006/10/16 16:18:50 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: pdModule.c,v 1.12 2008/02/07 16:21:24 avaccari Exp $
+    \$Id: pdModule.c,v 1.13 2009/08/25 21:39:39 avaccari Exp $
 
     This files contains all the funcions necessary to handle the submodules of
     cartridge power distribution system. */
@@ -144,7 +144,7 @@ static void enableHandler(void){
 
             /* Initialize the cartrdige. If an error occurs, shut off the power
                and return. */
-            waitSeconds(1); // Dealy to allow power to settle before initializing the cartridge
+            waitMilliseconds(WAIT_AFTER_POWER_ON); // Dealy to allow power to settle before initializing the cartridge
             if(cartridgeInit(currentPowerDistributionModule)==ERROR){
                 if(setPdModuleEnable(PD_MODULE_DISABLE)==ERROR){
                     /* Store the Error state in the last control message

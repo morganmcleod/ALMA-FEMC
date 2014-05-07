@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:16:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: globalDefinitions.c,v 1.16 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: globalDefinitions.c,v 1.17 2009/09/22 14:46:10 avaccari Exp $
 
     This file contains general use functions and variables. */
 
@@ -49,7 +49,7 @@ unsigned char checkRange(float low,
     return IN_RANGE;
 }
 
-/* Change endianicity */
+/* Change endianicity for floats and longs */
 /*! This function inverts the order of the 4 bytes IEEE float representation
     pointed at by \p *source and stores it into the location pointed at by
     \p *destination
@@ -61,6 +61,20 @@ void changeEndian(unsigned char *destination,
     destination[2]=source[1];
     destination[1]=source[2];
     destination[0]=source[3];
+}
+
+/* Change endianicity for unsigned ints */
+/*! This function inverts the order of each of the two bytes in the array of
+    ints pointed at by \p *source and stores it into the location pointed at by
+    \p *destination
+    \param  destination a *unsigned char
+    \param  source      a *unsigned char */
+void changeEndianInt(unsigned char *destination,
+                     unsigned char *source){
+    destination[3]=source[2];
+    destination[2]=source[3];
+    destination[1]=source[0];
+    destination[0]=source[1];
 }
 
 /* Build string */

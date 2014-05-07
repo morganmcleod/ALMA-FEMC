@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: pll.c,v 1.23 2008/02/07 16:21:24 avaccari Exp $
+    \$Id: pll.c,v 1.25 2009/08/25 21:39:39 avaccari Exp $
 
     This files contains all the functions necessary to handle the PLL events. */
 
@@ -96,14 +96,14 @@ static void lockDetectVoltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      pll.
                       lockDetectVoltage[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT = frontend.
+        CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        pll.
@@ -118,7 +118,7 @@ static void lockDetectVoltageHandler(void){
                             lo.
                              pll.
                               lockDetectVoltage[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -129,7 +129,7 @@ static void lockDetectVoltageHandler(void){
                                 lo.
                                  pll.
                                   lockDetectVoltage[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -152,8 +152,7 @@ static void lockDetectVoltageHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
 }
@@ -193,14 +192,14 @@ static void correctionVoltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      pll.
                       correctionVoltage[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT = frontend.
+        CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        pll.
@@ -215,7 +214,7 @@ static void correctionVoltageHandler(void){
                             lo.
                              pll.
                               correctionVoltage[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -226,7 +225,7 @@ static void correctionVoltageHandler(void){
                                 lo.
                                  pll.
                                   correctionVoltage[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -249,8 +248,7 @@ static void correctionVoltageHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
 
@@ -291,14 +289,14 @@ static void assemblyTempHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      pll.
                       assemblyTemp[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT = frontend.
+        CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        pll.
@@ -313,7 +311,7 @@ static void assemblyTempHandler(void){
                             lo.
                              pll.
                               assemblyTemp[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -324,7 +322,7 @@ static void assemblyTempHandler(void){
                                 lo.
                                  pll.
                                   assemblyTemp[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -347,8 +345,7 @@ static void assemblyTempHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
 }
@@ -388,14 +385,14 @@ static void YIGHeaterCurrentHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      pll.
                       YIGHeaterCurrent[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT = frontend.
+        CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        pll.
@@ -410,7 +407,7 @@ static void YIGHeaterCurrentHandler(void){
                             lo.
                              pll.
                               YIGHeaterCurrent[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -421,7 +418,7 @@ static void YIGHeaterCurrentHandler(void){
                                 lo.
                                  pll.
                                   YIGHeaterCurrent[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -444,8 +441,7 @@ static void YIGHeaterCurrentHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 
@@ -485,14 +481,14 @@ static void refTotalPowerHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      pll.
                       refTotalPower[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT = frontend.
+        CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        pll.
@@ -507,7 +503,7 @@ static void refTotalPowerHandler(void){
                             lo.
                              pll.
                               refTotalPower[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -518,7 +514,7 @@ static void refTotalPowerHandler(void){
                                 lo.
                                  pll.
                                   refTotalPower[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -541,8 +537,7 @@ static void refTotalPowerHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
 }
@@ -583,14 +578,14 @@ static void ifTotalPowerHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      pll.
                       ifTotalPower[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT = frontend.
+        CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        pll.
@@ -605,7 +600,7 @@ static void ifTotalPowerHandler(void){
                             lo.
                              pll.
                               ifTotalPower[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
@@ -616,7 +611,7 @@ static void ifTotalPowerHandler(void){
                                 lo.
                                  pll.
                                   ifTotalPower[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
@@ -639,8 +634,7 @@ static void ifTotalPowerHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 

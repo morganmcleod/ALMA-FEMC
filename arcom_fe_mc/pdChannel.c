@@ -5,7 +5,7 @@
     Created: 2006/10/1 14:56:51 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: pdChannel.c,v 1.8 2007/08/09 16:06:01 avaccari Exp $
+    \$Id: pdChannel.c,v 1.10 2009/08/25 21:39:39 avaccari Exp $
 
     This files contains all the functions necessary to handle the power
     distribution submodules' channels. */
@@ -83,14 +83,14 @@ static void voltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    powerDistribution.
                     pdModule[currentPowerDistributionModule].
                      pdChannel[currentPdModuleModule].
                       voltage[CURRENT_VALUE];
     } else {
         /* If no error during monitor pocess, gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    powerDistribution.
                     pdModule[currentPowerDistributionModule].
                      pdChannel[currentPdModuleModule].
@@ -105,7 +105,7 @@ static void voltageHandler(void){
                             pdModule[currentPowerDistributionModule].
                              pdChannel[currentPdModuleModule].
                               voltage[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            powerDistribution.
                             pdModule[currentPowerDistributionModule].
@@ -116,7 +116,7 @@ static void voltageHandler(void){
                                 pdModule[currentPowerDistributionModule].
                                  pdChannel[currentPdModuleModule].
                                   voltage[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                powerDistribution.
                                 pdModule[currentPowerDistributionModule].
@@ -139,8 +139,7 @@ static void voltageHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 
@@ -175,14 +174,14 @@ static void currentHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    powerDistribution.
                     pdModule[currentPowerDistributionModule].
                      pdChannel[currentPdModuleModule].
                       current[CURRENT_VALUE];
     } else {
         /* If no error during monitor pocess, gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    powerDistribution.
                     pdModule[currentPowerDistributionModule].
                      pdChannel[currentPdModuleModule].
@@ -197,7 +196,7 @@ static void currentHandler(void){
                             pdModule[currentPowerDistributionModule].
                              pdChannel[currentPdModuleModule].
                               current[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            powerDistribution.
                             pdModule[currentPowerDistributionModule].
@@ -208,7 +207,7 @@ static void currentHandler(void){
                                 pdModule[currentPowerDistributionModule].
                                  pdChannel[currentPdModuleModule].
                                   current[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                powerDistribution.
                                 pdModule[currentPowerDistributionModule].
@@ -231,8 +230,7 @@ static void currentHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 

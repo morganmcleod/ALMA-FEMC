@@ -6,7 +6,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: biasSerialInterface.h,v 1.38 2008/02/28 22:15:05 avaccari Exp $
+    \$Id: biasSerialInterface.h,v 1.39 2009/10/13 15:01:49 avaccari Exp $
 
     This file contains all the informations necessary to define the
     characteristics and operate the BIAS serial interface. */
@@ -58,7 +58,6 @@
     #define DAC_CLEAR_STROBE            1
     #define CARTRIDGE_TEMP_CONV_ERR     FLOAT_ERROR
     #define CARTRIDGE_TEMP_TBL_SIZE     187
-    #define CARTRIDGE_TEMP_READOUTS     2
 
     /* Command words:
        - Po is the polarization
@@ -176,7 +175,7 @@
     #define BIAS_ADC_LNA_DRAIN_V_SCALE  10.0        // Scale factor for LNA drain voltage
     #define BIAS_ADC_LNA_DRAIN_C_SCALE  100.0       // Scale factor for LNA drain current
     #define BIAS_ADC_LNA_GATE_V_SCALE   10.0        // Scale factor for LNA gate voltage
-    #define BIAS_ADC_SIS_HEATER_I_SCALE 425.0       // Scale factor for SIS heater current
+    #define BIAS_ADC_SIS_HEATER_I_SCALE 4166.67     // Scale factor for SIS heater current
     #define BIAS_ADC_CART_TEMP_V_SCALE  10.0        // Scale factor for the cartrdige temperature sensor
     #define BIAS_ADC_BUSY               0           // Busy state signal
 

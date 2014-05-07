@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: sisMagnet.c,v 1.15 2006/09/15 14:28:27 avaccari Exp $
+    \$Id: sisMagnet.c,v 1.17 2009/08/25 21:39:39 avaccari Exp $
 
     This files contains all the functions necessary to handle SIS magnet
     events. */
@@ -102,7 +102,7 @@ static void voltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     polarization[currentBiasModule].
                      sideband[currentPolarizationModule].
@@ -110,7 +110,7 @@ static void voltageHandler(void){
                        voltage[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     polarization[currentBiasModule].
                      sideband[currentPolarizationModule].
@@ -127,7 +127,7 @@ static void voltageHandler(void){
                              sideband[currentPolarizationModule].
                               sisMagnet.
                                voltage[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             polarization[currentBiasModule].
@@ -140,7 +140,7 @@ static void voltageHandler(void){
                                  sideband[currentPolarizationModule].
                                   sisMagnet.
                                    voltage[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 polarization[currentBiasModule].
@@ -164,8 +164,7 @@ static void voltageHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 
@@ -202,8 +201,7 @@ static void currentHandler(void){
               status=NO_ERROR;
 
               /* Extract the floating data from the CAN message */
-        changeEndian(convert.
-                      chr,
+        changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
 
         /* Check the value against the store limits. The limits are read from
@@ -215,7 +213,7 @@ static void currentHandler(void){
                              sideband[currentPolarizationModule].
                               sisMagnet.
                                current[MIN_SET_VALUE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             polarization[currentBiasModule].
@@ -280,7 +278,7 @@ static void currentHandler(void){
            can message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     polarization[currentBiasModule].
                      sideband[currentPolarizationModule].
@@ -288,7 +286,7 @@ static void currentHandler(void){
                        current[CURRENT_VALUE];
     } else {
         /* if no error during the monitor process gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     polarization[currentBiasModule].
                      sideband[currentPolarizationModule].
@@ -305,7 +303,7 @@ static void currentHandler(void){
                              sideband[currentPolarizationModule].
                               sisMagnet.
                                current[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             polarization[currentBiasModule].
@@ -318,7 +316,7 @@ static void currentHandler(void){
                                  sideband[currentPolarizationModule].
                                   sisMagnet.
                                    current[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 polarization[currentBiasModule].
@@ -344,8 +342,7 @@ static void currentHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 

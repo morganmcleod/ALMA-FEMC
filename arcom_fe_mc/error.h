@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: error.h,v 1.43 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: error.h,v 1.45 2009/10/13 16:17:16 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the error handling module. */
@@ -38,6 +38,7 @@
     #define MON_CAN_RNG     (-12)   //!< Monitor message on non existing RCA
     #define MON_ERROR_ACT   (-13)   //!< Monitor message returned value in error range and an action was taken by FEMC
     #define MON_WARN_ACT    (-14)   //!< Monitor message returned value in warning range and an action was taken by FEMC
+    #define MON_HARDW_FUT   (-15)   //!< Monitor message on not yet existing hardware
     /* Control */
     #define CON_ERROR_RNG   (-10)   //!< Value of last control message received is outside the allowed range
     /* Modules */
@@ -97,6 +98,12 @@
     #define ERR_INI                 0x35 //!< Error in the INI file access module
     #define ERR_OWB                 0x36 //!< Error in the OWB module
 
+
+    /* Globals */
+    /* Externs */
+    extern unsigned char errorNewest;    //!< A global to keep track of the newest error index
+    extern unsigned char errorOldest;    //!< A global to keep track of the oldest error index
+    extern unsigned int * errorHistory;  //!< A global pointer to the error history
 
     /* Prototypes */
     /* Statics */

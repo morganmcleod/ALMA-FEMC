@@ -5,7 +5,7 @@
     Created: 2007/06/02 16:29:22 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lprTemp.c,v 1.3 2008/05/01 14:16:24 avaccari Exp $
+    \$Id: lprTemp.c,v 1.5 2009/08/25 21:39:39 avaccari Exp $
 
     This files contains all the functions necessary to handle the lpr
     temperature sensors events. */
@@ -78,7 +78,7 @@ static void tempHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    lpr.
                     lprTemp[currentLprModule].
                      temp[CURRENT_VALUE];
@@ -88,7 +88,7 @@ static void tempHandler(void){
            the result but no actions are taken. */
     } else {
         /* If no error during monitor process, gather the stored data/ */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    lpr.
                     lprTemp[currentLprModule].
                      temp[CURRENT_VALUE];
@@ -101,7 +101,7 @@ static void tempHandler(void){
                            lpr.
                             lprTemp[currentLprModule].
                              temp[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            lpr.
                             lprTemp[currentLprModule].
@@ -110,7 +110,7 @@ static void tempHandler(void){
                                lpr.
                                 lprTemp[currentLprModule].
                                  temp[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                lpr.
                                 lprTemp[currentLprModule].
@@ -131,7 +131,6 @@ static void tempHandler(void){
        The value has to be converted from little endian (Intel) to big enadian
        (CAN). */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }

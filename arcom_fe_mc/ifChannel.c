@@ -5,7 +5,7 @@
     Created: 2006/12/01 13:24:46 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ifChannel.c,v 1.4 2008/02/07 16:21:24 avaccari Exp $
+    \$Id: ifChannel.c,v 1.6 2009/08/25 21:39:39 avaccari Exp $
 
     This files contains all the functions necessary to handle IF Channel
     events. */
@@ -222,14 +222,14 @@ void assemblyTempHandler(void){
            different format is used because getCryostatTemp might return
            two different error state depending on error conditions. */
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    ifSwitch.
                     ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
                              [currentIfChannelSideband[currentIfSwitchModule]].
                      assemblyTemp[CURRENT_VALUE];
     } else {
         /* If no error during the monitor process, gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    ifSwitch.
                     ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
                              [currentIfChannelSideband[currentIfSwitchModule]].
@@ -244,7 +244,7 @@ void assemblyTempHandler(void){
                             ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
                                      [currentIfChannelSideband[currentIfSwitchModule]].
                              assemblyTemp[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            ifSwitch.
                             ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
@@ -255,7 +255,7 @@ void assemblyTempHandler(void){
                                 ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
                                          [currentIfChannelSideband[currentIfSwitchModule]].
                                  assemblyTemp[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                ifSwitch.
                                 ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
@@ -277,8 +277,7 @@ void assemblyTempHandler(void){
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 

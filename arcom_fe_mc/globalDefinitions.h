@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: globalDefinitions.h,v 1.26 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: globalDefinitions.h,v 1.29 2009/09/22 14:46:10 avaccari Exp $
 
     This file contains definitions that are used throughout the various modules
     of the program. */
@@ -88,6 +88,13 @@
         unsigned char   chr[4];
     } CONVERSION;
 
+    /* Some extra define to help in the conversion */
+    #define CONV_UINT(idx)      convert.uint[idx]
+    #define CONV_CHR(idx)       convert.chr[idx]
+    #define CONV_CHR_ADD        convert.chr
+    #define CONV_FLOAT          convert.flt
+    #define CONV_LONGINT        convert.longint
+
     /* Globals */
     /* Externs */
     extern CONVERSION convert; //!< Union used to convert float to unsigned char[4]
@@ -96,7 +103,8 @@
     /* Externs */
     extern char *buildString(unsigned char *prefix, unsigned char number, unsigned char *suffix); //!< Build a string
     extern unsigned char checkRange(float low, float test, float high); //!< Check range
-    extern void changeEndian(unsigned char *destination, unsigned char *source); //!< Change endianicity
+    extern void changeEndian(unsigned char *destination, unsigned char *source); //!< Change endianicity for floating point types
+    extern void changeEndianInt(unsigned char *destination, unsigned char *source); //!< Change endianicity for int types
     extern void bogoFunction(void); //!< Place holder function
     extern long htol(char *hex); //!< Conversion from Hex to long int
 

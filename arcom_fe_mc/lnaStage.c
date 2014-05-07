@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lnaStage.c,v 1.24 2007/06/08 22:48:57 avaccari Exp $
+    \$Id: lnaStage.c,v 1.26 2009/08/25 21:39:39 avaccari Exp $
 
     This files contains all the functions necessary to handle the LNA Stage
     events. */
@@ -107,8 +107,7 @@ static void drainVoltageHandler(void){
                status=NO_ERROR;
 
         /* Extract the float from the can message. */
-        changeEndian(convert.
-                      chr,
+        changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
 
         /* Check the value against the store limits. The limits are read from
@@ -121,7 +120,7 @@ static void drainVoltageHandler(void){
                               lna.
                                stage[currentLnaModule].
                                 drainVoltage[MIN_SET_VALUE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             polarization[currentBiasModule].
@@ -191,7 +190,7 @@ static void drainVoltageHandler(void){
            can message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     polarization[currentBiasModule].
                      sideband[currentPolarizationModule].
@@ -200,7 +199,7 @@ static void drainVoltageHandler(void){
                         drainVoltage[CURRENT_VALUE];
     } else {
         /* If no error during the monitor process gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     polarization[currentBiasModule].
                      sideband[currentPolarizationModule].
@@ -219,7 +218,7 @@ static void drainVoltageHandler(void){
                               lna.
                                stage[currentLnaModule].
                                 drainVoltage[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             polarization[currentBiasModule].
@@ -234,7 +233,7 @@ static void drainVoltageHandler(void){
                                   lna.
                                    stage[currentLnaModule].
                                     drainVoltage[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 polarization[currentBiasModule].
@@ -260,8 +259,7 @@ static void drainVoltageHandler(void){
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
     return;
@@ -302,8 +300,7 @@ static void drainCurrentHandler(void){
                status=NO_ERROR;
 
         /* Extract the float from the can message. */
-        changeEndian(convert.
-                      chr,
+        changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
 
         /* Check the value against the store limits. The limits are read from
@@ -316,7 +313,7 @@ static void drainCurrentHandler(void){
                               lna.
                                stage[currentLnaModule].
                                 drainCurrent[MIN_SET_VALUE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             polarization[currentBiasModule].
@@ -386,7 +383,7 @@ static void drainCurrentHandler(void){
            can message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     polarization[currentBiasModule].
                      sideband[currentPolarizationModule].
@@ -396,7 +393,7 @@ static void drainCurrentHandler(void){
     } else {
 
         /* If no error during the monitor process gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     polarization[currentBiasModule].
                      sideband[currentPolarizationModule].
@@ -415,7 +412,7 @@ static void drainCurrentHandler(void){
                               lna.
                                stage[currentLnaModule].
                                 drainCurrent[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             polarization[currentBiasModule].
@@ -430,7 +427,7 @@ static void drainCurrentHandler(void){
                                   lna.
                                    stage[currentLnaModule].
                                     drainCurrent[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 polarization[currentBiasModule].
@@ -457,8 +454,7 @@ static void drainCurrentHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
 
@@ -497,7 +493,7 @@ static void gateVoltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     polarization[currentBiasModule].
                      sideband[currentPolarizationModule].
@@ -506,7 +502,7 @@ static void gateVoltageHandler(void){
                         gateVoltage[CURRENT_VALUE];
     } else {
         /* If no error during the monitor process gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     polarization[currentBiasModule].
                      sideband[currentPolarizationModule].
@@ -525,7 +521,7 @@ static void gateVoltageHandler(void){
                               lna.
                                stage[currentLnaModule].
                                 gateVoltage[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             polarization[currentBiasModule].
@@ -540,7 +536,7 @@ static void gateVoltageHandler(void){
                                   lna.
                                    stage[currentLnaModule].
                                     gateVoltage[LOW_ERROR_RANGE],
-                             CAN_FLOAT,
+                             CONV_FLOAT,
                              frontend.
                               cartridge[currentModule].
                                polarization[currentBiasModule].
@@ -566,8 +562,7 @@ static void gateVoltageHandler(void){
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
     return;

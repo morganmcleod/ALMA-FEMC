@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: sideband.c,v 1.10 2007/06/02 21:23:58 avaccari Exp $
+    \$Id: sideband.c,v 1.11 2009/08/03 21:59:07 avaccari Exp $
 
     This files contains all the functions necessary to handle sideband events. */
 
@@ -65,4 +65,5 @@ void sidebandHandler(void){
     /* Call the correct handler */
     (sidebandModulesHandler[currentSidebandModule])();
 }
+
 

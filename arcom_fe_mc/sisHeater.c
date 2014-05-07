@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: sisHeater.c,v 1.16 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: sisHeater.c,v 1.19 2009/10/13 15:01:49 avaccari Exp $
 
     This files contains all the functions necessary to handle SIS heater
     events. */
@@ -19,6 +19,7 @@
 #include "biasSerialInterface.h"
 #include "debug.h"
 #include "database.h"
+#include "timer.h"
 
 /* Globals */
 /* Externs */
@@ -92,6 +93,50 @@ static void enableHandler(void){
             lastEnable.
              status=NO_ERROR;
 
+        /* Check if message is addressed to band 9 and if it is an enable
+           message. If it is, check if the timer has expired. If not, return
+           the hardware blocked message. This is necessary to prevent the
+           keep-on algorithm from keeping the heater on on band 9. */
+        if((currentModule==BAND9)&&CAN_BYTE){
+            switch(queryAsyncTimer(TIMER_BIAS_B9_HEATER)){
+                case TIMER_NOT_RUNNING:
+                    /* Start timer */
+                    startAsyncTimer(TIMER_BIAS_B9_HEATER,
+                                    TIMER_BIAS_TO_B9_HEATER,
+                                    FALSE);
+                    break;
+                case TIMER_EXPIRED:
+                    /* Reload timer */
+                    startAsyncTimer(TIMER_BIAS_B9_HEATER,
+                                    TIMER_BIAS_TO_B9_HEATER,
+                                    TRUE);
+                    break;
+                case TIMER_RUNNING:
+                    /* Mark hardware as blocked */
+                    frontend.
+                     cartridge[currentModule].
+                      polarization[currentBiasModule].
+                       sisHeater.
+                        lastEnable.
+                         status=HARDW_BLKD_ERR;
+                    /* Signal error and bail out */
+                    storeError(ERR_SIS_HEATER,
+                               0x07); // Error 0x07: Hardware blocked error
+                    return;
+                    break;
+                default:
+                    frontend.
+                     cartridge[currentModule].
+                      polarization[currentBiasModule].
+                       sisHeater.
+                        lastEnable.
+                         status=ERROR;
+                    return;
+                    break;
+            }
+        }
+
+
         /* Change the status of the LNA led according to the content of the CAN
            message. */
         if(setSisHeaterEnable(CAN_BYTE?SIS_HEATER_ENABLE:
@@ -127,16 +172,15 @@ static void enableHandler(void){
     }
 
     /* If monitor on a monitor RCA */
-    /* This monitor point doesn't return an hardware status but just the
-       current status that is stored in memory. The memory status is
-       update when the state of the mixer bias mode is changed by a
-       control command. */
-    CAN_BYTE=frontend.
-              cartridge[currentModule].
-               polarization[currentBiasModule].
-                sisHeater.
-                 enable[CURRENT_VALUE];
-    CAN_SIZE=CAN_BOOLEAN_SIZE;
+    /* Since the change to the hardware introducing the automatic shutoff of the
+       SIS heater after 1 second (starting with Rev.D2 of the BIAS mdoule), this
+       monitor point is no longer meaningful since is just the repetition of the
+       monitor on the control RCA. */
+    storeError(ERR_SIS_HEATER,
+               0x06); // Error 0x06: Monitor message out of range
+    /* Store the state in the outgoing CAN message */
+    CAN_STATUS = MON_CAN_RNG;
+
 }
 
 /* Heater current handler */
@@ -159,8 +203,8 @@ static void currentHandler(void){
     /* If monitor on control RCA return error since there are no control
        messages allowed on the RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        storeError(ERR_SIS_MAGNET,
-                   0x06); // Error 0x09: Monitor message out of range
+        storeError(ERR_SIS_HEATER,
+                   0x06); // Error 0x06: Monitor message out of range
        /* Store the state in the outgoing CAN message */
        CAN_STATUS = MON_CAN_RNG;
 
@@ -173,14 +217,14 @@ static void currentHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     polarization[currentBiasModule].
                      sisHeater.
                       current[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     polarization[currentBiasModule].
                      sisHeater.
@@ -195,7 +239,7 @@ static void currentHandler(void){
                             polarization[currentBiasModule].
                              sisHeater.
                               current[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             polarization[currentBiasModule].
@@ -206,7 +250,7 @@ static void currentHandler(void){
                                 polarization[currentBiasModule].
                                  sisHeater.
                                   current[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 polarization[currentBiasModule].
@@ -229,8 +273,7 @@ static void currentHandler(void){
        big endian (CAN). It is done directly instead of using a function
        to save some time. */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
 }

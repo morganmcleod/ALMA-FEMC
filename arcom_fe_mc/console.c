@@ -5,7 +5,7 @@
     Created: 2007/05/22 11:31:31 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: console.c,v 1.10 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: console.c,v 1.14 2009/10/13 15:01:49 avaccari Exp $
 
     This files contains all the functions necessary to handle console accesses
     to the software. */
@@ -23,6 +23,7 @@
 #include "globalDefinitions.h"
 #include "debug.h"
 #include "version.h"
+#include "async.h"
 
 /* Globals */
 /* Externs */
@@ -138,6 +139,13 @@ static void parseBuffer(void){
         stop = 1;
         restart = 1;
     } else if (strcmp(token,
+                      "a")==0){ // 'a' -> toggles async process on/off
+        if(asyncState!=ASYNC_OFF){
+            asyncState=ASYNC_OFF;
+        } else {
+            asyncState=ASYNC_ON;
+        }
+    } else if (strcmp(token,
                       "d")==0){ // 'd' -> Disables the console
         printf("Console disabled!\n");
         printf("To enable, send a 1 to RCA 0x%lX\n",
@@ -198,11 +206,9 @@ static void parseBuffer(void){
 
                     /* Extract the payload from the token */
                     if(token != NULL){
-                        CAN_UINT = (unsigned int)atoi(token);
-                        CAN_DATA(0)=convert.
-                                     chr[3];
-                        CAN_DATA(1)=convert.
-                                     chr[2];
+                        CONV_UINT(0) = (unsigned int)atoi(token);
+                        CAN_DATA(0)=CONV_CHR(1);
+                        CAN_DATA(1)=CONV_CHR(0);
                         CAN_SIZE = CAN_INT_SIZE;
                         // Disable interrupts (if necessary)
                         CANMessageHandler();
@@ -216,15 +222,11 @@ static void parseBuffer(void){
 
                     /* Extract the payload from the token */
                     if(token != NULL){
-                        CAN_FLOAT = atof(token);
-                        CAN_DATA(0)=convert.
-                                     chr[3];
-                        CAN_DATA(1)=convert.
-                                     chr[2];
-                        CAN_DATA(2)=convert.
-                                     chr[1];
-                        CAN_DATA(3)=convert.
-                                     chr[0];
+                        CONV_FLOAT = atof(token);
+                        CAN_DATA(0)=CONV_CHR(3);
+                        CAN_DATA(1)=CONV_CHR(2);
+                        CAN_DATA(2)=CONV_CHR(1);
+                        CAN_DATA(3)=CONV_CHR(0);
                         CAN_SIZE = CAN_FLOAT_SIZE;
                         // Disable interrupts (if necessary)
                         CANMessageHandler();
@@ -240,6 +242,7 @@ static void parseBuffer(void){
         printf(" \" -> repeats last command\n");
         printf(" q<CR> -> quit\n");
         printf(" r<CR> -> restart\n");
+        printf(" a<CR> -> enables/disables the async process (DEBUG only)\n");
         printf(" d<CR> -> disable console\n");
         printf(" i<CR> -> display version information\n");
         printf(" m RCA<CR> -> monitor the specified address\n");
@@ -247,11 +250,13 @@ static void parseBuffer(void){
         printf("               It can be in decimal or exadecimal (0x...) format\n");
         printf("               For a list of the RCAs check:\n");
         printf("               - ALMA-40.00.00.00-75.35.25.00-X-ICD\n");
+        printf("               - ALMA-40.04.03.03-002-X-DSN\n");
         printf(" c RCA q data <CR> -> control the specified address\n");
         printf("                   RCA is the Relative CAN Address.\n");
         printf("                       It can be in decimal or exadecimal (0x...) format\n");
         printf("                       For a list of the RCAs check:\n");
         printf("                       - ALMA-40.00.00.00-75.35.25.00-X-ICD\n");
+        printf("                       - ALMA-40.04.03.03-002-X-DSN\n");
         printf("                   q is the qualifier for the payload:\n");
         printf("                     b for a byte or a boolean\n");
         printf("                     i for an unsigned integer\n");

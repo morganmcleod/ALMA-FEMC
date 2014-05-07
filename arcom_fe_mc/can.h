@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: can.h,v 1.34 2009/04/24 22:37:32 avaccari Exp $
+    \$Id: can.h,v 1.37 2009/09/22 14:46:10 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the Controlled Area Network interface included
@@ -30,11 +30,9 @@
     #define CAN_BOOLEAN_SIZE                0x01    // Size of a enable/disable state payload
     #define CAN_LAST_CONTROL_MESSAGE_SIZE   (CAN_MESSAGE_PAYLOAD_SIZE+2) // Size of the last control message
     /* Type substitution macros for CAN data import/export */
-    #define CAN_FLOAT           convert.flt
-    #define CAN_UINT            convert.uint[1]
     #define CAN_MSG             CANMessage
     #define CAN_DATA_ADD        CANMessage.data
-    #define CAN_DATA(byte)      CANMessage.data[byte]
+    #define CAN_DATA(idx)       CANMessage.data[idx]
     #define CAN_BYTE            CAN_DATA(0)
     #define CAN_SIZE            CANMessage.size
     #define CAN_ADDRESS         CANMessage.address
@@ -80,10 +78,11 @@
 
     /* Standard RCAs */
     /* Monitor */
-    //! \b 0x00000 -> Base address for the monitor RCAs
+    //! \b 0x00001 -> Base address for the monitor RCAs
     /*! This is the starting relative CAN address for the monitor requests
-        available in the firmware. */
-    #define BASE_MONITOR_RCA    0x00000L
+        available in the firmware. Address 0x00000 is reserved within the
+        AMBSI1 to return the ID. */
+    #define BASE_MONITOR_RCA    0x00001L
     #define LAST_MONITOR_RCA    (BASE_MONITOR_RCA+0x0FFFF) // Last possible monitor RCA
     /* Control */
     //! \b 0x10000 -> Base address for the control RCAs

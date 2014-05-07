@@ -7,7 +7,7 @@
     Created: 2004/08/24 16:33:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ppComm.c,v 1.33 2009/04/24 22:37:32 avaccari Exp $
+    \$Id: ppComm.c,v 1.35 2009/09/22 14:46:10 avaccari Exp $
 
     This file contains the functions necessary to cummunicate via the
     parallel port of the ARCOM Pegasus board.
@@ -105,19 +105,19 @@ int PPOpen(void){
     }
 
     outp(SIO_INDEX_PORT,
-         LD3_MODE_REGISTER1);                                // Select the mode register
+         LD3_MODE_REGISTER1);                               // Select the mode register
     outp(SIO_DATA_PORT,
-         (inp(LD3_MODE_REGISTER1)&0xF8)|LD3_EPP_MODE_KEY);    // Switch mode to EPP 1.7
+         (inp(LD3_MODE_REGISTER1)&0xF8)|LD3_EPP_MODE_KEY);  // Switch mode to EPP 1.7
     outp(SIO_INDEX_PORT,
-         LD3_ADDRESS_INDEX2);                                // Select the low order byte of the parallel port address
-    SPPDataPort=inp(SIO_DATA_PORT);                                         // Write the low order byte into variable
+         LD3_ADDRESS_INDEX2);                               // Select the low order byte of the parallel port address
+    SPPDataPort=inp(SIO_DATA_PORT);                         // Write the low order byte into variable
     outp(SIO_INDEX_PORT,
-         LD3_ADDRESS_INDEX1);                                // Select the high order byte of the parallel port address
-    SPPDataPort|=inp(SIO_DATA_PORT)<<8;                                     // Write the high order byte into variable
+         LD3_ADDRESS_INDEX1);                               // Select the high order byte of the parallel port address
+    SPPDataPort|=inp(SIO_DATA_PORT)<<8;                     // Write the high order byte into variable
     outp(SIO_INDEX_PORT,
-         LD3_ACTIVATE_INDEX);                                // Select the activation register
+         LD3_ACTIVATE_INDEX);                               // Select the activation register
     outp(SIO_DATA_PORT,
-         LD3_ACTIVATE_KEY);                                   // Activate the registers
+         LD3_ACTIVATE_KEY);                                 // Activate the registers
     outp(SIO_CONFIG_PORT,
          SIO_RUN_MODE_KEY);                                 // Exit Super I/0 configuration mode
 
@@ -132,7 +132,7 @@ int PPOpen(void){
     while((inp(SPPStatusPort)&SPP_STATUS_SELECT)){
             storeError(ERR_PP,
                        0x03);                  // Error 0x03 -> Warning! Waiting for AMBSI board.
-            waitSeconds(WAIT_ON_AMBSI_NOT_READY);    // Wait before checking again the ready status
+            waitMilliseconds(WAIT_ON_AMBSI_NOT_READY);    // Wait before checking again the ready status
     }
 
     /* Set parallel port direction to input */

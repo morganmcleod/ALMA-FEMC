@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: biasSerialInterface.c,v 1.49 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: biasSerialInterface.c,v 1.53 2009/10/13 15:01:49 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     BIAS serial interface.
@@ -141,9 +141,9 @@ static int getBiasAnalogMonitor(void){
 
 
     /* Parallel write AREG */
-    #ifdef DEBUG
+    #ifdef DEBUG_BIAS_SERIAL
         printf("         - Writing AREG\n");
-    #endif /* DEBUG */
+    #endif /* DEBUG_BIAS_SERIAL */
 
     /* The function to write the data to the hardware is called passing the
        intermediate buffer. If an error occurs, notify the calling function. */
@@ -159,11 +159,59 @@ static int getBiasAnalogMonitor(void){
         return ERROR;
     }
 
+
+/********* TEST FIX ****************/
+/*** Repeat the previous operation to add 40us */
+if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,
+                                    BIAS_AREG),
+                &biasRegisters[currentModule].
+                  aReg.
+                   integer,
+                BIAS_AREG_SIZE,
+                BIAS_AREG_SHIFT_SIZE,
+                BIAS_AREG_SHIFT_DIR,
+                SERIAL_WRITE)==ERROR){
+    return ERROR;
+}
+if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,
+                                    BIAS_AREG),
+                &biasRegisters[currentModule].
+                  aReg.
+                   integer,
+                BIAS_AREG_SIZE,
+                BIAS_AREG_SHIFT_SIZE,
+                BIAS_AREG_SHIFT_DIR,
+                SERIAL_WRITE)==ERROR){
+    return ERROR;
+}
+if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,
+                                    BIAS_AREG),
+                &biasRegisters[currentModule].
+                  aReg.
+                   integer,
+                BIAS_AREG_SIZE,
+                BIAS_AREG_SHIFT_SIZE,
+                BIAS_AREG_SHIFT_DIR,
+                SERIAL_WRITE)==ERROR){
+    return ERROR;
+}
+if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,
+                                    BIAS_AREG),
+                &biasRegisters[currentModule].
+                  aReg.
+                   integer,
+                BIAS_AREG_SIZE,
+                BIAS_AREG_SHIFT_SIZE,
+                BIAS_AREG_SHIFT_DIR,
+                SERIAL_WRITE)==ERROR){
+    return ERROR;
+}
+
     /* Initiate ADC conversion
         - send ADC convert strobe command */
-    #ifdef DEBUG
+    #ifdef DEBUG_BIAS_SERIAL
         printf("         - Initiating ADC conversion\n");
-    #endif /* DEBUG */
+    #endif /* DEBUG_BIAS_SERIAL */
     /* If an error occurs, notify the calling function */
     if(serialAccess(BIAS_ADC_CONVERT_STROBE(currentBiasModule),
                     NULL,
@@ -184,9 +232,9 @@ static int getBiasAnalogMonitor(void){
     }
 
     do {
-        #ifdef DEBUG
+        #ifdef DEBUG_BIAS_SERIAL
             printf("         - Waiting on ADC ready\n");
-        #endif /* DEBUG */
+        #endif /* DEBUG_BIAS_SERIAL */
 
         /* If an error occurs, notify the calling funtion */
         if(serialAccess(BIAS_PARALLEL_READ(currentBiasModule),
@@ -222,9 +270,9 @@ static int getBiasAnalogMonitor(void){
 
 
     /* ADC read cycle */
-    #ifdef DEBUG
+    #ifdef DEBUG_BIAS_SERIAL
         printf("         - Reading ADC value\n");
-    #endif /* DEBUG */
+    #endif /* DEBUG_BIAS_SERIAL */
 
     /* If error return the state to the calling function */
     if(serialAccess(BIAS_ADC_DATA_READ(currentBiasModule),
@@ -346,12 +394,16 @@ int setSisMixerBias(void){
     biasRegisters[currentModule].
      dac2Reg.
       bitField.
-       data=BIAS_DAC2_SIS_MIXER_V_SCALE(CAN_FLOAT);
+       data=BIAS_DAC2_SIS_MIXER_V_SCALE(CONV_FLOAT);
 
     /* 2 - Write the data to the serial access function */
-    #ifdef DEBUG
-        printf("         - Writing DAC2:\n");
-    #endif /* DEBUG */
+    #ifdef DEBUG_BIAS_SERIAL
+        printf("         - Writing DAC2: %u\n",
+               biasRegisters[currentModule].
+                dac2Reg.
+                 bitField.
+                  data);
+    #endif /* DEBUG_BIAS_SERIAL */
 
     /* If there is a problem writing DAC2, return the error. */
     if(serialAccess(BIAS_DAC_DATA_WRITE(currentBiasModule,
@@ -413,9 +465,9 @@ int setSisMixerLoop(unsigned char biasMode){
             break;
     }
     /* 1 - Parallel write BREG */
-    #ifdef DEBUG
+    #ifdef DEBUG_BIAS_SERIAL
         printf("         - Writing BREG\n");
-    #endif /* DEBUG */
+    #endif /* DEBUG_BIAS_SERIAL */
     if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,
                                         BIAS_BREG),
                     &biasRegisters[currentModule].
@@ -544,12 +596,16 @@ int setSisMagnetBias(void){
     biasRegisters[currentModule].
      dac2Reg.
       bitField.
-       data=BIAS_DAC2_SIS_MAGNET_C_SCALE(CAN_FLOAT);
+       data=BIAS_DAC2_SIS_MAGNET_C_SCALE(CONV_FLOAT);
 
     /* 2 - Write the data to the serial access function */
-    #ifdef DEBUG
-        printf("         - Writing DAC2\n");
-    #endif /* DEBUG */
+    #ifdef DEBUG_BIAS_SERIAL
+        printf("         - Writing DAC2: %u\n",
+               biasRegisters[currentModule].
+                dac2Reg.
+                 bitField.
+                  data);
+    #endif /* DEBUG_BIAS_SERIAL */
     if(serialAccess(BIAS_DAC_DATA_WRITE(currentBiasModule,
                                         BIAS_DAC2),
                     biasRegisters[currentModule].
@@ -609,9 +665,9 @@ int setLnaBiasEnable(unsigned char enable){
     }
 
     /* 1 - Parallel write BREG */
-    #ifdef DEBUG
+    #ifdef DEBUG_BIAS_SERIAL
         printf("         - Writing BREG\n");
-    #endif /* DEBUG */
+    #endif /* DEBUG_BIAS_SERIAL */
 
     /* If there is a problem writing BREG, restore BREG and return the ERROR. */
     if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,
@@ -776,14 +832,14 @@ int setLnaStage(void){
             biasRegisters[currentModule].
              dac1Reg.
               bitField.
-               data=BIAS_DAC1_LNA_STAGE_DRAIN_V_SCALE(CAN_FLOAT);
+               data=BIAS_DAC1_LNA_STAGE_DRAIN_V_SCALE(CONV_FLOAT);
             break;
         /* The LNA drain voltage is given by: (Ids/50)*16384 */
         case LNA_STAGE_DRAIN_C:
             biasRegisters[currentModule].
              dac1Reg.
               bitField.
-               data=BIAS_DAC1_LNA_STAGE_DRAIN_C_SCALE(CAN_FLOAT);
+               data=BIAS_DAC1_LNA_STAGE_DRAIN_C_SCALE(CONV_FLOAT);
             break;
         default:
             break;
@@ -800,9 +856,9 @@ int setLnaStage(void){
    }
 
    do {
-       #ifdef DEBUG
+       #ifdef DEBUG_BIAS_SERIAL
            printf("         - Waiting on DAC1 ready\n");
-       #endif /* DEBUG */
+       #endif /* DEBUG_BIAS_SERIAL */
 
        /* If there is a problem writing to DAC1, return error so that the
           frontend variable is not going to be updated. */
@@ -838,9 +894,13 @@ int setLnaStage(void){
    }
 
    /* 3 - Write the data to the serial access function */
-   #ifdef DEBUG
-       printf("         - Writing DAC1\n");
-   #endif /* DEBUG */
+   #ifdef DEBUG_BIAS_SERIAL
+        printf("         - Writing DAC1: %u\n",
+               biasRegisters[currentModule].
+                dac1Reg.
+                 bitField.
+                  data);
+   #endif /* DEBUG_BIAS_SERIAL */
 
    /* If there is a problem writing DAC1, return it so that the value in the
       frontend variable is not going to be updated. */
@@ -893,9 +953,9 @@ int setLnaLedEnable(unsigned char enable){
                                               LNA_LED_DISABLE;
 
     /* 1 - Parallel write BREG */
-    #ifdef DEBUG
+    #ifdef DEBUG_BIAS_SERIAL
         printf("         - Writing BREG\n");
-    #endif /* DEBUG */
+    #endif /* DEBUG_BIAS_SERIAL */
 
     /* If there is a problem writing BREG, restore BREG and return the ERROR */
     if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,
@@ -963,9 +1023,9 @@ int setSisHeaterEnable(unsigned char enable){
                                                     SIS_HEATER_DISABLE;
 
     /* 1 - Parallel write BREG */
-    #ifdef DEBUG
+    #ifdef DEBUG_BIAS_SERIAL
         printf("         - Writing BREG\n");
-    #endif /* DEBUG */
+    #endif /* DEBUG_BIAS_SERIAL */
 
     if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,
                                         BIAS_BREG),
@@ -1031,7 +1091,7 @@ int getSisHeater(void){
     }
 
     /* 6 - Scale the data */
-    /* The current is given by: 425*(adcData/65536) */
+    /* The current is given by: 4166.67*(adcData/65536) */
     frontend.
      cartridge[currentModule].
       polarization[currentBiasModule].
@@ -1120,24 +1180,12 @@ int setBiasDacStrobe(void){
 int getTemp(unsigned char polarization,
             unsigned char sensor){
 
-    /* A static to keep track of the last sensor read and the number of times it
-       was read. This is necessary to correct for an hardware problem. A sensor
-       has to be read a certain number of times for the reading to be stable. */
-    static unsigned char lastPolarization, lastSensor, readouts=CARTRIDGE_TEMP_READOUTS;
-
     /* A temporary variable to hold the read-back voltage and the converted
        temperature */
     float voltage, temperature;
 
     /* Set the polarization to the correct one. */
     currentBiasModule = polarization;
-
-    /* Check if this is the last sensor read. If not then reload redouts. */
-    if((polarization!=lastPolarization)||(sensor!=lastSensor)){
-        lastPolarization=polarization;
-        lastSensor=sensor;
-        readouts=CARTRIDGE_TEMP_READOUTS;
-    }
 
     /* Clear the BIAS AREG */
     biasRegisters[currentModule].
@@ -1187,16 +1235,6 @@ int getTemp(unsigned char polarization,
                                         cartridge[currentModule].
                                          cartridgeTemp[currentCartridgeTempSubsystemModule].
                                            offset;
-
-    /* If the total number of reads before the temperature reading is stable is
-       not reached then return the retry code. */
-    if(readouts){
-        --readouts;
-        CAN_STATUS=HARDW_RETRY;
-
-        return ERROR;
-    }
-
 
     return NO_ERROR;
 }

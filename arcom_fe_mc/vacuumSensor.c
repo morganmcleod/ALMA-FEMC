@@ -5,7 +5,7 @@
     Created: 2007/04/06 14:41:08 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: vacuumSensor.c,v 1.6 2008/02/28 22:15:05 avaccari Exp $
+    \$Id: vacuumSensor.c,v 1.11 2009/10/13 15:01:49 avaccari Exp $
 
     This files contains all the functions necessary to handle cryostat
     vacuum sensors events. */
@@ -19,6 +19,8 @@
 #include "error.h"
 #include "database.h"
 #include "cryostatSerialInterface.h"
+#include "can.h"
+#include "async.h"
 
 /* Globals */
 /* Externs */
@@ -73,20 +75,26 @@ static void pressureHandler(void){
     }
 
     /* Monitor the vacum sensor pressure */
-    if(getVacuumSensor()==ERROR){
-        /* If error during monitoring, the error state was stored in the
-           outgoing CAN message state during the previous statement. This
-           different format is used because getVacuumSensor might return
-           two different error state depending on error conditions. */
+    if(asyncVacuumControllerError[currentVacuumControllerModule]==ERROR){
+        /* If error during monitoring, store the ERROR state in the outgoing
+           CAN message state. */
+        CAN_STATUS = ERROR;
+
         /* Store the last known value in the outgoing message */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cryostat.
                     vacuumController.
                      vacuumSensor[currentVacuumControllerModule].
                       pressure[CURRENT_VALUE];
+        /* If the error was a conversion error, store the status in the CAN
+           message. */
+        if(CONV_FLOAT==CRYOSTAT_PRESS_CONV_ERR){
+            CAN_STATUS = HARDW_CON_ERR;
+        }
+
     } else {
         /* if no error during monitor process, gather the stored data */
-        CAN_FLOAT=frontend.
+        CONV_FLOAT=frontend.
                    cryostat.
                     vacuumController.
                      vacuumSensor[currentVacuumControllerModule].
@@ -101,7 +109,7 @@ static void pressureHandler(void){
                             vacuumController.
                              vacuumSensor[currentVacuumControllerModule].
                               pressure[LOW_WARNING_RANGE],
-                          CAN_FLOAT,
+                          CONV_FLOAT,
                           frontend.
                            cryostat.
                             vacuumController.
@@ -112,7 +120,7 @@ static void pressureHandler(void){
                                 vacuumController.
                                  vacuumSensor[currentVacuumControllerModule].
                                   pressure[LOW_ERROR_RANGE],
-                              CAN_FLOAT,
+                              CONV_FLOAT,
                               frontend.
                                cryostat.
                                 vacuumController.
@@ -130,12 +138,16 @@ static void pressureHandler(void){
         #endif /* DATABASE_RANGE */
     }
 
+    /* If the async monitoring is disabled, notify the monitored message */
+    if(asyncState==ASYNC_OFF){
+        CAN_STATUS = HARDW_BLKD_ERR;
+    }
+
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big endian
        (CAN). */
     changeEndian(CAN_DATA_ADD,
-                 convert.
-                  chr);
+                 CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
 
