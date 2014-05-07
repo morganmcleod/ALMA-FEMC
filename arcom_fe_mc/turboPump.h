@@ -40,9 +40,9 @@
                                                        2 -> speedHandler */
 
     /* Operability temperature range */
-    #define TURBO_PUMP_MIN_WARN_TEMP        10.0
+    #define TURBO_PUMP_MIN_WARN_TEMP        15.0
     #define TURBO_PUMP_MAX_WARN_TEMP        40.0
-    #define TURBO_PUMP_MIN_TEMPERATURE      15.0    // Minimum temperature at which turbo pump is operable
+    #define TURBO_PUMP_MIN_TEMPERATURE      10.0    // Minimum temperature at which turbo pump is operable
     #define TURBO_PUMP_MAX_TEMPERATURE      45.0    // Maximum temperature at which turbo pump is operable
 
     /* Typedefs */
