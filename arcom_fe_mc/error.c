@@ -315,7 +315,7 @@ void storeError(unsigned char moduleNo,
                         break;
                     case 0x08: // Front End in maintenance mode: standard RCAs blocked
                         sprintf(error,
-                                "The Front End in in Maintenance mode: only the special RCAs are available");
+                                "The Front End is in Maintenance mode: only the special RCAs are available");
                         break;
                     default: // Undefined error
                         sprintf(error,
@@ -603,24 +603,31 @@ void storeError(unsigned char moduleNo,
                 switch(errorNo){
                     case 0x01: // YTO coarse tune out of range
                         sprintf(error,
-                                "%s%f%s",
+                                "%s%u%s",
                                 "Error: The commanded YTO coarse tune set point (",
                                 CONV_UINT(0),
                                 ") is out of the allowed range");
                         break;
                     case 0x02: // Monitored YTO coarse tune in error range
                         sprintf(error,
-                                "%s%f%s",
+                                "%s%u%s",
                                 "Error: The monitored YTO coarse tune (",
                                 CONV_UINT(0),
                                 ") is in the error range");
                         break;
                     case 0x03: // Monitored YTO coarse tune in warning range
                         sprintf(error,
-                                "%s%f%s",
+                                "%s%u%s",
                                 "Warning: The monitored YTO coarse tune (",
                                 CONV_UINT(0),
                                 ") is in the warning range");
+                        break;
+                    case 0x04: // LO PA drain voltages were limited before YTO tuning
+                        sprintf(error,
+                                "%s%u%s",
+                                "Error: The commanded YTO coarse tune set point (",
+                                CONV_UINT(0),
+                                ") required one or both LO PA drain voltages to be reduced prior to tuning");
                         break;
                     default: // Undefined error
                         sprintf(error,
@@ -1046,8 +1053,13 @@ void storeError(unsigned char moduleNo,
                         break;
                     case 0x0D: // Warning: The PA temperature is outside the allowed range
                         sprintf(error,
-                                "Warning: The PA temperatue is outside the allowed range. PA blocked.");
+                                "Warning: The PA temperature is outside the allowed range. PA blocked.");
                         break;
+                    case 0x0E: // Warning: Attempted to set LO PA above max safe power level.
+                        sprintf(error,
+                                "Warning: Attempted to set PA channel drain voltage above max safe limit.");
+                        break;
+
                     default: // Undefined error
                         sprintf(error,
                                 "%s%d%s",

@@ -10,7 +10,9 @@
     This files contains all the functions necessary to handle LO events. */
 
 /* Includes */
+#include <stdlib.h>     /* malloc */
 #include <stdio.h>      /* printf */
+#include <string.h>     /* memset & strtok */
 
 #include "error.h"
 #include "frontend.h"
@@ -37,6 +39,8 @@ static HANDLER  loModulesHandler[LO_MODULES_NUMBER]={ytoHandler,
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
 int loInit(void){
+    int ret;
+
     #ifdef DEBUG_INIT
         printf(" - Initializing LO...\n");
     #endif // DEBUG_INIT
@@ -63,75 +67,17 @@ int loInit(void){
         printf("     done!\n"); // 10MHz
     #endif // DEBUG_INIT
 
-    /* Set the PA's drain voltage to 0. The mapping from channel to actual
-       polarization is not relevant since we are zeroing all of them. */
-    #ifdef DEBUG_INIT
-        printf("   - Setting PAs drain voltage to 0\n");
-    #endif // DEBUG_INIT
+    ret = loZeroPaDrainVoltage();
+    if (ret!=NO_ERROR)
+        return ret;
 
-    CONV_FLOAT=0.0;
-    currentPaChannelModule=PA_CHANNEL_DRAIN_VOLTAGE;
+    ret = loZeroPAGateVoltage();
+    if (ret!=NO_ERROR)
+        return ret;
 
-    /* PA Channel A */
-    #ifdef DEBUG_INIT
-        printf("     - Channel A\n");
-    #endif // DEBUG_INIT
-    currentPaModule=PA_CHANNEL_A;
-    /* Set Channel. If error, return error and abort initialization */
-    if(setPaChannel()==ERROR){
-        return ERROR;
-    }
-    #ifdef DEBUG_INIT
-        printf("       done!\n"); // Channel A
-    #endif // DEBUG_INIT
-
-    /* PA Channel B */
-    #ifdef DEBUG_INIT
-        printf("     - Channel B\n");
-    #endif // DEBUG_INIT
-    currentPaModule=PA_CHANNEL_B;
-    /* Set Channel. If error, return error and abort initialization */
-    if(setPaChannel()==ERROR){
-        return ERROR;
-    }
-    #ifdef DEBUG_INIT
-        printf("       done!\n"); // Channel B
-        printf("     done!\n"); // Set PA drain voltage to 0
-    #endif // DEBUG_INIT
-
-    /* Set the PA's gate voltage to 0 */
-    #ifdef DEBUG_INIT
-        printf("   - Setting PAs gate voltage to 0\n");
-    #endif // DEBUG_INIT
-    CONV_FLOAT=0.0;
-    currentPaChannelModule=PA_CHANNEL_GATE_VOLTAGE;
-
-    /* PA Channel A */
-    #ifdef DEBUG_INIT
-        printf("     - Channel A\n");
-    #endif // DEBUG_INIT
-    currentPaModule=PA_CHANNEL_A;
-    /* Set Channel. If error, return error and abort initialization */
-    if(setPaChannel()==ERROR){
-        return ERROR;
-    }
-    #ifdef DEBUG_INIT
-        printf("       done!\n"); // Channel A
-    #endif // DEBUG_INIT
-
-    /* PA Channel B */
-    #ifdef DEBUG_INIT
-        printf("     - Channel B\n");
-    #endif // DEBUG_INIT
-    currentPaModule=PA_CHANNEL_B;
-    /* Set Channel. If error, return error and abort initialization */
-    if(setPaChannel()==ERROR){
-        return ERROR;
-    }
-    #ifdef DEBUG_INIT
-        printf("       done!\n"); // Channel B
-        printf("     done!\n"); // Set PA get voltage to 0
-    #endif // DEBUG_INIT
+    ret = loZeroYtoCoarseTuning();
+    if (ret!=NO_ERROR)
+        return ret;
 
     /* Set correct loop bandwidth. If it is not defined return the undefined
        warning. */
@@ -167,6 +113,111 @@ int loInit(void){
     return NO_ERROR;
 }
 
+/*! Private helper to set the LO PA drain voltages to zero.
+    \return
+        - \ref NO_ERROR -> if no error occurred
+        - \ref ERROR    -> if something wrong happened */
+int loZeroPaDrainVoltage(void) {
+    /* Set the PA's drain voltage to 0. The mapping from channel to actual
+       polarization is not relevant since we are zeroing all of them. */
+    #ifdef DEBUG_INIT
+        printf("   - Setting PAs drain voltage to 0\n");
+    #endif // DEBUG_INIT
+
+    CONV_FLOAT=0.0;
+    currentPaChannelModule=PA_CHANNEL_DRAIN_VOLTAGE;
+
+    /* PA Channel A */
+    #ifdef DEBUG_INIT
+        printf("     - Channel A\n");
+    #endif // DEBUG_INIT
+    currentPaModule=PA_CHANNEL_A;
+    /* Set Channel. If error, return error and abort initialization */
+    if(setPaChannel()==ERROR){
+        return ERROR;
+    }
+    #ifdef DEBUG_INIT
+        printf("       done!\n"); // Channel A
+    #endif // DEBUG_INIT
+
+    /* PA Channel B */
+    #ifdef DEBUG_INIT
+        printf("     - Channel B\n");
+    #endif // DEBUG_INIT
+    currentPaModule=PA_CHANNEL_B;
+    /* Set Channel. If error, return error and abort initialization */
+    if(setPaChannel()==ERROR){
+        return ERROR;
+    }
+    #ifdef DEBUG_INIT
+        printf("       done!\n"); // Channel B
+        printf("     done!\n"); // Set PA drain voltage to 0
+    #endif // DEBUG_INIT
+    return NO_ERROR;
+}
+
+/*! Private helper to set the LO PA gate voltages to zero.
+    \return
+        - \ref NO_ERROR -> if no error occurred
+        - \ref ERROR    -> if something wrong happened */
+int loZeroPAGateVoltage(void) {
+    /* Set the PA's gate voltage to 0 */
+    #ifdef DEBUG_INIT
+        printf("   - Setting PAs gate voltage to 0\n");
+    #endif // DEBUG_INIT
+    CONV_FLOAT=0.0;
+    currentPaChannelModule=PA_CHANNEL_GATE_VOLTAGE;
+
+    /* PA Channel A */
+    #ifdef DEBUG_INIT
+        printf("     - Channel A\n");
+    #endif // DEBUG_INIT
+    currentPaModule=PA_CHANNEL_A;
+    /* Set Channel. If error, return error and abort initialization */
+    if(setPaChannel()==ERROR){
+        return ERROR;
+    }
+    #ifdef DEBUG_INIT
+        printf("       done!\n"); // Channel A
+    #endif // DEBUG_INIT
+
+    /* PA Channel B */
+    #ifdef DEBUG_INIT
+        printf("     - Channel B\n");
+    #endif // DEBUG_INIT
+    currentPaModule=PA_CHANNEL_B;
+    /* Set Channel. If error, return error and abort initialization */
+    if(setPaChannel()==ERROR){
+        return ERROR;
+    }
+    #ifdef DEBUG_INIT
+        printf("       done!\n"); // Channel B
+        printf("     done!\n"); // Set PA get voltage to 0
+    #endif // DEBUG_INIT
+    return NO_ERROR;
+}
+
+/*! Private helper to set the YTO course tuning word to zero
+    \return
+        - \ref NO_ERROR -> if no error occurred
+        - \ref ERROR    -> if something wrong happened */
+int loZeroYtoCoarseTuning(void) {
+    #ifdef DEBUG_INIT
+        printf("   - Setting YTO coarse tuning to 0\n");
+    #endif // DEBUG_INIT
+    CONV_FLOAT=0.0;
+    currentPaChannelModule=PA_CHANNEL_GATE_VOLTAGE;
+    
+    /* Set coarse tuning. If error, return error and abort initialization */
+    CONV_UINT(0) = 0;
+    if(setYtoCoarseTune()==ERROR){
+        return ERROR;
+    }
+    #ifdef DEBUG_INIT
+        printf("     done!\n");
+    #endif // DEBUG_INIT
+    return NO_ERROR;
+}
 
 /* LO startup init */
 /*! This function performs the operations necessary to initialize a LO during
@@ -182,6 +233,9 @@ int loStartup(void){
     /* Few variables to help load the data from the configuration file */
     CFG_STRUCT dataIn;
     unsigned char cnt;
+    char *str;
+    char entryName[15];
+    char entryText[50];
 
     printf(" LO %d configuration file: %s\n",
            currentModule+1,
@@ -410,11 +464,11 @@ int loStartup(void){
     /* Access configuration file, if error, skip the configuration. */
     if(myReadCfg(frontend.
                   cartridge[currentModule].
-               lo.
-                configFile,
-             PLL_YIG_C_OFFSET_SECTION,
-             &dataIn,
-             PLL_YIG_C_OFFSET_EXPECTED)!=NO_ERROR){
+                   lo.
+                    configFile,
+                 PLL_YIG_C_OFFSET_SECTION,
+                 &dataIn,
+                 PLL_YIG_C_OFFSET_EXPECTED)!=NO_ERROR){
         return NO_ERROR;
     }
 
@@ -450,11 +504,11 @@ int loStartup(void){
     /* Access configuration file, if error, skip the configuration. */
     if(myReadCfg(frontend.
                   cartridge[currentModule].
-               lo.
-                configFile,
-             LO_SUPPLY_V_SECTION,
-             &dataIn,
-             LO_SUPPLY_V_EXPECTED)!=NO_ERROR){
+                   lo.
+                    configFile,
+                 LO_SUPPLY_V_SECTION,
+                 &dataIn,
+                 LO_SUPPLY_V_EXPECTED)!=NO_ERROR){
         return NO_ERROR;
     }
 
@@ -488,14 +542,13 @@ int loStartup(void){
     /* Access configuration file, if error, skip the configuration. */
     if(myReadCfg(frontend.
                   cartridge[currentModule].
-               lo.
-                configFile,
-             LO_MULTIPLIER_C_SECTION,
-             &dataIn,
-             LO_MULTIPLIER_C_EXPECTED)!=NO_ERROR){
+                   lo.
+                    configFile,
+                 LO_MULTIPLIER_C_SECTION,
+                 &dataIn,
+                 LO_MULTIPLIER_C_EXPECTED)!=NO_ERROR){
         return NO_ERROR;
     }
-
 
     #ifdef DEBUG_STARTUP
         printf("    - LO multiplier currents scaling factor %f...done!\n",
@@ -522,29 +575,158 @@ int loStartup(void){
            yto.
             ytoCoarseTune[MAX_SET_VALUE]=YTO_COARSE_SET_MAX;
 
-    printf("      done!\n"); // Band select
+    printf("      done!\n"); // YTO course tuning
+    printf("    - Setting max safe power limits\n");
+        frontend.
+          cartridge[currentModule].
+            lo.
+              maxSafeLoPaTableSize=0;
+        frontend.
+          cartridge[currentModule].
+            lo.
+              maxSafeLoPaTable=NULL;
+
+    /* Configure read array */
+    dataIn.
+     Name=LO_PA_LIMITS_ENTRIES_KEY;
+    dataIn.
+     VarType=Cfg_Byte;
+    dataIn.
+     DataPtr=&cnt;
+
+    /* Access configuration file. */
+    if (myReadCfg(frontend.
+                   cartridge[currentModule].
+                    lo.
+                     configFile,
+                  LO_PA_LIMITS_SECTION,
+                  &dataIn,
+                  LO_PA_LIMITS_EXPECTED)!=NO_ERROR) {
+        /* not found: */
+        cnt = 0;
+    }
+
+    /* Allocate the max safe LO PA entries table. */
+    if (cnt > 0){
+        frontend.
+         cartridge[currentModule].
+          lo.
+           maxSafeLoPaTable = (MAX_SAFE_LO_PA_ENTRY *) malloc(cnt * sizeof(MAX_SAFE_LO_PA_ENTRY));
+        
+        /* if allocation succeeeded... */
+        if (frontend.
+             cartridge[currentModule].
+              lo.
+               maxSafeLoPaTable != NULL){
+
+            /* store the table size. */
+            frontend.
+             cartridge[currentModule].
+              lo.
+               maxSafeLoPaTableSize=cnt;
+
+            printf("ENTRIES=%d\n", (int) cnt);
+        }
+    }
+
+    if (cnt > 0){
+        /* start loading the entries */
+        
+        unsigned char actualCnt=0;
+
+        MAX_SAFE_LO_PA_ENTRY *nextEntry = frontend.
+                                           cartridge[currentModule].
+                                            lo.
+                                             maxSafeLoPaTable;
+
+        for(cnt=0;
+            cnt<frontend.
+                 cartridge[currentModule].
+                  lo.
+                   maxSafeLoPaTableSize;
+            cnt++){
+
+                /* format entry name */
+                sprintf(entryName, LO_PA_LIMITS_ENTRY_KEY, (int) (cnt + 1));
+                printf(entryName);
+                printf("=");
+
+                /* Configure read array */
+                dataIn.
+                 Name=entryName;
+                dataIn.
+                 VarType=Cfg_String;
+                dataIn.
+                 DataPtr=entryText;
+
+                /* Access configuration file.  If error, ignore this entry */
+                if(myReadCfg(frontend.
+                              cartridge[currentModule].
+                               lo.
+                                configFile,
+                             LO_PA_LIMITS_SECTION,
+                             &dataIn,
+                             LO_PA_LIMITS_EXPECTED)==NO_ERROR){
+
+                    //printf(entryText);
+
+                    memset(nextEntry, 0, sizeof(MAX_SAFE_LO_PA_ENTRY));
+
+                    str = strtok(entryText, " ,\t");
+                    if (str) {
+                        (*nextEntry).ytoEndpoint = (unsigned int) atoi(str);
+                        str = strtok(NULL, " ,\t");
+                    }
+                    if (str) {
+                        (*nextEntry).maxVD0 = atof(str);
+                        str = strtok(NULL, " ,\t");
+                    }
+                    if (str) {
+                        (*nextEntry).maxVD1 = atof(str);
+                    }
+
+                    printf("yto=%u, vd0=%f, vd1=%f", 
+                           (*nextEntry).ytoEndpoint, (*nextEntry).maxVD0, (*nextEntry).maxVD1);
+
+                    nextEntry++;
+                    actualCnt++;
+                }                        
+                printf("\n");
+
+        }
+        /* save the number of entries actually loaded */
+        frontend.
+         cartridge[currentModule].
+          lo.
+           maxSafeLoPaTableSize=actualCnt;
+    }
+    printf("      done!\n"); // max safe power
     printf("    done!\n"); // Control message limits
-
     printf(" done!\n\n"); // LO
-
-
     return NO_ERROR;
-
 }
 
+/* LO subsystem shutdown */
+/*! Free resources that were used by all LOs at shutdown time. */
+int loShutdown(void){
 
+    unsigned char module;
+    printf(" Shutting Down LO Subsystem...\n");
 
+    for(module=0;
+        module<CARTRIDGES_NUMBER;
+        module++){
+    
+        free(frontend.
+         cartridge[module].
+          lo.
+           maxSafeLoPaTable);
+    }
 
+    printf(" done!\n\n"); // Control message limits
 
-
-
-
-
-
-
-
-
-
+    return NO_ERROR;
+}
 
 /* LO handler */
 /*! This function will be called by the CAN message handling subrutine when the
@@ -572,3 +754,249 @@ void loHandler(void){
     (loModulesHandler[currentLoModule])();
 }
 
+
+/* find entry in the max safe LO PA table */
+/*! Find entry in the max safe LO PA table corresponding to the given YTO tuning word
+    Perform linear interpolation if the given YTO word is between entries.
+    If yto is above or below first and last entries in the table, return the nearest.
+    
+    \param yto      tuning word to look up
+
+    \return         pointer to entry or NULL if not found */
+MAX_SAFE_LO_PA_ENTRY *findMaxSafeLoPaEntry(unsigned int yto) {
+
+    MAX_SAFE_LO_PA_ENTRY *entry = NULL;
+    MAX_SAFE_LO_PA_ENTRY *lastEntry = NULL;
+    MAX_SAFE_LO_PA_ENTRY *table = frontend.
+                                   cartridge[currentModule].
+                                    lo.
+                                     maxSafeLoPaTable;
+
+    unsigned char tableSize = frontend.
+                               cartridge[currentModule].
+                                lo.
+                                 maxSafeLoPaTableSize;
+
+    static MAX_SAFE_LO_PA_ENTRY interpEntry;
+    //< if we need to interpolate, we'll return a pointer to this entry.
+
+    float interpFactor;
+    //< interpolation factor for scaling the maxVD0 and maxVD1 values betwen table entries.
+
+    int index = 0;
+    int done = 0;
+    unsigned int lastEndpoint = 0;
+
+    // if table is empty or not allocated, get out:
+    if (tableSize == 0 || table == NULL)
+        return NULL;
+
+    // look at the first entry:
+    entry = &table[0];
+
+    // if there is only one entry or if the requested YTO is at or below 
+    //  the first endpoint, return the first entry:
+    if ((tableSize == 1) || (yto <= (*entry).ytoEndpoint))
+        return entry;
+
+    // look at the YTO tuning for the last entry in the table:
+    lastEndpoint = table[tableSize - 1].ytoEndpoint;
+
+    // if the requested YTO is at or above the last YTO tuning,
+    //  return the last entry:
+    if (yto >= lastEndpoint) {
+        entry = &table[tableSize - 1];
+        return entry;
+    }
+
+    // loop to find an exact endpoint match or a pair of entries
+    //  between which to interpolate:
+    index = 0;
+    done = 0;
+    while (!done) {
+        // check for past end of table.
+        if (index >= tableSize) {
+            // this should be an impossible case because of lastEndpoint check above.
+            lastEntry = entry = NULL;                        
+            done = 1;
+
+        } else {
+            // save the last entry for endpoint comparison:
+            lastEntry = entry;
+            
+            // get the current entry:
+            entry = &table[index];
+            
+            // check for exact match current endpoint:
+            if (yto == (*entry).ytoEndpoint)
+                done = 1;
+
+            // check for case where we need to interpolate:
+            else if (lastEntry && (*lastEntry).ytoEndpoint < yto && yto < (*entry).ytoEndpoint) {
+                // interpolate:
+                interpEntry.ytoEndpoint = yto;
+                interpFactor = ((float) (yto - (*lastEntry).ytoEndpoint)) / 
+                               ((float) ((*entry).ytoEndpoint - (*lastEntry).ytoEndpoint));
+                interpEntry.maxVD0 = (*lastEntry).maxVD0 + (interpFactor * 
+                                     ((*entry).maxVD0 - (*lastEntry).maxVD0));
+                interpEntry.maxVD1 = (*lastEntry).maxVD1 + (interpFactor * 
+                                     ((*entry).maxVD1 - (*lastEntry).maxVD1));
+                entry = &interpEntry;
+                done = 1;          
+
+            } else
+                ++index;
+        }
+    }
+    return entry;
+}
+
+
+/* LO PA max safe level limits check */
+/*! Limit the CONV_FLOAT value about to be sent to the PA channel for drain voltage
+      to the safe maximum for the current YTO tuning.
+
+    \param paModule     which polarization PA channel to check.
+
+    \return
+        - \ref NO_ERROR -> if no error occurred
+        - \ref HARDW_BLKD_ERR -> the drain voltage was disallowed by the max safe level table */
+int limitSafePaDrainVoltage(unsigned char paModule) {
+
+    MAX_SAFE_LO_PA_ENTRY *entry;
+    unsigned int yto = frontend.
+                        cartridge[currentModule].
+                         lo.
+                          yto.
+                           ytoCoarseTune[CURRENT_VALUE];
+
+    printf("limitSafePaDrainVoltage yto=%u ", yto);
+
+    entry = findMaxSafeLoPaEntry(yto);
+
+    if (!entry) {   
+        printf("\n");
+        return NO_ERROR;
+    }
+
+    printf("maxVD0=%.2f maxVD1=%.2f ", (*entry).maxVD0, (*entry).maxVD1);
+
+    if (paModule == 0) {
+        printf("vd0=%.2f\n", CONV_FLOAT);
+        if (CONV_FLOAT > (*entry).maxVD0) {
+            CONV_FLOAT = (*entry).maxVD0;
+            return HARDW_BLKD_ERR;
+        }
+    }
+
+    if (paModule == 1) {
+        printf("vd1=%.2f\n", CONV_FLOAT);
+        if (CONV_FLOAT > (*entry).maxVD1) {
+            CONV_FLOAT = (*entry).maxVD1;
+            return HARDW_BLKD_ERR;
+        }
+    }
+
+    return NO_ERROR;
+}
+
+/* LO PA max safe level limits check */
+/*! Prior to YTO tuning to CONV_UINT(0), send commands to reduce the LO PA drain 
+      voltages to the limits in the max safe level table.
+
+    \param paModule     which polarization PA channel to check.
+
+    \return
+        - \ref NO_ERROR -> if no error occurred
+        - \ref HARDW_BLKD_ERR -> the drain voltage was disallowed by the max safe level table */
+int limitSafeYtoTuning(){
+    MAX_SAFE_LO_PA_ENTRY *entry;
+    unsigned int yto = CONV_UINT(0);
+    long int backup = CONV_LONGINT;     // backup copy of the conversion buffer
+    float vd0, vd1;
+    unsigned char *lastCommandData;
+    int ret0 = NO_ERROR;
+    int ret1 = NO_ERROR;
+
+    printf("limitSafeYtoTuning yto=%u ", yto);
+
+    entry = findMaxSafeLoPaEntry(yto);
+    
+    if (!entry) {
+        printf("\n");
+        return NO_ERROR;
+    }
+
+    // make a pointer to the data word in the last commanded Pol0 PA drain voltage:
+    currentPaModule=PA_CHANNEL_A;
+    lastCommandData = &(frontend.
+                         cartridge[currentModule].
+                          lo.
+                           pa.
+                            paChannel[currentPaChannel()].
+                             lastDrainVoltage.
+                              data);
+
+    // get the last commanded setting:
+    changeEndian(CONV_CHR_ADD, lastCommandData);
+    vd0 = CONV_FLOAT;
+    
+    // if we are about to exceed the max pol0 VD at the new yto tuning...
+    if (vd0 > (*entry).maxVD0) {
+        // use the max setting instead:
+        CONV_FLOAT=(*entry).maxVD0;
+
+        // save it back as the last commanded value
+        changeEndian(lastCommandData, CONV_CHR_ADD);
+
+        // send the command to reduce the LO PA drain voltage:
+        currentPaChannelModule=PA_CHANNEL_DRAIN_VOLTAGE;
+        if(setPaChannel()==ERROR)
+            ret0 = ERROR;
+        else
+            ret0 = HARDW_BLKD_ERR;
+    }
+
+    // make a pointer to the data word in the last commanded Pol1 PA drain voltage:
+    currentPaModule=PA_CHANNEL_B;
+    lastCommandData = &(frontend.
+                         cartridge[currentModule].
+                          lo.
+                           pa.
+                            paChannel[currentPaChannel()].
+                             lastDrainVoltage.
+                              data);
+
+    // get the last commanded setting:
+    changeEndian(CONV_CHR_ADD, lastCommandData);
+    vd1 = CONV_FLOAT;
+
+    // if we are about to exceed the max pol0 VD at the new yto tuning...
+    if (vd1 > (*entry).maxVD1) {
+        // use the max setting instead:
+        CONV_FLOAT=(*entry).maxVD1;
+
+        // save it back as the last commanded value
+        changeEndian(lastCommandData, CONV_CHR_ADD);
+
+        // send the command to reduce the LO PA drain voltage:
+        currentPaChannelModule=PA_CHANNEL_DRAIN_VOLTAGE;
+        if(setPaChannel()==ERROR)
+            ret1 = ERROR;
+        else
+            ret1 = HARDW_BLKD_ERR;
+    }
+
+    printf("maxVD0=%.2f maxVD1=%.2f vd0=%.2f vd1=%.2f\n", (*entry).maxVD0, (*entry).maxVD1, vd0, vd1);
+
+    // restore the conversion buffer to its prior state:
+    CONV_LONGINT = backup;
+
+    // return any error which was seen:
+    if (ret0 == ERROR || ret1 == ERROR)
+        return ERROR;
+    // HARDW_BLKD_ERR tells caller that one or both PA VD settings were reduced:
+    if (ret0 == HARDW_BLKD_ERR || ret1 == HARDW_BLKD_ERR)
+        return HARDW_BLKD_ERR;
+    return NO_ERROR;
+}

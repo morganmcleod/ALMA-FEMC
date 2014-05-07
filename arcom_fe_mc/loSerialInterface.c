@@ -1337,7 +1337,7 @@ int getPaChannel(void){
 
 
 /* Set PA channel */
-/*! This function allows the suer to set different values for gare and drain
+/*! This function allows the suer to set different values for gate and drain
     voltage in the addressed PA_CHANNEL.
 
     The function performs the following operation:

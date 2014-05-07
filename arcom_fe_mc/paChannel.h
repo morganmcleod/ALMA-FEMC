@@ -44,6 +44,10 @@
     #define PA_CHANNEL_A        0
     #define PA_CHANNEL_B        1
     #define PA_MAX_ALLOWED_TEMP 30.0    // Maximum temperature at which PA should be allowed to work
+                                        //   This is checked on the 4K and 12K cryostat sensors.
+    #define PA_TEMP_RANGE_LOW   0.0     // 4K and 12K cryostat seonsors are considered valid if they
+    #define PA_TEMP_RANGE_HIGH  350.0   //   are within this range of real-world temperatures.
+    #define PA_TEMP_SANITY_CHECK(T) ((PA_TEMP_RANGE_LOW < T) && (T < PA_TEMP_RANGE_HIGH))
 
     /* Submodules definitions */
     #define PA_CHANNEL_MODULES_NUMBER      3       // See list below

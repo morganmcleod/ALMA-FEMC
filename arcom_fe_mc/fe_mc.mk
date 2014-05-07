@@ -1,3 +1,3 @@
-project : C:\Program_Files\projects\fe_mc\fe_mc.exe .SYMBOLIC
+project : L:\femc\arcom_fe_mc\fe_mc.exe .SYMBOLIC
 
-!include C:\Program_Files\projects\fe_mc\fe_mc.mk1
+!include L:\femc\arcom_fe_mc\fe_mc.mk1

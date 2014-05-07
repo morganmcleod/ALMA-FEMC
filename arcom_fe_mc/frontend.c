@@ -37,6 +37,11 @@ int frontendStop(void){
         return ERROR;
     }
 
+    /* Shut down the LO subsystems */
+    if(loShutdown()==ERROR){
+        return ERROR;
+    }
+
     /* Shut down the LPR */
     if(lprStop()==ERROR){
         return ERROR;

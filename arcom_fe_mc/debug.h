@@ -6,7 +6,7 @@
 
     <b> CVS informations: </b><br>
 
-    \$Id: debug.h,v 1.47 2012/01/17 16:30:58 avaccari Exp $
+    \$Id: debug.h,v 1.48 2013/07/12 20:16:35 mmcleod Exp $
 
     This files contains all the informations necessary to debug the running
     software.
@@ -33,6 +33,7 @@
         #define DEBUG_POWERDIS              // Turn on Power Distribution debug
         #define DEBUG_IFSWITCH              // Turn on IF Switch debug
         #define DEBUG_CRYOSTAT              // Turn on Cryostat debug
+        // #define NO_STOREERROR_CRYOSTAT      // Master switch for cryostat storeError calls.  For debugging with no cryostat
         #define DEBUG_LPR                   // Turn on LPR debug
         #define DEBUG_FETIM                 // Turn on FETIM debug
         // #define DEBUG_INI                   // Turn on INI file access debug
@@ -56,15 +57,16 @@
         // #define DEBUG_POWERDIS              // Turn on Power Distribution debug
         // #define DEBUG_IFSWITCH              // Turn on IF Switch debug
         // #define DEBUG_CRYOSTAT              // Turn on Cryostat debug
+        #define NO_STOREERROR_CRYOSTAT         // Master switch for cryostat storeError calls.  For debugging with no cryostat
         // #define DEBUG_LPR                   // Turn on LPR debug
         // #define DEBUG_FETIM                 // Turn on FETIM debug
         // #define DEBUG_INI                   // Turn on INI file access debug
-        #define DEBUG_STARTUP               // Turn on startup debugging
+        // #define DEBUG_STARTUP               // Turn on startup debugging
         // #define DEBUG_OWB                   // Turn on one wire bus debugging
         // #define DEBUG_PPCOM                 // Turn on the parallel port communication debugging
-        // #define DEBUG_INIT                  // Turn on initialization debugging
+        #define DEBUG_INIT                  // Turn on initialization debugging
         // #define DEBUG                       // Turn on all the rest and error reporting
-        // #define ERROR_REPORT                // Uncomment this line to enable the console error report
+        #define ERROR_REPORT                // Uncomment this line to enable the console error report
         // #define DEBUG_FETIM_ASYNC           // Turn on the FETIM async debugging
     #endif /* DEVELOPMENT */
 

@@ -281,6 +281,7 @@ static void drainVoltageHandler(void){
 
     float temp4K,temp12K;
     unsigned int state=DISABLE;
+    signed char ret;
 
     #ifdef DEBUG
         printf("      Drain Voltage\n");
@@ -301,26 +302,59 @@ static void drainVoltageHandler(void){
                   cryostatTemp[CRYOCOOLER_12K].
                    temp[CURRENT_VALUE];
 
-        if((temp12K==FLOAT_ERROR)||(temp12K==FLOAT_UNINIT)){
-            if((temp4K==FLOAT_ERROR)||(temp4K==FLOAT_UNINIT)||(temp4K>PA_MAX_ALLOWED_TEMP)){
-                state=DISABLE;
-            } else {
-                state=ENABLE;
-            }
-        } else {
-            if(temp12K>PA_MAX_ALLOWED_TEMP){
-                state=DISABLE;
-            } else {
-                state=ENABLE;
+        /* We check the 4K sensor first and if that doesn't allow the command,
+           we check the 12K sensor next.   Previous algorithm in 2.6.1 checked
+           the 12K sensor first and would always reject if that one sensor 
+           was above PA_MAX_ALLOWED_TEMP. */
+
+        // start by assuming the command will be blocked:
+        state=DISABLE;
+
+        // is the 4K cryostat sensor reading valid?
+        if((temp4K != FLOAT_ERROR) && (temp4K != FLOAT_UNINIT)) {
+            // yes, is it a reasonable real-world temperature?            
+            if (PA_TEMP_SANITY_CHECK(temp4K)) {
+                // yes, is it low enough to allow the PA to be enabled?
+                if (temp4K <= PA_MAX_ALLOWED_TEMP)
+                    state=ENABLE;   // yes.
             }
         }
+
+        // may need to use the 12K sensor instead:
+        if (state == DISABLE) {
+            // is the 12K cryostat sensor reading valid?
+            if((temp12K != FLOAT_ERROR) && (temp12K != FLOAT_UNINIT)) {
+                // yes, is it a reasonable real-world temperature?            
+                if (PA_TEMP_SANITY_CHECK(temp12K)) {
+                    // yes, is it low enough to allow the PA to be enabled?
+                    if (temp12K <= PA_MAX_ALLOWED_TEMP)
+                        state=ENABLE;   // yes.
+                }
+            }
+        }            
+
+        // MTM commented out cryostat temp check algorithm from 2.6.1.
+        // 
+        // if((temp12K==FLOAT_ERROR)||(temp12K==FLOAT_UNINIT)){
+        //     if((temp4K==FLOAT_ERROR)||(temp4K==FLOAT_UNINIT)||(temp4K>PA_MAX_ALLOWED_TEMP)){
+        //         state=DISABLE;
+        //     } else {
+        //         state=ENABLE;
+        //     }
+        // } else {
+        //     if(temp12K>PA_MAX_ALLOWED_TEMP){
+        //         state=DISABLE;
+        //     } else {
+        //         state=ENABLE;
+        //     }
+        // }
 
         // If we are in TROUBLESHOOTING mode, ignore all the above safety checks and allow the voltage to be set:
         if (frontend.mode[CURRENT_VALUE] == TROUBLESHOOTING_MODE)
             state=ENABLE;
 
         if(state==DISABLE){
-            storeError(ERR_PA,
+            storeError(ERR_PA_CHANNEL,
                        0x0D); // Error 0x0D -> PA temperature above the allowed range -> PAs disabled
 
             frontend.
@@ -390,7 +424,28 @@ static void drainVoltageHandler(void){
             }
         #endif /* DATABASE_RANGE */
 
-        /* Set the PA channel gate voltage. If an error occurs then store the
+        /* Limit the CONV_FLOAT value about to be sent to the PA channel for drain voltage
+             to the safe maximum for the current YTO tuning.
+           Returns HARDW_BLKD_ERR if the value was reduced. */
+        ret = limitSafePaDrainVoltage(currentPaModule);
+
+        if (ret != NO_ERROR) {
+            // report that the limit was violated:
+            storeError(ERR_PA_CHANNEL,
+                       0x0E); // Error 0x0E -> Warning: Attempted to set LO PA above max safe power level.
+
+            /* save the modified command setting to the "last control message" location */
+            changeEndian(frontend.
+                          cartridge[currentModule].
+                           lo.
+                            pa.
+                             paChannel[currentPaChannel()].
+                              lastDrainVoltage.
+                               data,
+                         CONV_CHR_ADD);
+        }
+
+        /* Set the PA channel drain voltage. If an error occurs then store the
            state and then return. */
         if(setPaChannel()==ERROR){
             /* Store the ERROR state in the last control message variable */
@@ -401,7 +456,6 @@ static void drainVoltageHandler(void){
                 paChannel[currentPaChannel()].
                  lastDrainVoltage.
                   status=ERROR;
-
             return;
         }
 
@@ -416,6 +470,16 @@ static void drainVoltageHandler(void){
                 paChannel[currentPaChannel()].
                  lastDrainVoltage.
                   status=HARDW_UPD_WARN;
+        
+        /* if limitSafePaDrainVoltage() above returned a problem, we want to save that error status */
+        } else {
+            frontend.
+             cartridge[currentModule].
+              lo.
+               pa.
+                paChannel[currentPaChannel()].
+                 lastDrainVoltage.
+                  status=ret;
         }
 
         /* If everything went fine, it's a control message, we're done. */

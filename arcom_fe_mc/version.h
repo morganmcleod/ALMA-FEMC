@@ -23,6 +23,20 @@
 
     REVISION HISTORY
 
+    2014-04-22  002.006.004 beta
+        Beta release for FETIM testing at the OSF.
+        Beta release for testing cryostat temperature sensor check when
+          setting LO PA drain voltage.
+
+    2013-12-10  002.006.003 beta
+        Beta release for FETIM testing at the OSF.
+        Modified and built by Morgan McLeod <mmcleod@nrao.edu>
+        - FETIM glitch counter displays as a positive percentage.
+        - FETIM added +0.25 MPa (=50 mV) offset to He2 buffer tank monitor
+          value due to an offset induced by the isolation amplifier.
+        - Changed turbo pump HARDWARE_BLOCKED lower temperatur 15C -> 10C.
+        - Also changed TURBO_PUMP_MIN_WARN_TEMP to 15C.
+
     2013-07-12  002.006.002 beta
         Beta release for FETIM testing at the OSF.
         Modified and built by Morgan McLeod <mmcleod@nrao.edu>
@@ -294,10 +308,10 @@
     /* Defines */
     #define VERSION_MAJOR   002  //!< Major version
     #define VERSION_MINOR   006  //!< Minor version
-    #define VERSION_PATCH   003  //!< Patch level
+    #define VERSION_PATCH   004  //!< Patch level
 
-    #define VERSION_DATE    "2013-10-30" //!< Version Date
-    #define VERSION_NOTES   "beta 2 for FETIM testing." //!<Version Notes
+    #define VERSION_DATE    "2014-04-22" //!< Version Date
+    #define VERSION_NOTES   "beta 4 for FETIM testing." //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"

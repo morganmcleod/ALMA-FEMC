@@ -53,6 +53,7 @@ void ytoHandler(void){
 
 /* Coarse Tune Handler */
 static void ytoCoarseTuneHandler(void){
+    int ret = NO_ERROR;
 
     #ifdef DEBUG
         printf("     Coarse Tune\n");
@@ -109,23 +110,48 @@ static void ytoCoarseTuneHandler(void){
             return;
         }
 
-        /* Set the YTO coarse tune. If an error occurs then store the state and
-           then return. */
-           if(setYtoCoarseTune()==ERROR){
-               /* Store the ERROR state in the last control message variable */
-               frontend.
-                cartridge[currentModule].
-                 lo.
-                  yto.
-                   lastYtoCoarseTune.
-                    status=ERROR;
+        ret = limitSafeYtoTuning();
 
-               return;
-           }
-
-           /* If everything went fine, it's a control message, we're done. */
-           return;
+        if (ret == HARDW_BLKD_ERR) {
+            // report that the limit was violated:
+            storeError(ERR_YTO,
+                       0x04); // Error 0x04 -> LO PA drain voltages were limited before YTO tuning
         }
+
+        if (ret == ERROR) {
+            // some other error.   Don't retune!
+            frontend.
+             cartridge[currentModule].
+              lo.
+               yto.
+                lastYtoCoarseTune.
+                 status=ERROR;
+            return;
+        }
+
+        /* Set the YTO coarse tune. If an error occurs then store the state and return. */
+        if(setYtoCoarseTune()==ERROR){
+            /* Store the ERROR state in the last control message variable */
+            frontend.
+             cartridge[currentModule].
+              lo.
+               yto.
+                lastYtoCoarseTune.
+                 status=ERROR;
+        
+        /* if limitSafeYtoTuning() above returned a problem, we want to save that error status */
+        } else {
+            frontend.
+             cartridge[currentModule].
+              lo.
+               yto.
+                lastYtoCoarseTune.
+                 status=ret;
+        }
+
+        /* If everything went fine, it's a control message, we're done. */
+        return;
+    }
 
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){

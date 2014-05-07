@@ -87,6 +87,12 @@
     #define LO_MULTIPLIER_C_KEY         "MULT_C"            // Key containing the multiplier current scaling factor
     #define LO_MULTIPLIER_C_EXPECTED    1                   // Expected keys containing the multiplier current scaling factor
 
+    #define LO_PA_LIMITS_SECTION        "PA_LIMITS"         // Section containing the PA max safe power limits
+    #define LO_PA_LIMITS_ENTRIES_KEY    "ENTRIES"           // Key containing number of PA limits entries
+    #define LO_PA_LIMITS_EXPECTED       1                   // Expected keys containing PA limits
+    #define LO_PA_LIMITS_MAX_ENTRIES    255                 // Maximum number of entries allowed
+    #define LO_PA_LIMITS_ENTRY_KEY      "ENTRY_%d"          // Key for individual PA limits entries
+                                                            // Entries are formatted as <YTO count>,<PAVD0 limit>,<PAVD1 limit>
     /* Submodules definitions */
     #define LO_MODULES_NUMBER       5       // See list below
     #define LO_MODULES_RCA_MASK     0x00070 /* Mask to extract the submodule number:
@@ -98,6 +104,33 @@
     #define LO_MODULES_MASK_SHIFT   4       // Bits right shift for the submodules mask
 
     /* Typedefs */
+    //! Max safe LO PA power table entry
+    /*! This structure represens a row in the LO PA max safe power settings table.
+        \ingroup    cartridge
+        \param      ytoEndpoint     Endpoint of a YTO tuning range in the table.
+                                    Values between 0 and 4095.
+        \param      maxVD0          Maximum allowed setting of LO PA VD0 within
+                                    the range between this and the next or prev
+                                    endpoint.  Values between 0.0 and 2.5.
+        \param      maxVD1          Maximum allowed setting of LO PA VD1 within
+                                    the range. Values between 0.0 and 2.5. */
+    typedef struct {
+        //! ytoEndpoint
+        /*! Endpoint of a YTO tuning range in the table.
+            Values between 0 and 4095. */
+        unsigned int ytoEndpoint;
+        //! maxVD0
+        /* Maximum allowed setting of LO PA VD0 within
+           the range between this and the next or prev
+           endpoint.  Values between 0.0 and 2.5. */
+        float maxVD0;
+        //! maxVD1
+        /* Maximum allowed setting of LO PA VD1 within
+           the range. Values between 0.0 and 2.5. */
+        float maxVD1;
+
+    } MAX_SAFE_LO_PA_ENTRY;
+
     //! Current state of the LO
     /*! This structure represent the current state of the LO.
         \ingroup    cartridge
@@ -134,15 +167,15 @@
                 - \ref ENABLE   -> Speed is set to 10 MHz
                 - \ref DISABLE  -> Speed is set to 5 MHz */
         unsigned char   ssi10MHzEnable;
-        //! MC current state
+        //! AMC current state
         /*! Please see the definition of the \ref AMC structure for more
             informations. */
         AMC         amc;
-        //! LL current state
+        //! PLL current state
         /*! Please see the definition of the \ref PLL structure for more
             informations. */
         PLL         pll;
-        //! A current state
+        //! PA current state
         /*! Please see the definition of the \ref PA structure for more
             informations. */
         PA          pa;
@@ -169,6 +202,14 @@
         /*! This contains the scale factor of all the multiplier currents
             monitored in the LO. */
         float       multiplierCurrentsScale;
+        
+        //! Max safe LO PA entries table size
+        //* Size of the max safe LO PA entries table */
+        unsigned char maxSafeLoPaTableSize;
+        //! Max safe LO PA entries table
+        /*! Table of max safe LO PA entries.  See definition above */
+        MAX_SAFE_LO_PA_ENTRY *maxSafeLoPaTable;
+
     } LO;
 
     /* Globals */
@@ -178,7 +219,18 @@
     /* Prototypes */
     /* Externs */
     extern int loStartup(void); //!< This function initializes the selected lo during startup
+    extern int loShutdown(void); //!< Free resources that were used by all LOs at shutdown time
     extern void loHandler(void); //!< This function deals with the incoming can message
     extern int loInit(void); //!< This function initializes the selected LO at runtime
+
+    extern int loZeroPaDrainVoltage(void);  //!< Helper function to set the LO PA drain voltages to zero
+    extern int loZeroPAGateVoltage(void);   //!< Helper function to set the LO PA gate voltages to zero
+    extern int loZeroYtoCoarseTuning(void); //!< Helper function to set the YTO coarse tuning to zero
+
+    extern int limitSafePaDrainVoltage(unsigned char paModule);
+        //!< Limit the CONV_FLOAT value about to be sent to the PA channel.
+
+    extern int limitSafeYtoTuning();
+        //!< Prior to YTO tuning, send commands to reduce the LO PA drain voltages.
 
 #endif /* _LO_H */

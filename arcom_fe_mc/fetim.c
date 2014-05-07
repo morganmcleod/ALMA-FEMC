@@ -160,6 +160,9 @@ int fetimStartup(void){
 }
 
 /* FETIM async */
+
+/*  #define DEBUG_FETIM_FE_SAFE_MODE 1  */
+
 /*! This function deals with the asynchronous operation in the FETIM:
         - Monitor the external temperature sensors (this are going to be used
           by the turbo pump code to allow/disallow operation of the hardware)
@@ -276,6 +279,11 @@ int fetimAsync(void){
                 } else {
                     newState=FE_STATUS_SAFE;
                 }
+
+                /* Check for debugging mode where safe state is always enabled */
+                #ifdef DEBUG_FETIM_FE_SAFE_MODE
+                    newState=FE_STATUS_SAFE;
+                #endif
 
                 /* If the state has not changed, then skip. */
                 if(newState==currentState){
