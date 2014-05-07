@@ -7,7 +7,7 @@
     Created: 2004/08/24 16:33:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ppComm.c,v 1.35 2009/09/22 14:46:10 avaccari Exp $
+    \$Id: ppComm.c,v 1.36 2010/11/02 14:36:29 avaccari Exp $
 
     This file contains the functions necessary to cummunicate via the
     parallel port of the ARCOM Pegasus board.
@@ -149,19 +149,30 @@ int PPOpen(void){
     /* Clear any curren interrupt on the parallel port */
     PPClear();
 
+
+
+// If you manage to disable all the interrupts, they should be re-enabled here!
+
+    printf("done!\n\n"); // Initialization
+
+    return NO_ERROR;
+}
+
+
+/*! This function will finialize the connection with the AMBSI1 enabling
+    effective communication */
+int PPStart(void){
+
+    /* Lower the INIT line and write 0x5A to notify AMBSI that ARCOM is ready
+       to communicate */
+/*    outp(SPPControlPort,
+         inp(SPPControlPort)&~SPP_CONTROL_INIT);
+*/
     /* Enable parallel port interrupt line */
     PPIrqCtrl(ENABLE);
 
     /* Modify the PIC to acknowledge interrupt on the parallel port line */
     PicPPIrqCtrl(ENABLE); // Enable parallel port interrupt line in the PIC
-
-
-// If you manage to disable all the interrupts, they should be re-enabled here!
-
-    outp(SPPControlPort,
-         inp(SPPControlPort)&~SPP_CONTROL_INIT);  // Signal ARCOM ready
-
-    printf("done!\n\n"); // Initialization
 
     return NO_ERROR;
 }

@@ -5,7 +5,7 @@
     Created: 2006/10/24 11:52:13 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: globalOperations.c,v 1.19 2009/03/23 19:22:04 avaccari Exp $
+    \$Id: globalOperations.c,v 1.20 2010/10/01 22:13:46 avaccari Exp $
 
     This files contains all the functions necessary to handle global frontend
     operations. */
@@ -25,6 +25,7 @@
 #include "pegasus.h"
 #include "debug.h"
 #include "ppComm.h"
+#include "serialMux.h"
 
 /* Initialization */
 /*! This function takes care of initializing all the subsystem of the system.
@@ -36,6 +37,11 @@ int initialization(void){
 
     /* Initialize the error library */
     if(errorInit()==ERROR){
+        return ERROR;
+    }
+
+    /* Initialize the Serial Mux board */
+    if(serialMuxInit()==ERROR){
         return ERROR;
     }
 

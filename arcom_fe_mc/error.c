@@ -6,7 +6,7 @@
     Created: 2004/08/24 16:16:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: error.c,v 1.81 2009/10/13 15:01:49 avaccari Exp $
+    \$Id: error.c,v 1.82 2010/11/02 14:36:29 avaccari Exp $
 
     This file contains the functions necessary to handle the errors that might
     occour during the operation of the ARCOM Pegasus board.*/
@@ -34,7 +34,6 @@ unsigned int * errorHistory; /*!< This is a pointer to the array that will
 /* Statics */
 static unsigned int errorNoErrorHistory=1;
 static unsigned char errorOn=0;
-static unsigned long errorTotal=1;
 
 
 /*! Initializes the error routines trying to allocate enough space in memory for
@@ -149,8 +148,6 @@ void storeError(unsigned char moduleNo,
                                errorNo); // Print error on COM1 for debugging purposes
         #endif /* ERROR_REPORT */
     }
-
-    errorTotal++; // Increase the global error counter
 }
 
 #ifdef ERROR_REPORT

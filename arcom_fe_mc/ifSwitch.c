@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ifSwitch.c,v 1.9 2010/03/03 15:43:18 avaccari Exp $
+    \$Id: ifSwitch.c,v 1.10 2010/11/02 14:36:29 avaccari Exp $
 
     This files contains all the functions necessary to handle IF Switch
     events. */
@@ -93,26 +93,24 @@ void bandSelectHandler(void){
         /* Since the payload is just a byte, there is no need to conver the
            received data from the can message to any particular format, the
            data is already available in CAN_BYTE. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           ifSwitch.
-                            bandSelect[MIN_SET_VALUE],
-                          CAN_BYTE,
-                          frontend.
-                           ifSwitch.
-                           bandSelect[MAX_SET_VALUE])){
-                storeError(ERR_IF_SWITCH,
-                           0x02); // Error 0x02 -> Selected band set value out of range
+        if(checkRange(frontend.
+                       ifSwitch.
+                        bandSelect[MIN_SET_VALUE],
+                      CAN_BYTE,
+                      frontend.
+                       ifSwitch.
+                       bandSelect[MAX_SET_VALUE])){
+            storeError(ERR_IF_SWITCH,
+                       0x02); // Error 0x02 -> Selected band set value out of range
 
-                /* Store error in the last control message variable */
-                frontend.
-                 ifSwitch.
-                  lastBandSelect.
-                   status=CON_ERROR_RNG;
+            /* Store error in the last control message variable */
+            frontend.
+             ifSwitch.
+              lastBandSelect.
+               status=CON_ERROR_RNG;
 
-                return;
-            }
-        #endif /* DATABASE_RANGE */
+            return;
+        }
 
         /* Set the IF switch band. If an error occurs then store the state and
            return. */
@@ -177,12 +175,74 @@ int ifSwitchStartup(void){
         return ERROR;
     }
 
-    printf("    Revision level: %d\n",
+    printf("     Revision level: %d\n",
            frontend.
             ifSwitch.
              hardwRevision);
 
     printf("    done!\n"); // Hardware Revision Level
+
+    /* Set the limits for control messages */
+    printf("  - Setting limits for control messages\n");
+    printf("    - Band select\n");
+    frontend.
+     ifSwitch.
+      bandSelect[MIN_SET_VALUE]=BAND1;
+    frontend.
+     ifSwitch.
+      bandSelect[MAX_SET_VALUE]=BAND10;
+    printf("      done!\n"); // Band select
+
+
+    printf("    - Channel attenuation\n");
+    printf("      - Channel 1\n"); // The channel identification here has no meaning it's only to print out a message
+    frontend.
+     ifSwitch.
+      ifChannel[POLARIZATION0][SIDEBAND0].
+       attenuation[MIN_SET_VALUE]=IF_CHANNEL_SET_ATTENUATION_MIN;
+    frontend.
+     ifSwitch.
+      ifChannel[POLARIZATION0][SIDEBAND0].
+       attenuation[MAX_SET_VALUE]=IF_CHANNEL_SET_ATTENUATION_MAX;
+    printf("        done!\n"); // Channel 1
+
+    printf("      - Channel 2\n"); // The channel identification here has no meaning it's only to print out a message
+    frontend.
+     ifSwitch.
+      ifChannel[POLARIZATION0][SIDEBAND1].
+       attenuation[MIN_SET_VALUE]=IF_CHANNEL_SET_ATTENUATION_MIN;
+    frontend.
+     ifSwitch.
+      ifChannel[POLARIZATION0][SIDEBAND1].
+       attenuation[MAX_SET_VALUE]=IF_CHANNEL_SET_ATTENUATION_MAX;
+    printf("        done!\n"); // Channel 2
+
+    printf("      - Channel 3\n"); // The channel identification here has no meaning it's only to print out a message
+    frontend.
+     ifSwitch.
+      ifChannel[POLARIZATION1][SIDEBAND0].
+       attenuation[MIN_SET_VALUE]=IF_CHANNEL_SET_ATTENUATION_MIN;
+    frontend.
+     ifSwitch.
+      ifChannel[POLARIZATION1][SIDEBAND0].
+       attenuation[MAX_SET_VALUE]=IF_CHANNEL_SET_ATTENUATION_MAX;
+    printf("        done!\n"); // Channel 3
+
+    printf("      - Channel 4\n"); // The channel identification here has no meaning it's only to print out a message
+    frontend.
+     ifSwitch.
+      ifChannel[POLARIZATION1][SIDEBAND1].
+       attenuation[MIN_SET_VALUE]=IF_CHANNEL_SET_ATTENUATION_MIN;
+    frontend.
+     ifSwitch.
+      ifChannel[POLARIZATION1][SIDEBAND1].
+       attenuation[MAX_SET_VALUE]=IF_CHANNEL_SET_ATTENUATION_MAX;
+    printf("        done!\n"); // Channel 4
+
+    printf("      done!\n"); // Channel Attenuation
+
+    printf("    done!\n"); // Control message limits
+
     printf(" done!\n\n"); // Initialization
 
     return NO_ERROR;

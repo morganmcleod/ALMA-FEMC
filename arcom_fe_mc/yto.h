@@ -6,7 +6,7 @@
     Created: 2004/08/24 16:01:13 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: yto.h,v 1.18 2006/11/30 23:01:43 avaccari Exp $
+    \$Id: yto.h,v 1.19 2010/11/02 14:36:29 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the YTO . */
@@ -34,6 +34,10 @@
 
     /* Submodules definitions */
     #define YTO_MODULES_NUMBER      1       // It's just the coarseTuneHandler
+
+    /* YTO Definitions */
+    #define YTO_COARSE_SET_MIN     0   // Minimum value for the coarse tuning of the YTO
+    #define YTO_COARSE_SET_MAX  4095   // Maximum value for the coarse tuning of the YTO
 
     /* Typedefs */
     //! Current state of the YTO

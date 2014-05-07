@@ -5,7 +5,7 @@
     Created: 2007/06/02 15:50:13 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: opticalSwitch.c,v 1.4 2009/10/13 15:01:49 avaccari Exp $
+    \$Id: opticalSwitch.c,v 1.5 2010/11/02 14:36:29 avaccari Exp $
 
     This file contains all the function necessary to handle the optical switch
     events. */
@@ -83,29 +83,27 @@ static void portHandler(void){
         /* Since the payload is just a byte, there is no need to convert the
            received data from the CAN message to any particular format, the
            data is already available in CAN_BYTE. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           lpr.
-                            opticalSwitch.
-                             port[MIN_SET_VALUE],
-                          CAN_BYTE,
-                          frontend.
-                           lpr.
-                            opticalSwitch.
-                             port[MAX_SET_VALUE])){
-                storeError(ERR_OPTICAL_SWITCH,
-                           0x02); // Error 0x02 -> Selected port set value out of range
+        if(checkRange(frontend.
+                       lpr.
+                        opticalSwitch.
+                         port[MIN_SET_VALUE],
+                      CAN_BYTE,
+                      frontend.
+                       lpr.
+                        opticalSwitch.
+                         port[MAX_SET_VALUE])){
+            storeError(ERR_OPTICAL_SWITCH,
+                       0x02); // Error 0x02 -> Selected port set value out of range
 
-                /* Store error in the last control message variable */
-                frontend.
-                 lpr.
-                  opticalSwitch.
-                   lastPort.
-                    status=CON_ERROR_RNG;
+            /* Store error in the last control message variable */
+            frontend.
+             lpr.
+              opticalSwitch.
+               lastPort.
+                status=CON_ERROR_RNG;
 
-                return;
-            }
-        #endif /* DATABASE_RANGE */
+            return;
+        }
 
         /* Set the LPR port. If an error occurs then store the state and
            return. */

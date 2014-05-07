@@ -5,7 +5,7 @@
     Created: 2007/03/14 17:13:45 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: gateValve.c,v 1.4 2007/05/21 15:49:26 avaccari Exp $
+    \$Id: gateValve.c,v 1.5 2010/10/01 22:13:46 avaccari Exp $
 
     This files contains all the functions necessary to handle gate valve
     events. */
@@ -36,19 +36,6 @@ void gateValveHandler(void){
     #ifdef DEBUG_CRYOSTAT
         printf("  Gate Valve\n");
     #endif /* DEBUG_CRYOSTAT */
-
-    /* Check if the backing pump is enabled. If it's not then the electronics to
-       monitor and control the gate valve is off. In that case, return the
-       HARDW_BLKD_ERR and return. */
-    if(frontend.
-        cryostat.
-         backingPump.
-          enable[CURRENT_VALUE]==BACKING_PUMP_DISABLE){
-        storeError(ERR_GATE_VALVE,
-                   0x03); // Error 0x03 -> Backing Pump off -> Gate valve disabled
-        CAN_STATUS = HARDW_BLKD_ERR; // Notify the incoming CAN message
-        return;
-    }
 
     /* Since there is only one submodule in the gate valve, the check to see if
        the desired submodule is in range, is not neede and we can directly call
@@ -84,6 +71,23 @@ static void stateHandler(void){
           gateValve.
            lastState.
             status=NO_ERROR;
+
+        /* Check if the backing pump is enabled. If it's not then the electronics to
+           control the gate valve is off. In that case, return the HARDW_BLKD_ERR
+           and return. */
+        if(frontend.
+            cryostat.
+             backingPump.
+              enable[CURRENT_VALUE]==BACKING_PUMP_DISABLE){
+            storeError(ERR_GATE_VALVE,
+                       0x03); // Error 0x03 -> Backing Pump off -> Gate valve disabled
+            frontend.
+             cryostat.
+              gateValve.
+               lastState.
+                status=HARDW_BLKD_ERR; // Store the status in the last control message
+            return;
+        }
 
         /* Change the status of the gate valve according to the content of the
            CAN message. */

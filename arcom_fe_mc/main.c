@@ -6,7 +6,7 @@
     Created: 2004/08/24 16:46:19 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: main.c,v 1.36 2009/06/19 21:42:38 avaccari Exp $
+    \$Id: main.c,v 1.37 2010/11/02 14:36:29 avaccari Exp $
 
     This is \ref main.c
 
@@ -28,6 +28,7 @@
 #include "console.h"
 #include "async.h"
 #include "timer.h"
+#include "ppcomm.h"
 
 /* Globals */
 /* Externs */
@@ -43,6 +44,11 @@ int main(void){
 
     /* Initialize the frontend */
     if(initialization()==ERROR){
+        return ERROR;
+    }
+
+    /* Enable connection with AMBSI1 */
+    if(PPStart()==ERROR){
         return ERROR;
     }
 

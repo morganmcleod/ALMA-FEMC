@@ -6,7 +6,7 @@
     Created: 2007/04/10 11:08:20 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cryostatSerialInterface.h,v 1.15 2010/08/11 22:05:20 avaccari Exp $
+    \$Id: cryostatSerialInterface.h,v 1.17 2010/11/02 14:36:29 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the cryostat serial interface. */
@@ -60,9 +60,12 @@
     #define GATE_VALVE_OPEN                 1
     #define GATE_VALVE_UNKNOWN              2
     #define GATE_VALVE_ERROR                3
-    #define GATE_VALVE_SENSORS_UNKNOWN      0x0
-    #define GATE_VALVE_SENSORS_OPEN         0x5
-    #define GATE_VALVE_SENSORS_CLOSE        0xA
+    #define GATE_VALVE_4SENSORS_UNKNOWN     0x0
+    #define GATE_VALVE_4SENSORS_OPEN        0x5
+    #define GATE_VALVE_4SENSORS_CLOSE       0xA
+    #define GATE_VALVE_2SENSORS_UNKNOWN     0xC
+    #define GATE_VALVE_2SENSORS_OPEN        0xD
+    #define GATE_VALVE_2SENSORS_CLOSE       0xE
     #define CRYOSTAT_TEMP_CONV_ERR          FLOAT_ERROR
     #define CRYOSTAT_PRESS_CONV_ERR         FLOAT_ERROR
 
@@ -272,10 +275,10 @@
         /*! This 4-bit field returns the current state of the gate valve.
             In reality there are 4 sensor to detect the position of the gate
             valve:
-                - open sensor #1
-                - close sensor #1
-                - open sensor #2
-                - close sensor #2
+                - b0 -> open sensor #2 (FE DC 24V)
+                - b1 -> close sensor #2 (FE DC 24V)
+                - b2 -> open sensor #1 (Switched 24V)
+                - b3 -> close sensor #1 (Switched 24V)
             There are 16 possible combination of the output mostly of which
             describe an error state. */
         unsigned int gateValveState         :4;

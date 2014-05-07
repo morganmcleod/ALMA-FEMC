@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:16:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: globalDefinitions.c,v 1.17 2009/09/22 14:46:10 avaccari Exp $
+    \$Id: globalDefinitions.c,v 1.18 2010/11/02 14:36:29 avaccari Exp $
 
     This file contains general use functions and variables. */
 
@@ -29,7 +29,8 @@ CONVERSION convert;   /*!< This union allows to perform quick and easy
 
 /* Check range */
 /*! This function checks if the parameter \p test is within the provided ranges.
-    The check is done in the following range: (low,high].
+    The check is done in the following range: [low,high] (inclusive for not-math
+    majors).
     \param  low     a float
     \param  test    a float
     \param  high    a float
@@ -43,7 +44,7 @@ unsigned char checkRange(float low,
     if(test<low){
         return BELOW_RANGE;
     }
-    if(test>=high){
+    if(test>high){
         return ABOVE_RANGE;
     }
     return IN_RANGE;

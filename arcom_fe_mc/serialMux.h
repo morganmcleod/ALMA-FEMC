@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: serialMux.h,v 1.16 2009/04/24 22:37:32 avaccari Exp $
+    \$Id: serialMux.h,v 1.17 2010/10/01 22:13:46 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the serial multiplexing board.
@@ -136,6 +136,6 @@
     /* Externs */
     extern int writeMux(void); //!< Serial Mux Board write
     extern int readMux(void); //!< Serial Mux Board read
-    extern int readyMux(void); //!< Serial Mux Board ready
+    extern int serialMuxInit(void); //!< Initialize the Serial Mux Board
 
 #endif // _SERIALMUX_H

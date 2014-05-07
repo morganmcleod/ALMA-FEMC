@@ -519,9 +519,9 @@ omm.obj,schottkyMixer.obj,serialInterface.obj,serialMux.obj,sideband.obj,sis&
 acuumController.obj,vacuumSensor.obj,version.obj,yto.obj
  @%append fe_mc.lk1 
  *wlink name fe_mc d all SYS dos op maxe=25 op q op symf op el @fe_mc.lk1
- copy fe_mc.exe releases\02-04-00.exe /y
- copy fe_mc.exe releases\2100811.exe /y
- copy fe_mc.exe releases\fe_mc.exe /y
- #copy fe_mc.exe releases\candidates\2-04-00b.exe /y
+ #copy fe_mc.exe releases\02-04-00.exe /y
+ #copy fe_mc.exe releases\2100811.exe /y
+ #copy fe_mc.exe releases\fe_mc.exe /y
+ copy fe_mc.exe releases\candidates\2-05-00b.exe /y
  #ftp -n -s:updateFemc.scr
 

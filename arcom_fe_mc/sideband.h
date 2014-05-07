@@ -6,7 +6,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: sideband.h,v 1.14 2007/05/21 15:49:27 avaccari Exp $
+    \$Id: sideband.h,v 1.15 2010/11/02 14:36:29 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate one of the two sidebands available for each
@@ -40,6 +40,8 @@
 
     /* Defines */
     #define SIDEBANDS_NUMBER    2 //!< Number of sidebands per polarization
+    #define SIDEBAND0           0 //!< 0: Upper
+    #define SIDEBAND1           1 //!< 1: Lower
 
     /* Submodules definitions */
     #define SIDEBAND_MODULES_NUMBER       3       // See list below

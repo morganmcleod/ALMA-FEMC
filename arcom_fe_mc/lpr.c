@@ -5,7 +5,7 @@
     Created: 2007/06/02 17:01:27 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lpr.c,v 1.16 2010/03/03 15:43:18 avaccari Exp $
+    \$Id: lpr.c,v 1.17 2010/11/02 14:36:29 avaccari Exp $
 
     This file contains all the functions necessary to handle LPR events. */
 
@@ -280,6 +280,24 @@ int lprStartup(void){
 
     printf("      done!\n"); // Set shutter
     printf("    done!\n"); // Optical Switch
+
+
+
+    /* Set limits for control messages */
+    printf("  - Setting limits for control messages\n");
+    printf("    - Optical switch band select\n");
+        frontend.
+         lpr.
+          opticalSwitch.
+           port[MIN_SET_VALUE]=BAND1;
+        frontend.
+         lpr.
+          opticalSwitch.
+           port[MAX_SET_VALUE]=BAND10;
+    printf("      done!\n"); // Optical
+    printf("    done!\n"); // Control messages limits
+
+
     printf(" done!\n\n"); // Initialization
 
     return NO_ERROR;

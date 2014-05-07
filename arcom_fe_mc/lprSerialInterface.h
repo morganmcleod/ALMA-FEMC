@@ -6,7 +6,7 @@
     Created: 2007/06/02 10:38:01 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lprSerialInterface.h,v 1.8 2009/10/22 14:52:09 avaccari Exp $
+    \$Id: lprSerialInterface.h,v 1.9 2010/10/01 22:13:46 avaccari Exp $
 
     This file contains all the informations necessary to define the
     characteristics and operate the LPR serial interface. */
@@ -117,8 +117,8 @@
     #define LPR_ADC_BUSY                        0           // Busy state signal
     #define LPR_ADC_TEMP_SCALE                  978.4736    // Scale factor for the LPR temperature sensors
     #define LPR_ADC_DRIVE_CURRENT_SCALE         800.0       // Scale factor for the laser drive current
-    #define LPR_ADC_LASER_PD_CURRENT_SCALE      5000.0      // Scale factor for the laser photo detector current
-    #define LPR_ADC_LASER_PD_CURRRENT_OFFSET    2.5         // Offset value for the laser photo detector current
+    #define LPR_ADC_LASER_PD_CURRENT_SCALE      50.0        // Scale factor for the laser photo detector current
+    #define LPR_ADC_LASER_PD_CURRRENT_OFFSET    25.0        // Offset value for the laser photo detector current
     #define LPR_ADC_EDFA_PD_CURRENT_SCALE       500.0       // Scale factor for the EDFA photo detector current
     #define LPR_ADC_VOLTAGE_IN_SCALE            5.0         // Scale factor for the standard voltage monitoring
 

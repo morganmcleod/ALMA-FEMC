@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: serialMux.c,v 1.19 2009/06/19 21:42:38 avaccari Exp $
+    \$Id: serialMux.c,v 1.20 2010/10/01 22:13:46 avaccari Exp $
 
     This files contains all the functions necessary to control the serial
     multiplexing board.
@@ -290,7 +290,7 @@ static int waitOnBusy(void){
     return NO_ERROR;
 }
 
-/* Serial Mux Board ready status */
+/* Serial Mux Board initialization status */
 /*! This function will check for the ready state of the serial mux board.
     Once the FPGA in the board is ready to receive commands then a read access
     performed on \ref MUX_FPGA_RDY_ADD should return \ref FPGA_READY.
@@ -299,10 +299,10 @@ static int waitOnBusy(void){
 
     \return
         - \ref NO_ERROR -> if no error occurred
-        - \ref ERROR    -> if something wrong happened
-    \todo Remove the check for older version once all the versions of the FPGA
-    are consistent: after release 1.2.0 */
-int readyMux(void){
+        - \ref ERROR    -> if something wrong happened */
+int serialMuxInit(void){
+
+    printf("Initializing Serial Multiplexer board...\n");
 
     /* Check if the FPGA is ready. The check for ADD-2 can be removed once the
        FPGA has been fixed and all the versions are consistent. */
@@ -312,5 +312,8 @@ int readyMux(void){
         return ERROR;
     }
 
+    printf("done!\n\n");
+
     return NO_ERROR;
 }
+

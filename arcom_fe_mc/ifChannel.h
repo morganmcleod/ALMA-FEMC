@@ -6,7 +6,7 @@
     Created: 2004/10/25 14:48:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ifChannel.h,v 1.8 2010/03/03 15:43:18 avaccari Exp $
+    \$Id: ifChannel.h,v 1.9 2010/11/02 14:36:29 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the power distribution channel subsystem. There
@@ -44,6 +44,8 @@
     #define IF_CHANNEL1         1
     #define IF_CHANNEL2         2
     #define IF_CHANNEL3         3
+    #define IF_CHANNEL_SET_ATTENUATION_MIN  0
+    #define IF_CHANNEL_SET_ATTENUATION_MAX  15
 
     /* IF switch temperature evaluation defines */
     #define BRIDGE_RESISTOR             4020.0  // R1

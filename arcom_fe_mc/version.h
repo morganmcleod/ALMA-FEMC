@@ -6,7 +6,7 @@
 
     <b> CVS informations: </b><br>
 
-    \$Id: version.h,v 1.46 2010/08/11 22:05:20 avaccari Exp $
+    \$Id: version.h,v 1.49 2010/11/04 19:59:38 avaccari Exp $
 
     This files contains all the informations about the current version of the
     software and its revision history.
@@ -22,6 +22,31 @@
             - ...
 
     REVISION HISTORY
+    2010-11-04  002.005.000     (fe_mc.exe or 02-05-00.exe or 2101104.exe)
+        Official Release
+        This version is tagged Ver_02_05_00(ALMA-40_00_00_00-75_35_25_00_B_ICD).
+        - The limits for the control message to modify the IF switch channels
+          attenuation are now hardcoded and implemented. (Jira ticket: FE-270)
+        - The limits for the control message to modify the YTO coarse tuning are
+          now hardcoded and implemented. (Jira ticket: FE-269)
+        - A direct communication test between the main board and the multiplexer
+          board has been added during boot up time. This test will assure that
+          the communication is established before allowing further execution of
+          the code. (Jira ticket: FE-45)
+        - The error counting and returning has been fixed. (Jira ticket: FE-151)
+        - The limits for the control message to set the LPR optical channel are
+          now hardcoded and implemented. (Jira ticket: FE-258)
+        - The limits for the control message to set the IF switch cartrdige are
+          now hardcoded and implemented. (Jira ticket: FE-238)
+        - The monitoring of the gate valve has been modified to allow monitoring
+          also when the backing pump is turned off. In this case the evaluation
+          of the state is based only on 2 of the 4 sensors but an evaluation of
+          the current state is still possible. (Jira ticket: FE-232)
+        - Modified scaling for LPR laser photodetector current and removed the
+          hardware undefined error. This point will return meaningful data only
+          for LPR SN.226 and above. It is not implemented in previous serial
+          number. (Jira ticket: FE-233)
+
     2010-08-11  002.004.000     (fe_mc.exe or 02-04-00.exe or 2100811.exe)
         Official Release
         This version is tagged Ver_02_04_00(ALMA-40_00_00_00-75_35_25_00_B_ICD).
@@ -207,17 +232,17 @@
 
 /*! \mainpage
     \section    sectionVersion  Version
-    Documentation relative to Version: 002.004.000 */
+    Documentation relative to Version: 002.005.000 */
 
 #ifndef _VERSION_H
     #define _VERSION_H
 
     /* Defines */
     #define VERSION_MAJOR   002  //!< Major version
-    #define VERSION_MINOR   004  //!< Minor version
+    #define VERSION_MINOR   005  //!< Minor version
     #define VERSION_PATCH   000  //!< Patch level
 
-    #define VERSION_DATE    "2010-08-11" //!< Version Date
+    #define VERSION_DATE    "2010-11-04" //!< Version Date
     #define VERSION_NOTES   "" //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Andrea Vaccari - NRAO (avaccari@nrao.edu)"

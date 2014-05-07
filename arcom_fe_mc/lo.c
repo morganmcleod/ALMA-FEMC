@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lo.c,v 1.20 2009/08/25 21:39:39 avaccari Exp $
+    \$Id: lo.c,v 1.21 2010/11/02 14:36:29 avaccari Exp $
 
     This files contains all the functions necessary to handle LO events. */
 
@@ -171,7 +171,9 @@ int loInit(void){
 /* LO startup init */
 /*! This function performs the operations necessary to initialize a LO during
     startup. These operations are performed only once during the startup
-    sequence.
+    sequence. This function is called by the frontendInit function one time for
+    every available cartrdige so the currentModule veriable is updated every
+    single time with the currently addressed WCA.
     \return
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
@@ -505,6 +507,23 @@ int loStartup(void){
 
     printf("    done!\n"); // LO multiplier currents scaling factor
 
+    /* Set the limits for control messages */
+    printf("  - Setting limits for control messages\n");
+    printf("    - YTO coarse tuning\n");
+        frontend.
+         cartridge[currentModule].
+          lo.
+          yto.
+           ytoCoarseTune[MIN_SET_VALUE]=YTO_COARSE_SET_MIN;
+
+        frontend.
+         cartridge[currentModule].
+          lo.
+           yto.
+            ytoCoarseTune[MAX_SET_VALUE]=YTO_COARSE_SET_MAX;
+
+    printf("      done!\n"); // Band select
+    printf("    done!\n"); // Control message limits
 
     printf(" done!\n\n"); // LO
 

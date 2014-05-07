@@ -6,7 +6,7 @@
 
     <b> CVS informations: </b><br>
 
-    \$Id: powerDistribution.c,v 1.17 2009/03/23 20:43:04 avaccari Exp $
+    \$Id: powerDistribution.c,v 1.18 2010/11/02 14:36:29 avaccari Exp $
 
 
     This files contains all the functions necessary to handle power distribution
@@ -111,7 +111,7 @@ int powerDistributionStartup(void){
        serial communication have to be implemented. */
     currentModule=POWER_DIST_MODULE;
 
-    printf(" Initializing Power Distribution System...\n");
+    printf(" Initializing Power Distribution System...\n\n");
 
     /* Power down all the cartridges to prevent misalignment between software
        status and hardware status. */

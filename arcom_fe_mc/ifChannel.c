@@ -5,7 +5,7 @@
     Created: 2006/12/01 13:24:46 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ifChannel.c,v 1.8 2010/08/11 22:05:20 avaccari Exp $
+    \$Id: ifChannel.c,v 1.9 2010/11/02 14:36:29 avaccari Exp $
 
     This files contains all the functions necessary to handle IF Channel
     events. */
@@ -99,32 +99,30 @@ void attenuationHandler(void){
         /* Since the payload is just a byte, there is no need to conver the
            received data from the can message to any particular format, the
            data is already available in CAN_BYTE. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           ifSwitch.
-                            ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
-                                     [currentIfChannelSideband[currentIfSwitchModule]].
-                             attenuation[MIN_SET_VALUE],
-                          CAN_BYTE,
-                          frontend.
-                           ifSwitch.
-                            ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
-                                     [currentIfChannelSideband[currentIfSwitchModule]].
-                             attenuation[MAX_SET_VALUE])){
-                storeError(ERR_IF_CHANNEL,
-                           0x06); // Error 0x06 -> Attenuation set value out of range
+        if(checkRange(frontend.
+                       ifSwitch.
+                        ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
+                                 [currentIfChannelSideband[currentIfSwitchModule]].
+                         attenuation[MIN_SET_VALUE],
+                      CAN_BYTE,
+                      frontend.
+                       ifSwitch.
+                        ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
+                                 [currentIfChannelSideband[currentIfSwitchModule]].
+                         attenuation[MAX_SET_VALUE])){
+            storeError(ERR_IF_CHANNEL,
+                       0x06); // Error 0x06 -> Attenuation set value out of range
 
-                /* Store error in the last control message variable */
-                frontend.
-                 ifSwitch.
-                  ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
-                           [currentIfChannelSideband[currentIfSwitchModule]].
-                   lastAttenuation.
-                    status=CON_ERROR_RNG;
+            /* Store error in the last control message variable */
+            frontend.
+             ifSwitch.
+              ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
+                       [currentIfChannelSideband[currentIfSwitchModule]].
+               lastAttenuation.
+                status=CON_ERROR_RNG;
 
-                return;
-            }
-        #endif /* DATABASE_RANGE */
+            return;
+        }
 
         /* Set the IF channel attenuation. If an error occurs then store the
            state and then return. */

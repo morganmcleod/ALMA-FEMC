@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: can.h,v 1.37 2009/09/22 14:46:10 avaccari Exp $
+    \$Id: can.h,v 1.38 2010/11/02 14:36:29 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the Controlled Area Network interface included
@@ -129,6 +129,9 @@
     #define BASE_SPECIAL_CONTROL_RCA    0x21000L
     #define SET_EXIT_PROGRAM            BASE_SPECIAL_CONTROL_RCA            //!< \b BASE+0x00 -> Ends the execution of the main program
     #define SET_REBOOT                  (SET_EXIT_PROGRAM+0x01)             //!< \b BASE+0x01 -> Reboots the ARCOM board
+    #define SET_AMBSI1_ESN              (SET_EXIT_PROGRAM+0x02)             //!< \b BASE+0x02 -> Set the known AMBSI1 ESN. This is received during initialization from the AMBSI1
+    #define SET_AMBSI1_NID_FRM_REV      (SET_EXIT_PROGRAM+0x03)             //!< \b BASE+0x03 -> Set the known AMBSI1 Node ID and AMBSI1 FEMC firmware revision. This is received during initialization from the AMBSI1
+    #define SET_AMBSI1_INFO             (SET_EXIT_PROGRAM+0x04)             //!< \b BASE+0x04 -> Set the known AMBSI1 AMB library info and the AMBSI1 hardware info. This is received during initialization from the AMBSI1
     #define SET_CONSOLE_ENABLE          (SET_EXIT_PROGRAM+0x09)             //!< \b BASE+0x09 -> Enables/Disables the console
     #define SET_FE_MODE                 (SET_EXIT_PROGRAM+0x0E)             //!< \b BASE+0x0E -> Changes the current FE operating mode
     #define LAST_SPECIAL_CONTROL_RCA    (BASE_SPECIAL_CONTROL_RCA+0x00FFF)  // Last possible special monitor RCA

@@ -5,7 +5,7 @@
     Created: 2006/09/06 11:52:38 by avaccari
 
     <b> CVS Informations: </b><br>
-    \$Id: loSerialInterface.c,v 1.14 2010/03/03 15:43:18 avaccari Exp $
+    \$Id: loSerialInterface.c,v 1.15 2010/11/02 14:36:29 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     LO serial interface.
@@ -477,7 +477,8 @@ int getPll(unsigned char port){
                                                       lockDetectVoltageScale*loRegisters[currentModule].
                                                                               adcData)/LO_ADC_RANGE;
             break;
-        /* The correction voltage is given by 210/11*(adcData/65536) */
+        /* The correction voltage coefficient is stored in the configuration
+           file. */
         case PLL_CORRECTION_VOLTAGE:
             frontend.
              cartridge[currentModule].

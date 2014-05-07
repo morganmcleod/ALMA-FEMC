@@ -5,7 +5,7 @@
     Created: 2007/06/02 12:15:18 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: laser.c,v 1.7 2009/10/21 22:24:22 avaccari Exp $
+    \$Id: laser.c,v 1.8 2010/10/01 22:13:46 avaccari Exp $
 
     This files contains all the function necessary to handler the EDFA laser
     events. */
@@ -264,7 +264,7 @@ static void photoDetectCurrentHandler(void){
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
         storeError(ERR_LASER,
                    0x03); // Error 0x03 -> Monitor message out of range
-        /* Store the state in the outgoing CAN message */\
+        /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
 
         return;
@@ -328,12 +328,6 @@ static void photoDetectCurrentHandler(void){
             }
         #endif /* DATABASE_RANGE */
     }
-
-    /*** This feature is not yet working in the LPR hardware. For the time
-         being a error indicating this situation is returned along with the
-         data. This should be removed once the hardware is available. ***/
-    CAN_STATUS=MON_HARDW_FUT;
-
 
     /* Load the CAN message payload with th returned value and set the size.
        The value has to be converted from little endian (Intel) to big endian

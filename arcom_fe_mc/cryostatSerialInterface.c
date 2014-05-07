@@ -5,7 +5,7 @@
     Created: 2007/04/10 11:26:37 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cryostatSerialInterface.c,v 1.16 2010/08/11 22:05:20 avaccari Exp $
+    \$Id: cryostatSerialInterface.c,v 1.18 2010/11/02 14:36:29 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     cryostat serial interface.
@@ -522,34 +522,73 @@ int getGateValveState(void){
         return ERROR;
     }
 
-    /* Check the gate valve state */
-    switch(cryoRegisters.
-            statusReg.
-             bitField.
-              gateValveState){
-        case GATE_VALVE_SENSORS_UNKNOWN: // If the sensors configuration correspond to an unknown gate valve
-            frontend.
-             cryostat.
-              gateValve.
-               state[CURRENT_VALUE]=GATE_VALVE_UNKNOWN;
-            break;
-        case GATE_VALVE_SENSORS_OPEN: // If the sensors configuration correspond to a open gate valve
-            frontend.
-             cryostat.
-              gateValve.
-               state[CURRENT_VALUE]=GATE_VALVE_OPEN;
-            break;
-        case GATE_VALVE_SENSORS_CLOSE: // If the sensors configuration correspond to a close gate valve
-            frontend.
-             cryostat.
-              gateValve.
-               state[CURRENT_VALUE]=GATE_VALVE_CLOSE;
-            break;
-        default: // Any other sensor configuration is due to hardware error
-            frontend.
-             cryostat.
-              gateValve.
-               state[CURRENT_VALUE]=GATE_VALVE_ERROR;
+    /* Check the gate valve state.
+       Depending on the state of the backing pump the reading will return either
+       the state of 4 sensors (pump enable) or 2 sensors (pump disables). In
+       either cases is possible to evaluate the state of the gate valve. */
+    if(frontend.
+        cryostat.
+         backingPump.
+          enable[CURRENT_VALUE]==BACKING_PUMP_ENABLE){
+        switch(cryoRegisters.
+                statusReg.
+                 bitField.
+                  gateValveState){
+            case GATE_VALVE_4SENSORS_UNKNOWN: // If the sensors configuration correspond to an unknown gate valve
+                frontend.
+                 cryostat.
+                  gateValve.
+                   state[CURRENT_VALUE]=GATE_VALVE_UNKNOWN;
+                break;
+            case GATE_VALVE_4SENSORS_OPEN: // If the sensors configuration correspond to a open gate valve
+                frontend.
+                 cryostat.
+                  gateValve.
+                   state[CURRENT_VALUE]=GATE_VALVE_OPEN;
+                break;
+            case GATE_VALVE_4SENSORS_CLOSE: // If the sensors configuration correspond to a close gate valve
+                frontend.
+                 cryostat.
+                  gateValve.
+                   state[CURRENT_VALUE]=GATE_VALVE_CLOSE;
+                break;
+            default: // Any other sensor configuration is due to hardware error
+                frontend.
+                 cryostat.
+                  gateValve.
+                   state[CURRENT_VALUE]=GATE_VALVE_ERROR;
+                break;
+        }
+    } else {
+        switch(cryoRegisters.
+                statusReg.
+                 bitField.
+                  gateValveState){
+            case GATE_VALVE_2SENSORS_UNKNOWN: // If the sensors configuration correspond to an unknown gate valve
+                frontend.
+                 cryostat.
+                  gateValve.
+                   state[CURRENT_VALUE]=GATE_VALVE_UNKNOWN;
+                break;
+            case GATE_VALVE_2SENSORS_OPEN: // If the sensors configuration correspond to a open gate valve
+                frontend.
+                 cryostat.
+                  gateValve.
+                   state[CURRENT_VALUE]=GATE_VALVE_OPEN;
+                break;
+            case GATE_VALVE_2SENSORS_CLOSE: // If the sensors configuration correspond to a close gate valve
+                frontend.
+                 cryostat.
+                  gateValve.
+                   state[CURRENT_VALUE]=GATE_VALVE_CLOSE;
+                break;
+            default: // Any other sensor configuration is due to hardware error
+                frontend.
+                 cryostat.
+                  gateValve.
+                   state[CURRENT_VALUE]=GATE_VALVE_ERROR;
+                break;
+        }
     }
 
     return NO_ERROR;

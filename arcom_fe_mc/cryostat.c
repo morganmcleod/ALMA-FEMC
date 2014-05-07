@@ -6,7 +6,7 @@
 
     <b> CVS informations: </b><br>
 
-    \$Id: cryostat.c,v 1.27 2010/08/11 22:05:20 avaccari Exp $
+    \$Id: cryostat.c,v 1.28 2010/11/02 14:36:29 avaccari Exp $
 
     This files contains all the functions necessary to handle cryostat events. */
 
@@ -137,7 +137,7 @@ int cryostatStartup(void){
             return ERROR;
         }
 
-        printf("    Revision level: %d\n",
+        printf("     Revision level: %d\n",
                frontend.
                 cryostat.
                  hardwRevision);

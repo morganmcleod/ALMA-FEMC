@@ -18,7 +18,7 @@
     Created: 2004/08/24 16:16:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: can.c,v 1.46 2009/09/22 14:46:10 avaccari Exp $
+    \$Id: can.c,v 1.47 2010/11/02 14:36:29 avaccari Exp $
 
     This file contains the functions necessary to deal with the received CAN
     messages. */
@@ -443,7 +443,7 @@ static void specialRCAsHandler(void){
                     #endif // DEBUG_CAN
                     CAN_SIZE=CAN_BYTE_SIZE;
                     CAN_BYTE=(errorNewest>=errorOldest)?errorNewest-errorOldest:
-                                                        ERROR_HISTORY_LENGTH-(errorNewest-errorOldest);
+                                                        ERROR_HISTORY_LENGTH-(errorOldest-errorNewest)+1;
                     break;
                 case GET_NEXT_ERROR: // 0x2000D -> Returns the next unread error
                     #ifdef DEBUG_CAN
@@ -498,6 +498,21 @@ static void specialRCAsHandler(void){
                                SET_REBOOT);
                     #endif /* DEBUG_CAN */
                     reboot();
+                    break;
+                case SET_AMBSI1_ESN: // 0x21002 -> Set known AMBSI1 ESN
+                    printf("0x%1X 0x%1X 0x%1X 0x%1X 0x%1X 0x%1X 0x%1X 0x%1X\n\n",
+                           CAN_DATA(0),
+                           CAN_DATA(1),
+                           CAN_DATA(2),
+                           CAN_DATA(3),
+                           CAN_DATA(4),
+                           CAN_DATA(5),
+                           CAN_DATA(6),
+                           CAN_DATA(7));
+                    break;
+                case SET_AMBSI1_NID_FRM_REV: // 0x21003 -> Set known AMBSI1 Node ID and FEMC firmware revision
+                    break;
+                case SET_AMBSI1_INFO: // 0x21004 -> Set known AMBSI1 AMB library and hardware info
                     break;
                 case SET_CONSOLE_ENABLE: // 0x21009 -> Enables/Disables the console
                     #ifdef DEBUG_CAN

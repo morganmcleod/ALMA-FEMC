@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: yto.c,v 1.17 2009/09/22 14:46:10 avaccari Exp $
+    \$Id: yto.c,v 1.18 2010/11/02 14:36:29 avaccari Exp $
 
     This files contains all the functions necessary to handle YIG tuned
     oscillator events. */
@@ -84,32 +84,30 @@ static void ytoCoarseTuneHandler(void){
 
         /* Check the value against the store limits. The limits are read from
            the configuration database at configuration time. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             yto.
-                              ytoCoarseTune[MIN_SET_VALUE],
-                          CONV_UINT(0),
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             yto.
-                              ytoCoarseTune[MAX_SET_VALUE])){
-                storeError(ERR_YTO,
-                           0x01); // Error 0x01: YTO coarse tune set value out of range
+        if(checkRange(frontend.
+                       cartridge[currentModule].
+                        lo.
+                         yto.
+                          ytoCoarseTune[MIN_SET_VALUE],
+                      CONV_UINT(0),
+                      frontend.
+                       cartridge[currentModule].
+                        lo.
+                         yto.
+                          ytoCoarseTune[MAX_SET_VALUE])){
+            storeError(ERR_YTO,
+                       0x01); // Error 0x01: YTO coarse tune set value out of range
 
-                /* Store the error in the last control message variable */
-                frontend.
-                 cartridge[currentModule].
-                  lo.
-                   yto.
-                    lastYtoCoarseTune.
-                     status=CON_ERROR_RNG;
+            /* Store the error in the last control message variable */
+            frontend.
+             cartridge[currentModule].
+              lo.
+               yto.
+                lastYtoCoarseTune.
+                 status=CON_ERROR_RNG;
 
-                return;
-            }
-        #endif /* DATABASE_RANGE */
+            return;
+        }
 
         /* Set the YTO coarse tune. If an error occurs then store the state and
            then return. */

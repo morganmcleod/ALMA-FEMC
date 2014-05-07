@@ -5,7 +5,7 @@
     Created: 2007/06/05 14:59:17 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lprSerialInterface.c,v 1.11 2010/03/03 15:43:18 avaccari Exp $
+    \$Id: lprSerialInterface.c,v 1.12 2010/10/01 22:13:46 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     LPR serial interface.
@@ -489,7 +489,7 @@ int getLaserPhotoDetectCurrent(void){
     }
 
     /* 6 - Scale the data */
-    /* The laser drive current is given by: 2.5-[5000.0*(adcData/65536)] */
+    /* The laser drive current is given by: 10*[2.5-5.0*(adcData/65536)] */
     frontend.
      lpr.
       edfa.

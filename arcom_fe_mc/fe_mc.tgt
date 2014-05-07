@@ -22,10 +22,10 @@ MCommand
 5
 MCommand
 197
-copy fe_mc.exe releases\02-04-00.exe /y
-copy fe_mc.exe releases\2100811.exe /y
+copy fe_mc.exe releases\02-05-00.exe /y
+copy fe_mc.exe releases\2101104.exe /y
 copy fe_mc.exe releases\fe_mc.exe /y
-#copy fe_mc.exe releases\candidates\2-04-00b.exe /y
+#copy fe_mc.exe releases\candidates\2-05-00b.exe /y
 #ftp -n -s:updateFemc.scr
 6
 MItem
@@ -106,7 +106,7 @@ WString
 28
 WString
 16
-tcp;10.12.96.254
+tcp;10.12.96.123
 0
 29
 MVState
