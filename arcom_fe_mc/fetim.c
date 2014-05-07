@@ -5,7 +5,7 @@
     Created: 2011/03/25 17:01:27 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: fetim.c,v 1.4 2012/01/17 16:30:58 avaccari Exp $
+    \$Id: fetim.c,v 1.5 2013/07/12 20:16:35 mmcleod Exp $
 
     This file contains all the functions necessary to handle FETIM events. */
 
@@ -35,6 +35,11 @@ int asyncFetimExtTempError[COMP_TEMP_SENSORS_NUMBER]; /*!< A global to keep
                                                            error while
                                                            monitoring fetim ext
                                                            temperatures */
+int asyncFetimHePressError;                          /*!< A global to keep
+                                                           track of the async
+                                                           error while
+                                                           monitoring fetim He2
+                                                           pressure */                                 
 
 
 /* Statics */
@@ -171,6 +176,7 @@ int fetimAsync(void){
     /* A static enum to track the state of the async function */
     static enum {
         ASYNC_FETIM_GET_EXT_TEMP,
+        ASYNC_FETIM_GET_HE2_PRESS,
         ASYNC_FETIM_SET_FE_STATUS,
         ASYNC_FETIM_SHUTDOWN_FE
     } asyncFetimState = ASYNC_FETIM_GET_EXT_TEMP;
@@ -213,8 +219,36 @@ int fetimAsync(void){
             /* Next sensor, if wrap around, then next monitor next thing */
             if(++currentAsyncFetimExtTempModule==COMP_TEMP_SENSORS_NUMBER){
                 currentAsyncFetimExtTempModule-=COMP_TEMP_SENSORS_NUMBER;
-                asyncFetimState = ASYNC_FETIM_SET_FE_STATUS;
+                asyncFetimState = ASYNC_FETIM_GET_HE2_PRESS;
             }
+
+            break;
+
+        /* Monitor the He buffer tank pressure asynchronously */
+        case ASYNC_FETIM_GET_HE2_PRESS:
+            #ifdef DEBUG_FETIM_ASYNC
+                printf("Async -> FETIM -> He2 Pressure\n");
+            #endif /* DEBUG_FETIM_ASYNC */
+
+            /* Get the tank pressure */
+            asyncFetimHePressError=getCompHe2Press();
+
+            /* If done or error, go next sensor */
+            switch(asyncFetimHePressError){
+                case NO_ERROR:
+                    return NO_ERROR;
+                    break;
+                case ASYNC_DONE:
+                    asyncFetimHePressError=NO_ERROR;
+                    break;
+                case ERROR:
+                    break;
+                default:
+                    break;
+            }
+
+            /* Next monitor next thing */
+            asyncFetimState = ASYNC_FETIM_SET_FE_STATUS;
 
             break;
 
@@ -275,11 +309,12 @@ int fetimAsync(void){
                   state.
                    shutdownTrig[CURRENT_VALUE]==TRUE){
 
-                /* Try to shutdown the FE if error brutally exit */
-                if(shutDown()==ERROR){
-                    printf("Front End firmware exiting now due to FETIM shutdown\n");
-                    exit(NO_ERROR);
-                }
+                /* Shut down the frontend */
+                shutDown();
+             
+                /* And exit to DOS... */
+                printf("Front End firmware exiting now due to FETIM shutdown\n");
+                exit(NO_ERROR);
             }
 
            /* Set next state */

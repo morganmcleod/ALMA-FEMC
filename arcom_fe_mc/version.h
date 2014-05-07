@@ -6,7 +6,7 @@
 
     <b> CVS informations: </b><br>
 
-    \$Id: version.h,v 1.55 2012/04/13 15:36:39 avaccari Exp $
+    \$Id: version.h,v 1.56 2013/07/12 20:16:35 mmcleod Exp $
 
     This files contains all the informations about the current version of the
     software and its revision history.
@@ -22,6 +22,16 @@
             - ...
 
     REVISION HISTORY
+
+    2013-07-12  002.006.002 beta
+        Beta release for FETIM testing at the OSF.
+        Modified and built by Morgan McLeod <mmcleod@nrao.edu>
+        - FETIM He2 buffer tank is monitored asynchronously.
+        - FETIM temperature sensor scaling corrected to match hardware.
+        - Added bit shift one place to right when monitoring He2 buffer tank 
+          and external temperature sensors.
+        - Disabled DEBUG_STARTUP which was left enabled in previous release.
+        - Fixed infinite loop preventing shutdown initiated by FETIM.
 
     2012-04-13  002.006.001     (fe_mc.exe or 02-06-01.exe or 20120413.exe)
         Official Release
@@ -284,12 +294,12 @@
     /* Defines */
     #define VERSION_MAJOR   002  //!< Major version
     #define VERSION_MINOR   006  //!< Minor version
-    #define VERSION_PATCH   001  //!< Patch level
+    #define VERSION_PATCH   003  //!< Patch level
 
-    #define VERSION_DATE    "2012-04-13" //!< Version Date
-    #define VERSION_NOTES   "" //!<Version Notes
+    #define VERSION_DATE    "2013-10-30" //!< Version Date
+    #define VERSION_NOTES   "beta 2 for FETIM testing." //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
-    #define AUTHOR          "Andrea Vaccari - NRAO (avaccari@nrao.edu)"
+    #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"
 
     /* Prototypes */
