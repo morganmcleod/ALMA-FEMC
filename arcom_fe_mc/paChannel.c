@@ -315,6 +315,10 @@ static void drainVoltageHandler(void){
             }
         }
 
+        // If we are in TROUBLESHOOTING mode, ignore all the above safety checks and allow the voltage to be set:
+        if (frontend.mode[CURRENT_VALUE] == TROUBLESHOOTING_MODE)
+            state=ENABLE;
+
         if(state==DISABLE){
             storeError(ERR_PA,
                        0x0D); // Error 0x0D -> PA temperature above the allowed range -> PAs disabled

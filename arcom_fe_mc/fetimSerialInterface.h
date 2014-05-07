@@ -6,7 +6,7 @@
     Created: 2011/05/04 10:38:01 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: fetimSerialInterface.h,v 1.2 2011/11/09 00:40:30 avaccari Exp $
+    \$Id: fetimSerialInterface.h,v 1.3 2013/07/12 20:16:35 mmcleod Exp $
 
     This file contains all the informations necessary to define the
     characteristics and operate the FETIM serial interface. */
@@ -165,24 +165,24 @@
     #define FETIM_PAR_ADC_DATA_SIZE             8           // Read only
     #define FETIM_PAR_ADC_DATA_SHIFT_SIZE       NO_SHIFT    // The incoming data is not shifted
     #define FETIM_PAR_ADC_DATA_SHIFT_DIR        NO_SHIFT    // The incoming data is not shifted
-    #define FETIM_PAR_ADC_TEMP_OFFSET           0.0         // Offset factor for the inside temperature sensors
-    #define FETIM_PAR_ADC_TEMP_SCALE            60.0        // Scale factor for the inside temperature sensors
-    #define FETIM_PAR_ADC_GLITCH_OFFSET         (-100.0)    // Offset factor for the glitch counter
-    #define FETIM_PAR_ADC_GLITCH_SCALE          100.0       // Scale factor for the glitch counter
+    #define FETIM_PAR_ADC_TEMP_OFFSET           (-20.0)         // Offset factor for the inside temperature sensors
+    #define FETIM_PAR_ADC_TEMP_SCALE            80.0        // Scale factor for the inside temperature sensors
+    #define FETIM_PAR_ADC_GLITCH_OFFSET         100.0       // Offset factor for the glitch counter
+    #define FETIM_PAR_ADC_GLITCH_SCALE          (-100.0)    // Scale factor for the glitch counter
     #define FETIM_PAR_ADC_FLOW_SCALE            2.0         // Scale factor for the airflow sensors
 
 
 
     /* --- Serial ADC definitions (12-bit) --- */
-    #define FETIM_SER_ADC_RANGE                 4096        // Full parallel ADC range
+    #define FETIM_SER_ADC_RANGE                 4096        // Full serial ADC range
     #define FETIM_SER_ADC_DATA_SIZE             17          // Read only: 1 extra + 4 zeros followed by 12-bit data
-    #define FETIM_SER_ADC_DATA_SHIFT_SIZE       NO_SHIFT    // The incoming data is not shifted
-    #define FETIM_SER_ADC_DATA_SHIFT_DIR        NO_SHIFT    // The incoming data is not shifted
+    #define FETIM_SER_ADC_DATA_SHIFT_SIZE       1    // The incoming data is shifted right one bit
+    #define FETIM_SER_ADC_DATA_SHIFT_DIR        SHIFT_RIGHT    // The incoming data is shifted right one bit
     #define FETIM_SER_ADC_DATA_MASK             0x0FFF      // Mask to extract the serial ADC data from the incoming payload
-    #define FETIM_SER_ADC_TEMP_OFFSET           0.0         // Offset factor for the outside temperature sensors
-    #define FETIM_SER_ADC_TEMP_SCALE            120.0       // Scale factor for the outside temperature sensors
-    #define FETIM_SER_ADC_HE2_PRESS_OFFSET      (-1.0)      // Offset factor for the He2 pressure sensor
-    #define FETIM_SER_ADC_HE2_PRESS_SCALE       5.0         // Scale factor for the He2 pressure sensor
+    #define FETIM_SER_ADC_TEMP_OFFSET           (-20.0)         // Offset factor for the outside temperature sensors
+    #define FETIM_SER_ADC_TEMP_SCALE            160.0       // Scale factor for the outside temperature sensors
+    #define FETIM_SER_ADC_HE2_PRESS_OFFSET      (-1.25)      // Offset factor for the He2 pressure sensor
+    #define FETIM_SER_ADC_HE2_PRESS_SCALE       10.0         // Scale factor for the He2 pressure sensor
 
 
 

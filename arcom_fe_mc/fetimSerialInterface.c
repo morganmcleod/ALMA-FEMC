@@ -5,7 +5,7 @@
     Created: 2011/05/04 11:26:37 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: fetimSerialInterface.c,v 1.2 2011/11/09 00:40:30 avaccari Exp $
+    \$Id: fetimSerialInterface.c,v 1.3 2013/07/12 20:16:35 mmcleod Exp $
 
     This files contains all the functions necessary to control and operate the
     FETIM interface.
@@ -157,7 +157,7 @@ int getIntrlkGlitchValue(void){
        state.
         glitch.
          value[CURRENT_VALUE]=FETIM_PAR_ADC_GLITCH_OFFSET+(FETIM_PAR_ADC_GLITCH_SCALE*fetimRegisters.
-                                                                                       parAdcData)/FETIM_PAR_ADC_RANGE;
+                                                                                       parAdcData)/(FETIM_PAR_ADC_RANGE - 1);
 
 
 
@@ -189,7 +189,7 @@ int getCompressorTemp(void){
       bitField.
        monitorPoint=FETIM_BREG_OUT_TEMPERATURE(currentCompressorModule);
 
-    /* Call the parallel adc monitor function */
+    /* Call the serial adc monitor function */
     switch(getFetimSerialMonitor()){
         case NO_ERROR:
             return NO_ERROR;
@@ -219,9 +219,6 @@ int getCompressorTemp(void){
 
 
 
-
-
-
 /* Get the compressor He2 pressure */
 /*! This function returns the pressure of the addressed compressor He2
     pressure sensor.
@@ -242,9 +239,19 @@ int getCompHe2Press(void){
       bitField.
        monitorPoint=FETIM_BREG_OUT_HE2_PRESS;
 
-    /* Call the parallel adc monitor function */
-    if(getFetimSerialMonitor()==ERROR){
-        return ERROR;
+    /* Call the serial adc monitor function */
+    switch(getFetimSerialMonitor()){
+        case NO_ERROR:
+            return NO_ERROR;
+            break;
+        case ERROR:
+            return ERROR;
+            break;
+        case ASYNC_DONE:
+            break;
+        default:
+            return ERROR;
+            break;
     }
 
     /* Scale the data */
@@ -252,14 +259,12 @@ int getCompHe2Press(void){
      fetim.
       compressor.
        he2Press.
-        pressure[CURRENT_VALUE]=(FETIM_SER_ADC_HE2_PRESS_OFFSET+FETIM_SER_ADC_HE2_PRESS_SCALE*fetimRegisters.
+        pressure[CURRENT_VALUE]=FETIM_SER_ADC_HE2_PRESS_OFFSET+(FETIM_SER_ADC_HE2_PRESS_SCALE*fetimRegisters.
                                                                                                serAdcData)/FETIM_SER_ADC_RANGE;
 
 
-    return NO_ERROR;
+    return ASYNC_DONE;
 }
-
-
 
 
 
@@ -639,7 +644,10 @@ int getFetimSerialMonitor(void){
         case ASYNC_FETIM_SERIAL_BREG:
 
             #ifdef DEBUG_FETIM_ASYNC
-                printf("Async -> FETIM -> Ext Temp%d -> Write BREG\n",currentAsyncFetimExtTempModule);
+                if (fetimRegisters.bRegOut.bitField.monitorPoint == FETIM_BREG_OUT_HE2_PRESS)
+                    printf("Async -> FETIM -> He2 Pressure -> Write BREG\n");
+                else
+                    printf("Async -> FETIM -> Ext Temp%d -> Write BREG\n",currentAsyncFetimExtTempModule);
             #endif /* DEBUG_FETIM_ASYNC */
 
             /* Parallel write BREG_OUT */
@@ -666,7 +674,10 @@ int getFetimSerialMonitor(void){
                 int tempSerAdcValue[2];
 
                 #ifdef DEBUG_FETIM_ASYNC
-                    printf("Async -> FETIM -> Ext Temp%d -> Conv+Read\n",currentAsyncFetimExtTempModule);
+                    if (fetimRegisters.bRegOut.bitField.monitorPoint == FETIM_BREG_OUT_HE2_PRESS)
+                        printf("Async -> FETIM -> He2 Pressure -> Conv+Read\n");
+                    else
+                        printf("Async -> FETIM -> Ext Temp%d -> Conv+Read\n",currentAsyncFetimExtTempModule);
                 #endif /* DEBUG_FETIM_ASYNC */
 
                 /* Conversion+Read the converted data */
