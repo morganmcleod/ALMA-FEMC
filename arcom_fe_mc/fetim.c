@@ -5,7 +5,7 @@
     Created: 2011/03/25 17:01:27 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: fetim.c,v 1.2 2011/11/09 00:40:30 avaccari Exp $
+    \$Id: fetim.c,v 1.4 2012/01/17 16:30:58 avaccari Exp $
 
     This file contains all the functions necessary to handle FETIM events. */
 
@@ -98,11 +98,11 @@ int fetimStartup(void){
 
     printf(" Initializing FETIM Module...\n");
     printf("  - Reading FETIM module hardware revision level...\n");
-
     /* Call the getIfSwitchHadrwRevision() function to read the hardware
        revision level and depening on the returned value evaluates the presence
        of the FETIM hardware. If error, return error and abort
        initialization. */
+
     if(getFetimHardwRevision()==ERROR){
         return ERROR;
     }
@@ -111,7 +111,10 @@ int fetimStartup(void){
     if(frontend.
         fetim.
          available==UNAVAILABLE){
-        printf("     FETIM module not installed!\n");
+        printf("     Revision level: %d\n -> FETIM module not installed!\n",
+               frontend.
+                fetim.
+                 hardwRevision);
     } else {
         printf("     Revision level: %d\n",
                frontend.

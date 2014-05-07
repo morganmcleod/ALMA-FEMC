@@ -5,7 +5,7 @@
     Created: 2006/10/16 16:18:50 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: pdModule.c,v 1.14 2011/03/24 13:34:10 avaccari Exp $
+    \$Id: pdModule.c,v 1.15 2012/01/17 16:30:58 avaccari Exp $
 
     This files contains all the funcions necessary to handle the submodules of
     cartridge power distribution system. */
@@ -136,6 +136,22 @@ static void enableHandler(void){
             /* Check against the max number of cartridge allowed on at any given
                time. If already reached, store the error in the last incoming
                CAN message variable. */
+            /* Load the max value depending on the operation mode. */
+            switch(frontend.
+                   mode[CURRENT_VALUE]){
+                case TROUBLESHOOTING_MODE:
+                    frontend.
+                     powerDistribution.
+                      poweredModules[MAX_SET_VALUE]=MAX_POWERED_BANDS_TROUBLESHOOTING;
+                    break;
+                default:
+                    frontend.
+                     powerDistribution.
+                      poweredModules[MAX_SET_VALUE]=MAX_POWERED_BANDS_OPERATIONAL;
+                    break;
+            }
+
+            /* Cagainst the value */
             if(frontend.
                 powerDistribution.
                  poweredModules[CURRENT_VALUE]+1 > frontend.

@@ -18,7 +18,7 @@
     Created: 2004/08/24 16:16:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: can.c,v 1.50 2011/11/09 00:40:30 avaccari Exp $
+    \$Id: can.c,v 1.51 2011/11/28 22:10:49 avaccari Exp $
 
     This file contains the functions necessary to deal with the received CAN
     messages. */
@@ -134,9 +134,6 @@ void CANMessageHandler(void){
 
 /* Standard message handler. */
 static void standardRCAsHandler(void){
-
-//// IF IN MAINTENANCE MODE ONLY SPECIAL RCAs SHOULD BE ALLOWED
-//// CHECK NEEDS TO BE ADDED HERE AND DOCUMENTATION UPDATED
     if(CAN_SIZE == CAN_MONITOR){ // If it is a monitor message
         #ifdef DEBUG_CAN
             if(currentClass){

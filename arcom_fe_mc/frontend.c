@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:16:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: frontend.c,v 1.22 2011/11/09 00:40:30 avaccari Exp $
+    \$Id: frontend.c,v 1.23 2011/11/28 22:10:49 avaccari Exp $
 
     This file contains the functions and the informations necessary to deal with
     the frontend system. */
@@ -190,11 +190,7 @@ int frontendInit(void){
         return ERROR;
     }
 
-
-/*********************** ONLY OPERATIONAL ? ****************************/
-    /* How do I deal if I want to be in debug mode without all the shit turned
-       on? Right now I start in OPERATIONAL_MODE but it can be changed with
-       CAN message to address 0x2000E. */
+    /* Switch to operational mode */
     frontend.
      mode[CURRENT_VALUE] = OPERATIONAL_MODE;
 

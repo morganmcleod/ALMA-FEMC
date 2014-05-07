@@ -6,7 +6,7 @@
 
     <b> CVS informations: </b><br>
 
-    \$Id: version.h,v 1.52.2.2 2011/12/13 01:40:28 avaccari Exp $
+    \$Id: version.h,v 1.55 2012/04/13 15:36:39 avaccari Exp $
 
     This files contains all the informations about the current version of the
     software and its revision history.
@@ -22,6 +22,16 @@
             - ...
 
     REVISION HISTORY
+
+    2012-04-13  002.006.001     (fe_mc.exe or 02-06-01.exe or 20120413.exe)
+        Official Release
+        This version is tagged Ver_02_06_01(ALMA-40_00_00_00-75_35_25_00_C_ICD).
+        - Allowed number to power up cartridges now depend on FE operation mode:
+          troubleshooting: all, all the other modes: 3.
+        - Cartrdige temperature sensors: added check to verify that the measured
+          voltage is within the temperature calibration curve (for the lowest
+          voltage -> highest temperature).
+        - Assigned PA channel mapping for bands 5 and 10.
 
     2011-12-12  002.006.000     (fe_mc.exe or 02-06-00.exe or 20111212.exe)
         Official Release
@@ -55,9 +65,6 @@
           dewar pressure > 5x10e-4. Within the async loop, this will be
           continuously tested and depending on the condition, the FE status bit
           for the FETIM will be set so SAFE or UNSAFE. (Jora ticket: FE-311).
-
-
-
 
     2010-11-04  002.005.000     (fe_mc.exe or 02-05-00.exe or 2101104.exe)
         Official Release
@@ -269,7 +276,7 @@
 
 /*! \mainpage
     \section    sectionVersion  Version
-    Documentation relative to Version: 002.006.000 */
+    Documentation relative to Version: 002.006.001 */
 
 #ifndef _VERSION_H
     #define _VERSION_H
@@ -277,10 +284,10 @@
     /* Defines */
     #define VERSION_MAJOR   002  //!< Major version
     #define VERSION_MINOR   006  //!< Minor version
-    #define VERSION_PATCH   000  //!< Patch level
+    #define VERSION_PATCH   001  //!< Patch level
 
-    #define VERSION_DATE    "2011-12-12" //!< Version Date
-    #define VERSION_NOTES   "Preliminary FETIM integration" //!<Version Notes
+    #define VERSION_DATE    "2012-04-13" //!< Version Date
+    #define VERSION_NOTES   "" //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Andrea Vaccari - NRAO (avaccari@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"

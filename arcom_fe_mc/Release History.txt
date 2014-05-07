@@ -7,8 +7,19 @@ Before release, remember to update or get the info from:
   - version date define
   - version notes define
 - execute after in the compiler
+- check the integration center watch list
 
 ****** Release infos here *******
+2012-04-13  002.006.001     (fe_mc.exe or 02-06-01.exe or 20120413.exe)
+    Official Release
+    This version is tagged Ver_02_06_01(ALMA-40_00_00_00-75_35_25_00_C_ICD).
+    - Allowed number to power up cartridges now depend on FE operation mode:
+      troubleshooting: all, all the other modes: 3.
+    - Cartrdige temperature sensors: added check to verify that the measured
+      voltage is within the temperature calibration curve (for the lowest
+      voltage -> highest temperature).
+    - Assigned PA channel mapping for bands 5 and 10.
+
 2011-12-12  002.006.000     (fe_mc.exe or 02-06-00.exe or 20111212.exe)
     Official Release
     This version is tagged Ver_02_06_00(ALMA-40_00_00_00-75_35_25_00_C_IDC)

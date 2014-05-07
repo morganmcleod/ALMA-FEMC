@@ -6,7 +6,7 @@
 
     <b> CVS informations: </b><br>
 
-    \$Id: debug.h,v 1.46 2011/11/09 00:40:30 avaccari Exp $
+    \$Id: debug.h,v 1.47 2012/01/17 16:30:58 avaccari Exp $
 
     This files contains all the informations necessary to debug the running
     software.
@@ -59,7 +59,7 @@
         // #define DEBUG_LPR                   // Turn on LPR debug
         // #define DEBUG_FETIM                 // Turn on FETIM debug
         // #define DEBUG_INI                   // Turn on INI file access debug
-        // #define DEBUG_STARTUP               // Turn on startup debugging
+        #define DEBUG_STARTUP               // Turn on startup debugging
         // #define DEBUG_OWB                   // Turn on one wire bus debugging
         // #define DEBUG_PPCOM                 // Turn on the parallel port communication debugging
         // #define DEBUG_INIT                  // Turn on initialization debugging

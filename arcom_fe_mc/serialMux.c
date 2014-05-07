@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: serialMux.c,v 1.20 2010/10/01 22:13:46 avaccari Exp $
+    \$Id: serialMux.c,v 1.21 2012/01/17 16:30:58 avaccari Exp $
 
     This files contains all the functions necessary to control the serial
     multiplexing board.
@@ -307,6 +307,11 @@ int serialMuxInit(void){
     /* Check if the FPGA is ready. The check for ADD-2 can be removed once the
        FPGA has been fixed and all the versions are consistent. */
     if((inpw(MUX_FPGA_RDY_ADD)!=FPGA_READY)&&(inpw(MUX_FPGA_RDY_ADD-2)!=FPGA_READY)){
+
+        #ifdef DEBUG_STARTUP
+            printf("\n\nCRITICAL ERROR - The FPGA is not ready\n\n");
+        #endif /* DEBUG_STARTUP */
+
         criticalError(ERR_SERIAL_MUX,
                       0x03); // Error 0x03 -> FPGA not ready
         return ERROR;

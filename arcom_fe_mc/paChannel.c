@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: paChannel.c,v 1.24 2011/11/09 00:40:30 avaccari Exp $
+    \$Id: paChannel.c,v 1.26 2012/04/13 15:36:39 avaccari Exp $
 
     This files contains all the functions necessary to handle the PA Channel
     events.
@@ -644,15 +644,15 @@ static void drainCurrentHandler(void){
      <TR>
       <TH>Bands<TH>Polarization<TH>Channel
      <TR>
-      <TD>1,2,10<TD>0...1<TD>N/D
+      <TD>1,2<TD>0...1<TD>N/D
      <TR>
-      <TD>3,4,8,9<TD>0<TD>B
+      <TD>3,4,8,9,10<TD>0<TD>B
      <TR>
-      <TD>3,4,8,9<TD>1<TD>A
+      <TD>3,4,8,9,10<TD>1<TD>A
      <TR>
-      <TD>6,7<TD>0<TD>A
+      <TD>5,6,7<TD>0<TD>A
      <TR>
-      <TD>6,7<TD>1<TD>B
+      <TD>5,6,7<TD>1<TD>B
     </TABLE>
 
     \return
@@ -665,10 +665,12 @@ int currentPaChannel(void){
         case BAND4:
         case BAND8:
         case BAND9:
+        case BAND10:
             paMapped = TRUE;
             return currentPaModule==0?PA_CHANNEL_B:
                                       PA_CHANNEL_A;
             break;
+        case BAND5:
         case BAND6:
         case BAND7:
             paMapped = TRUE;
@@ -676,8 +678,8 @@ int currentPaChannel(void){
                                       PA_CHANNEL_B;
             break;
         /* The following are assumption on the bands we don't have information
-           about at this point: 1, 2, 5 and 10. When the information are
-           available, this table should be updated. */
+           about at this point: 1 and 2. When the information are available,
+           this table should be updated. */
         default:
             paMapped = FALSE;
             return currentPaModule==0?PA_CHANNEL_A:

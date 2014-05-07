@@ -5,7 +5,7 @@
     Created: 2006/10/24 11:52:13 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: globalOperations.c,v 1.22 2011/11/09 00:40:30 avaccari Exp $
+    \$Id: globalOperations.c,v 1.23 2011/11/28 22:10:49 avaccari Exp $
 
     This files contains all the functions necessary to handle global frontend
     operations. */
@@ -56,6 +56,20 @@ int initialization(void){
         }
     #endif /* OWB */
 
+    /* Switch to maintenance mode before allowing interrupt. The idea is that at
+       this point the FE will be in a state where it knows about the installed
+       hardware and the data is available for the control software to analyze.
+       While in maintenance mode, all the housekeeping operation should be
+       performed if necessary:
+       - update configuration files
+       - ...
+       The FE will wait for a message to switch to operational mode. (Right now
+       the switch is automatic. But the framework is put in place to allow this
+       control of states during startup). */
+    /* Switch to operational mode */
+    frontend.
+     mode[CURRENT_VALUE] = MAINTENANCE_MODE;
+
     /* Initialize the parallel port communication. This is done after the OWB
        initialization because there is no need for communication between ABMSI1
        and ARCOM before that.
@@ -69,7 +83,8 @@ int initialization(void){
        communication is fully established with the AMBSI. Now we wait for the
        user to send a go-ahead command. During this wait, the configuration INI
        file can be uploaded via ethernet to the ARCOM drive. During the frontend
-       initialization, they will be read. */
+       initialization, they will be read. At the end of the initialization, the
+       frontend module switched the mode to operational. */
 
 
     /* Initialize the frontend */

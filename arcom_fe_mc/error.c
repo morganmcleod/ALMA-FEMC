@@ -6,7 +6,7 @@
     Created: 2004/08/24 16:16:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: error.c,v 1.86 2011/11/09 00:40:30 avaccari Exp $
+    \$Id: error.c,v 1.87 2012/01/17 16:30:58 avaccari Exp $
 
     This file contains the functions necessary to handle the errors that might
     occour during the operation of the ARCOM Pegasus board.*/
@@ -57,6 +57,10 @@ int errorInit(void){
         errorHistory=&errorNoErrorHistory;
         ++errorNewest;
 
+        #ifdef DEBUG_STARTUP
+            printf("\n\nERROR - Not enough memory to store the error array\n\n");
+        #endif /* DEBUG_STARTUP */
+
         #ifdef ERROR_REPORT
             reportErrorConsole(ERR_ERROR,
                                0x01); // Error 0x01 -> Not enough memory to store the error array
@@ -73,6 +77,10 @@ int errorInit(void){
     if(NULL==freopen(NULL,
                      "r",
                      stderr)){
+        #ifdef DEBUG_STARTUP
+            printf("\n\nWARNING - Fail to redirect stderr\n\n");
+        #endif /* DEBUG_STARTUP */
+
         #ifdef ERROR_REPORT
             storeError(ERR_ERROR,
                      0x02); // Error 0x02 -> Error turning off stderr
@@ -113,6 +121,8 @@ void criticalError(unsigned char moduleNo,
     storeError(moduleNo,
                errorNo);
     printf("The previous error is unrecoverable. The program will now exit.\nPlease reset the system board before attempting to run the program again.\n");
+
+//// MAYBE THE BOARD SHOULD REBOOT IN THIS CASE
 //    shutDown(); // Shutdown the system
 exit(1);
 }

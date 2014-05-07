@@ -6,7 +6,7 @@
 
     <b> CVS informations: </b><br>
 
-    \$Id: powerDistribution.c,v 1.20 2011/11/09 00:40:30 avaccari Exp $
+    \$Id: powerDistribution.c,v 1.21 2012/01/17 16:30:58 avaccari Exp $
 
 
     This files contains all the functions necessary to handle power distribution
@@ -117,13 +117,13 @@ int powerDistributionStartup(void){
        status and hardware status. */
     powerDistributionStop();
 
-    /* Now we can proceed with initialization */
+    /* Now we can proceed with initialization
     frontend.
      powerDistribution.
       poweredModules[MAX_SET_VALUE]=(frontend.
                                       mode[CURRENT_VALUE]==TROUBLESHOOTING_MODE)?MAX_POWERED_BANDS_TROUBLESHOOTING:
                                                                                  MAX_POWERED_BANDS_OPERATIONAL;
-
+*/
     printf(" done!\n\n");
 
     return NO_ERROR;

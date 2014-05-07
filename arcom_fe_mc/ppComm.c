@@ -7,7 +7,7 @@
     Created: 2004/08/24 16:33:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ppComm.c,v 1.37 2011/03/24 13:34:11 avaccari Exp $
+    \$Id: ppComm.c,v 1.38 2012/04/13 15:36:39 avaccari Exp $
 
     This file contains the functions necessary to cummunicate via the
     parallel port of the ARCOM Pegasus board.
@@ -153,7 +153,7 @@ int PPOpen(void){
 
     /* If the timer has expired signal the error and continue */
     if(timedOut==TIMER_EXPIRED){
-        printf(" ERROR: AMBSI1 not responding. CAN interface disabled.");
+        printf(" ERROR: AMBSI1 not responding. CAN interface disabled.\n");
         storeError(ERR_PP,
                    0x04); // Error 0x04 -> Timeout while waiting for the AMBSI1
     }

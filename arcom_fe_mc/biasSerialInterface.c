@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: biasSerialInterface.c,v 1.54 2010/03/03 15:43:18 avaccari Exp $
+    \$Id: biasSerialInterface.c,v 1.55 2011/11/28 22:10:49 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     BIAS serial interface.
@@ -96,6 +96,12 @@ static float temperatureConversion(float voltage){
 
 	float temperature, slope;
 	unsigned char i;
+
+	/* Check if voltage is lower than lowest limit. The highest limit is
+	   checked by the search algorithm. */
+	if(voltage<0.090681){
+	    return CARTRIDGE_TEMP_CONV_ERR;
+	}
 
 	/* Find position in the calibration curve */
 	for(i=0;

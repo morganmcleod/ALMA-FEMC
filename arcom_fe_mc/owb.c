@@ -5,7 +5,7 @@
     Created: 2007/09/05 14:33:02 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: owb.c,v 1.12 2011/03/24 13:34:10 avaccari Exp $
+    \$Id: owb.c,v 1.13 2012/01/17 16:30:58 avaccari Exp $
 
     This files contains all the functions necessary to handle the one wire bus
     communication. */
@@ -60,6 +60,11 @@ int owbInit(void){
                  ESNS_SIM_SECTION,
                  &dataIn,
                  ESNS_SIM_USE_EXPECTED)!=NO_ERROR){
+        #ifdef DEBUG_STARTUP
+            printf("\n\nWARNING - Error opening the file:%s\n\n",
+                   ESNS_DATA_FILE);
+        #endif /* DEBUG_STARTUP */
+
         useSimulator=0;
     }
 
@@ -118,6 +123,12 @@ int owbGetEsn(void){
                      ESNS_SIM_SECTION,
                      &dataIn,
                      ESNS_SIM_DEV_NO_EXPECTED)!=NO_ERROR){
+
+            #ifdef DEBUG_STARTUP
+                printf("\n\nWARNING - Error opening the file:%s\n\n",
+                       ESNS_DATA_FILE);
+            #endif /* DEBUG_STARTUP */
+
             printf(" - Aborting simulator\n");
             useSimulator=0;
         }
@@ -148,6 +159,10 @@ int owbGetEsn(void){
                 /* If file access error, assume no simulator */
                 case FILE_OPEN_ERROR:
                 case FILE_ERROR:
+                    #ifdef DEBUG_STARTUP
+                        printf("\n\nWARNING - Error opening the file:%s\n\n",
+                               ESNS_DATA_FILE);
+                    #endif /* DEBUG_STARTUP */
 
                     #ifdef DEBUG_OWB
                         printf(" - Aborting simulator\n");
@@ -197,6 +212,11 @@ int owbGetEsn(void){
                                   ESNS_SIM_SECTION,
                                   ESNS_SIM_BASE_KEY,
                                   base)==ERROR){
+                        #ifdef DEBUG_STARTUP
+                            printf("\n\nWARNING - Error opening the file:%s\n\n",
+                                   ESNS_DATA_FILE);
+                        #endif /* DEBUG_STARTUP */
+
                         printf(" - Aborting simulator\n");
                         useSimulator=0;
                         break;
@@ -205,6 +225,11 @@ int owbGetEsn(void){
                     break;
                 default:
                     /* In any other case assume no simulator */
+                    #ifdef DEBUG_STARTUP
+                        printf("\n\nWARNING - Error opening the file:%s\n\n",
+                               ESNS_DATA_FILE);
+                    #endif /* DEBUG_STARTUP */
+
                     printf(" - Aborting simulator\n");
                     useSimulator = 0;
                     break;
@@ -438,6 +463,10 @@ int owbGetEsn(void){
        a problem with the bus. Notify the system and set the number of found
        devices to 0. */
     if(device==MAX_DEVICES_NUMBER){
+        #ifdef DEBUG_STARTUP
+            printf("\n\nWARNING - Maximum number of ESN devices reached.\n\n");
+        #endif /* DEBUG_STARTUP */
+
         storeError(ERR_OWB,
                    0x03); // Error 0x03 -> Maximum number of devices reached
         esnDevicesFound = 0;
@@ -489,6 +518,10 @@ int owbGetEsn(void){
                  ESNS_NO_SECTION,
                  &dataIn,
                  ESNS_NO_EXPECTED)!=NO_ERROR){
+        #ifdef DEBUG_STARTUP
+            printf("\n\nWARNING - Error opening the file:%s\n\n",
+                   ESNS_DATA_FILE);
+        #endif /* DEBUG_STARTUP */
     } else {
         /* If no error accessing the file, process the file */
         printf("   - Number of stored devices: %d\n",
