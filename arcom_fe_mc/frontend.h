@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: frontend.h,v 1.22 2007/10/02 22:04:58 avaccari Exp $
+    \$Id: frontend.h,v 1.23 2008/05/01 14:16:24 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the entire frontend system.
@@ -59,21 +59,21 @@
     #define BAND_SECT_BASE  "BAND"
     #define BAND_SECT(Ca)   buildString(BAND_SECT_BASE,Ca,NULL)
 
-    #define BAND_AVAIL_SECTION(Ca)  BAND_SECT(Ca)   // Section containing the availability of the band
+    #define BAND_AVAIL_SECTION(Ca)  BAND_SECT(Ca+1) // Section containing the availability of the band
     #define BAND_AVAIL_KEY          "AVAILABLE"     // Key containing the availability of the band
     #define BAND_AVAIL_EXPECTED     1               // Expected keys contining the availability of the band
 
     #define CART_SECT_BASE  "CART"
     #define CART_SECT(Ca)   buildString(CART_SECT_BASE,Ca,NULL)
 
-    #define CART_FILE_SECTION(Ca)   CART_SECT(Ca)   // Section containing the configuration file name for the cartridge
+    #define CART_FILE_SECTION(Ca)   CART_SECT(Ca+1) // Section containing the configuration file name for the cartridge
     #define CART_FILE_KEY           "FILE"          // Key containing the configuration file name for the cartridge
     #define CART_FILE_EXPECTED      1               // Expected keys containing the configuration file name for the cartridge
 
     #define WCA_SECT_BASE   "WCA"
     #define WCA_SECT(Ca)    buildString(WCA_SECT_BASE,Ca,NULL)
 
-    #define WCA_FILE_SECTION(Ca)    WCA_SECT(Ca)    // Section containng the configuration file name for the wca
+    #define WCA_FILE_SECTION(Ca)    WCA_SECT(Ca+1)  // Section containng the configuration file name for the wca
     #define WCA_FILE_KEY            "FILE"          // Key containing the configuration file name for the wca
     #define WCA_FILE_EXPECTED       1               // Expected keys containing the configuration file name
 

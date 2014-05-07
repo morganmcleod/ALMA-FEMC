@@ -18,7 +18,7 @@
     Created: 2004/08/24 16:16:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: can.c,v 1.40 2008/02/28 22:15:05 avaccari Exp $
+    \$Id: can.c,v 1.41 2008/09/26 23:00:38 avaccari Exp $
 
     This file contains the functions necessary to deal with the received CAN
     messages. */
@@ -64,9 +64,6 @@ unsigned char    currentClass=0;    /*!< This variable stores the current class
    during normal execution. */
 static HANDLER      classesHandler[CLASSES_NUMBER]={standardRCAsHandler,
                                                     standardRCAsHandler,
-                                                    specialRCAsHandler,
-                                                    initHandler,
-                                                    initHandler,
                                                     specialRCAsHandler}; // The classes handler array is initialized.
 static HANDLER      modulesHandler[MODULES_NUMBER]={cartridgeHandler,   // Cartridge 0 -> Band 1
                                                     cartridgeHandler,   // Cartridge 1 -> Band 2
@@ -119,7 +116,7 @@ void CANMessageHandler(void){
        receiver is outfitted with the particular device addressed.
        Adding the initializing status variable allows to use different pointers
        while in intialization mode respect to the standard operation. */
-    (classesHandler[initializing+currentClass])(); // Call the appropriate handler
+    (classesHandler[currentClass])(); // Call the appropriate handler
 
     /* Clear the new message flag */
     newCANMsg=0;
@@ -132,36 +129,6 @@ void CANMessageHandler(void){
 
 
 }
-
-
-
-
-/* Initialization handler */
-static void initHandler(void){
-
-    #ifdef DEBUG_CAN
-        printf("Initialization handler:\n");
-    #endif /* DEBUG_CAN */
-
-    /* If control message, ignore it. */
-    if(CAN_SIZE){ // If control (size!=0)
-        return;
-    }
-
-    /* If monitor */
-    storeError(ERR_CAN,
-               0x07); // Error 0x07 -> Hardware not accessible during initialization
-    CAN_STATUS=HARDW_BLKD_ERR;
-
-    /* Since it was a monitor request, then the reply message was assembled
-       by the previous call, send the message! */
-    sendCANMessage();
-
-    return;
-}
-
-
-
 
 /* Standard message handler. */
 static void standardRCAsHandler(void){
@@ -451,14 +418,6 @@ static void specialRCAsHandler(void){
                     CAN_SIZE=CAN_FULL_SIZE;
                     device++;
                     break;
-                case GET_INITIALIZATION_STATUS: // 0x2000C -> Returns the current initialization status
-                    #ifdef DEBUG_CAN
-                        printf("  0x%lX->GET_INITIALIZATION_STATUS\n\n",
-                               GET_INITIALIZATION_STATUS);
-                    #endif /* DEBUG_CAN */
-                    CAN_DATA(0)=initializing?1:0;
-                    CAN_SIZE=CAN_BOOLEAN_SIZE;
-                    break;
                 default: // This will take care also of all the monitor request on special CAN control RCAs
                     #ifdef DEBUG_CAN
                         printf("  Out of Range!\n\n");
@@ -488,14 +447,6 @@ static void specialRCAsHandler(void){
                                SET_REBOOT);
                     #endif /* DEBUG_CAN */
                     reboot();
-                    break;
-                case SET_INITIALIZE_FRONTEND: // 0x21002 -> Initialize the frontend
-                    #ifdef DEBUG_CAN
-                        printf("  0x%lX->SET_INITIALIZE_FRONTEND\n\n",
-                               SET_INITIALIZE_FRONTEND);
-                    #endif /* DEBUG_CAN */
-                    initializeFrontend=(CAN_BYTE==TRUE)?TRUE:
-                                                        FALSE;
                     break;
                 case SET_CONSOLE_ENABLE: // 0x21009 -> Enables/Disables the console
                     #ifdef DEBUG_CAN

@@ -5,7 +5,7 @@
     Created: 2004/08/31 18:21:05 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: debug.h,v 1.35 2008/03/10 22:15:43 avaccari Exp $
+    \$Id: debug.h,v 1.37 2008/09/26 23:00:38 avaccari Exp $
 
     This files contains all the informations necessary to debug the running
     software.
@@ -37,6 +37,7 @@
         #define DEBUG_OWB               // Turn on one wire bus debugging
         #define DEBUG_PPCOM             // Turn on the parallel port communication debugging
         #define DEBUG_INIT              // Turn on initialization debugging
+        #define DEBUG_CONSOLE           // Turn on console debugging
         #define DEBUG                   // Turn on all the rest and error reporting
         #define ERROR_REPORT            // Uncomment this line to enable the console error report
     #endif /* DEVELOPMENT */
@@ -58,9 +59,10 @@
         // #define DEBUG_STARTUP           // Turn on startup debugging
         // #define DEBUG_OWB               // Turn on one wire bus debugging
         // #define DEBUG_PPCOM             // Turn on the parallel port communication debugging
-        #define DEBUG_INIT              // Turn on initialization debugging
+        // #define DEBUG_INIT              // Turn on initialization debugging
+        // #define DEBUG_CONSOLE           // Turn on console debugging
         #define ERROR_REPORT            // Uncomment this line to enable the console error report
-        #define DEBUG_CAN_FAST          // Uncomment this line to enable the minimalistic CAN message debug in fast version
+        // #define DEBUG_CAN_FAST          // Uncomment this line to enable the minimalistic CAN message debug in fast version
     #endif /* DEVELOPMENT */
 
 #endif /* _DEBUG_H */

@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cartridge.c,v 1.39 2008/02/07 16:21:23 avaccari Exp $
+    \$Id: cartridge.c,v 1.41 2008/09/26 23:00:38 avaccari Exp $
 
     This files contains all the functions necessary to handle cartridge events.
 
@@ -213,13 +213,13 @@ int cartridgeStartup(void){
 
 
     printf(" Cartridge %d configuration file: %s\n",
-           currentModule,
+           currentModule+1,
            frontend.
             cartridge[currentModule].
              configFile);
 
     printf(" Initializing Cartridge %d ESN:",
-           currentModule);
+           currentModule+1);
 
     /* Get the serial number from the configuration file */
     /* Configure the read array */
@@ -767,7 +767,7 @@ int cartridgeInit(unsigned char cartridge){
     #endif /* DATABASE_HARDW */
 
     printf("Initializing cartrdige (%d)\n",
-           currentModule);
+           currentModule+1);
 
     /* Enable the 10MHz communication for the BIAS and the LO and update the
        relative state variable. Initialize both polarization even if there might

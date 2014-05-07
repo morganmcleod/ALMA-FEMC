@@ -6,7 +6,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: loSerialInterface.h,v 1.30 2008/03/10 22:15:43 avaccari Exp $
+    \$Id: loSerialInterface.h,v 1.32 2008/10/07 17:38:39 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the LO serial interface. */
@@ -93,12 +93,12 @@
 
 
     /* --- AREG definition (12-bit) --- */
-    /* Write only: 12-bit + 2 bits for latching.
+    /* Write only: 12-bit + 3 bits for latching.
        AREG is the register that contains the YTO coarse tune. */
-    #define LO_AREG_SIZE            14
+    #define LO_AREG_SIZE            15
     /* This register has to be shifted left before being sent out for alignment.
        This is because of the extra bits the hardware need to latch the data. */
-    #define LO_AREG_SHIFT_SIZE      2
+    #define LO_AREG_SHIFT_SIZE      3
     #define LO_AREG_SHIFT_DIR       SHIFT_LEFT
     /* YTO Coarse tune (bit 11-0) */
 

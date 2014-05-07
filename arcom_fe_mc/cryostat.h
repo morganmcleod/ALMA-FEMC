@@ -6,7 +6,7 @@
     Created: 2004/10/25 15:39:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cryostat.h,v 1.19 2007/08/28 21:46:47 avaccari Exp $
+    \$Id: cryostat.h,v 1.20 2008/09/26 23:00:38 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the cryostat system. */
@@ -162,7 +162,7 @@
         //! Configuration File
         /*! This contains the configuration file name as extracted from the
             frontend configuration file. */
-        char            configFile[MAX_FILE_NAME_SIZE];
+        char                configFile[MAX_FILE_NAME_SIZE];
     } CRYOSTAT;
 
     /* Globals */

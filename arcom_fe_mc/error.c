@@ -6,7 +6,7 @@
     Created: 2004/08/24 16:16:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: error.c,v 1.72 2008/02/16 00:13:08 avaccari Exp $
+    \$Id: error.c,v 1.74 2009/02/10 21:16:39 avaccari Exp $
 
     This file contains the functions necessary to handle the errors that might
     occour during the operation of the ARCOM Pegasus board.*/
@@ -274,11 +274,6 @@ void storeError(unsigned char moduleNo,
                                 CAN_ADDRESS,
                                 ") is out of the defined range");
                         break;
-                    case 0x07: // Hardware not accessible during initialization
-                        sprintf(error,
-                                "%s",
-                                "Warning: The Hardware is not available during initialization");
-                        break;
                     default: // Undefined error
                         sprintf(error,
                                 "%s%d%s",
@@ -293,7 +288,7 @@ void storeError(unsigned char moduleNo,
             case ERR_CARTRIDGE: // Cartridge
                 sprintf(module,
                         "Cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // Cartridge not installed
                         sprintf(error,
@@ -331,7 +326,7 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "%s%d%s",
                                 "Error: The addressed cartridge (",
-                                currentModule,
+                                currentModule+1,
                                 ") is not powered");
                         break;
                     default: // Undefined error
@@ -348,7 +343,7 @@ void storeError(unsigned char moduleNo,
             case ERR_CARTRIDGE_TEMP: // Cartridge Temperature Sensor
                 sprintf(module,
                         "Cartridge (%d) Temperature Sensor",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // Temperature sensor not installed
                         sprintf(error,
@@ -393,12 +388,12 @@ void storeError(unsigned char moduleNo,
             case ERR_LO: // LO
                 sprintf(module,
                         "LO in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
 /*                  case 0x01: // LO module not installed
                         sprintf(error,
                                 "%s%d%s",
-                                "Error: The LO in thie cartridge is not installed");
+                                "Error: The LO in the cartridge is not installed");
                         break; */
                     case 0x02: // LO submodule out of range
                         sprintf(error,
@@ -425,7 +420,7 @@ void storeError(unsigned char moduleNo,
             case ERR_PLL: // PLL
                 sprintf(module,
                         "PLL in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // PLL submodule out of range
                         sprintf(error,
@@ -554,7 +549,7 @@ void storeError(unsigned char moduleNo,
             case ERR_YTO: // YTO
                 sprintf(module,
                         "YTO in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // YTO coarse tune out of range
                         sprintf(error,
@@ -592,7 +587,7 @@ void storeError(unsigned char moduleNo,
             case ERR_PHOTOMIXER: // Photomixer
                 sprintf(module,
                         "Photomixer in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // Photomixer submodule out of range
                         sprintf(error,
@@ -651,7 +646,7 @@ void storeError(unsigned char moduleNo,
             case ERR_AMC: // AMC
                 sprintf(module,
                         "AMC in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // AMC submodule out of range
                         sprintf(error,
@@ -878,7 +873,7 @@ void storeError(unsigned char moduleNo,
             case ERR_PA: // PA
                 sprintf(module,
                         "PA in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // PA submodule out of range
                         sprintf(error,
@@ -923,7 +918,7 @@ void storeError(unsigned char moduleNo,
             case ERR_PA_CHANNEL: // PA Channel
                 sprintf(module,
                         "PA Channel in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // PA Channel submodule out of range
                         sprintf(error,
@@ -1014,7 +1009,7 @@ void storeError(unsigned char moduleNo,
             case ERR_POLARIZATION: // Polarization
                 sprintf(module,
                         "Polarization in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // Polarization module not installed
                         sprintf(error,
@@ -1044,7 +1039,7 @@ void storeError(unsigned char moduleNo,
             case ERR_SIDEBAND: // Sideband
                 sprintf(module,
                         "Sideband in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // Sideband module not installed
                         sprintf(error,
@@ -1074,7 +1069,7 @@ void storeError(unsigned char moduleNo,
             case ERR_LNA_LED: // LNA led
                 sprintf(module,
                         "LNA led in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // LNA led module not installed
                         sprintf(error,
@@ -1097,7 +1092,7 @@ void storeError(unsigned char moduleNo,
             case ERR_SIS_HEATER: // SIS Heater
                 sprintf(module,
                         "SIS Heater in cartrdige (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // SIS Heater module not installed
                         sprintf(error,
@@ -1149,7 +1144,7 @@ void storeError(unsigned char moduleNo,
             case ERR_SCHOTTKY_MIXER: // Schottky Mixer
                 sprintf(module,
                         "Schottky Mixer in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // Schottky Mixer module not installed
                         sprintf(error,
@@ -1172,7 +1167,7 @@ void storeError(unsigned char moduleNo,
             case ERR_SIS: // SIS
                 sprintf(module,
                         "SIS in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // SIS module not installed
                         sprintf(error,
@@ -1245,7 +1240,7 @@ void storeError(unsigned char moduleNo,
             case ERR_SIS_MAGNET: // SIS magnet
                 sprintf(module,
                         "SIS magnet in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // SIS magnet module not installed
                         sprintf(error,
@@ -1318,7 +1313,7 @@ void storeError(unsigned char moduleNo,
             case ERR_LNA: // LNA
                 sprintf(module,
                         "LNA in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // LNA module not installed
                         sprintf(error,
@@ -1348,7 +1343,7 @@ void storeError(unsigned char moduleNo,
             case ERR_LNA_STAGE: // LNA stage
                 sprintf(module,
                         "LNA stage in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // LNA stage module not installed
                         sprintf(error,
@@ -1442,7 +1437,7 @@ void storeError(unsigned char moduleNo,
             case ERR_POL_SPECIAL_MSGS: // Polarization Special Messages
                 sprintf(module,
                         "Polarization Special Messages in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // Polarization special messages submodule out of range
                         sprintf(error,
@@ -1465,7 +1460,7 @@ void storeError(unsigned char moduleNo,
             case ERR_POL_DAC: // Polarization DAC
                 sprintf(module,
                         "Polarization DAC in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // Polarization DAC submodule out of range
                         sprintf(error,
@@ -1568,7 +1563,7 @@ void storeError(unsigned char moduleNo,
             case ERR_BIAS_SERIAL: // Bias Serial Interface Module
                 sprintf(module,
                         "Bias Serial Interface in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // Timeout while waiting for the BIAS ADC to become ready
                         sprintf(error,
@@ -1592,7 +1587,7 @@ void storeError(unsigned char moduleNo,
             case ERR_LO_SERIAL: // LO Serial Interface Module
                 sprintf(module,
                         "LO Serial Interface in cartridge (%d)",
-                        currentModule);
+                        currentModule+1);
                 switch(errorNo){
                     case 0x01: // Timeout while waiting for the LO ADC to become ready
                         sprintf(error,

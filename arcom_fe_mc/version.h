@@ -5,7 +5,7 @@
     Created: 2004/10/06 16:47:08 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: version.h,v 1.25 2007/10/02 22:04:58 avaccari Exp $
+    \$Id: version.h,v 1.33 2009/02/25 23:33:27 avaccari Exp $
 
     This files contains all the informations about the current version of the
     software and its revision history.
@@ -21,6 +21,49 @@
             - ...
 
     REVISION HISTORY
+    2009-02-25  002.000.000     (fe_mc.exe or 02-00-00.exe or 2k90225.exe)
+        Official Release.
+        This version is tagged Ver_02_00_00(ALMA-40_00_00_00-75_35_25_00_B_ICD).
+
+    2008-10-08  002.000.000b1    (2-0-00b1.exe)
+        The two previous beta revisions are rolled into the new revision
+        including all the previous changes. Since this new revision is not
+        backwards compatible with the previous versions it will be released as
+        rev 2.
+        This version is tagged Ver_02_00_00b1.
+
+    2008-10-07  001.000.002b     (1-0-02b2.exe)
+        - Modified LO to provide only 1 extra clock cycle for the YTO strobe (JIRA
+          FE-13)
+        This version is tagged Ver_01_00_02b2.
+
+    2008-09-26  001.000.002b     (1-0-02b1.exe)
+        *** Added functionality ***
+        --- Console ---
+        - If the console is activated, then pressing the ' key will retype the
+          last submitted console command.
+        - If the console is activated, then pressing the " key will resubmit the
+          last submitted console command.
+        *** Patches ***
+        --- Cryostat ---
+        - The TVO sensor number is now a string instead of an integer.
+        - Modified return error values for the 230V supply current monitoring to
+          take in account of the hardware retry issue (unstable monitor points)
+        --- Console ---
+        - Added #define to enable/disable console debugging
+        --- Error ---
+        - Corrected output number of cartridge to match the band number
+        --- LO ---
+        - Modified size of AREG to match a fix to an hardware problem that required
+          a change in the CPLD code inside the LO monitor and control.
+          (JIRA issue FEIC-73)
+        This version is tagged Ver_01_00_02b1.
+
+    2008-04-09  001.000.000
+        First Official Release.
+        This is the first stable working release.
+        This version is tagged Ver_01_00_00(ALMA-40_00_00_00-75_35_25_00_B_ICD).
+
     2007-08-09  000.007.000
         Development Release.
         This release fixed bugs in the previous release and added monitor and
@@ -63,19 +106,19 @@
 
 /*! \mainpage
     \section    sectionVersion  Version
-    Documentation relative to Version: 000.008.000RC */
+    Documentation relative to Version: 002.000.000 */
 
 #ifndef _VERSION_H
     #define _VERSION_H
 
     /* Defines */
-    #define VERSION_MAJOR   000  //!< Major version
-    #define VERSION_MINOR   007  //!< Minor version
+    #define VERSION_MAJOR   002  //!< Major version
+    #define VERSION_MINOR   000  //!< Minor version
     #define VERSION_PATCH   000  //!< Patch level
-    #define VERSION_DATE    "2007-08-09" //!< Version Date
+    #define VERSION_DATE    "2009-02-25" //!< Version Date
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Andrea Vaccari - NRAO (avaccari@nrao.edu)"
-    #define BUGZILLA        "bugzilla.cv.nrao.edu"
+    #define BUGZILLA        "jira.alma.cl"
 
     /* Prototypes */
     /* Statics */

@@ -5,7 +5,7 @@
     Created: 2007/05/22 11:31:57 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: console.h,v 1.3 2007/09/07 22:00:06 avaccari Exp $
+    \$Id: console.h,v 1.4 2008/09/26 23:00:38 avaccari Exp $
 
     This files contains all the informations necessary to handle the console
     accesses to the software. */
@@ -20,9 +20,11 @@
         #include "globalDefinitions.h"
     #endif /* _GLOBALDEFINITIONS_H */
 
-    #define BUFFER_SIZE 255 //!< Size of the console buffer
-    #define ENTER_KEY   13  //!< Key to press to evaluate buffer
-    #define DELETE_KEY  8   //!< Delete key code
+    #define BUFFER_SIZE     255 //!< Size of the console buffer
+    #define ENTER_KEY       13  //!< Key to press to evaluate buffer
+    #define DELETE_KEY      8   //!< Delete key code
+    #define APOSTROPHE_KEY  39  //!< Apostrophe key code
+    #define QUOTE_KEY       34  //!< Quote key code
 
     /* Globals */
     /* Externs */

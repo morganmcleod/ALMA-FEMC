@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lo.c,v 1.16 2008/03/10 22:15:43 avaccari Exp $
+    \$Id: lo.c,v 1.17 2008/05/01 14:16:24 avaccari Exp $
 
     This files contains all the functions necessary to handle LO events. */
 
@@ -98,14 +98,14 @@ int loStartup(void){
     unsigned char cnt;
 
     printf(" LO %d configuration file: %s\n",
-           currentModule,
+           currentModule+1,
            frontend.
             cartridge[currentModule].
              lo.
               configFile);
 
     printf(" Initializing LO %d ESN:",
-           currentModule);
+           currentModule+1);
 
     /* Get the serial number from the configuration file */
     /* Configure the read array */

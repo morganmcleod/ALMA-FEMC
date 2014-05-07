@@ -5,18 +5,13 @@
     Created: 2006/10/24 11:53:36 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: globalOperations.h,v 1.7 2008/03/10 22:15:43 avaccari Exp $
+    \$Id: globalOperations.h,v 1.8 2008/09/26 23:00:38 avaccari Exp $
 
     This files contains all the informations necessary to handle the global
     frontend operations in the running software. */
 
 #ifndef _GLOBALOPERATIONS_H
     #define _GLOBALOPERATIONS_H
-
-    /* Globals */
-    /* Externs */
-    extern unsigned char initializing; //!< This semaphore signals to the software that the initialization is happening
-    extern unsigned char initializeFrontend; //!< This global controls the initialization of the frontend
 
     /* Prototypes */
     /* Externs */

@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: timer.h,v 1.23 2008/03/10 22:15:43 avaccari Exp $
+    \$Id: timer.h,v 1.24 2008/09/26 23:00:38 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the timers used by the software. */
@@ -67,11 +67,6 @@
     /* RESET */
     #define TIMER_OWB_RESET         11      // Timer number
     #define TIMER_TO_OWB_RESET      10000   // Timeout in milliseconds
-
-    /*** Initialization ***/
-    /* Initialize command */
-    #define TIMER_INIT_WAIT_CMD     12      // Timer number
-    #define TIMER_INIT_TO_WAIT_CMD  20000   // Timeout in milliseconds
 
     /* Timer control */
     #define TIMER_ON                1

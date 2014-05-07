@@ -5,7 +5,7 @@
     Created: 2007/05/22 11:31:31 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: console.c,v 1.8 2008/02/28 22:15:05 avaccari Exp $
+    \$Id: console.c,v 1.9 2008/09/26 23:00:38 avaccari Exp $
 
     This files contains all the functions necessary to handle console accesses
     to the software. */
@@ -35,13 +35,16 @@
 
 /* Static */
 static unsigned char buffer[BUFFER_SIZE];
+static unsigned char lastBuffer[BUFFER_SIZE];
 static unsigned char bufferIndex=0;
+static unsigned char lastBufferIndex=0;
 
 
 /* Console */
 /*! This function handles the console inputs. */
 void console(void){
     unsigned char key;
+    unsigned char counter;
 
     /* Check if the console is enable */
     if(consoleEnable==DISABLE){
@@ -52,21 +55,66 @@ void console(void){
     if(kbhit()){
         key=getch();
         putch(key);
-        if(key==DELETE_KEY){
-            if(bufferIndex>0){
-                bufferIndex--;
-                buffer[bufferIndex]=NULL;
-            }
-            return;
-        }
-        buffer[bufferIndex]=key;
-        buffer[bufferIndex+1]=NULL;
-        bufferIndex++;
 
-        if(key==ENTER_KEY){
-            buffer[--bufferIndex]=NULL;
-            parseBuffer();
-            bufferIndex=0;
+        #ifdef DEBUG_CONSOLE
+            printf("(%d@%d)",
+                   key,
+                   bufferIndex);
+            flushall();
+        #endif /* DEBUG_CONSOLE */
+
+        switch(key){
+            case DELETE_KEY:
+                if(bufferIndex>0){
+                    bufferIndex--;
+                    buffer[bufferIndex]=NULL;
+                }
+                break;
+            case APOSTROPHE_KEY:
+                bufferIndex++;
+                memcpy(buffer,
+                       lastBuffer,
+                       BUFFER_SIZE);
+                for(counter=0;
+                    counter<bufferIndex;
+                    counter++){
+                    putch(DELETE_KEY);
+                }
+                bufferIndex=lastBufferIndex;
+                printf("%s",
+                       buffer);
+                flushall();
+                break;
+            case QUOTE_KEY:
+                bufferIndex++;
+                memcpy(buffer,
+                       lastBuffer,
+                       BUFFER_SIZE);
+                for(counter=0;
+                    counter<bufferIndex;
+                    counter++){
+                    putch(DELETE_KEY);
+                }
+                printf("%s",
+                       buffer);
+                parseBuffer();
+                bufferIndex=0;
+                buffer[0]=NULL;
+                break;
+            case ENTER_KEY:
+                memcpy(lastBuffer,
+                       buffer,
+                       BUFFER_SIZE);
+                lastBufferIndex=bufferIndex;
+                parseBuffer();
+                bufferIndex=0;
+                buffer[0]=NULL;
+                break;
+            default:
+                buffer[bufferIndex]=key;
+                buffer[bufferIndex+1]=NULL;
+                bufferIndex++;
+                break;
         }
     }
 }
@@ -192,28 +240,29 @@ static void parseBuffer(void){
             }
         }
     } else { // Anything else print help
+        displayVersion();
         printf("Console help\n");
-        printf(" q -> quit\n");
-        printf(" r -> restart\n");
-        printf(" d -> disable console\n");
-        printf(" i -> display version information\n");
-        printf(" m RCA -> monitor the specified address\n");
-        printf("          RCA is the Relative CAN Address.\n");
-        printf("              It can be in decimal or exadecimal (0x...) format\n");
-        printf("              For a list of the RCAs check:\n");
-        printf("              - ALMA-40.00.00.00-75.35.25.00-X-ICD\n");
-        printf(" c RCA q data -> control the specified address\n");
-        printf("          RCA is the Relative CAN Address.\n");
-        printf("              It can be in decimal or exadecimal (0x...) format\n");
-        printf("              For a list of the RCAs check:\n");
-        printf("              - ALMA-40.00.00.00-75.35.25.00-X-ICD\n");
-        printf("          q is the qualifier for the payload:\n");
-        printf("            b for a byte or a boolean\n");
-        printf("            i for an unsigned integer\n");
-        printf("            f for a float\n");
-        printf("          data is the payload in the format specified by the qualifier\n");
-        printf("              For a list of the RCAs check:\n");
-        printf("              - ALMA-40.00.00.00-75.35.25.00-X-ICD\n");
+        printf(" ' -> retypes last command\n");
+        printf(" \" -> repeats last command\n");
+        printf(" q<CR> -> quit\n");
+        printf(" r<CR> -> restart\n");
+        printf(" d<CR> -> disable console\n");
+        printf(" i<CR> -> display version information\n");
+        printf(" m RCA<CR> -> monitor the specified address\n");
+        printf("           RCA is the Relative CAN Address.\n");
+        printf("               It can be in decimal or exadecimal (0x...) format\n");
+        printf("               For a list of the RCAs check:\n");
+        printf("               - ALMA-40.00.00.00-75.35.25.00-X-ICD\n");
+        printf(" c RCA q data <CR> -> control the specified address\n");
+        printf("                   RCA is the Relative CAN Address.\n");
+        printf("                       It can be in decimal or exadecimal (0x...) format\n");
+        printf("                       For a list of the RCAs check:\n");
+        printf("                       - ALMA-40.00.00.00-75.35.25.00-X-ICD\n");
+        printf("                   q is the qualifier for the payload:\n");
+        printf("                     b for a byte or a boolean\n");
+        printf("                     i for an unsigned integer\n");
+        printf("                     f for a float\n");
+        printf("                   data is the payload in the format specified by the qualifier\n");
     }
 }
 

@@ -21,9 +21,12 @@ MCommand
 0
 5
 MCommand
-76
-copy fe_mc.exe releases\candidates\0-8-00r1.exe /y
-ftp -n -s:updateFemc.scr
+197
+copy fe_mc.exe releases\02-00-00.exe /y
+copy fe_mc.exe releases\2k90225.exe /y
+copy fe_mc.exe releases\fe_mc.exe /y
+#copy fe_mc.exe releases\candidates\2-0-00b1.exe /y
+#ftp -n -s:updateFemc.scr
 6
 MItem
 9

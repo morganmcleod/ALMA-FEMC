@@ -5,7 +5,7 @@
     Created: 2007/06/02 16:29:22 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lprTemp.c,v 1.2 2007/06/08 22:48:57 avaccari Exp $
+    \$Id: lprTemp.c,v 1.3 2008/05/01 14:16:24 avaccari Exp $
 
     This files contains all the functions necessary to handle the lpr
     temperature sensors events. */
@@ -86,6 +86,16 @@ static void tempHandler(void){
         /* Check the result against the warning and error range. Right now this
            function is only printing out a warning/error message depending on
            the result but no actions are taken. */
+    } else {
+        /* If no error during monitor process, gather the stored data/ */
+        CAN_FLOAT=frontend.
+                   lpr.
+                    lprTemp[currentLprModule].
+                     temp[CURRENT_VALUE];
+
+        /* Check the result agains the warning and error range. Right now
+           this function is only printing out a warning/error message
+           depending on the result but no actions are taken. */
         #ifdef DATABASE_RANGE
             if(checkRange(frontend.
                            lpr.

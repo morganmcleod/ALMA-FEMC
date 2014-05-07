@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cryostat.c,v 1.17 2008/02/07 16:21:24 avaccari Exp $
+    \$Id: cryostat.c,v 1.18 2008/09/26 23:00:38 avaccari Exp $
 
     This files contains all the functions necessary to handle cryostat events. */
 
@@ -77,7 +77,7 @@ int cryostatInit(void){
 
     #ifdef DATABASE_HARDW
         /* Few variables to help load the coefficient in the frontend table */
-        unsigned char sensor, sensorNo, cnt;
+        unsigned char sensor, sensorNo[8], cnt;
         #ifdef DEBUG_STARTUP
             unsigned char coeff;
         #endif /* DEBUG_STARTUP */
@@ -176,9 +176,9 @@ int cryostatInit(void){
             dataIn.
              Name=TVO_NO_KEY;
             dataIn.
-             VarType=Cfg_Byte;
+             VarType=Cfg_String;
             dataIn.
-             DataPtr=&sensorNo;
+             DataPtr=sensorNo;
 
             /* Access configuration file, if error, skip the configuration. */
             if(myReadCfg(frontend.
@@ -191,7 +191,7 @@ int cryostatInit(void){
             }
 
             /* Print sensor information */
-            printf("  - Loading coefficients for TVO sensor: %d...\n     [%s]\n     TVO_NO: %d\n",
+            printf("  - Loading coefficients for TVO sensor: %d...\n     [%s]\n     TVO_NO: %s\n",
                    sensor,
                    sensors[sensor],
                    sensorNo);
@@ -300,9 +300,10 @@ void supplyCurrent230VHandler(void){
 
     /* Monitor the 230V supply current */
     if(getSupplyCurrent230V()==ERROR){
-        /* If error during monitoring, store the ERROR state in the outgoing
-           CAN message state. */
-        CAN_STATUS = ERROR;
+        /* If error during monitoring, the error state was stored in the
+           outgoing CAN message state during the previous statement. This
+           different format is used because getSupplyCurrent230V might return
+           two different error state depending on error conditions. */
         /* Store the last known value in the outgoing message */
         CAN_FLOAT=frontend.
                    cryostat.

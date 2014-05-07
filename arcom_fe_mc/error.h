@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: error.h,v 1.41 2008/02/07 16:21:24 avaccari Exp $
+    \$Id: error.h,v 1.42 2009/02/10 21:16:40 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the error handling module. */
@@ -30,6 +30,8 @@
     #define MON_ERROR_RNG   (-10)   //!< Monitor message returned value in error range
     #define MON_WARN_RNG    (-11)   //!< Monitor message returned value in warning range
     #define MON_CAN_RNG     (-12)   //!< Monitor message on non existing RCA
+    #define MON_ERROR_ACT   (-13)   //!< Monitor message returned value in error range and an action was taken by FEMC
+    #define MON_WARN_ACT    (-14)   //!< Monitor message returned value in warning range and an action was taken by FEMC
     /* Control */
     #define CON_ERROR_RNG   (-10)   //!< Value of last control message received is outside the allowed range
     /* Modules */

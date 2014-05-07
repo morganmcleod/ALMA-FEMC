@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: can.h,v 1.32 2008/02/16 00:13:08 avaccari Exp $
+    \$Id: can.h,v 1.33 2008/09/26 23:00:38 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the Controlled Area Network interface included
@@ -42,11 +42,11 @@
 
 
     /* Classes definition */
-    #define CLASSES_NUMBER      6           // See the list below
+    #define CLASSES_NUMBER      3           // See the list below
     #define CLASSES_RCA_MASK    0x30000L    /* Mask to extract the different classes:
-                                               0 -> Monitor Messages mapped to 3 and ridirected to bogoFunction() during initialization
-                                               1 -> Control Messages mapped to 4 and ridirected to bogoFunction() during initialization
-                                               2 -> Special Messages mapped to 5 during initialization
+                                               0 -> Monitor Messages
+                                               1 -> Control Messages
+                                               2 -> Special Messages
                                                3 -> AMBSI Reserved (Should not receive) */
     #define CLASSES_MASK_SHIFT  16          // Bits right shift for the classes mask
     #define CONTROL_CLASS       1
@@ -118,7 +118,6 @@
     #define GET_CONSOLE_ENABLE          (GET_FPGA_VERSION_INFO+0x01)        //!< \b BASE+0x09 -> Returns the current state of the console (0->disabled 1->enabled)
     #define GET_ESNS_FOUND              (GET_CONSOLE_ENABLE+0x01)           //!< \b BASE+0x0A -> Returns the number of ESNs found
     #define GET_ESNS                    (GET_ESNS_FOUND+0x01)               //!< \b BASE+0x0B -> Returns the list of the found ESNs
-    #define GET_INITIALIZATION_STATUS   (GET_ESNS+0x01)                     //!< \b BASE+0x0C -> Returns the initialization status: 0 -> done, 1 -> initializing (Don't change the offset of this RCA, since it is register with the same number in the AMBSI1)
     #define LAST_SPECIAL_MONITOR_RCA    (BASE_SPECIAL_MONITOR_RCA+0x00FFF)  // Last possible special monitor RCA
     /* Control */
     //! \b 0x21000 -> Base address for the special control RCAs
@@ -128,7 +127,6 @@
     #define BASE_SPECIAL_CONTROL_RCA    0x21000L
     #define SET_EXIT_PROGRAM            BASE_SPECIAL_CONTROL_RCA            //!< \b BASE+0x00 -> Ends the execution of the main program
     #define SET_REBOOT                  (SET_EXIT_PROGRAM+0x01)             //!< \b BASE+0x01 -> Reboots the ARCOM board
-    #define SET_INITIALIZE_FRONTEND     (SET_REBOOT+0x01)                   //!< \b BASE+0x02 -> Proceed with frontend initialization
     #define SET_CONSOLE_ENABLE          (SET_EXIT_PROGRAM+0x09)             //!< \b BASE+0x09 -> Enables/Disables the console
     #define LAST_SPECIAL_CONTROL_RCA    (BASE_SPECIAL_CONTROL_RCA+0x00FFF)  // Last possible special monitor RCA
 
