@@ -6,7 +6,7 @@
 
     <b> CVS informations: </b><br>
 
-    \$Id: version.h,v 1.42 2009/10/13 16:17:16 avaccari Exp $
+    \$Id: version.h,v 1.45 2010/04/28 22:07:59 avaccari Exp $
 
     This files contains all the informations about the current version of the
     software and its revision history.
@@ -22,7 +22,24 @@
             - ...
 
     REVISION HISTORY
-    2009-10-13  002.002.000     (fe_mc.exe or 02-02-00.exe or 2k91013.exe
+    2010-04-28  002.003.000     (fe_mc.exe or 02-03-00.exe or 2100428.exe)
+        Official Release
+        This version is tagged Ver_02_03_00(ALMA-40_00_00_00-75_35_25_00_B_ICD).
+        - During initialization of the OWB, the detected ESNs will be reported
+          both with the family code first and with the family code last.
+          (Jira ticket: HANDOVER-879)
+        - Modified interface to IF switch to support both hardware revisions of
+          the IF switch M&C board. (Jira ticket: FE-158)
+        - Resolved issue with IF switch temperatures monitoring returning
+          errors. (Jira tickets: FE-154, AIV-1675)
+        - Fixed issue that will leave timer running if error during wait for
+          ADC to get ready in several subsystems.
+        - Changes B9 SIS heater timeout to 10s. Also created independent
+          timeouts one for each polarization.
+        - Added the support for different multiplier scales via the WCA
+          configuration files. (Jira ticket: FE-153)
+
+    2009-10-13  002.002.000     (fe_mc.exe or 02-02-00.exe or 2k91013.exe)
         Official Release
         This version is tagged Ver_02_02_00(ALMA-40_00_00_00-75_35_25_00_B_ICD).
         - Modified scaling factor for LPR temperature sensors
@@ -177,18 +194,18 @@
 
 /*! \mainpage
     \section    sectionVersion  Version
-    Documentation relative to Version: 002.002.000 */
+    Documentation relative to Version: 002.003.000 */
 
 #ifndef _VERSION_H
     #define _VERSION_H
 
     /* Defines */
     #define VERSION_MAJOR   002  //!< Major version
-    #define VERSION_MINOR   002  //!< Minor version
+    #define VERSION_MINOR   003  //!< Minor version
     #define VERSION_PATCH   000  //!< Patch level
 
-    #define VERSION_DATE    "2009-10-13" //!< Version Date
-    #define VERSION_NOTES   "\n- 40us delay in bias and WCA\n- Double read for the photmixer monitor\n- 5ms delay after band power up before band initialization\n- error report off" //!<Version Notes
+    #define VERSION_DATE    "2010-04-28" //!< Version Date
+    #define VERSION_NOTES   "" //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Andrea Vaccari - NRAO (avaccari@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"

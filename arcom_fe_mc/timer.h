@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: timer.h,v 1.29 2009/10/13 15:01:49 avaccari Exp $
+    \$Id: timer.h,v 1.30 2010/03/03 15:43:18 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the timers used by the software. */
@@ -32,8 +32,8 @@
     #define TIMER_BIAS_DAC1_RDY         21      // Timer number
     #define TIMER_BIAS_TO_DAC1_RDY      100     // Timeout in milliseconds
     /* BAND9 SIS Heater */
-    #define TIMER_BIAS_B9_HEATER        22      // Timer number
-    #define TIMER_BIAS_TO_B9_HEATER     100000  // Timeout in milliseconds
+    #define TIMER_BIAS_B9_HEATER(pol)   (22+pol)// Timer number
+    #define TIMER_BIAS_TO_B9_HEATER     10000   // Timeout in milliseconds
 
     /*** LO Module ***/
     /* ADC */
@@ -52,7 +52,7 @@
 
     /*** Cryostat Module ***/
     /* ADC */
-    #define TIMER_CRYO_ANALOG_WAIT      50      // Timer number
+    #define TIMER_CRYO_ANALOG_WAIT      60      // Timer number
     #define TIMER_CRYO_TO_ANALOG_WAIT   50      // Timeout in milliseconds
 
     /*** LPR Module ***/

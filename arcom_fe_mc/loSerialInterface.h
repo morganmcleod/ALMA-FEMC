@@ -6,7 +6,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: loSerialInterface.h,v 1.32 2008/10/07 17:38:39 avaccari Exp $
+    \$Id: loSerialInterface.h,v 1.33 2010/03/03 15:43:18 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the LO serial interface. */
@@ -195,7 +195,6 @@
     #define LO_DRAIN_C_SCALE                1000.0      // Scale factor for any drain current
     #define LO_PLL_ASSEMBLY_TEMP_SCALE      1000.0      // Scale factor for the PLL assembly temperature
     #define LO_PLL_TTL_PWR_SCALE            10.0        // Scale factor for the PLL any total power
-    #define LO_AMC_MULTIPLIER_C_SCALE       100.0       // Scale factor for the AMC D multiplier bias current
     #define LO_ADC_BUSY                     0           // Busy state signal
 
 

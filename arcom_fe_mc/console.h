@@ -5,7 +5,7 @@
     Created: 2007/05/22 11:31:57 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: console.h,v 1.5 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: console.h,v 1.6 2010/04/27 22:08:16 avaccari Exp $
 
     This files contains all the informations necessary to handle the console
     accesses to the software. */
@@ -33,6 +33,7 @@
     /* Prototypes */
     /* Statics */
     static void parseBuffer(void);
+
     /* Externs */
     extern void console(void); //!< This function handles the console inputs
 

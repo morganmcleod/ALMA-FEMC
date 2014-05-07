@@ -5,7 +5,7 @@
     Created: 2007/06/02 17:01:27 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lpr.c,v 1.15 2009/08/25 21:39:39 avaccari Exp $
+    \$Id: lpr.c,v 1.16 2010/03/03 15:43:18 avaccari Exp $
 
     This file contains all the functions necessary to handle LPR events. */
 
@@ -263,7 +263,13 @@ int lprStartup(void){
             return ERROR;
         }
         printf("        done!\n"); // Force shutter
+    } else {
+        /* Stop the timer */
+        if(stopAsyncTimer(TIMER_LPR_SWITCH_RDY)==ERROR){
+            return ERROR;
+        }
     }
+
 
     /* If everyting went fine, update the optical switch port to reflect
        the fact that the shutter is enabled. */

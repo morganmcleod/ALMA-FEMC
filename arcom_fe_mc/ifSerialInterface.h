@@ -6,7 +6,7 @@
     Created: 2006/11/30 16:40:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ifSerialInterface.h,v 1.7 2007/05/29 14:56:11 avaccari Exp $
+    \$Id: ifSerialInterface.h,v 1.8 2010/03/03 15:43:18 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the IF switch serial interface. */
@@ -162,8 +162,9 @@
            - 5 -> Voltage 2 IF channel 3
            - 6 -> Voltage 1 IF channel 4
            - 7 -> Voltage 2 IF channel 4 */
-    #define IF_GREG_SELECT_TEMP_MONITOR_V1(Ch)  (2*Ch)
-    #define IF_GREG_SELECT_TEMP_MONITOR_V2(Ch)  (2*Ch+1)
+    #define IF_GREG_SELECT_TEMP_MONITOR_V1(Ch)          (2*Ch)
+    #define IF_GREG_SELECT_TEMP_MONITOR_V2(Ch)          (2*Ch+1)
+    #define IF_GREG_SELECT_TEMP_MONITOR_V_NEW_HARDW(Ch) (Ch)
 
 
 
@@ -193,10 +194,15 @@
     //! IF Siwtch status register bitfield (4-bit+12 -> 16-bit)
     /*! The IF switch status register defines the current state of several
         hardware within the power distribution:
+        \param hardwRev     an unsigned int     :2
         \param adcReady     an unsigned int     :1 */
     typedef struct {
-        /* bit 2-0 of the power distribution are unused */
-        unsigned int                :3;
+        //! Hardware revision level
+        /*! This 2-bits return the hardware revision level of the
+            IF switch M&C board */
+        unsigned int hardwRev       :2;
+        /* bit 2 of thae power distribution are unused */
+        unsigned int                :1;
         //! ADC Ready bit
         /*! This 1-bit field return the current status of the ADC:
                 - 0 -> ADC Busy
@@ -288,5 +294,6 @@
     extern int getIfChannelTemp(void); //!< This function monitors the IF channel temperature
     extern int setIfChannelAttenuation(void); //!< This function controls the IF channel attenuation
     extern int setIfSwitchBandSelect(void); //!< This function controls the IF switch band selection
+    extern int getIfSwitchHardwRevision(void); //!< This function return the IF switch M&C board hardware revision level
 
 #endif /* _IFSERIALINTERFACE_H */

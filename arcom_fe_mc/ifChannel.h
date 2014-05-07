@@ -6,7 +6,7 @@
     Created: 2004/10/25 14:48:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ifChannel.h,v 1.7 2007/05/21 15:49:26 avaccari Exp $
+    \$Id: ifChannel.h,v 1.8 2010/03/03 15:43:18 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the power distribution channel subsystem. There
@@ -46,10 +46,12 @@
     #define IF_CHANNEL3         3
 
     /* IF switch temperature evaluation defines */
-    #define BRIDGE_RESISTOR         4020.0  // R1
-    #define VREF                    0.5     // Reference voltage
-    #define BETA_NORDEN             3380.0  // Norden uses a termistor from muRata #NCP15XH103J03RC
-    #define TEMP_OFFSET             273.15  // Guess!
+    #define BRIDGE_RESISTOR             4020.0  // R1
+    #define BRIDGE_RESISTOR_NEW_HARDW   10000.0 // Resistor for new M&C hardware
+    #define VREF                        0.5     // Reference voltage
+    #define VREF_NEW_HARDW              2.5     // Reference voltage for new M&C hardware
+    #define BETA_NORDEN                 3380.0  // Norden uses a termistor from muRata #NCP15XH103J03RC
+    #define TEMP_OFFSET                 273.15  // Guess!
 
 
     /* Submodules definitions */

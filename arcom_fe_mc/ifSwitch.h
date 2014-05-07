@@ -6,7 +6,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ifSwitch.h,v 1.16 2007/06/01 20:55:10 avaccari Exp $
+    \$Id: ifSwitch.h,v 1.17 2010/03/03 15:43:18 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the IF switch system. This system allows to
@@ -69,12 +69,17 @@
     //! Current state of the IF switch system
     /*! This structure represent the current state of the IF switch system.
         \ingroup    frontend
+        \param      hardwRevision       This contains the IF switch M&C board
+                                        hardware revision level
         \param      ifChannel[Po][Sb]   a IF_CHANNEL
         \param      bandSelect          an unsigned char
         \param      lastBandSelect      This contains a copy of the last issued
                                         control message for the band select. */
      typedef struct {
         //! Current state of the the IF channel
+        //! IF Switch M&C board hardware revision level
+        /*! This contains the IF switch M&C board hardware revision level */
+        unsigned char   hardwRevision;
         /*! There are four different IF channel for every cartridge. The
             attenuation of each channel can be set independently.
 
@@ -109,5 +114,6 @@
     static void bandSelectHandler(void);
     /* Externs */
     extern void ifSwitchHandler(void); //!< This function deals with the incoming CAN message
+    extern int ifSwitchStartup(void); //!< This function deals with the initialization of the IF switch system
 
 #endif /* _IFSWITCH_H */

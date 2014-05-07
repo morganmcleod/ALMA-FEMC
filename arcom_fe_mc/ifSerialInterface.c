@@ -5,7 +5,7 @@
     Created: 2006/11/30 16:49:28 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ifSerialInterface.c,v 1.10 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: ifSerialInterface.c,v 1.11 2010/03/03 15:43:18 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     IF Switch serial interface.
@@ -115,6 +115,12 @@ static int getIfAnalogMonitor(void){
                         IF_STATUS_REG_SHIFT_SIZE,
                         IF_STATUS_REG_SHIFT_DIR,
                         SERIAL_READ)==ERROR){
+
+            /* Stop the timer */
+            if(stopAsyncTimer(TIMER_IF_ADC_RDY)==ERROR){
+                return ERROR;
+            }
+
             return ERROR;
         }
         timedOut=queryAsyncTimer(TIMER_IF_ADC_RDY);
@@ -227,6 +233,8 @@ int setIfTempServoEnable(unsigned char enable){
 
 /* Get IF channel temperature */
 /*! This function gets the temperature of the selected IF switch channel.
+    The temperatures are computed in different ways depending on the hardware
+    revision level of the IF switch M&C board.
 
     In order to measure the temperature, it's necessary to acquire two voltages,
     so this function will perform the following operations
@@ -236,7 +244,7 @@ int setIfTempServoEnable(unsigned char enable){
            requests for the IF switch
         -# Scale the raw binary data with the correct unit and store the result
            in a temporary variable
-        -# Repeat 1-3 for the following voltage
+        -# Repeat 1-3 for the following voltage (only for old revision hardware)
         -# Scale the raw data with the correct unit and store the result in the
            \ref frontend variable.
 
@@ -246,47 +254,80 @@ int setIfTempServoEnable(unsigned char enable){
 int getIfChannelTemp(void){
 
     /* Variables to store the temporary data */
-    float v1 = 0.0, v2 = 0.0, rTermistor=0.0, temperature=0.0;
+    float v = 0.0, v1 = 0.0, v2 = 0.0, rTermistor=0.0, temperature=0.0;
 
     /* Clear the IF switch GREG */
     ifRegisters.
      gReg=0x0000;
 
-    /* 1 - Select the desired monitor point
-           a - update GREG */
-    ifRegisters.
-     gReg=IF_GREG_SELECT_TEMP_MONITOR_V1(currentIfSwitchModule);
+    /* If the IF switch M&C module is the old hardware revision */
+    if(frontend.
+        ifSwitch.
+         hardwRevision==0){
+        /* 1 - Select the desired monitor point
+               a - update GREG */
+        ifRegisters.
+         gReg=IF_GREG_SELECT_TEMP_MONITOR_V1(currentIfSwitchModule);
 
-    /* 2 - Call the getIfAnalogMonitor function */
-    if(getIfAnalogMonitor()==ERROR){
-        return ERROR;
+        /* 2 - Call the getIfAnalogMonitor function */
+        if(getIfAnalogMonitor()==ERROR){
+            return ERROR;
+        }
+
+        /* 3 - Scale the first data and store in temporary variable */
+        v1=(IF_ADC_TEMP_V_SCALE*ifRegisters.
+                                 adcData)/IF_ADC_RANGE;
+
+        /* 4 - Repeat 1-3 for the next voltage */
+        /* Select the desired monitor point
+               - update GREG */
+        ifRegisters.
+         gReg=IF_GREG_SELECT_TEMP_MONITOR_V2(currentIfSwitchModule);
+
+        /* Call the getIfAnalogMonitor function */
+        if(getIfAnalogMonitor()==ERROR){
+            return ERROR;
+        }
+
+        /* Scale the data and store in temporary variable */
+        v2=(IF_ADC_TEMP_V_SCALE*ifRegisters.
+                                 adcData)/IF_ADC_RANGE;
+
+        /* 5 - Scale the data */
+        /* Find the termistor resistance */
+        rTermistor = BRIDGE_RESISTOR*(v1+v2-2.0*VREF)/(VREF-v1);
+
+        /* Find the temperature in K */
+        temperature = BETA_NORDEN*298.15/(298.15*log(rTermistor/10000.0)+BETA_NORDEN);
+
+
+
+
+    } else { // If it is the new hardware
+
+
+
+        /* 1 - Select the desired monitor point
+               a - update GREG */
+        ifRegisters.
+         gReg=IF_GREG_SELECT_TEMP_MONITOR_V_NEW_HARDW(currentIfSwitchModule);
+
+        /* 2 - Call the getIfAnalogMonitor function */
+        if(getIfAnalogMonitor()==ERROR){
+            return ERROR;
+        }
+
+        /* 3 - Scale the first data and store in temporary variable */
+        v=(IF_ADC_TEMP_V_SCALE*ifRegisters.
+                                adcData)/IF_ADC_RANGE;
+
+        /* 4 - Scale the data */
+        /* Find the termistor resistance */
+        rTermistor = BRIDGE_RESISTOR_NEW_HARDW*(v/VREF_NEW_HARDW);
+
+        /* Find the temperature in K */
+        temperature = BETA_NORDEN*298.15/(298.15*log(rTermistor/10000.0)+BETA_NORDEN);
     }
-
-    /* 3 - Scale the first data and store in temporary variable */
-    v1=(IF_ADC_TEMP_V_SCALE*ifRegisters.
-                             adcData)/IF_ADC_RANGE;
-
-    /* 4 - Repeat 1-3 for the next voltage */
-    /* Select the desired monitor point
-           - update GREG */
-    ifRegisters.
-     gReg=IF_GREG_SELECT_TEMP_MONITOR_V2(currentIfSwitchModule);
-
-    /* Call the getIfAnalogMonitor function */
-    if(getIfAnalogMonitor()==ERROR){
-        return ERROR;
-    }
-
-    /* Scale the data and store in temporary variable */
-    v2=(IF_ADC_TEMP_V_SCALE*ifRegisters.
-                             adcData)/IF_ADC_RANGE;
-
-    /* 5 - Scale the data */
-    /* Find the termistor resistance */
-    rTermistor = BRIDGE_RESISTOR*(v1+v2-2.0*VREF)/(VREF-v1);
-
-    /* Find the temperature in K */
-    temperature = BETA_NORDEN*298.15/(298.15*log(rTermistor/10000.0)+BETA_NORDEN);
 
     /* Check if a domain error occurred while evaluating the log. */
     if(errno==EDOM){
@@ -521,6 +562,49 @@ int setIfSwitchBandSelect(void){
     frontend.
      ifSwitch.
       bandSelect[CURRENT_VALUE]=CAN_BYTE;
+
+    return NO_ERROR;
+}
+
+
+/* Get IF switch M&C board hardware revision level */
+/*! This function reads the hardware revision level of the IF switch M&C board.
+    Different revision require different handling of certain data.
+
+    This function will perform the following operations:
+        -# Perform a parallel read (the hardware revision data is included in
+           the status register
+        -# If no error occurs, update the frontend variable with the revision
+           level
+
+    \return
+        - \ref NO_ERROR -> if no error occurres
+        - \ref ERROR    -> if something wrong happened */
+int getIfSwitchHardwRevision(void){
+
+    #ifdef DEBUG_IFSWITCH_SERIAL
+        printf("         - Reading hardware revision level (parallel read)\n");
+    #endif /* DEBUG_SWITCH_SERIAL */
+
+    /* If an error occurs, notify the calling function */
+    if(serialAccess(IF_PARALLEL_READ,
+                    &ifRegisters.
+                      statusReg.
+                       integer,
+                    IF_STATUS_REG_SIZE,
+                    IF_STATUS_REG_SHIFT_SIZE,
+                    IF_STATUS_REG_SHIFT_DIR,
+                    SERIAL_READ)==ERROR){
+        return ERROR;
+    }
+
+    /* If no error update frontend variable. */
+    frontend.
+     ifSwitch.
+      hardwRevision=ifRegisters.
+                     statusReg.
+                      bitField.
+                       hardwRev;
 
     return NO_ERROR;
 }

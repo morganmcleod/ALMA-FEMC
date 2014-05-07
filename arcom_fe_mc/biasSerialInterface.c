@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: biasSerialInterface.c,v 1.53 2009/10/13 15:01:49 avaccari Exp $
+    \$Id: biasSerialInterface.c,v 1.54 2010/03/03 15:43:18 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     BIAS serial interface.
@@ -245,6 +245,12 @@ if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,
                         BIAS_STATUS_REG_SHIFT_SIZE,
                         BIAS_STATUS_REG_SHIFT_DIR,
                         SERIAL_READ)==ERROR){
+
+            /* Stop the timer. */
+            if(stopAsyncTimer(TIMER_BIAS_ADC_RDY)==ERROR){
+                return ERROR;
+            }
+
             return ERROR;
         }
         timedOut=queryAsyncTimer(TIMER_BIAS_ADC_RDY);
@@ -870,6 +876,12 @@ int setLnaStage(void){
                        BIAS_STATUS_REG_SHIFT_SIZE,
                        BIAS_STATUS_REG_SHIFT_DIR,
                        SERIAL_READ)==ERROR){
+
+           /* Stop the timer. */
+           if(stopAsyncTimer(TIMER_BIAS_DAC1_RDY)==ERROR){
+               return ERROR;
+           }
+
            return ERROR;
        }
        timedOut=queryAsyncTimer(TIMER_BIAS_DAC1_RDY);

@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:16:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: frontend.c,v 1.19 2009/04/24 22:37:32 avaccari Exp $
+    \$Id: frontend.c,v 1.20 2010/03/03 15:43:18 avaccari Exp $
 
     This file contains the functions and the informations necessary to deal with
     the frontend system. */
@@ -173,6 +173,11 @@ int frontendInit(void){
 
     /* Initialize the power distribution system */
     if(powerDistributionStartup()==ERROR){
+        return ERROR;
+    }
+
+    /* Initialize the IF switch system */
+    if(ifSwitchStartup()==ERROR){
         return ERROR;
     }
 

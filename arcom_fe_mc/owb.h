@@ -5,20 +5,20 @@
     Created: 2007/09/05 14:33:15 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: owb.h,v 1.5 2009/03/25 14:45:21 avaccari Exp $
+    \$Id: owb.h,v 1.6 2010/04/27 22:08:16 avaccari Exp $
 
     This file contains the header for the one wire bus access functions. */
 
 #ifndef _OWB_H
     #define _OWB_H
 
-    /* Defines */
     /* Extra includes */
     /* GLOBAL DEFINITIONS Defines */
     #ifndef _GLOBALDEFINITIONS_H
         #include "globalDefinitions.h"
     #endif /* _GLOBALDEFINITIONS_H */
 
+    /* Defines */
     #define OWB // Define this only if the OWB support is available in the FPGA
 
     #define MAX_DEVICES_NUMBER  35  // Maximum number of devices to look for
@@ -58,6 +58,36 @@
     #define ESNS_DEVICE_BASE        "ESN"       // Base for ESNs device key name
     #define ESNS_DEVICE_KEY(Dv)     buildString(ESNS_DEVICE_BASE,Dv,NULL) // Key containing the stored ESNs device SN
     #define ESNS_DEVICE_EXPECTED    1           // Expected keys in section containing the stored ESNs device SN
+
+    /* Dallas Maxim Chips Defines */
+
+    /* Family codes */
+    #define FAMILY_DS18S20  0x10
+    #define FAMILY_DS2433   0x23
+
+    /* ROM commands */
+    #define SEARCH_ROM          0xF0
+    #define READ_ROM            0x33
+    #define MATCH_ROM           0x55
+    #define SKIP_ROM            0xCC
+    #define ALARM_SEARCH        0xEC
+    #define OVERDRIVE_SKIP_ROM  0x3C
+    #define OVERDRIVE_MATCH_ROM 0x69
+
+    /* DS18S20 commands */
+    #define DS18S20_CONVERT_T           0x44
+    #define DS18S20_READ_SCRATCHPAD     0xBE
+    #define DS18S20_WRITE_SCRATCHPAD    0x4E
+    #define DS18S20_COPY_SCRATCHPAD     0x48
+    #define DS18S20_RECALL_E2           0xB8
+    #define DS18S20_READ_POWER_SUPPLY   0xB4
+
+    /* DS2433 commands */
+    #define DS2433_WRITE_SCRATCHPAD     0x0F
+    #define DS2433_READ_SCRATCHPAD      0xAA
+    #define DS2433_COPY_SCRATCHPAD      0x55
+    #define DS2433_READ_MEMORY          0xF0
+
 
     /* Globals */
     /* Externs */

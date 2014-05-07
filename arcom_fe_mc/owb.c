@@ -5,7 +5,7 @@
     Created: 2007/09/05 14:33:02 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: owb.c,v 1.10 2009/09/23 22:30:57 avaccari Exp $
+    \$Id: owb.c,v 1.11 2010/04/27 22:08:16 avaccari Exp $
 
     This files contains all the functions necessary to handle the one wire bus
     communication. */
@@ -45,12 +45,10 @@ int owbInit(void){
     unsigned char storedESNS[MAX_DEVICES_NUMBER][SERIAL_NUMBER_SIZE];
     unsigned char device;
     unsigned char loop;
-//    unsigned char swap;
     char base[6]; // 5 char for up to 65535 + 1 NULL
     int TData[SEARCH_BYTES_LENGTH];
     int RData[SEARCH_BYTES_LENGTH];
     int timedOut=0; // A local to keep track of time out errors
-
 
     printf("Initializing One Wire Bus...\n");
 
@@ -360,7 +358,7 @@ int owbInit(void){
     for(device=0;
         device<esnDevicesFound;
         device++){
-        printf("     - ESN%d: %X %X %X %X %X %X %X %X\n",
+        printf("     - ESN%d: %X %X %X %X %X %X %X %X (%X %X %X %X %X %X %X %X)\n",
                device,
                ESNS[device][0],
                ESNS[device][1],
@@ -369,7 +367,15 @@ int owbInit(void){
                ESNS[device][4],
                ESNS[device][5],
                ESNS[device][6],
-               ESNS[device][7]);
+               ESNS[device][7],
+               ESNS[device][7],
+               ESNS[device][6],
+               ESNS[device][5],
+               ESNS[device][4],
+               ESNS[device][3],
+               ESNS[device][2],
+               ESNS[device][1],
+               ESNS[device][0]);
     }
 
 
@@ -418,7 +424,7 @@ int owbInit(void){
         for(device=0;
             device<esnDevicesStored;
             device++){
-            printf("     - ESN%d: %X %X %X %X %X %X %X %X\n",
+            printf("     - ESN%d: %X %X %X %X %X %X %X %X (%X %X %X %X %X %X %X %X)\n",
                    device,
                    storedESNS[device][0],
                    storedESNS[device][1],
@@ -427,7 +433,15 @@ int owbInit(void){
                    storedESNS[device][4],
                    storedESNS[device][5],
                    storedESNS[device][6],
-                   storedESNS[device][7]);
+                   storedESNS[device][7],
+                   storedESNS[device][7],
+                   storedESNS[device][6],
+                   storedESNS[device][5],
+                   storedESNS[device][4],
+                   storedESNS[device][3],
+                   storedESNS[device][2],
+                   storedESNS[device][1],
+                   storedESNS[device][0]);
         }
 
 
@@ -441,9 +455,10 @@ int owbInit(void){
         printf(" - Updating stored list...\n");
         printf("   done!\n");
 
-
-
     printf("done!\n\n");
+
+
+
 
     return NO_ERROR;
 }

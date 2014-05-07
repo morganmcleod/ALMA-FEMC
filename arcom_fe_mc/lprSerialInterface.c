@@ -5,7 +5,7 @@
     Created: 2007/06/05 14:59:17 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lprSerialInterface.c,v 1.10 2009/10/22 14:52:09 avaccari Exp $
+    \$Id: lprSerialInterface.c,v 1.11 2010/03/03 15:43:18 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     LPR serial interface.
@@ -119,6 +119,11 @@ static int getLprAnalogMonitor(void){
                         LPR_STATUS_REG_SHIFT_SIZE,
                         LPR_STATUS_REG_SHIFT_DIR,
                         SERIAL_READ)==ERROR){
+            /* Stop the timer */
+            if(stopAsyncTimer(TIMER_LPR_ADC_RDY)==ERROR){
+                return ERROR;
+            }
+
             return ERROR;
         }
         timedOut=queryAsyncTimer(TIMER_LPR_ADC_RDY);

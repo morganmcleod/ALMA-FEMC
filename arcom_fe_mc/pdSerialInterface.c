@@ -5,7 +5,7 @@
     Created: 2006/10/18 10:11:13 by avaccari
 
     <b> CVS Informations: </b><br>
-    \$Id: pdSerialInterface.c,v 1.11 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: pdSerialInterface.c,v 1.12 2010/03/03 15:43:18 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     power distribution serial interface.
@@ -115,6 +115,12 @@ static int getPdAnalogMonitor(void){
                         PD_STATUS_REG_SHIFT_SIZE,
                         PD_STATUS_REG_SHIFT_DIR,
                         SERIAL_READ)==ERROR){
+
+            /* Stop the timer */
+            if(stopAsyncTimer(TIMER_PD_ADC_RDY)==ERROR){
+                return ERROR;
+            }
+
             return ERROR;
         }
         timedOut=queryAsyncTimer(TIMER_PD_ADC_RDY);

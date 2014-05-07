@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: sisHeater.c,v 1.19 2009/10/13 15:01:49 avaccari Exp $
+    \$Id: sisHeater.c,v 1.20 2010/03/03 15:43:18 avaccari Exp $
 
     This files contains all the functions necessary to handle SIS heater
     events. */
@@ -98,16 +98,16 @@ static void enableHandler(void){
            the hardware blocked message. This is necessary to prevent the
            keep-on algorithm from keeping the heater on on band 9. */
         if((currentModule==BAND9)&&CAN_BYTE){
-            switch(queryAsyncTimer(TIMER_BIAS_B9_HEATER)){
+            switch(queryAsyncTimer(TIMER_BIAS_B9_HEATER(currentBiasModule))){
                 case TIMER_NOT_RUNNING:
                     /* Start timer */
-                    startAsyncTimer(TIMER_BIAS_B9_HEATER,
+                    startAsyncTimer(TIMER_BIAS_B9_HEATER(currentBiasModule),
                                     TIMER_BIAS_TO_B9_HEATER,
                                     FALSE);
                     break;
                 case TIMER_EXPIRED:
                     /* Reload timer */
-                    startAsyncTimer(TIMER_BIAS_B9_HEATER,
+                    startAsyncTimer(TIMER_BIAS_B9_HEATER(currentBiasModule),
                                     TIMER_BIAS_TO_B9_HEATER,
                                     TRUE);
                     break;

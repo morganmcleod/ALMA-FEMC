@@ -5,7 +5,7 @@
     Created: 2006/09/06 11:52:38 by avaccari
 
     <b> CVS Informations: </b><br>
-    \$Id: loSerialInterface.c,v 1.13 2009/08/25 21:39:39 avaccari Exp $
+    \$Id: loSerialInterface.c,v 1.14 2010/03/03 15:43:18 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     LO serial interface.
@@ -154,6 +154,12 @@ static int getLoAnalogMonitor(void){
                         LO_STATUS_REG_SHIFT_SIZE,
                         LO_STATUS_REG_SHIFT_DIR,
                         SERIAL_READ)==ERROR){
+
+            /* Stop the timer */
+            if(stopAsyncTimer(TIMER_LO_ADC_RDY)==ERROR){
+                return ERROR;
+            }
+
             return ERROR;
         }
         timedOut=queryAsyncTimer(TIMER_LO_ADC_RDY);
@@ -1002,8 +1008,11 @@ int getAmc(unsigned char port){
              cartridge[currentModule].
               lo.
                amc.
-                multiplierDCurrent[CURRENT_VALUE]=(LO_AMC_MULTIPLIER_C_SCALE*loRegisters[currentModule].
-                                                                              adcData)/LO_ADC_RANGE;
+                multiplierDCurrent[CURRENT_VALUE]=(frontend.
+                                                    cartridge[currentModule].
+                                                     lo.
+                                                      multiplierCurrentsScale*loRegisters[currentModule].
+                                                                               adcData)/LO_ADC_RANGE;
             break;
         /* The E gate voltage is given by  10*(adcData/65536) */
         case AMC_GATE_E_VOLTAGE:

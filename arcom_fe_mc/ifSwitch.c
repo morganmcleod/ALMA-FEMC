@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ifSwitch.c,v 1.8 2007/05/21 15:49:26 avaccari Exp $
+    \$Id: ifSwitch.c,v 1.9 2010/03/03 15:43:18 avaccari Exp $
 
     This files contains all the functions necessary to handle IF Switch
     events. */
@@ -153,3 +153,38 @@ void bandSelectHandler(void){
 
     CAN_SIZE=CAN_BYTE_SIZE;
 }
+
+/* IF Switch initialization */
+/*! This function performs all the necessary initialization for the IF switch
+    system. These are executed only once at startup.
+    \return
+        - \ref NO_ERROR -> if no error occurred
+        - \ref ERROR    -> if something wrong happened */
+int ifSwitchStartup(void){
+
+    /* Set the currentModule variable to reflect the fact that the IF switch is
+       selected. This is necessary because currentModule is the global variable
+       used to select the communication channel. This is only necessary if
+       serial communication have to be implemented. */
+    currentModule=IF_SWITCH_MODULE;
+
+    printf(" Initializing IF Switch Module...\n");
+    printf("  - Reading IF switch M&C module hardware revision level...\n");
+
+    /* Call the getIfSwitchHadrwRevision() function to read the hardware
+       revision level. If error, return error and abort initialization. */
+    if(getIfSwitchHardwRevision()==ERROR){
+        return ERROR;
+    }
+
+    printf("    Revision level: %d\n",
+           frontend.
+            ifSwitch.
+             hardwRevision);
+
+    printf("    done!\n"); // Hardware Revision Level
+    printf(" done!\n\n"); // Initialization
+
+    return NO_ERROR;
+}
+

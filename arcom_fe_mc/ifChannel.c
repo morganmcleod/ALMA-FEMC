@@ -5,7 +5,7 @@
     Created: 2006/12/01 13:24:46 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ifChannel.c,v 1.6 2009/08/25 21:39:39 avaccari Exp $
+    \$Id: ifChannel.c,v 1.7 2010/03/03 15:43:18 avaccari Exp $
 
     This files contains all the functions necessary to handle IF Channel
     events. */
@@ -183,13 +183,17 @@ void assemblyTempHandler(void){
 
     /* Check if the temperature servo is enable. The electronics to read the
        temperature is biased only when the temperature servo is enable. If it
-       isn't then return the HARDW_BLKD_ERR and return. */
-    if(frontend.
-        ifSwitch.
-         ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
-                  [currentIfChannelSideband[currentIfSwitchModule]].
-          ifTempServo.
-           enable[CURRENT_VALUE]==IF_TEMP_SERVO_DISABLE){
+       isn't then return the HARDW_BLKD_ERR and return. This is true only for
+       revision 0 of the hardware, for the following revision, the temperature
+       is always available. */
+    if((frontend.
+         ifSwitch.
+          ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
+                   [currentIfChannelSideband[currentIfSwitchModule]].
+           ifTempServo.
+            enable[CURRENT_VALUE]==IF_TEMP_SERVO_DISABLE)&(frontend.
+                                                            ifSwitch.
+                                                             hardwRevision==0)){
         storeError(ERR_IF_CHANNEL,
                    0x07); // Error 0x07 -> the temperature servo is not enabled
         CAN_STATUS = HARDW_BLKD_ERR; // Notify the incoming CAN message
