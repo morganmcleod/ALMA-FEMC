@@ -6,7 +6,7 @@
 
     <b> CVS informations: </b><br>
 
-    \$Id: cryostat.c,v 1.28 2010/11/02 14:36:29 avaccari Exp $
+    \$Id: cryostat.c,v 1.30 2011/11/09 00:40:30 avaccari Exp $
 
     This files contains all the functions necessary to handle cryostat events. */
 
@@ -25,9 +25,9 @@
 /* Externs */
 unsigned char currentCryostatModule=0;
 unsigned char currentAsyncCryoTempModule = 0; /*!< This global keeps track of
-                                               the cryostat temperature module
-                                               currently addressed by the
-                                               asynchronous routine. */
+                                                   the cryostat temperature
+                                                   module currently addressed by
+                                                   the asynchronous routine. */
 int asyncCryoTempError[CRYOSTAT_TEMP_SENSORS_NUMBER]; /*!< A global to keep
                                                            track of the async
                                                            error while
@@ -108,7 +108,7 @@ int cryostatStartup(void){
         #endif /* DEBUG_STARTUP */
 
         CFG_STRUCT  dataIn;
-        unsigned char sensor, sensorNo[8], cnt;
+        unsigned char sensor, sensorNo[32], cnt;
         /* A variable to hold the section names of the cryostat configuration file
            where the TVO coefficients can be found. */
         char sensors[TVO_SENSORS_NUMBER+1][TVO_SEC_NAME_SIZE]={"CRYOCOOLER_4K",
@@ -301,6 +301,34 @@ int cryostatStartup(void){
        enable[CURRENT_VALUE]=VACUUM_CONTROLLER_ENABLE;
     printf("done!\n"); // Vacuum controller startup state
 
+    /* Set the default value for the temperature and pressure sensors to
+       FLOAT_UNINIT to allow verification that they've been monitored. */
+    printf("  - Set the startup value for the cryostat sensors...\n");
+    printf("    - Pressure...");
+    for(sensor=0;
+        sensor<VACUUM_SENSORS_NUMBER;
+        sensor++){
+        frontend.
+         cryostat.
+          vacuumController.
+           vacuumSensor[sensor].
+            pressure[CURRENT_VALUE]=FLOAT_UNINIT;
+    }
+    printf("done!\n"); // Pressure
+
+    printf("    - Temperature...");
+    for(sensor=0;
+        sensor<CRYOSTAT_TEMP_SENSORS_NUMBER;
+        sensor++){
+        frontend.
+         cryostat.
+          cryostatTemp[sensor].
+           temp[CURRENT_VALUE]=FLOAT_UNINIT;
+    }
+    printf("done!\n"); // Temperature
+
+    printf("    done!\n"); // Default sensor value
+
     printf(" done!\n\n"); // Cryostat
 
     return NO_ERROR;
@@ -416,7 +444,7 @@ void supplyCurrent230VHandler(void){
     \return
         - \ref NO_ERROR     -> if no error occured
         - \ref ASYNC_DONE   -> once all the async operations are done
-        - \ref ERROR        -> if something*/
+        - \ref ERROR        -> if something went wrong */
 int cryostatAsync(void){
 
     /* A static enum to track the state of the async function */
@@ -426,10 +454,10 @@ int cryostatAsync(void){
         ASYNC_CRYO_GET_230V
     } asyncCryoGetState = ASYNC_CRYO_GET_TEMP;
 
-    /* Cryostat */
+    /* Address the cryostat */
     currentModule=CRYO_MODULE;
 
-    /* Switch to the correct module */
+    /* Switch to the correct state */
     switch(asyncCryoGetState){
         /* Monitor all the temperatures one at the time asynchronously */
         case ASYNC_CRYO_GET_TEMP:

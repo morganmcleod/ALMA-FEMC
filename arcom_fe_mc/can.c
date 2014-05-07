@@ -18,7 +18,7 @@
     Created: 2004/08/24 16:16:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: can.c,v 1.47 2010/11/02 14:36:29 avaccari Exp $
+    \$Id: can.c,v 1.50 2011/11/09 00:40:30 avaccari Exp $
 
     This file contains the functions necessary to deal with the received CAN
     messages. */
@@ -79,7 +79,8 @@ static HANDLER      modulesHandler[MODULES_NUMBER]={cartridgeHandler,   // Cartr
                                                     powerDistributionHandler,
                                                     ifSwitchHandler,
                                                     cryostatHandler,
-                                                    lprHandler}; // The modules handler array is initialized
+                                                    lprHandler,
+                                                    fetimHandler}; // The modules handler array is initialized
 
 
 
@@ -134,6 +135,8 @@ void CANMessageHandler(void){
 /* Standard message handler. */
 static void standardRCAsHandler(void){
 
+//// IF IN MAINTENANCE MODE ONLY SPECIAL RCAs SHOULD BE ALLOWED
+//// CHECK NEEDS TO BE ADDED HERE AND DOCUMENTATION UPDATED
     if(CAN_SIZE == CAN_MONITOR){ // If it is a monitor message
         #ifdef DEBUG_CAN
             if(currentClass){
@@ -144,6 +147,20 @@ static void standardRCAsHandler(void){
                         currentClass);
             }
         #endif /* DEBUG_CAN */
+
+        /* Check if maintenance mode. If we are, then block all standard
+           standard messages. */
+        if(frontend.
+            mode[CURRENT_VALUE]==MAINTENANCE_MODE){
+            storeError(ERR_CAN,
+                       0x08); // Error 0x08 -> Front End in maintenance mode.
+            CAN_STATUS = HARDW_BLKD_ERR;
+
+            /* Return the error since it was a monitor message */
+            sendCANMessage();
+
+            return;
+        }
 
         /* Store the NO_ERROR default status */
         CAN_STATUS = NO_ERROR;
@@ -170,6 +187,15 @@ static void standardRCAsHandler(void){
     }
 
     /* If it is a control message... */
+    /* Check if maintenance mode. If we are, then block all standard
+       standard messages. */
+    if(frontend.
+        mode[CURRENT_VALUE]==MAINTENANCE_MODE){
+        storeError(ERR_CAN,
+                   0x08); // Error 0x08 -> Front End in maintenance mode.
+        return;
+    }
+
     /* There is no way to store an error to a control message addressed to a
        non existing RCA. */
     #ifdef DEBUG_CAN
@@ -465,11 +491,14 @@ static void specialRCAsHandler(void){
                         printf("  0x%lX->GET_FE_MODE\n\n",
                                GET_FE_MODE);
                     #endif /* DEBUG_CAN */
-                    CAN_DATA(0)=frontend.
-                                 mode[CURRENT_VALUE];
-                    CAN_SIZE=CAN_BYTE;
+                    CAN_BYTE=frontend.
+                              mode[CURRENT_VALUE];
+                    CAN_SIZE=CAN_BYTE_SIZE;
                     break;
-                default: // This will take care also of all the monitor request on special CAN control RCAs
+                /* This will take care also of all the monitor request on
+                   special CAN control RCAs. It should be replaced by a proper
+                   structure as the one used for standard RCAs */
+                default:
                     #ifdef DEBUG_CAN
                         printf("  Out of Range!\n\n");
                     #endif /* DEBUG_CAN */
@@ -499,21 +528,6 @@ static void specialRCAsHandler(void){
                     #endif /* DEBUG_CAN */
                     reboot();
                     break;
-                case SET_AMBSI1_ESN: // 0x21002 -> Set known AMBSI1 ESN
-                    printf("0x%1X 0x%1X 0x%1X 0x%1X 0x%1X 0x%1X 0x%1X 0x%1X\n\n",
-                           CAN_DATA(0),
-                           CAN_DATA(1),
-                           CAN_DATA(2),
-                           CAN_DATA(3),
-                           CAN_DATA(4),
-                           CAN_DATA(5),
-                           CAN_DATA(6),
-                           CAN_DATA(7));
-                    break;
-                case SET_AMBSI1_NID_FRM_REV: // 0x21003 -> Set known AMBSI1 Node ID and FEMC firmware revision
-                    break;
-                case SET_AMBSI1_INFO: // 0x21004 -> Set known AMBSI1 AMB library and hardware info
-                    break;
                 case SET_CONSOLE_ENABLE: // 0x21009 -> Enables/Disables the console
                     #ifdef DEBUG_CAN
                         printf("  0x%lX->SET_CONSOLE\n\n",
@@ -522,17 +536,32 @@ static void specialRCAsHandler(void){
                     consoleEnable=(CAN_BYTE==DISABLE)?DISABLE:
                                                       ENABLE;
                     break;
-/* This should be implemented right now, only operation mode is allowed
                 case SET_FE_MODE: // 0x2100E -> Set the FE operating mode
                     #ifdef DEBUG_CAN
                         printf("  0x%lX->SET_FE_MODE\n\n",
                                SET_FE_MODE);
                     #endif // DEBUG_CAN
-// The range should be checked according to the usual scheme before setting.
-                    frontend.
-                     mode[CURRENT_VALUE]=CAN_DATA(0);
+                    switch(CAN_BYTE){
+                        case OPERATIONAL_MODE:
+                        case TROUBLESHOOTING_MODE:
+                        case MAINTENANCE_MODE:
+                            frontend.
+                             mode[CURRENT_VALUE]=CAN_BYTE;
+                            break;
+                        default:
+                            storeError(ERR_CAN,
+                                       0x07); // Error 0x07 -> Illegal Front End Mode
+                            break;
+                    }
                     break;
-*/
+                case SET_READ_ESN: // 0x2100F -> Read the ESN available on the OWB
+                    #ifdef DEBUG_CAN
+                        printf("  0x%lX->SET_READ_ESN\n\n",
+                               SET_READ_ESN);
+                    #endif /* DEBUG_CAN */
+                    owbGetEsn();
+                    device=0; // Clears device index
+                    break;
                 default:
                     #ifdef DEBUG_CAN
                         printf("  Out of Range!\n\n");
@@ -577,7 +606,7 @@ static void receiveCANMessage(void){
     #endif /* DEBUG_CAN_FAST */
 
     #ifdef DEBUG_CAN
-        printf("RCA: %#lx\n",
+        printf("\nRCA: %#lx\n",
                CAN_ADDRESS);
         printf("size: %d\nData: ",
                CAN_SIZE);
@@ -676,7 +705,7 @@ static void sendCANMessage(void){
             break;
     }
 
-    printf(" (status: %#x)\n",
+    printf(" (status: %#x)\n\n",
            CAN_STATUS);
 
 

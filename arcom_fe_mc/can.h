@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: can.h,v 1.38 2010/11/02 14:36:29 avaccari Exp $
+    \$Id: can.h,v 1.40 2011/04/15 15:17:19 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the Controlled Area Network interface included
@@ -50,7 +50,7 @@
     #define CONTROL_CLASS       1
 
     /* Modules definition */
-    #define MODULES_NUMBER      14          // See the list below
+    #define MODULES_NUMBER      15          // See the list below
     #define BAND1_MODULE        0x00
     #define BAND2_MODULE        0x01
     #define BAND3_MODULE        0x02
@@ -65,13 +65,15 @@
     #define IF_SWITCH_MODULE    0x0B
     #define CRYO_MODULE         0x0C
     #define LPR_MODULE          0x0D
+    #define FETIM_MODULE        0x0E
     #define MODULES_RCA_MASK    0x0F000     /* Mask to extract the module number:
                                                0-9 -> Cartridge (10 modules -> 1 handler)
-                                               A  -> Power distribution
-                                               B  -> IF switch
-                                               C  -> Cryostat
-                                               D  -> LPR
-                                               E-F -> Available for more modules */
+                                               A   -> Power distribution
+                                               B   -> IF switch
+                                               C   -> Cryostat
+                                               D   -> LPR
+                                               E   -> FETIM
+                                               F   -> Available for more modules */
     #define MODULES_MASK_SHIFT  12          // Bits right shift for the modules mask
 
 
@@ -129,11 +131,9 @@
     #define BASE_SPECIAL_CONTROL_RCA    0x21000L
     #define SET_EXIT_PROGRAM            BASE_SPECIAL_CONTROL_RCA            //!< \b BASE+0x00 -> Ends the execution of the main program
     #define SET_REBOOT                  (SET_EXIT_PROGRAM+0x01)             //!< \b BASE+0x01 -> Reboots the ARCOM board
-    #define SET_AMBSI1_ESN              (SET_EXIT_PROGRAM+0x02)             //!< \b BASE+0x02 -> Set the known AMBSI1 ESN. This is received during initialization from the AMBSI1
-    #define SET_AMBSI1_NID_FRM_REV      (SET_EXIT_PROGRAM+0x03)             //!< \b BASE+0x03 -> Set the known AMBSI1 Node ID and AMBSI1 FEMC firmware revision. This is received during initialization from the AMBSI1
-    #define SET_AMBSI1_INFO             (SET_EXIT_PROGRAM+0x04)             //!< \b BASE+0x04 -> Set the known AMBSI1 AMB library info and the AMBSI1 hardware info. This is received during initialization from the AMBSI1
     #define SET_CONSOLE_ENABLE          (SET_EXIT_PROGRAM+0x09)             //!< \b BASE+0x09 -> Enables/Disables the console
     #define SET_FE_MODE                 (SET_EXIT_PROGRAM+0x0E)             //!< \b BASE+0x0E -> Changes the current FE operating mode
+    #define SET_READ_ESN                (SET_EXIT_PROGRAM+0x0F)             //!< \b BASE+0x0F -> Forces the firmware to read again the ESN available on the OWB
     #define LAST_SPECIAL_CONTROL_RCA    (BASE_SPECIAL_CONTROL_RCA+0x00FFF)  // Last possible special monitor RCA
 
 

@@ -5,7 +5,7 @@
     Created: 2007/06/02 17:01:27 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lpr.c,v 1.17 2010/11/02 14:36:29 avaccari Exp $
+    \$Id: lpr.c,v 1.18 2011/11/09 00:40:30 avaccari Exp $
 
     This file contains all the functions necessary to handle LPR events. */
 
@@ -66,8 +66,9 @@ void lprHandler(void){
         - \ref ERROR    -> if something wrong happened */
 int lprStartup(void){
 
-    /* Few variables to help load the coefficient in the frontend table */
+    /* A variable to keep track of the timer */
     int timedOut;
+
     #ifdef DATABASE_HARDW
         unsigned char cnt;
 
@@ -299,6 +300,94 @@ int lprStartup(void){
 
 
     printf(" done!\n\n"); // Initialization
+
+    return NO_ERROR;
+}
+
+/* LPR Stop */
+/*! This function performs the operations necessary to shutdown the LPR. This
+    are performed only once at shutdown.
+    \return
+        - \ref NO_ERROR -> if no error occurred
+        - \ref ERROR    -> if something wrong happened */
+int lprStop(void){
+
+    /* A variable to keep track of the timer */
+    int timedOut;
+
+    /* Set the currentModule variable to reflect the fact that the LPR is
+       selected. This is necessary because currentModule is the global variable
+       used to select the communication channel. This is only necessary if
+       serial communication have to be implemented. */
+    currentModule=LPR_MODULE;
+
+    printf(" Powering down LPR...\n");
+
+    /* Set optical modulation input to 0V. This will ensure that only minimum
+       optical radiation escaped the LPR should the switch not be shuttered. */
+    printf("  - Setting modulation input value to 0.0V...\n");
+    /* Load the CAN float to 0.0V */
+    CONV_FLOAT=0.0;
+    /* Call the setModulationInputValue() function to set the value in
+       hardware. If error, return error and abort initialization. */
+    if(setModulationInputValue()==ERROR){
+        return ERROR;
+    }
+    printf("    done!\n"); // Modulation input to 0.0V
+
+
+    /* Shutter the optical switch */
+    printf("  - Set optical switch in shutter mode...\n");
+    /* Setup for 5 seconds and start the asynchornous timer */
+    if(startAsyncTimer(TIMER_LPR_SWITCH_RDY,
+                       TIMER_LPR_TO_SWITCH_RDY,
+                       FALSE)==ERROR){
+        return ERROR;
+    }
+
+    /* Try standard shutter for 5 sec. The standard shutter waits for the
+       optical switch to be ready. */
+    do {
+        printf("    - Trying standard shutter...\n");
+        timedOut=queryAsyncTimer(TIMER_LPR_SWITCH_RDY);
+        if(timedOut==ERROR){
+            return ERROR;
+        }
+    } while ((setOpticalSwitchShutter(STANDARD)==ERROR)&&(timedOut==TIMER_RUNNING));
+
+    printf("      done!\n"); // Optical switch ready
+
+    /* If the timer has expired, signal the error and force the shutter */
+    if(timedOut==TIMER_EXPIRED){
+        storeError(ERR_OPTICAL_SWITCH,
+                   0x09); // Error 0x09 -> Warning: Time out while waiting for ready state during initialization
+
+        /* Force the shutter mode. If error, return error and abort
+           initialization. */
+        printf("    - Forcing shutter mode...\n");
+        if(setOpticalSwitchShutter(FORCED)==ERROR){
+            return ERROR;
+        }
+        printf("      done!\n"); // Force shutter
+    } else {
+        /* Stop the timer */
+        if(stopAsyncTimer(TIMER_LPR_SWITCH_RDY)==ERROR){
+            return ERROR;
+        }
+    }
+
+
+    /* If everyting went fine, update the optical switch port to reflect
+       the fact that the shutter is enabled. */
+    frontend.
+     lpr.
+      opticalSwitch.
+       port[CURRENT_VALUE]=PORT_SHUTTERED;
+
+    printf("    done!\n"); // Set shutter
+
+
+    printf(" done!\n\n"); // Optical Switch
 
     return NO_ERROR;
 }

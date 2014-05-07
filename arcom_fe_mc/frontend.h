@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: frontend.h,v 1.24 2009/03/23 20:43:04 avaccari Exp $
+    \$Id: frontend.h,v 1.27 2011/11/09 00:40:30 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the entire frontend system.
@@ -48,9 +48,15 @@
     #endif /* _CRYOSTAT_H */
 
     /* LPR defines */
-    #ifndef LPR_H
+    #ifndef _LPR_H
         #include "lpr.h"
     #endif /* _LPR_H */
+
+    /* FETIM defines */
+    #ifndef _FETIM_H
+        #include "fetim.h"
+    #endif /* _FETIM_H */
+
 
     /* Defines */
     /* Configuration defines */
@@ -90,6 +96,8 @@
         \param  powerDistribution   a POWER_DISTRIBUTION
         \param  ifSwitch            a IF_SWITCH
         \param  cryostat            a CRYOSTAT
+        \param  lpr                 a LPR
+        \param  fetim               a FETIM
         \warning    Modules will be added/changed when more informations about
                     them are available. */
     typedef struct {
@@ -105,11 +113,9 @@
                                                possible operation with the
                                                receiver.
                 - \ref MAINTENANCE_MODE     -> The receiver is in maintenance
-                                               mode. In this mode operation
-                                               allowed are: warm up, cool down,
-                                               power on self test, power on
-                                               configuration, configuration
-                                               data exchange. */
+                                               mode. In this mode only operation
+                                               allowed by special CAN addressed
+                                               are allowed. */
         unsigned char       mode[OPERATION_ARRAY_SIZE];
         //! Cartridge current state
         /*! Cartridges \p Ca are assigned according to the following:
@@ -138,6 +144,9 @@
         //! LPR current state
         /*! Please see \ref LPR for more informations. */
         LPR                 lpr;
+        //! FETIM current state
+        /*! Please see \ref FETIM for more information. */
+        FETIM               fetim;
     } FRONTEND;
 
     /* Globals */

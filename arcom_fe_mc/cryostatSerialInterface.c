@@ -5,7 +5,7 @@
     Created: 2007/04/10 11:26:37 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cryostatSerialInterface.c,v 1.18 2010/11/02 14:36:29 avaccari Exp $
+    \$Id: cryostatSerialInterface.c,v 1.21 2011/11/09 00:40:30 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     cryostat serial interface.
@@ -19,7 +19,7 @@
     This module doesn't know the details on how the communication to the remote
     monitor and control device takes place. */
 
-    /* Includes */
+/* Includes */
 #include <stddef.h>     /* NULL */
 #include <stdio.h>      /* printf */
 #include <math.h>       /* pow */
@@ -74,9 +74,9 @@ static int getCryoAnalogMonitor(void){
            right channel. */
         case ASYNC_CRYO_ANALOG_AREG:
             /* Parallel write AREG */
-            #ifdef DEBUG_CRYOSTAT_SERIAL
+            #ifdef DEBUG_ASYNC_CRYOSTAT_SERIAL
                 printf("         - Writing AREG\n");
-            #endif /* DEBUG_CRYOSTAT_SERIAL */
+            #endif /* DEBUG_ASYNC_CRYOSTAT_SERIAL */
 
             /* The function to write the data to the hardware is called passing the
                intermediate buffer. If an error occurs, notify the calling function. */
@@ -98,14 +98,17 @@ static int getCryoAnalogMonitor(void){
 
         /* Setup the timer to wait before starting the ADC conversion. */
         case ASYNC_CRYO_ANALOG_SET_WAIT:
-            #ifdef DEBUG_CRYOSTAT_SERIAL
+            #ifdef DEBUG_ASYNC_CRYOSTAT_SERIAL
                 printf("         - Wait for hardware");
-            #endif /* DEBUG_CRYOSTAT_SERIAL */
+            #endif /* DEBUG_ASYNC_CRYOSTAT_SERIAL */
 
             /* Setup timer to wait for 50 ms before reading the temperature */
             if(startAsyncTimer(TIMER_CRYO_ANALOG_WAIT,
                                TIMER_CRYO_TO_ANALOG_WAIT,
                                FALSE)==ERROR){
+                /* Reset state */
+                asyncCryoAnalogState=ASYNC_CRYO_ANALOG_AREG;
+
                 return ERROR;
             }
 
@@ -120,14 +123,17 @@ static int getCryoAnalogMonitor(void){
                 /* A temporary variable to deal with the timer. */
                 int timedOut;
 
-                #ifdef DEBUG_CRYOSTAT_SERIAL
+                #ifdef DEBUG_ASYNC_CRYOSTAT_SERIAL
                     printf(".");
-                #endif /* DEBUG_CRYOSTAT_SERIAL */
+                #endif /* DEBUG_ASYNC_CRYOSTAT_SERIAL */
 
                 /* Query the async timer */
                 timedOut=queryAsyncTimer(TIMER_CRYO_ANALOG_WAIT);
 
                 if(timedOut==ERROR){
+                    /* Reset state */
+                    asyncCryoAnalogState=ASYNC_CRYO_ANALOG_AREG;
+
                     return ERROR;
                 }
 
@@ -145,9 +151,9 @@ static int getCryoAnalogMonitor(void){
         case ASYNC_CRYO_ANALOG_ADC_CONV:
             /* Initiate ADC conversion:
                - send ADC convert strobe command */
-            #ifdef DEBUG_CRYOSTAT_SERIAL
+            #ifdef DEBUG_ASYNC_CRYOSTAT_SERIAL
                 printf("\n         - Initiating ADC conversion\n");
-            #endif /* DEBUG_CRYOSTAT_SERIAL */
+            #endif /* DEBUG_ASYNC_CRYOSTAT_SERIAL */
 
             /* If an error occurs, notify the calling function */
             if(serialAccess(CRYO_ADC_CONVERT_STROBE,
@@ -156,6 +162,9 @@ static int getCryoAnalogMonitor(void){
                             CRYO_ADC_STROBE_SHIFT_SIZE,
                             CRYO_ADC_STROBE_SHIFT_DIR,
                             SERIAL_WRITE)==ERROR){
+                /* Reset state */
+                asyncCryoAnalogState=ASYNC_CRYO_ANALOG_AREG;
+
                 return ERROR;
             }
 
@@ -171,9 +180,9 @@ static int getCryoAnalogMonitor(void){
                    to get ready. */
                 static unsigned char retries=0;
 
-                #ifdef DEBUG_CRYOSTAT_SERIAL
+                #ifdef DEBUG_ASYNC_CRYOSTAT_SERIAL
                     printf("         - Waiting on ADC ready\n");
-                #endif /* DEBUG_CRYOSTAT_SERIAL */
+                #endif /* DEBUG_ASYNC_CRYOSTAT_SERIAL */
 
                 /* If an error occurs, notify the calling function */
                 if(serialAccess(CRYO_PARALLEL_READ,
@@ -184,6 +193,9 @@ static int getCryoAnalogMonitor(void){
                                 CRYO_STATUS_REG_SHIFT_SIZE,
                                 CRYO_STATUS_REG_SHIFT_DIR,
                                 SERIAL_READ)==ERROR){
+                    /* Reset state */
+                    asyncCryoAnalogState=ASYNC_CRYO_ANALOG_AREG;
+
                     return ERROR;
                 }
 
@@ -205,6 +217,9 @@ static int getCryoAnalogMonitor(void){
                                0x01); // Error 0x01 -> Too many retries waiting for ADC_READY
                     retries=0;
 
+                    /* Reset state */
+                    asyncCryoAnalogState=ASYNC_CRYO_ANALOG_AREG;
+
                     return ERROR;
                 }
 
@@ -221,9 +236,9 @@ static int getCryoAnalogMonitor(void){
                 int tempAdcValue[2];
 
                 /* ADC read cycle */
-                #ifdef DEBUG_CRYOSTAT_SERIAL
+                #ifdef DEBUG_ASYNC_CRYOSTAT_SERIAL
                     printf("         - Reading ADC value\n");
-                #endif /* DEBUG_CRYOSTAT_SERIAL */
+                #endif /* DEBUG_ASYNC_CRYOSTAT_SERIAL */
 
                 /* If error return the state to the calling function */
                 if(serialAccess(CRYO_ADC_DATA_READ,
@@ -232,6 +247,9 @@ static int getCryoAnalogMonitor(void){
                                 CRYO_ADC_DATA_SHIFT_SIZE,
                                 CRYO_ADC_DATA_SHIFT_DIR,
                                 SERIAL_READ)==ERROR){
+                    /* Reset state */
+                    asyncCryoAnalogState=ASYNC_CRYO_ANALOG_AREG;
+
                     return ERROR;
                 }
 
@@ -248,6 +266,9 @@ static int getCryoAnalogMonitor(void){
             }
 
         default:
+            /* Reset state */
+            asyncCryoAnalogState=ASYNC_CRYO_ANALOG_AREG;
+
             return ERROR;
             break;
     }
@@ -508,7 +529,6 @@ int getTurboPumpStates(void){
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
 int getGateValveState(void){
-
     /* Read the status register, if an error occurs, notify the calling
        function. */
     if(serialAccess(CRYO_PARALLEL_READ,
@@ -523,72 +543,57 @@ int getGateValveState(void){
     }
 
     /* Check the gate valve state.
-       Depending on the state of the backing pump the reading will return either
-       the state of 4 sensors (pump enable) or 2 sensors (pump disables). In
-       either cases is possible to evaluate the state of the gate valve. */
-    if(frontend.
-        cryostat.
-         backingPump.
-          enable[CURRENT_VALUE]==BACKING_PUMP_ENABLE){
-        switch(cryoRegisters.
-                statusReg.
-                 bitField.
-                  gateValveState){
-            case GATE_VALVE_4SENSORS_UNKNOWN: // If the sensors configuration correspond to an unknown gate valve
+       The hardware was then modified to always return 4 sensors and the
+       software followed suite. If the 24V switcher (backing pump) is not
+       turned on, then all the sensors will be triggered. This is equivalent
+       to an overcurrent situation so it must be differentiated. */
+    switch(cryoRegisters.
+            statusReg.
+             bitField.
+              gateValveState){
+        case GATE_VALVE_4SENSORS_UNKNOWN: // If the sensors configuration correspond to an unknown gate valve
+            frontend.
+             cryostat.
+              gateValve.
+               state[CURRENT_VALUE]=GATE_VALVE_UNKNOWN;
+            break;
+        case GATE_VALVE_4SENSORS_OPEN: // If the sensors configuration correspond to a open gate valve
+            frontend.
+             cryostat.
+              gateValve.
+               state[CURRENT_VALUE]=GATE_VALVE_OPEN;
+            break;
+        case GATE_VALVE_4SENSORS_CLOSE: // If the sensors configuration correspond to a close gate valve
+            frontend.
+             cryostat.
+              gateValve.
+               state[CURRENT_VALUE]=GATE_VALVE_CLOSE;
+            break;
+        case GATE_VALVE_4SENSORS_OVER_CURR: // If the sensors configuration correspond to an over current situation
+        /* Check if the backing pump is disabled. If it is disabled, return
+           "unknown". The new hardware doesn't return the location if either
+           of the supply voltages is off. */
+            if(frontend.
+                cryostat.
+                 backingPump.
+                  enable[CURRENT_VALUE]==BACKING_PUMP_ENABLE){
+                frontend.
+                 cryostat.
+                  gateValve.
+                   state[CURRENT_VALUE]=GATE_VALVE_OVER_CURR;
+            } else {
                 frontend.
                  cryostat.
                   gateValve.
                    state[CURRENT_VALUE]=GATE_VALVE_UNKNOWN;
-                break;
-            case GATE_VALVE_4SENSORS_OPEN: // If the sensors configuration correspond to a open gate valve
-                frontend.
-                 cryostat.
-                  gateValve.
-                   state[CURRENT_VALUE]=GATE_VALVE_OPEN;
-                break;
-            case GATE_VALVE_4SENSORS_CLOSE: // If the sensors configuration correspond to a close gate valve
-                frontend.
-                 cryostat.
-                  gateValve.
-                   state[CURRENT_VALUE]=GATE_VALVE_CLOSE;
-                break;
-            default: // Any other sensor configuration is due to hardware error
-                frontend.
-                 cryostat.
-                  gateValve.
-                   state[CURRENT_VALUE]=GATE_VALVE_ERROR;
-                break;
-        }
-    } else {
-        switch(cryoRegisters.
-                statusReg.
-                 bitField.
-                  gateValveState){
-            case GATE_VALVE_2SENSORS_UNKNOWN: // If the sensors configuration correspond to an unknown gate valve
-                frontend.
-                 cryostat.
-                  gateValve.
-                   state[CURRENT_VALUE]=GATE_VALVE_UNKNOWN;
-                break;
-            case GATE_VALVE_2SENSORS_OPEN: // If the sensors configuration correspond to a open gate valve
-                frontend.
-                 cryostat.
-                  gateValve.
-                   state[CURRENT_VALUE]=GATE_VALVE_OPEN;
-                break;
-            case GATE_VALVE_2SENSORS_CLOSE: // If the sensors configuration correspond to a close gate valve
-                frontend.
-                 cryostat.
-                  gateValve.
-                   state[CURRENT_VALUE]=GATE_VALVE_CLOSE;
-                break;
-            default: // Any other sensor configuration is due to hardware error
-                frontend.
-                 cryostat.
-                  gateValve.
-                   state[CURRENT_VALUE]=GATE_VALVE_ERROR;
-                break;
-        }
+            }
+            break;
+        default: // Any other sensor configuration is due to hardware error
+            frontend.
+             cryostat.
+              gateValve.
+               state[CURRENT_VALUE]=GATE_VALVE_ERROR;
+            break;
     }
 
     return NO_ERROR;
@@ -1172,9 +1177,9 @@ int getCryostatTemp(void){
         - \ref ERROR    -> if something wrong happened */
 int getCryoHardwRevision(void){
 
-    #ifdef DEBUG_CRYO_SERIAL
+    #ifdef DEBUG_CRYOSTAT_SERIAL
         printf("         - Reading hardware revision level\n");
-    #endif /* DEBUG_CRYO_SERIAL */
+    #endif /* DEBUG_CRYOSTAT_SERIAL */
 
     /* If an error occurs, notify the calling function */
     if(serialAccess(CRYO_HRDW_REV_READ,

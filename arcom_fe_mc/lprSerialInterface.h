@@ -6,7 +6,7 @@
     Created: 2007/06/02 10:38:01 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lprSerialInterface.h,v 1.9 2010/10/01 22:13:46 avaccari Exp $
+    \$Id: lprSerialInterface.h,v 1.10 2011/08/05 19:18:06 avaccari Exp $
 
     This file contains all the informations necessary to define the
     characteristics and operate the LPR serial interface. */
@@ -49,7 +49,7 @@
     #define LPR_10MHZ_MODE              0x07
     #define LPR_PARALLEL_WRITE(Rg)      (0x08+Rg)
     #define LPR_PARALLEL_READ           0x0A
-    // 0x0B-0x0F -> not used
+    // 0x0B-0x1F -> not used
 
     /* --- AREG definitions (8-bit) --- */
     /* Write Only: 8-bit + 1 bit for latching.

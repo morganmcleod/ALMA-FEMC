@@ -6,7 +6,7 @@
     Created: 2004/10/25 10:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: pdModule.h,v 1.14 2009/08/25 21:39:39 avaccari Exp $
+    \$Id: pdModule.h,v 1.15 2011/03/24 13:34:10 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the power distribution module subsystem. There
@@ -45,7 +45,6 @@
 
     /* Defines */
     #define PD_MODULES_NUMBER   (CARTRIDGES_NUMBER) //!< Number of power distribution modules
-    #define WAIT_AFTER_POWER_ON 5                   // Number of milliseconds to wait after power up before initialization
 
     /* Submodules definitions */
     #define PD_MODULE_MODULES_NUMBER        7       // See list below

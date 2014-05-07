@@ -6,7 +6,7 @@
     Created: 2007/05/29 14:49:12 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lpr.h,v 1.7 2009/03/23 19:22:04 avaccari Exp $
+    \$Id: lpr.h,v 1.9 2011/11/09 00:40:30 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the LO photonic receiver. */
@@ -73,7 +73,7 @@
                                     \ref LPR_TEMP_SENSORS_NUMBER sensor in each
                                     lpr.
         \param      opticalSwitch   This contains the information about the
-                                    state fo the optical switch.
+                                    state for the optical switch.
         \param      edfa            This contains the information about the
                                     state of the erbium doped fiber
                                     amplifier.
@@ -116,5 +116,6 @@
     /* Externs */
     extern void lprHandler(void); //!< This function deals with the incoming CAN messages
     extern int lprStartup(void); //!< This function initializes the LPR
+    extern int lprStop(void); //!< This function shuts down the LPR
 
 #endif /* _LPR_H */

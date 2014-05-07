@@ -5,7 +5,7 @@
     Created: 2007/06/02 12:34:50 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: edfa.c,v 1.4 2009/10/21 22:24:22 avaccari Exp $
+    \$Id: edfa.c,v 1.5 2011/04/15 15:17:19 avaccari Exp $
 
     This file contains all the functions necessary to handle EDFA events. */
 
@@ -54,7 +54,7 @@ void edfaHandler(void){
 }
 
 /* EDFA Driver State Handler */
-/*  This functions deald with the monitor requests to the EDFA driver state. */
+/* This functions deals with the monitor requests to the EDFA driver state. */
 static void driverStateHandler(void){
 
     #ifdef DEBUG_LPR

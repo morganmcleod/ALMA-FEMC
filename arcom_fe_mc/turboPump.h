@@ -6,7 +6,7 @@
     Created: 2004/10/27 14:27:40 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: turboPump.h,v 1.8 2007/06/01 20:55:10 avaccari Exp $
+    \$Id: turboPump.h,v 1.9 2011/11/09 00:40:30 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the turbo pump included in the cryostat. */
@@ -38,6 +38,13 @@
                                                        0 -> enableHandler
                                                        1 -> stateHandler
                                                        2 -> speedHandler */
+
+    /* Operability temperature range */
+    #define TURBO_PUMP_MIN_WARN_TEMP        10.0
+    #define TURBO_PUMP_MAX_WARN_TEMP        40.0
+    #define TURBO_PUMP_MIN_TEMPERATURE      15.0    // Minimum temperature at which turbo pump is operable
+    #define TURBO_PUMP_MAX_TEMPERATURE      45.0    // Maximum temperature at which turbo pump is operable
+
     /* Typedefs */
     //! Current state of the turbo pump
     /*! This structure represent the current state of the turbo pump.

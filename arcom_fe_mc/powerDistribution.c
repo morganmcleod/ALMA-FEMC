@@ -6,7 +6,7 @@
 
     <b> CVS informations: </b><br>
 
-    \$Id: powerDistribution.c,v 1.18 2010/11/02 14:36:29 avaccari Exp $
+    \$Id: powerDistribution.c,v 1.20 2011/11/09 00:40:30 avaccari Exp $
 
 
     This files contains all the functions necessary to handle power distribution
@@ -118,7 +118,6 @@ int powerDistributionStartup(void){
     powerDistributionStop();
 
     /* Now we can proceed with initialization */
-
     frontend.
      powerDistribution.
       poweredModules[MAX_SET_VALUE]=(frontend.
@@ -153,6 +152,7 @@ int powerDistributionStop(void){
         printf(" - Powering down module: %d...",
                currentPowerDistributionModule);
         setPdModuleEnable(PD_MODULE_DISABLE);
+        cartridgeStop(currentPowerDistributionModule);
         printf(" done!\n");
     }
 

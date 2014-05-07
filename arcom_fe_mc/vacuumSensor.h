@@ -8,7 +8,7 @@
     Created: 2007/04/06 14:25:15 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: vacuumSensor.h,v 1.6 2007/04/06 19:04:52 avaccari Exp $
+    \$Id: vacuumSensor.h,v 1.7 2011/11/09 00:40:30 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the dewar vacuum sensors. */
@@ -30,9 +30,10 @@
     #endif /* _GLOBALDEFINITIONS_H */
 
     /* Defines */
-    #define VACUUM_SENSORS_NUMBER  2 //!< Number of vacuum sensors in the dewar
-    #define CRYOSTAT_PRESSURE    0x0 //!< 00: Cryostat Pressure
-    #define VACUUM_PORT_PRESSURE 0x1 //!< 01: Vacuum Port Pressure
+    #define VACUUM_SENSORS_NUMBER       2       //!< Number of vacuum sensors in the dewar
+    #define CRYOSTAT_PRESSURE           0x0     //!< 00: Cryostat Pressure
+    #define VACUUM_PORT_PRESSURE        0x1     //!< 01: Vacuum Port Pressure
+    #define MAX_CRYO_COOLING_PRESSURE   0.0005  //!< Top pressure limit to allow cooling down
 
     /* Submodule definistions */
     #define VACUUM_SENSOR_MODULES_NUMBER        1   // It's just the pressure

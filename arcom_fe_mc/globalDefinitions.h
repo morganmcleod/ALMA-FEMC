@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: globalDefinitions.h,v 1.30 2010/08/11 22:05:20 avaccari Exp $
+    \$Id: globalDefinitions.h,v 1.31 2011/11/09 00:40:30 avaccari Exp $
 
     This file contains definitions that are used throughout the various modules
     of the program. */
@@ -59,6 +59,7 @@
     #define SHIFT_LEFT      0       //!< Signal to shift left
     #define SHIFT_RIGHT     1       //!< Signal to shift right
     #define FLOAT_ERROR     (-1.0)  //!< Global definition for a float value error
+    #define FLOAT_UNINIT    (-2.0)  //!< Global definition for an uninitialized float
 
 
     /* Useful fast macros */

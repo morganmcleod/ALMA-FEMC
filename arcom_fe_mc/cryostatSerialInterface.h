@@ -6,7 +6,7 @@
     Created: 2007/04/10 11:08:20 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cryostatSerialInterface.h,v 1.17 2010/11/02 14:36:29 avaccari Exp $
+    \$Id: cryostatSerialInterface.h,v 1.19 2011/11/09 00:40:30 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the cryostat serial interface. */
@@ -60,12 +60,11 @@
     #define GATE_VALVE_OPEN                 1
     #define GATE_VALVE_UNKNOWN              2
     #define GATE_VALVE_ERROR                3
+    #define GATE_VALVE_OVER_CURR            4
     #define GATE_VALVE_4SENSORS_UNKNOWN     0x0
     #define GATE_VALVE_4SENSORS_OPEN        0x5
     #define GATE_VALVE_4SENSORS_CLOSE       0xA
-    #define GATE_VALVE_2SENSORS_UNKNOWN     0xC
-    #define GATE_VALVE_2SENSORS_OPEN        0xD
-    #define GATE_VALVE_2SENSORS_CLOSE       0xE
+    #define GATE_VALVE_4SENSORS_OVER_CURR   0xF
     #define CRYOSTAT_TEMP_CONV_ERR          FLOAT_ERROR
     #define CRYOSTAT_PRESS_CONV_ERR         FLOAT_ERROR
 

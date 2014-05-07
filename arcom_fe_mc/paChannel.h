@@ -1,12 +1,12 @@
 /*! \file       paChannel.h
-    \ingroup    ps
+    \ingroup    pa
     \brief      PA channel header file
 
     <b> File informations: </b><br>
     Created: 2004/10/20 15:39:19 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: paChannel.h,v 1.20 2006/11/30 23:01:42 avaccari Exp $
+    \$Id: paChannel.h,v 1.22 2011/11/09 00:40:30 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate each PA channel. Every PA channel is connected
@@ -43,6 +43,7 @@
     #define PA_CHANNELS_NUMBER  (POLARIZATIONS_NUMBER) //!< Number of PA channel per PA
     #define PA_CHANNEL_A        0
     #define PA_CHANNEL_B        1
+    #define PA_MAX_ALLOWED_TEMP 30.0    // Maximum temperature at which PA should be allowed to work
 
     /* Submodules definitions */
     #define PA_CHANNEL_MODULES_NUMBER      3       // See list below

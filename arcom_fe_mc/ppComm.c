@@ -7,7 +7,7 @@
     Created: 2004/08/24 16:33:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ppComm.c,v 1.36 2010/11/02 14:36:29 avaccari Exp $
+    \$Id: ppComm.c,v 1.37 2011/03/24 13:34:11 avaccari Exp $
 
     This file contains the functions necessary to cummunicate via the
     parallel port of the ARCOM Pegasus board.
@@ -58,6 +58,8 @@ static void (interrupt far * oldHandler)(void);
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
 int PPOpen(void){
+
+    int timedOut=0; // A local to keep track of time out errors
 
     printf("Initializing parallel port communication...\n");
 
@@ -129,10 +131,36 @@ int PPOpen(void){
     /* Handshake readiness status with AMBSI */
     outp(SPPControlPort,
          (inp(SPPControlPort)|SPP_CONTROL_INIT)&~SPP_STATUS_SELECT); // INIT line high and SELECT line low
-    while((inp(SPPStatusPort)&SPP_STATUS_SELECT)){
-            storeError(ERR_PP,
-                       0x03);                  // Error 0x03 -> Warning! Waiting for AMBSI board.
-            waitMilliseconds(WAIT_ON_AMBSI_NOT_READY);    // Wait before checking again the ready status
+
+    /* Setup async timer to wait for AMBSI reply. If no reply switch notify and
+       continue. This allows console control and debug. */
+    if(startAsyncTimer(TIMER_PP_AMBSI_RDY,
+                       TIMER_PP_TO_AMBSI_RDY,
+                       FALSE)==ERROR){
+        timedOut=0; // If error setting up the timer, unlimited wait for AMBSI1 to get ready
+    }
+
+    /* Wait for AMBSI1 to reply or timer to expire */
+    while((inp(SPPStatusPort)&SPP_STATUS_SELECT)&&!timedOut){
+        storeError(ERR_PP,
+                   0x03);                  // Error 0x03 -> Warning! Waiting for AMBSI board.
+        waitMilliseconds(WAIT_ON_AMBSI_NOT_READY);    // Wait before checking again the ready status
+        timedOut=queryAsyncTimer(TIMER_PP_AMBSI_RDY);
+        if(timedOut==ERROR){
+            timedOut=0; // If error while waiting for the time, ignore the timer and keep waiting
+        }
+    }
+
+    /* If the timer has expired signal the error and continue */
+    if(timedOut==TIMER_EXPIRED){
+        printf(" ERROR: AMBSI1 not responding. CAN interface disabled.");
+        storeError(ERR_PP,
+                   0x04); // Error 0x04 -> Timeout while waiting for the AMBSI1
+    }
+
+    /* In case of no error, clear the asynchronous timer. */
+    if(stopAsyncTimer(TIMER_PP_AMBSI_RDY)==ERROR){
+        return ERROR;
     }
 
     /* Set parallel port direction to input */

@@ -5,7 +5,7 @@
     Created: 2007/03/14 17:11:40 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: turboPump.c,v 1.5 2007/05/21 15:49:27 avaccari Exp $
+    \$Id: turboPump.c,v 1.6 2011/11/09 00:40:30 avaccari Exp $
 
     This files contains all the functions necessary to handle turbo pump
     events. */
@@ -80,6 +80,33 @@ static void enableHandler(void){
 
     /* If control (size !=0) */
     if(CAN_SIZE){
+        /* If FETIM available and external sensors temperature < 15C, do not start
+           and return HARDW_BLK_ERROR. */
+        if(frontend.
+            fetim.
+             available==AVAILABLE){
+            if((frontend.
+                 fetim.
+                  compressor.
+                   temp[COMP_TEMP_SENSOR_TURBO].
+                    temp[CURRENT_VALUE]<TURBO_PUMP_MIN_TEMPERATURE)||(frontend.
+                                                                       fetim.
+                                                                        compressor.
+                                                                         temp[COMP_TEMP_SENSOR_TURBO].
+                                                                          temp[CURRENT_VALUE]>TURBO_PUMP_MAX_TEMPERATURE)){
+
+                storeError(ERR_TURBO_PUMP,
+                           0x09); // Error 0x09 -> Temperature below allowed range -> Turbo pump disabled
+                frontend.
+                 cryostat.
+                  turboPump.
+                   lastEnable.
+                    status=HARDW_BLKD_ERR; // Store the status in the last control message
+
+                return;
+            }
+        }
+
         /* Store message in "last control message" location */
         memcpy(&frontend.
                  cryostat.

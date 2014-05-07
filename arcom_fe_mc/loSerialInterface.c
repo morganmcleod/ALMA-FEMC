@@ -5,7 +5,7 @@
     Created: 2006/09/06 11:52:38 by avaccari
 
     <b> CVS Informations: </b><br>
-    \$Id: loSerialInterface.c,v 1.15 2010/11/02 14:36:29 avaccari Exp $
+    \$Id: loSerialInterface.c,v 1.17 2011/08/05 19:18:06 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     LO serial interface.
@@ -21,7 +21,7 @@
 
 /* Includes */
 #include <stdio.h>      /* printf */
-#include <math.h>       /* sqrt */
+#include <math.h>       /* sqrt, fabs */
 
 #include "debug.h"
 #include "error.h"
@@ -79,6 +79,9 @@ static int getLoAnalogMonitor(void){
 
 
 /********* TEST FIX ****************/
+/** After testing, this fix became */
+/** permanent.                     */
+/***********************************/
 /*** Repeat the previous operation to add 40us */
     if(serialAccess(LO_PARALLEL_WRITE(LO_BREG),
                     &loRegisters[currentModule].
@@ -317,7 +320,7 @@ int setPhotomixerEnable(unsigned char enable){
                     LO_BREG_SHIFT_SIZE,
                     LO_BREG_SHIFT_DIR,
                     SERIAL_WRITE)==ERROR){
-        /* Restore BREG to its original saved valur */
+        /* Restore BREG to its original saved value */
         loRegisters[currentModule].
          bReg.
           integer = tempBReg;
@@ -401,8 +404,8 @@ int getPhotomixer(unsigned char port){
              cartridge[currentModule].
               lo.
                photomixer.
-                current[CURRENT_VALUE]=(LO_ADC_PHOTOMIXER_BIAS_C_SCALE*loRegisters[currentModule].
-                                                                        adcData)/LO_ADC_RANGE;
+                current[CURRENT_VALUE]=fabs((LO_ADC_PHOTOMIXER_BIAS_C_SCALE*loRegisters[currentModule].
+                                                                             adcData)/LO_ADC_RANGE);
             break;
         default:
             break;

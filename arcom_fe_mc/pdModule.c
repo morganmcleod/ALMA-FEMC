@@ -5,7 +5,7 @@
     Created: 2006/10/16 16:18:50 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: pdModule.c,v 1.13 2009/08/25 21:39:39 avaccari Exp $
+    \$Id: pdModule.c,v 1.14 2011/03/24 13:34:10 avaccari Exp $
 
     This files contains all the funcions necessary to handle the submodules of
     cartridge power distribution system. */
@@ -20,6 +20,7 @@
 #include "pdSerialInterface.h"
 #include "database.h"
 #include "timer.h"
+#include "async.h"
 
 /* Globals */
 /* Externs */
@@ -67,6 +68,10 @@ void pdModuleHandler(void){
     (pdModuleModulesHandler[currentPdModuleModule])();
 }
 
+
+
+
+
 /* Power distribution module enable handler */
 static void enableHandler(void){
     #ifdef DEBUG_POWERDIS
@@ -103,6 +108,22 @@ static void enableHandler(void){
                - update the powered cartrdiges variable
                - update the cartrdige state */
         if(CAN_BYTE){
+
+            /* Check if the cartrdige is in error state. If it is, then the only
+               allowed action is to turn off the cartridge before attemptin to
+               turn it on again. */
+            if((frontend.
+                 cartridge[currentPowerDistributionModule].
+                  state==CARTRIDGE_ERROR)){
+                frontend.
+                 powerDistribution.
+                  pdModule[currentPowerDistributionModule].
+                   lastEnable.
+                    status = HARDW_ERROR; // Store in the last CAN message variable
+
+                return;
+            }
+
 
             /* Check if the cartridge is already powered and if it is, just
                return. */
@@ -142,33 +163,21 @@ static void enableHandler(void){
                 return;
             }
 
-            /* Initialize the cartrdige. If an error occurs, shut off the power
-               and return. */
-            waitMilliseconds(WAIT_AFTER_POWER_ON); // Dealy to allow power to settle before initializing the cartridge
-            if(cartridgeInit(currentPowerDistributionModule)==ERROR){
-                if(setPdModuleEnable(PD_MODULE_DISABLE)==ERROR){
-                    /* Store the Error state in the last control message
-                       variable */
-                    frontend.
-                     powerDistribution.
-                      pdModule[currentPowerDistributionModule].
-                       lastEnable.
-                        status=ERROR;
+            /* Set the state of the cartrdige to CARTRIDGE_ON (powered but not
+               yet initialized. This state will trigger the initialization by
+               the cartrdige async routine. */
+            frontend.
+             cartridge[currentPowerDistributionModule].
+              state=CARTRIDGE_ON;
+            /* Force the priority of the async to address the cartrdige next.
+               This will also re-eable the async procedure if it has been
+               disables via CAN message or console */
+            asyncState=ASYNC_CARTRIDGE;
 
-                    return;
-                }
-
-                /* Store the Error state in the last control message variable */
-                frontend.
-                 powerDistribution.
-                  pdModule[currentPowerDistributionModule].
-                   lastEnable.
-                    status=ERROR;
-
-                return;
-            }
-
-            /* Increse the number of currently turned on cartridges. */
+            /* Increse the number of currently turned on cartridges. This is done
+               here since the initialization is going to be performed asynchronously.
+               Due to that, we need to prevent the user from turning on more than
+               3 cartridges even before each initialization is completed. */
             frontend.
              powerDistribution.
               poweredModules[CURRENT_VALUE]++;
@@ -192,8 +201,8 @@ static void enableHandler(void){
             return;
         }
 
-        /*  Turn off the cartrdige. If an error occurs continue with
-            powering off. */
+        /*  Stop the cartrdige. If an error occurs continue with powering
+            off. */
         if(cartridgeStop(currentPowerDistributionModule)==ERROR){
             /* Store the Error state in the last control message variable */
             frontend.
@@ -212,6 +221,14 @@ static void enableHandler(void){
                lastEnable.
                 status=ERROR;
 
+            /* Set the state of the cartridge to 'error'. If this occurs then
+               the knowledge of the state of the hardware is compromised and
+               the only allowed action should be to try again to turn off the
+               cartridge. If that keeps failing, maintenance is required. */
+            frontend.
+             cartridge[currentPowerDistributionModule].
+              state=CARTRIDGE_ERROR;
+
             return;
         }
 
@@ -222,6 +239,7 @@ static void enableHandler(void){
 
         return;
     }
+
 
     /* If it's a monitor message on a control RCA */
     if(currentClass==CONTROL_CLASS){
@@ -243,6 +261,15 @@ static void enableHandler(void){
        status that is stored in memory. The memory status is updated when the
        state of the power distribution module is changed by a control
        message. */
+    if((frontend.
+         cartridge[currentPowerDistributionModule].
+          state==CARTRIDGE_ERROR)){
+        CAN_BYTE=HARDW_ERROR;
+        CAN_SIZE=CAN_BOOLEAN_SIZE;
+
+        return;
+    }
+
     CAN_BYTE=frontend.
               powerDistribution.
                pdModule[currentPowerDistributionModule].

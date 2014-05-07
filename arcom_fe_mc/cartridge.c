@@ -6,7 +6,7 @@
 
     <b> CVS informations: </b><br>
 
-    \$Id: cartridge.c,v 1.45 2009/04/09 02:09:55 avaccari Exp $
+    \$Id: cartridge.c,v 1.46 2011/03/24 13:34:10 avaccari Exp $
 
     This files contains all the functions necessary to handle cartridge events.
 
@@ -22,6 +22,9 @@
 #include "database.h"
 #include "biasSerialInterface.h"
 #include "iniWrapper.h"
+#include "async.h"
+#include "pdSerialInterface.h"
+#include "timer.h"
 
 /* Statics */
 static HANDLER cartridgeSubsystemHandler[CARTRIDGE_SUBSYSTEMS_NUMBER]={biasSubsystemHandler,
@@ -41,10 +44,18 @@ static HANDLER cartridgeTempSubsystemModulesHandler[CARTRIDGE_TEMP_SUBSYSTEM_MOD
                                                                                               cartridgeTempHandler};
 
 /* Externs */
-unsigned char currentCartridgeSubsystem=0;
-unsigned char currentLoAndTempModule=0;
-unsigned char currentBiasModule=0;
-unsigned char currentCartridgeTempSubsystemModule=0;
+unsigned char currentCartridgeSubsystem=0; /*! This global keep track of the
+                                               currently addressed cartrdige
+                                               subsystem (WCA or CCA) */
+unsigned char currentLoAndTempModule=0; /*! This global keeps track of the
+                                            currently addressed LO and cartridge
+                                            temperature sensors */
+unsigned char currentBiasModule=0; /*! This global keeps track of the currently
+                                       addressed polarization */
+unsigned char currentCartridgeTempSubsystemModule=0; /*! This global keeps track
+                                                         of the currently
+                                                         addressed temperature
+                                                         sensor */
 
 /* Cartridge handler */
 /*! This function will be called by the CAN message handling subrutine when the
@@ -68,18 +79,43 @@ void cartridgeHandler(void){
         }
     #endif /* DATABASE_HARDW */
 
-    /* Check if the cartrdige is powered before allowing monitor and control.
-       This check should always be performed because if the cartridge doesn't
-       go through the initialization sequence, the CPLDs in the cartridge will
-       think that they should operate at 5MHz instead of 10 and the returned
-       data will be half of the real data. */
-    if(frontend.
-        cartridge[currentModule].
-         state==CARTRIDGE_OFF){
-        storeError(ERR_CARTRIDGE,
-                   0x06); // Error 0x06 -> The cartrdige is not powered
-        CAN_STATUS = HARDW_BLKD_ERR; // Notify incoming message
-        return;
+
+    /* Check the state of the cartridge */
+    switch(frontend.
+            cartridge[currentModule].
+             state){
+
+        /* Check if the cartrdige is in error state. If this is the case, then
+           no action is allowed until the error is cleared. See ICD. */
+        case CARTRIDGE_ERROR:
+            storeError(ERR_CARTRIDGE,
+                       0x07); // Error 0x07 -> The cartrdige is in error state
+            CAN_STATUS = HARDW_ERROR; // Notify incoming message
+            return;
+            break;
+
+        /* Check if the cartrdige is powered before allowing monitor and control.
+           This check should always be performed because if the cartridge doesn't
+           go through the initialization sequence, the CPLDs in the cartridge will
+           think that they should operate at 5MHz instead of 10 and the returned
+           data will be half of the real data. */
+        case CARTRIDGE_OFF:
+            storeError(ERR_CARTRIDGE,
+                       0x06); // Error 0x06 -> The cartrdige is not powered
+            CAN_STATUS = HARDW_BLKD_ERR; // Notify incoming message
+            return;
+            break;
+
+        /* Check if the cartridge is initializing. If it is, return the status
+           but no error necessary. */
+        case CARTRIDGE_INITING:
+            CAN_STATUS = HARDW_BLKD_ERR;
+            return;
+            break;
+
+
+        default:
+            break;
     }
 
     /* Check if the specified submodule is in range */
@@ -807,14 +843,15 @@ int cartridgeInit(unsigned char cartridge){
     }
 
 
-    /* Change the state of the addressed cartridge to ON */
+    /* Change the state of the addressed cartridge to CARTRDIGE_READY (powered
+       and initialized) */
     #ifdef DEBUG_INIT
         printf(" - Turning cartridge ON...");
     #endif // DEBUG_INIT
 
     frontend.
      cartridge[currentModule].
-      state = CARTRIDGE_ON;
+      state = CARTRIDGE_READY;
 
     #ifdef DEBUG_INIT
         printf("done!\n"); // Turning cartrdige on
@@ -826,3 +863,219 @@ int cartridgeInit(unsigned char cartridge){
 
 }
 
+/* Cartrdige async */
+/*! This function deals with the asynchronous operations related to a cartridge
+    \return
+        - \ref NO_ERROR     -> if no error occured
+        - \ref ASYNC_DONE   -> once all the async operations are done
+        - \ref ERROR        -> if something went wrong */
+int cartridgeAsync(void){
+
+    /* A static to keep track of the currently addressed cartridge */
+    static unsigned char currentAsyncCartridge=0;
+
+    /* A static to keep track of the current async task for each cartridge */
+    static enum {
+        ASYNC_CARTRIDGE_IDLE,
+        ASYNC_CARTRIDGE_INIT
+    } asyncCartridgeTask = ASYNC_CARTRIDGE_IDLE;
+    /* Address the current async cartridge */
+    currentModule=currentAsyncCartridge;
+
+    /* Switch depending on the cartridge task */
+    switch(asyncCartridgeTask){
+        case ASYNC_CARTRIDGE_IDLE:
+            /* Check if the cartridge was turned on */
+            if(frontend.
+                cartridge[currentAsyncCartridge].
+                 state==CARTRIDGE_ON){
+
+                /* If CARTRIDGE_ON, then next task is initialization */
+                asyncCartridgeTask=ASYNC_CARTRIDGE_INIT;
+
+                /* Stay with this cartridge */
+                return NO_ERROR;
+            }
+            break;
+
+        case ASYNC_CARTRIDGE_INIT:
+            /* Initialize cartridge and switch on result */
+            switch(asyncCartridgeInit()){
+                case NO_ERROR:
+                    return NO_ERROR;
+                    break;
+                case ASYNC_DONE:
+                    asyncCartridgeTask=ASYNC_CARTRIDGE_IDLE;
+                    break;
+                case ERROR:
+                    /* If there was an error in the initialization, attempt to
+                       turn off the cartridge. */
+
+                    /* Turn off the power to the cartrdige. */
+                    if(setPdModuleEnable(PD_MODULE_DISABLE)==ERROR){
+                        /* If we end up in here, it means that something very major
+                           has happened and the communication within the FEMC
+                           module is compromised. At this point all the bets on
+                           the state of the system are off. This would require
+                           a HALT but we are just going to notify the cartrdige
+                           module that there was an urecoverable error with the
+                           initialization and allow for a restart of the cartrdige. */
+                        /* Store the Error state in the last control message variable */
+                        frontend.
+                         powerDistribution.
+                          pdModule[currentAsyncCartridge].
+                           lastEnable.
+                            status=ERROR;
+
+                        /* Set the state of the cartridge to 'error' */
+                        frontend.
+                         cartridge[currentAsyncCartridge].
+                          state=CARTRIDGE_ERROR;
+
+                        /* Next state: IDLE */
+                        asyncCartridgeTask=ASYNC_CARTRIDGE_IDLE;
+                        break;
+                    }
+
+                    /*  If it worked. Mark the catridge as off. */
+                    if(cartridgeStop(currentAsyncCartridge)==ERROR){
+                        /* Store the Error state in the last control message variable */
+                        frontend.
+                         powerDistribution.
+                          pdModule[currentAsyncCartridge].
+                           lastEnable.
+                            status=ERROR;
+                    }
+
+                    /* Decrease the number of currently turned on cartridges. */
+                    frontend.
+                     powerDistribution.
+                      poweredModules[CURRENT_VALUE]--;
+
+
+                    asyncCartridgeTask=ASYNC_CARTRIDGE_IDLE;
+                    break;
+                default:
+                    break;
+            }
+            break;
+
+        default:
+            break;
+    }
+
+    /* Next cartridge, if wrap around, then we are done with cartridges. */
+    if(++currentAsyncCartridge==CARTRIDGES_NUMBER){
+        currentAsyncCartridge-=CARTRIDGES_NUMBER;
+
+        /* If all the cartrdiges have been handled then we are done */
+        return ASYNC_DONE;
+    }
+
+    return NO_ERROR;
+}
+
+
+/* Asynchronously initialize a cartrdige */
+int asyncCartridgeInit(void){
+
+    /* A static enum to track the state of the async init function */
+    static enum {
+        ASYNC_CARTRIDGE_INIT_SET_WAIT,
+        ASYNC_CARTRIDGE_INIT_WAIT,
+        ASYNC_CARTRDIGE_INIT_INIT
+    } asyncCartridgeInitState = ASYNC_CARTRIDGE_INIT_SET_WAIT;
+
+    /* Check if the cartridge was turned off in the meantime */
+    if(frontend.
+        cartridge[currentModule].
+         state==CARTRIDGE_OFF){
+
+        /* If CARTRIDGE_OFF, then next task is idle */
+        asyncCartridgeInitState=ASYNC_CARTRIDGE_INIT_SET_WAIT;
+
+        /* Clear the timer */
+        if(stopAsyncTimer(TIMER_CARTRIDGE_INIT)==ERROR){
+            return ERROR;
+        }
+
+        /* Cartridge was turned off so nothing else to do */
+        return ASYNC_DONE;
+
+    }
+
+    /* Switch depening on the current initialization state */
+    switch(asyncCartridgeInitState){
+        case ASYNC_CARTRIDGE_INIT_SET_WAIT:
+            /* Set the state of the cartrdige to 'initializing' */
+            frontend.
+             cartridge[currentModule].
+              state=CARTRIDGE_INITING;
+
+            /* Setup timer to wait 5ms before initializing the cartridge */
+            if(startAsyncTimer(TIMER_CARTRIDGE_INIT,
+                               TIMER_TO_CARTRIDGE_INIT,
+                               FALSE)==ERROR){
+
+                /* Next state: start state */
+                asyncCartridgeInitState=ASYNC_CARTRIDGE_INIT_SET_WAIT;
+
+                return ERROR;
+            }
+
+            /* Set next state */
+            asyncCartridgeInitState=ASYNC_CARTRIDGE_INIT_WAIT;
+
+            break;
+
+        case ASYNC_CARTRIDGE_INIT_WAIT:
+            {
+                /* A temporaty variable to deal with the timer */
+                int timedOut;
+
+                /* Query the async timer */
+                timedOut=queryAsyncTimer(TIMER_CARTRIDGE_INIT);
+
+                if(timedOut==ERROR){
+                    /* Next state: start state */
+                    asyncCartridgeInitState=ASYNC_CARTRIDGE_INIT_SET_WAIT;
+
+                    return ERROR;
+                }
+
+                /* Wait until timer expires. No need to clear the timer because
+                   it is done by the queryAsyncTimer function if expired. */
+                if(timedOut==TIMER_EXPIRED){
+                    /* Set next state */
+                    asyncCartridgeInitState=ASYNC_CARTRDIGE_INIT_INIT;
+                }
+
+                break;
+            }
+        case ASYNC_CARTRDIGE_INIT_INIT:
+            /* Perform the actual initialization */
+            if(cartridgeInit(currentModule)==ERROR){
+                /* Set next state */
+                asyncCartridgeInitState=ASYNC_CARTRDIGE_INIT_INIT;
+
+                return ERROR;
+            }
+
+            /* Set the state of the cartrdige to 'ready' */
+            frontend.
+             cartridge[currentModule].
+              state=CARTRIDGE_READY;
+
+            /* Next state: start state */
+            asyncCartridgeInitState=ASYNC_CARTRIDGE_INIT_SET_WAIT;
+
+            return ASYNC_DONE;
+            break;
+
+        default:
+            return ERROR;
+            break;
+    }
+
+    return NO_ERROR;
+}

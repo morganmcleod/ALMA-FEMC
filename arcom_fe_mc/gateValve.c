@@ -5,7 +5,7 @@
     Created: 2007/03/14 17:13:45 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: gateValve.c,v 1.5 2010/10/01 22:13:46 avaccari Exp $
+    \$Id: gateValve.c,v 1.6 2011/08/05 19:18:06 avaccari Exp $
 
     This files contains all the functions necessary to handle gate valve
     events. */
@@ -89,6 +89,37 @@ static void stateHandler(void){
             return;
         }
 
+        /* Check the gate valve state. */
+        if(getGateValveState()==ERROR){
+            /* If error while monitoring, store the status in the last control
+               message */
+            frontend.
+             cryostat.
+              gateValve.
+               lastState.
+                status=ERROR; // Store the status in the last control message
+
+            return;
+        }
+
+        /* If the gate valve is still moving, don't do anything an notify user. */
+        if(frontend.
+            cryostat.
+             gateValve.
+              state[CURRENT_VALUE]==GATE_VALVE_UNKNOWN){
+
+            storeError(ERR_GATE_VALVE,
+                       0x04); // Error 0x04 -> Valve still moving -> Wait unil stopped
+
+            frontend.
+             cryostat.
+              gateValve.
+               lastState.
+                status=HARDW_BLKD_ERR; // Store the status in the last control message
+
+            return;
+        }
+
         /* Change the status of the gate valve according to the content of the
            CAN message. */
         if(setGateValveState(CAN_BYTE?GATE_VALVE_OPEN:
@@ -102,6 +133,7 @@ static void stateHandler(void){
 
             return;
         }
+
         /* If everything went fine, it's a control message, we're done. */
         return;
     }

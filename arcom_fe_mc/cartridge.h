@@ -12,7 +12,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cartridge.h,v 1.25 2007/08/31 22:23:20 avaccari Exp $
+    \$Id: cartridge.h,v 1.26 2011/03/24 13:34:10 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate each cartridge in the frontend system.
@@ -140,10 +140,12 @@
     #define BAND10  CARTRIDGE9  //!< 9: Band 10
 
     /* Cartrdge states */
-    #define CARTRIDGE_OFF       0
-    #define CARTRIDGE_ON        1
-    #define CARTRIDGE_READY     2
-    #define CARTRDIGE_OBSERVING 3
+    #define CARTRIDGE_ERROR     (-1) // Cartridge is in error state: should be turned off
+    #define CARTRIDGE_OFF       0    // Cartridge is off
+    #define CARTRIDGE_ON        1    // Cartridge is powered but not initialized
+    #define CARTRIDGE_READY     2    // Cartridge is ready to be used
+    #define CARTRIDGE_OBSERVING 3    // Cartridge is observing
+    #define CARTRIDGE_INITING   4    // Cartridge is initializing
 
     /* Subsystem definition */
     #define CARTRIDGE_SUBSYSTEMS_NUMBER     2       // See the list below
@@ -198,11 +200,14 @@
         //! Cartrdige current state
         /*! This field indicates the current state of the cartridge.
             The cartrdige can be in one of the following states:
-                - \ref CARTRIDGE_OFF    -> Cartrdige is not powered
-                - \ref CARTRIDGE_ON     -> Cartridge is powered but not yet
-                                           initialized
-                - \ref CARTRIDGE_READY  -> Cartridge is initialized */
-        unsigned char   state;
+                - \ref CARTRIDGE_OFF        -> Cartrdige is not powered
+                - \ref CARTRIDGE_ON         -> Cartridge is powered but not yet
+                                               initialized
+                - \ref CARTRIDGE_READY      -> Cartridge is initialized
+                - \ref CARTRIDGE_OBSERVING  -> Cartridge is observing
+                - \ref CARTRIDGE_INITING    -> Cartridge being initialized
+                - \ref CARTRIDGE_ERROR      -> Cartrdige in error state */
+        int             state;
         //! Polarization current state
         /*! Polarizations \p Po are assigned according to the following:
                 - Po = 0: Polarization 0
@@ -241,10 +246,12 @@
     static void loAndTempSubsystemHandler(void);
     static void cartridgeTempSubsystemHandler(void);
     static void biasSubsystemHandler(void);
+    static int asyncCartridgeInit(void);
     /* Externs */
     extern int cartridgeStartup(void); //!< This function initializes the selected cartridge during startup
     extern void cartridgeHandler(void); //!< This function deals with the incoming can message
     extern int cartridgeInit(unsigned char cartridge); //!< This function initializes the selected cartrdige at runtime
     extern int cartridgeStop(unsigned char cartridge); //!< Shut down the selected cartrdige
+    extern int cartridgeAsync(void); //!< This function deals with the asynchronous operation of a cartrdige
 
 #endif /* _CARTRIDGE_H */

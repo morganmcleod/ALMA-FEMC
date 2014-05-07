@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: error.h,v 1.45 2009/10/13 16:17:16 avaccari Exp $
+    \$Id: error.h,v 1.47 2011/04/15 15:17:19 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the error handling module. */
@@ -32,6 +32,7 @@
     #define HARDW_UPD_WARN  (-4)    //!< The addressed hardware is not properly defined yet (firmware needs updating)
     #define HARDW_CON_ERR   (-5)    //!< There was an error while appling the required conversion
     #define HARDW_RETRY     (-6)    //!< The seleected monitor message should be read again
+    #define HARDW_ERROR     (-7)    //!< The selected hardware is in error state. Follow ICD instruction to proceed.
     /* Monitor */
     #define MON_ERROR_RNG   (-10)   //!< Monitor message returned value in error range
     #define MON_WARN_RNG    (-11)   //!< Monitor message returned value in warning range
@@ -97,6 +98,17 @@
     #define ERR_MI_DAC              0x34 //!< Error in the Modulation input DAC module
     #define ERR_INI                 0x35 //!< Error in the INI file access module
     #define ERR_OWB                 0x36 //!< Error in the OWB module
+    #define ERR_FETIM               0x37 //!< Error in the FETIM module
+    #define ERR_INTERLOCK           0x38 //!< Error in the FETIM interlock module
+    #define ERR_COMPRESSOR          0x39 //!< Error in the FETIM compressor module
+    #define ERR_INTRLK_SENS         0x3A //!< Error in the FETIM interlock sensors module
+    #define ERR_INTRLK_STATE        0x3B //!< Error in the FETIM interlock state module
+    #define ERR_INTRLK_TEMP         0x3C //!< Error in the FETIM interlock temperature module
+    #define ERR_INTRLK_FLOW         0x3D //!< Error in the FETIM interlock flow module
+    #define ERR_INTRLK_GLITCH       0x3E //!< Error in the FETIM interlock glitch module
+    #define ERR_COMP_TEMP           0x3F //!< Error in the FETIM compressor temperature module
+    #define ERR_COMP_HE2_PRESS      0x40 //!< Error in the FETIM compressor He2 pressure module
+
 
 
     /* Globals */

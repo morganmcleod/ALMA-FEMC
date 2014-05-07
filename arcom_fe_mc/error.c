@@ -6,7 +6,7 @@
     Created: 2004/08/24 16:16:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: error.c,v 1.82 2010/11/02 14:36:29 avaccari Exp $
+    \$Id: error.c,v 1.86 2011/11/09 00:40:30 avaccari Exp $
 
     This file contains the functions necessary to handle the errors that might
     occour during the operation of the ARCOM Pegasus board.*/
@@ -34,6 +34,7 @@ unsigned int * errorHistory; /*!< This is a pointer to the array that will
 /* Statics */
 static unsigned int errorNoErrorHistory=1;
 static unsigned char errorOn=0;
+static unsigned long errorTotal=0;
 
 
 /*! Initializes the error routines trying to allocate enough space in memory for
@@ -129,6 +130,10 @@ exit(1);
     \param errorNo      This is the error number for the specified module */
 void storeError(unsigned char moduleNo,
                 unsigned char errorNo){
+
+    /* Increases the total error counter even if the error routine is not
+       enabled */
+    errorTotal++;
 
     /* Check if the error reporting is turned on */
     if(errorOn){
@@ -230,6 +235,10 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "Warning: Waiting for AMBSI to get ready for parallel communication");
                         break;
+                    case 0x04: // AMBSI ready timer expired
+                        sprintf(error,
+                                "Error: Timer expired while waiting for AMBSI to get ready. CAN disabled! Only console operations available");
+                        break;
                     default: // Undefined error
                         sprintf(error,
                                 "%s%d%s",
@@ -287,6 +296,17 @@ void storeError(unsigned char moduleNo,
                                 CAN_ADDRESS,
                                 ") is out of the defined range");
                         break;
+                    case 0x07: // Illegal Front End Mode
+                        sprintf(error,
+                                "%s%d%s",
+                                "The selected Front End mode (",
+                                CAN_DATA(0),
+                                ") in not allowed");
+                        break;
+                    case 0x08: // Front End in maintenance mode: standard RCAs blocked
+                        sprintf(error,
+                                "The Front End in in Maintenance mode: only the special RCAs are available");
+                        break;
                     default: // Undefined error
                         sprintf(error,
                                 "%s%d%s",
@@ -341,6 +361,13 @@ void storeError(unsigned char moduleNo,
                                 "Error: The addressed cartridge (",
                                 currentModule+1,
                                 ") is not powered");
+                        break;
+                    case 0x07: // Cartridge in ERROR state
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The addressed cartridge (",
+                                currentModule+1,
+                                ") is in error state");
                         break;
                     default: // Undefined error
                         sprintf(error,
@@ -1006,6 +1033,10 @@ void storeError(unsigned char moduleNo,
                     case 0x0C: // Warning: The addressed hardware is not properly defined yet
                         sprintf(error,
                                 "Warning: The addressed hardware is not properly defined yet. Firmware needs updating.");
+                        break;
+                    case 0x0D: // Warning: The PA temperature is outside the allowed range
+                        sprintf(error,
+                                "Warning: The PA temperatue is outside the allowed range. PA blocked.");
                         break;
                     default: // Undefined error
                         sprintf(error,
@@ -1965,6 +1996,10 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "Warning: The backing pump is OFF. Turbo pump disabled.");
                         break;
+                    case 0x09: // Warning: Temperature out of range
+                        sprintf(error,
+                                "Warning: The turbo pump temperature is outside the allowed range. Turbo pump disabled.");
+                        break;
                     default: // Undefined error
                         sprintf(error,
                                 "%s%d%s",
@@ -2039,6 +2074,10 @@ void storeError(unsigned char moduleNo,
                     case 0x03: // Warning: Backing pump OFF
                         sprintf(error,
                                 "Warning: The backing pump is OFF. Gate valve disabled.");
+                        break;
+                    case 0x04: // Warning: Valve still moving
+                        sprintf(error,
+                                "Warning: The gate valve is still moving. Wait until stopped.");
                         break;
                     default: // Undefined error
                         sprintf(error,
@@ -2617,6 +2656,518 @@ void storeError(unsigned char moduleNo,
                     case 0x04: // Bus reset timed out
                         sprintf(error,
                                 "Error: Time out while resetting the bus.");
+                        break;
+                    default: // Undefined error
+                        sprintf(error,
+                                "%s%d%s",
+                                "The specified error (",
+                                errorNo,
+                                ") is not defined for this module");
+                        break;
+                }
+                break;
+
+            /* Front End Thermal Interlock Module */
+            case ERR_FETIM: // Front End Interlock Module
+                sprintf(module,
+                        "Front End Thermal Interlock");
+                switch(errorNo){
+                    case 0x01: // Submodule out of range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The addressed FETIM submodule (",
+                                currentFetimModule,
+                                ") is out of range");
+                        break;
+                    case 0x02: // FETIM not installed
+                        sprintf(error,
+                                "Error: The FETIM is not intalled in the Front End");
+                        break;
+                    default: // Undefined error
+                        sprintf(error,
+                                "%s%d%s",
+                                "The specified error (",
+                                errorNo,
+                                ") is not defined for this module");
+                        break;
+                }
+                break;
+
+            /* FETIM Interlock Module */
+            case ERR_INTERLOCK: // FETIM Interlock
+                sprintf(module,
+                        "FETIM Interlock");
+                switch(errorNo){
+                    case 0x01: // Submodule out of range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The addressed FETIM interlock submodule (",
+                                currentInterlockModule,
+                                ") is out of range");
+                        break;
+                    default: // Undefined error
+                        sprintf(error,
+                                "%s%d%s",
+                                "The specified error (",
+                                errorNo,
+                                ") is not defined for this module");
+                        break;
+                }
+                break;
+
+            /* FETIM Compressor Module */
+            case ERR_COMPRESSOR: // FETIM Compressor
+                sprintf(module,
+                        "FETIM Compressor");
+                switch(errorNo){
+                    case 0x01: // Submodule out of range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The addressed FETIM compressor submodule (",
+                                currentCompressorModule,
+                                ") is out of range");
+                        break;
+                    case 0x02: // Control message out of range
+                        sprintf(error,
+                                "Error: The control message is out of range");
+                        break;
+                    case 0x03: // Monitor message out of range
+                        sprintf(error,
+                                "Error: The monitor message is out of range");
+                        break;
+                    case 0x04: // Monitored interlock status digital value in error range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The monitored interlock status digital value (",
+                                CAN_BYTE,
+                                ") is in the error range");
+                        break;
+                    case 0x05: // Monitored interlock status digital value in warning range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Warning: The monitored interlock status digital value (",
+                                CAN_BYTE,
+                                ") is in the warning range");
+                        break;
+                    case 0x06: // Monitored compressor cable digital value in error range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The monitored compressor cable digital value (",
+                                CAN_BYTE,
+                                ") is in the error range");
+                        break;
+                    case 0x07: // Monitored compressor cable digital value in warning range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Warning: The monitored compresor cable digital value (",
+                                CAN_BYTE,
+                                ") is in the warning range");
+                        break;
+                    default: // Undefined error
+                        sprintf(error,
+                                "%s%d%s",
+                                "The specified error (",
+                                errorNo,
+                                ") is not defined for this module");
+                        break;
+                }
+                break;
+
+            /* FETIM Interlock Sensors Module */
+            case ERR_INTRLK_SENS: // FETIM Interlock sensors
+                sprintf(module,
+                        "FETIM Interlock Sensors");
+                switch(errorNo){
+                    case 0x01: // Submodule out of range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The addressed FETIM interlock sensors submodule (",
+                                currentInterlockSensorsModule,
+                                ") is out of range");
+                        break;
+                    case 0x02: // Control message out of range
+                        sprintf(error,
+                                "Error: The control message is out of range");
+                        break;
+                    case 0x03: // Monitor message out of range
+                        sprintf(error,
+                                "Error: The monitor message is out of range");
+                        break;
+                    case 0x04: // Monitored single fail digital value in error range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The monitored single fail digital value (",
+                                CAN_BYTE,
+                                ") is in the error range");
+                        break;
+                    case 0x05: // Monitored single fail digital value in warning range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Warning: The monitored single fail digital value (",
+                                CAN_BYTE,
+                                ") is in the warning range");
+                        break;
+                    default: // Undefined error
+                        sprintf(error,
+                                "%s%d%s",
+                                "The specified error (",
+                                errorNo,
+                                ") is not defined for this module");
+                        break;
+                }
+                break;
+
+            /* FETIM Interlock State Module */
+            case ERR_INTRLK_STATE: // FETIM Interlock state
+                sprintf(module,
+                        "FETIM Interlock State");
+                switch(errorNo){
+                    case 0x01: // Submodule out of range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The addressed FETIM interlock state submodule (",
+                                currentInterlockStateModule,
+                                ") is out of range");
+                        break;
+                    case 0x02: // Control message out of range
+                        sprintf(error,
+                                "Error: The control message is out of range");
+                        break;
+                    case 0x03: // Monitor message out of range
+                        sprintf(error,
+                                "Error: The monitor message is out of range");
+                        break;
+                    case 0x04: // Monitored multi fail digital value in error range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The monitored multi fail digital value (",
+                                CAN_BYTE,
+                                ") is in the error range");
+                        break;
+                    case 0x05: // Monitored multi fail digital value in warning range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Warning: The monitored multi fail digital value (",
+                                CAN_BYTE,
+                                ") is in the warning range");
+                        break;
+                    case 0x06: // Monitored temperature out of range digital value in error range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The monitored temperature out of range digital value (",
+                                CAN_BYTE,
+                                ") is in the error range");
+                        break;
+                    case 0x07: // Monitored temperature out of range digital value in warning range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Warning: The monitored temperature out of range digital value (",
+                                CAN_BYTE,
+                                ") is in the warning range");
+                        break;
+                    case 0x08: // Monitored airflow out of range digital value in error range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The monitored airflow out of range digital value (",
+                                CAN_BYTE,
+                                ") is in the error range");
+                        break;
+                    case 0x09: // Monitored airflow out of range digital value in warning range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Warning: The monitored airflow out of range digital value (",
+                                CAN_BYTE,
+                                ") is in the warning range");
+                        break;
+                    case 0x0A: // Monitored shutdwon delay triggered digital value in error range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The monitored shutdown delay triggered digital value (",
+                                CAN_BYTE,
+                                ") is in the error range");
+                        break;
+                    case 0x0B: // Monitored shutdown delay triggered digital value in warning range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Warning: The monitored shutdown delay triggered digital value (",
+                                CAN_BYTE,
+                                ") is in the warning range");
+                        break;
+                    case 0x0C: // Monitored shutdwon triggered digital value in error range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The monitored shutdown triggered digital value (",
+                                CAN_BYTE,
+                                ") is in the error range");
+                        break;
+                    case 0x0D: // Monitored shutdown triggered digital value in warning range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Warning: The monitored shutdown triggered digital value (",
+                                CAN_BYTE,
+                                ") is in the warning range");
+                        break;
+                    default: // Undefined error
+                        sprintf(error,
+                                "%s%d%s",
+                                "The specified error (",
+                                errorNo,
+                                ") is not defined for this module");
+                        break;
+                }
+                break;
+
+            /* FETIM Interlock Temperature Module */
+            case ERR_INTRLK_TEMP: // FETIM Interlock temeprature
+                sprintf(module,
+                        "FETIM Interlock Temperature");
+                switch(errorNo){
+                    case 0x01: // Submodule out of range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The addressed FETIM interlock temperature submodule (",
+                                currentInterlockTempModule,
+                                ") is out of range");
+                        break;
+                    case 0x02: // Control message out of range
+                        sprintf(error,
+                                "Error: The control message is out of range");
+                        break;
+                    case 0x03: // Monitor message out of range
+                        sprintf(error,
+                                "Error: The monitor message is out of range");
+                        break;
+                    case 0x04: // Monitored interlock temperature in error range
+                        sprintf(error,
+                                "%s%f%s",
+                                "Error: The monitored interlock internal temperature (",
+                                CONV_FLOAT,
+                                ") is in the error range");
+                        break;
+                    case 0x05: // Monitored interlock temperature in warning range
+                        sprintf(error,
+                                "%s%f%s",
+                                "Warning: The monitored interlock internal temperature (",
+                                CONV_FLOAT,
+                                ") is in the warning range");
+                        break;
+                    default: // Undefined error
+                        sprintf(error,
+                                "%s%d%s",
+                                "The specified error (",
+                                errorNo,
+                                ") is not defined for this module");
+                        break;
+                }
+                break;
+
+            /* FETIM Interlock Flow Module */
+            case ERR_INTRLK_FLOW: // FETIM Interlock flow
+                sprintf(module,
+                        "FETIM Interlock Flow");
+                switch(errorNo){
+                    case 0x01: // Submodule out of range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The addressed FETIM interlock flow submodule (",
+                                currentInterlockFlowModule,
+                                ") is out of range");
+                        break;
+                    case 0x02: // Control message out of range
+                        sprintf(error,
+                                "Error: The control message is out of range");
+                        break;
+                    case 0x03: // Monitor message out of range
+                        sprintf(error,
+                                "Error: The monitor message is out of range");
+                        break;
+                    case 0x04: // Monitored airflow in error range
+                        sprintf(error,
+                                "%s%f%s",
+                                "Error: The monitored airflow (",
+                                CONV_FLOAT,
+                                ") is in the error range");
+                        break;
+                    case 0x05: // Monitored airflow in warning range
+                        sprintf(error,
+                                "%s%f%s",
+                                "Warning: The monitored airflow (",
+                                CONV_FLOAT,
+                                ") is in the warning range");
+                        break;
+                    default: // Undefined error
+                        sprintf(error,
+                                "%s%d%s",
+                                "The specified error (",
+                                errorNo,
+                                ") is not defined for this module");
+                        break;
+                }
+                break;
+
+            /* FETIM Interlock Glitch Module */
+            case ERR_INTRLK_GLITCH: // FETIM Interlock GLITCH
+                sprintf(module,
+                        "FETIM Interlock GLITCH");
+                switch(errorNo){
+                    case 0x01: // Submodule out of range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The addressed FETIM interlock glitch submodule (",
+                                currentInterlockGlitchModule,
+                                ") is out of range");
+                        break;
+                    case 0x02: // Control message out of range
+                        sprintf(error,
+                                "Error: The control message is out of range");
+                        break;
+                    case 0x03: // Monitor message out of range
+                        sprintf(error,
+                                "Error: The monitor message is out of range");
+                        break;
+                    case 0x04: // Monitored interlock analog glitch counter value in error range
+                        sprintf(error,
+                                "%s%f%s",
+                                "Error: The monitored interlock analog glitch counter value (",
+                                CONV_FLOAT,
+                                ") is in the error range");
+                        break;
+                    case 0x05: // Monitored interlock analog glitch counter value in warning range
+                        sprintf(error,
+                                "%s%f%s",
+                                "Warning: The monitored interlock analog glitch counter value (",
+                                CONV_FLOAT,
+                                ") is in the warning range");
+                        break;
+                    case 0x06: // Monitored interlock glitch counter tigger in error range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The monitored interlock glitch counter trigger (",
+                                CAN_BYTE,
+                                ") is in the error range");
+                        break;
+                    case 0x07: // Monitored interlock glitch counter trigger in warning range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Warning: The monitored interlock glitch counter trigger (",
+                                CAN_BYTE,
+                                ") is in the warning range");
+                        break;
+                    default: // Undefined error
+                        sprintf(error,
+                                "%s%d%s",
+                                "The specified error (",
+                                errorNo,
+                                ") is not defined for this module");
+                        break;
+                }
+                break;
+
+            /* FETIM Compressor Temperature Module */
+            case ERR_COMP_TEMP: // FETIM Compressor Temeprature
+                sprintf(module,
+                        "FETIM Compressor Temperature");
+                switch(errorNo){
+                    case 0x01: // Submodule out of range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The addressed FETIM compressor temperature (",
+                                currentCompTempModule,
+                                ") is out of range");
+                        break;
+                    case 0x02: // Control message out of range
+                        sprintf(error,
+                                "Error: The control message is out of range");
+                        break;
+                    case 0x03: // Monitor message out of range
+                        sprintf(error,
+                                "Error: The monitor message is out of range");
+                        break;
+                    case 0x04: // Monitored compressor temperature in error range
+                        sprintf(error,
+                                "%s%f%s",
+                                "Error: The monitored compressor external temperature (",
+                                CONV_FLOAT,
+                                ") is in the error range");
+                        break;
+                    case 0x05: // Monitored compressor temperature in warning range
+                        sprintf(error,
+                                "%s%f%s",
+                                "Warning: The monitored compressor external temperature (",
+                                CONV_FLOAT,
+                                ") is in the warning range");
+                        break;
+                    case 0x06: // Monitored temperature out of range digital value in error range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The monitored external temperature out of range digital value (",
+                                CAN_BYTE,
+                                ") is in the error range");
+                        break;
+                    case 0x07: // Monitored temperature out of range digital value in warning range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Warning: The monitored external temperature out of range digital value (",
+                                CAN_BYTE,
+                                ") is in the warning range");
+                        break;
+                    default: // Undefined error
+                        sprintf(error,
+                                "%s%d%s",
+                                "The specified error (",
+                                errorNo,
+                                ") is not defined for this module");
+                        break;
+                }
+                break;
+
+            /* FETIM Compressor He2 pressure Module */
+            case ERR_COMP_HE2_PRESS: // FETIM Compressor He2 pressure
+                sprintf(module,
+                        "FETIM Compressor He2 Pressure");
+                switch(errorNo){
+                    case 0x01: // Submodule out of range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The addressed FETIM compressor He2 pressure (",
+                                currentHe2PressModule,
+                                ") is out of range");
+                        break;
+                    case 0x02: // Control message out of range
+                        sprintf(error,
+                                "Error: The control message is out of range");
+                        break;
+                    case 0x03: // Monitor message out of range
+                        sprintf(error,
+                                "Error: The monitor message is out of range");
+                        break;
+                    case 0x04: // Monitored compressor He2 pressure in error range
+                        sprintf(error,
+                                "%s%f%s",
+                                "Error: The monitored compressor He2 pressure (",
+                                CONV_FLOAT,
+                                ") is in the error range");
+                        break;
+                    case 0x05: // Monitored compressor He2 pressure in warning range
+                        sprintf(error,
+                                "%s%f%s",
+                                "Warning: The monitored compressor He2 pressure (",
+                                CONV_FLOAT,
+                                ") is in the warning range");
+                        break;
+                    case 0x06: // Monitored He2 pressure out of range digital value in error range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The monitored He2 pressure out of range digital value (",
+                                CAN_BYTE,
+                                ") is in the error range");
+                        break;
+                    case 0x07: // Monitored He2 pressure out of range digital value in warning range
+                        sprintf(error,
+                                "%s%d%s",
+                                "Warning: The monitored He2 pressure out of range digital value (",
+                                CAN_BYTE,
+                                ") is in the warning range");
                         break;
                     default: // Undefined error
                         sprintf(error,

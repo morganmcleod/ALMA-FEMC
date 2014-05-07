@@ -6,7 +6,7 @@
 
     <b> CVS informations: </b><br>
 
-    \$Id: version.h,v 1.49 2010/11/04 19:59:38 avaccari Exp $
+    \$Id: version.h,v 1.52.2.2 2011/12/13 01:40:28 avaccari Exp $
 
     This files contains all the informations about the current version of the
     software and its revision history.
@@ -22,6 +22,43 @@
             - ...
 
     REVISION HISTORY
+
+    2011-12-12  002.006.000     (fe_mc.exe or 02-06-00.exe or 20111212.exe)
+        Official Release
+        This version is tagged Ver_02_06_00(ALMA-40_00_00_00-75_35_25_00_C_ICD).
+        - Fully implemented FE operation mode. When in MAINTENANCE_MODE only
+          the special RCA will be available. (FE-6)
+        - Added automatic monitor on control RCA when control issued using
+          serial console.
+        - Modified code to enable a cartridge asychronously. This modifies the
+          5ms latency required by the cartridge hardware from blocking to non
+          blocking (Jira ticket: FE-276).
+        - Incresed size for TVO sensor name field from 7 to 31 characters.
+        - Modified WCA photodetector code to return the absolute value of the
+          bias current (Jira ticket: FE-273).
+        - Modified behavior of initialization of parallel port communication. A
+          timer was implemented while waiting for the AMBSI1 to become ready. If
+          the AMBSI1 is not responsive during intialization, the timer will
+          expire and the bootup continue and an error will be stored. The CAN
+          communication will NOT be available but the console will still be
+          responsive to allow debug.
+        - Added control message and console option to read ESN available on OWB.
+          This allows to search for available ESN whenever is desired without
+          having to reboot the module (Jira ticket: FE-298).
+        - Modified behavior of gate valve behavior due to the change in hardware
+          of the gate valve driver. (Jira ticket: FE-232).
+        - Added shutdown procedure to the LPR to maximize safety of personel
+          (Jira ticket: FE-247).
+        - Implemented software interlock to prevent usage of turbo pump outside
+          allowed temperature range. (Jira ticket: FE-293).
+        - Implemented software interlock to prevent starting of cooldown if
+          dewar pressure > 5x10e-4. Within the async loop, this will be
+          continuously tested and depending on the condition, the FE status bit
+          for the FETIM will be set so SAFE or UNSAFE. (Jora ticket: FE-311).
+
+
+
+
     2010-11-04  002.005.000     (fe_mc.exe or 02-05-00.exe or 2101104.exe)
         Official Release
         This version is tagged Ver_02_05_00(ALMA-40_00_00_00-75_35_25_00_B_ICD).
@@ -232,18 +269,18 @@
 
 /*! \mainpage
     \section    sectionVersion  Version
-    Documentation relative to Version: 002.005.000 */
+    Documentation relative to Version: 002.006.000 */
 
 #ifndef _VERSION_H
     #define _VERSION_H
 
     /* Defines */
     #define VERSION_MAJOR   002  //!< Major version
-    #define VERSION_MINOR   005  //!< Minor version
+    #define VERSION_MINOR   006  //!< Minor version
     #define VERSION_PATCH   000  //!< Patch level
 
-    #define VERSION_DATE    "2010-11-04" //!< Version Date
-    #define VERSION_NOTES   "" //!<Version Notes
+    #define VERSION_DATE    "2011-12-12" //!< Version Date
+    #define VERSION_NOTES   "Preliminary FETIM integration" //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Andrea Vaccari - NRAO (avaccari@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"

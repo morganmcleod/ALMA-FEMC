@@ -5,7 +5,7 @@
     Created: 2006/10/24 11:52:13 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: globalOperations.c,v 1.20 2010/10/01 22:13:46 avaccari Exp $
+    \$Id: globalOperations.c,v 1.22 2011/11/09 00:40:30 avaccari Exp $
 
     This files contains all the functions necessary to handle global frontend
     operations. */
@@ -50,6 +50,10 @@ int initialization(void){
         if(owbInit()==ERROR){
             return ERROR;
         }
+
+        if(owbGetEsn()==ERROR){
+            return ERROR;
+        }
     #endif /* OWB */
 
     /* Initialize the parallel port communication. This is done after the OWB
@@ -86,7 +90,7 @@ int shutDown(void){
     printf("Shutting down...\n\n");
 
     /* Stop the timer for the RSS page update */
-    stopAsyncTimer(TIMER_RSS);
+//    stopAsyncTimer(TIMER_RSS);
 
     /* Shut down the frontend */
     if(frontendStop()==ERROR){

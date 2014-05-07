@@ -5,7 +5,7 @@
     Created: 2009/03/25 18:20:44 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: async.h,v 1.4 2009/10/13 15:01:49 avaccari Exp $
+    \$Id: async.h,v 1.6 2011/11/09 00:40:30 avaccari Exp $
 
     This file contains the information necessary to define the characteristics
     of the functions that take care of executing operation while the cpu is idle
@@ -23,13 +23,17 @@
     //! Current state of the asynchronous process
     /*! This variables contains the current state of the asynchronous process:
         \param ASYNC_CRYOSTAT   the process is handling the cryostat
+        \param ASYNC_CARTRIDGE  the process is handling the cartridges
+        \param ASYNC_FETIM      the process is handling the FETIM
         \param ASYNC_OFF        the process is turned off
         \param ASYNC_ON         the process is starting */
     typedef enum {
         ASYNC_CRYOSTAT,
+        ASYNC_CARTRIDGE,
+        ASYNC_FETIM,
         ASYNC_OFF,
         ASYNC_ON
-    } ASYNC_STATE; //!< Currenst state of the async process
+    } ASYNC_STATE; //!< Current state of the async process
 
 
 

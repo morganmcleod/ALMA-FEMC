@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: timer.h,v 1.31 2010/08/11 22:05:20 avaccari Exp $
+    \$Id: timer.h,v 1.32 2011/03/24 13:34:11 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the timers used by the software. */
@@ -14,7 +14,7 @@
     #define _TIMER_H
 
     /* Defines */
-    #define MAX_TIMERS_NUMBER           90       //!< Max number of timers
+    #define MAX_TIMERS_NUMBER           100       //!< Max number of timers
 
     /*** RSS ***/
     #define TIMER_RSS                   0        // Timer number
@@ -23,6 +23,11 @@
     /*** Serial Mux Board ***/
     #define TIMER_SERIAL_MUX            10      // Timer number
     #define TIMER_TO_SERIAL_MUX         1000    // Timeout in milliseconds
+
+    /*** Cartridge level timers ***/
+    /* Initialization timer */
+    #define TIMER_CARTRIDGE_INIT        15      // Timer number
+    #define TIMER_TO_CARTRIDGE_INIT     10       // Timeout in milliseconds
 
     /*** Bias Module ***/
     /* ADC */
@@ -70,6 +75,11 @@
     /* RESET */
     #define TIMER_OWB_RESET             81      // Timer number
     #define TIMER_TO_OWB_RESET          10000   // Timeout in milliseconds
+
+    /*** Parallel port communication ***/
+    /* AMBSI1 Ready */
+    #define TIMER_PP_AMBSI_RDY          90      // Timer number
+    #define TIMER_PP_TO_AMBSI_RDY       1000    // Timeout in milliseconds
 
     /* Timer control */
     #define TIMER_ON                    1

@@ -6,7 +6,7 @@
     Created: 2004/10/25 18:06:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: gateValve.h,v 1.8 2007/06/01 20:55:10 avaccari Exp $
+    \$Id: gateValve.h,v 1.9 2011/08/05 19:18:06 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the gate valve. */
@@ -45,6 +45,10 @@
                                     - \ref GATE_VALVE_CLOSE -> Valve is close
                                     - \ref GATE_VALVE_UNKNOWN -> Valve is in an
                                       unknown state.
+                                    - \ref GATE_VALVE_OVER_CURR -> Valve is
+                                      stuck due to an overcurrent
+                                    - \ref GATE_VALVE_ERROR -> Valve is in error
+                                      state
         \param      lastState   This contains a copy of the last issued control
                                 message to the state of the gate valve. */
     typedef struct {
@@ -53,7 +57,9 @@
             The possible states are:
                 - \ref GATE_VALVE_OPEN -> Valve is open
                 - \ref GATE_VALVE_CLOSE -> Valve is close
-                - \ref GATE_VALVE_UNKNOWN -> Valve is in an unknown state. */
+                - \ref GATE_VALVE_UNKNOWN -> Valve is in an unknown state
+                - \ref GATE_VALVE_OVER_CURR -> Valve is stuck due to an overcurrent
+                - \ref GATE_VALVE_ERROR -> Valve is in error state. */
         unsigned char   state[OPERATION_ARRAY_SIZE];
         //! Last control message: gate valve state
         /*! This is the content of the last control message sent to the gate

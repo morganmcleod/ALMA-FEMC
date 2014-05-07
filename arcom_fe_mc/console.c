@@ -5,7 +5,7 @@
     Created: 2007/05/22 11:31:31 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: console.c,v 1.14 2009/10/13 15:01:49 avaccari Exp $
+    \$Id: console.c,v 1.16 2011/04/15 15:17:19 avaccari Exp $
 
     This files contains all the functions necessary to handle console accesses
     to the software. */
@@ -24,6 +24,7 @@
 #include "debug.h"
 #include "version.h"
 #include "async.h"
+#include "owb.h"
 
 /* Globals */
 /* Externs */
@@ -59,13 +60,13 @@ void console(void){
         #endif /* DEBUG_CONSOLE */
 
         switch(key){
-            case DELETE_KEY:
+            case DELETE_KEY: // Delete
                 if(bufferIndex>0){
                     bufferIndex--;
-                    buffer[bufferIndex]=NULL;
+                    buffer[bufferIndex]='\0';
                 }
                 break;
-            case APOSTROPHE_KEY:
+            case APOSTROPHE_KEY: // Apostrophe
                 bufferIndex++;
                 memcpy(buffer,
                        lastBuffer,
@@ -80,7 +81,7 @@ void console(void){
                        buffer);
                 flushall();
                 break;
-            case QUOTE_KEY:
+            case QUOTE_KEY: // Quote
                 bufferIndex++;
                 memcpy(buffer,
                        lastBuffer,
@@ -94,20 +95,20 @@ void console(void){
                        buffer);
                 parseBuffer();
                 bufferIndex=0;
-                buffer[0]=NULL;
+                buffer[0]='\0';
                 break;
-            case ENTER_KEY:
+            case ENTER_KEY: // Enter
                 memcpy(lastBuffer,
                        buffer,
                        BUFFER_SIZE);
                 lastBufferIndex=bufferIndex;
                 parseBuffer();
                 bufferIndex=0;
-                buffer[0]=NULL;
+                buffer[0]='\0';
                 break;
             default:
                 buffer[bufferIndex]=key;
-                buffer[bufferIndex+1]=NULL;
+                buffer[bufferIndex+1]='\0';
                 bufferIndex++;
                 break;
         }
@@ -131,137 +132,149 @@ static void parseBuffer(void){
                  " \0");
 
     /* Check the first token for known commands */
-    if(strcmp(token,
-              "q")==0){         // 'q' -> Quit
-        stop = 1;
-    } else if (strcmp(token,
-                      "r")==0){ // 'r' -> Restarts
-        stop = 1;
-        restart = 1;
-    } else if (strcmp(token,
-                      "a")==0){ // 'a' -> toggles async process on/off
-        if(asyncState!=ASYNC_OFF){
-            asyncState=ASYNC_OFF;
-        } else {
-            asyncState=ASYNC_ON;
-        }
-    } else if (strcmp(token,
-                      "d")==0){ // 'd' -> Disables the console
-        printf("Console disabled!\n");
-        printf("To enable, send a 1 to RCA 0x%lX\n",
-               SET_CONSOLE_ENABLE);
-        consoleEnable = 0;
-    } else if (strcmp(token,
-                      "i")==0){ // 'i' -> Display version info
-        displayVersion();
-    } else if (strcmp(token,
-                      "m")==0){ // 'm' -> Monitor
-        CAN_SIZE=0;
-
-        /* Get next token */
-        token = strtok(NULL,
-                       " \0");
-
-        /* Extract the RCA from the token */
-        if(token != NULL){
-            CAN_ADDRESS = (unsigned long)htol(token);
-            // Disable interrupts (if necessary)
-            CANMessageHandler();
-            // Enable interrupts
-        }
-    } else if(strcmp(token,
-                     "c")==0){  // 'c' -> Control
-        /* Get next token */
-        token = strtok(NULL,
-                       " \0");
-
-        /* Extract the RCA from the token */
-        if(token != NULL){
-            CAN_ADDRESS = (unsigned long)htol(token);
-            /* Get payload qualifier token */
+    switch(*token){
+        case 'a': // *** 'a' -> toggles async process on/off ***
+            if(asyncState!=ASYNC_OFF){
+                asyncState=ASYNC_OFF;
+            } else {
+                asyncState=ASYNC_ON;
+            }
+            break;
+        case 'c': // *** 'c' -> Control ***
+            /* Get next token */
             token = strtok(NULL,
                            " \0");
 
-            /* Extract qualifier from the token */
+            /* Extract the RCA from the token */
             if(token != NULL){
-                if(strcmp(token,
-                          "b")==0){
-                    /* Get next token */
-                    token = strtok(NULL,
-                                   " \0");
+                CAN_ADDRESS = (unsigned long)htol(token);
+                /* Get payload qualifier token */
+                token = strtok(NULL,
+                               " \0");
 
-                    /* Extract the payload from the token */
-                    if(token != NULL){
-                        CAN_DATA(0) = (unsigned char)atoi(token);
-                        CAN_SIZE = CAN_BYTE_SIZE;
-                        // Disable interrupts (if necessary)
-                        CANMessageHandler();
-                        // Enable interrupts
-                    }
-                } else if(strcmp(token,
-                                 "i")==0){
-                    /* Get next token */
-                    token = strtok(NULL,
-                                   " \0");
+                /* Extract qualifier from the token */
+                if(token != NULL){
+                    if(strcmp(token,
+                              "b")==0){ // ** 'b' -> Byte **
+                        /* Get next token */
+                        token = strtok(NULL,
+                                       " \0");
 
-                    /* Extract the payload from the token */
-                    if(token != NULL){
-                        CONV_UINT(0) = (unsigned int)atoi(token);
-                        CAN_DATA(0)=CONV_CHR(1);
-                        CAN_DATA(1)=CONV_CHR(0);
-                        CAN_SIZE = CAN_INT_SIZE;
-                        // Disable interrupts (if necessary)
-                        CANMessageHandler();
-                        // Enable interrupts
-                    }
-                } else if(strcmp(token,
-                                 "f")==0){
-                    /* Get next token */
-                    token = strtok(NULL,
-                                   " \0");
+                        /* Extract the payload from the token */
+                        if(token != NULL){
+                            CAN_DATA(0) = (unsigned char)atoi(token);
+                            CAN_SIZE = CAN_BYTE_SIZE;
+                            // Disable interrupts (if necessary)
+                            CANMessageHandler();
+                            // Get the monitor on control
+                            CAN_SIZE = 0;
+                            CANMessageHandler();
+                            // Enable interrupts
+                        }
+                    } else if(strcmp(token,
+                                     "i")==0){ // ** 'i' -> Integer **
+                        /* Get next token */
+                        token = strtok(NULL,
+                                       " \0");
 
-                    /* Extract the payload from the token */
-                    if(token != NULL){
-                        CONV_FLOAT = atof(token);
-                        CAN_DATA(0)=CONV_CHR(3);
-                        CAN_DATA(1)=CONV_CHR(2);
-                        CAN_DATA(2)=CONV_CHR(1);
-                        CAN_DATA(3)=CONV_CHR(0);
-                        CAN_SIZE = CAN_FLOAT_SIZE;
-                        // Disable interrupts (if necessary)
-                        CANMessageHandler();
-                        // Enable interrupts
+                        /* Extract the payload from the token */
+                        if(token != NULL){
+                            CONV_UINT(0) = (unsigned int)atoi(token);
+                            CAN_DATA(0)=CONV_CHR(1);
+                            CAN_DATA(1)=CONV_CHR(0);
+                            CAN_SIZE = CAN_INT_SIZE;
+                            // Disable interrupts (if necessary)
+                            CANMessageHandler();
+                            // Get the monitor on control
+                            CAN_SIZE = 0;
+                            CANMessageHandler();
+                            // Enable interrupts
+                        }
+                    } else if(strcmp(token,
+                                     "f")==0){ // ** 'f' -> float **
+                        /* Get next token */
+                        token = strtok(NULL,
+                                       " \0");
+
+                        /* Extract the payload from the token */
+                        if(token != NULL){
+                            CONV_FLOAT = atof(token);
+                            CAN_DATA(0)=CONV_CHR(3);
+                            CAN_DATA(1)=CONV_CHR(2);
+                            CAN_DATA(2)=CONV_CHR(1);
+                            CAN_DATA(3)=CONV_CHR(0);
+                            CAN_SIZE = CAN_FLOAT_SIZE;
+                            // Disable interrupts (if necessary)
+                            CANMessageHandler();
+                            // Get the monitor on control
+                            CAN_SIZE = 0;
+                            CANMessageHandler();
+                            // Enable interrupts
+                        }
                     }
                 }
             }
-        }
-    } else { // Anything else print help
-        displayVersion();
-        printf("Console help\n");
-        printf(" ' -> retypes last command\n");
-        printf(" \" -> repeats last command\n");
-        printf(" q<CR> -> quit\n");
-        printf(" r<CR> -> restart\n");
-        printf(" a<CR> -> enables/disables the async process (DEBUG only)\n");
-        printf(" d<CR> -> disable console\n");
-        printf(" i<CR> -> display version information\n");
-        printf(" m RCA<CR> -> monitor the specified address\n");
-        printf("           RCA is the Relative CAN Address.\n");
-        printf("               It can be in decimal or exadecimal (0x...) format\n");
-        printf("               For a list of the RCAs check:\n");
-        printf("               - ALMA-40.00.00.00-75.35.25.00-X-ICD\n");
-        printf("               - ALMA-40.04.03.03-002-X-DSN\n");
-        printf(" c RCA q data <CR> -> control the specified address\n");
-        printf("                   RCA is the Relative CAN Address.\n");
-        printf("                       It can be in decimal or exadecimal (0x...) format\n");
-        printf("                       For a list of the RCAs check:\n");
-        printf("                       - ALMA-40.00.00.00-75.35.25.00-X-ICD\n");
-        printf("                       - ALMA-40.04.03.03-002-X-DSN\n");
-        printf("                   q is the qualifier for the payload:\n");
-        printf("                     b for a byte or a boolean\n");
-        printf("                     i for an unsigned integer\n");
-        printf("                     f for a float\n");
-        printf("                   data is the payload in the format specified by the qualifier\n");
+            break;
+        case 'd': // *** 'd' -> Disables the console ***
+            printf("Console disabled!\n");
+            printf("To re-enable, send a 1 to RCA 0x%lX\n",
+                   SET_CONSOLE_ENABLE);
+            consoleEnable = 0;
+            break;
+        case 'e': // *** 'e' -> Read available ESNs on OWB***
+            owbGetEsn();
+            break;
+        case 'i': // *** 'i' -> Display version info ***
+            displayVersion();
+            break;
+        case 'm': // *** 'm' -> Monitor ***
+            CAN_SIZE=0;
+
+            /* Get next token */
+            token = strtok(NULL,
+                           " \0");
+
+            /* Extract the RCA from the token */
+            if(token != NULL){
+                CAN_ADDRESS = (unsigned long)htol(token);
+                // Disable interrupts (if necessary)
+                CANMessageHandler();
+                // Enable interrupts
+            }
+            break;
+        case 'q': // *** 'q' -> Quit ***
+            stop = 1;
+            break;
+        case 'r': // *** 'r' -> Restarts ***
+            stop = 1;
+            restart = 1;
+            break;
+        default: // Anything else print help
+            displayVersion();
+            printf("Console help\n");
+            printf(" ' -> retypes last command\n");
+            printf(" \" -> repeats last command\n");
+            printf(" a<CR> -> enables/disables the async process (DEBUG only)\n");
+            printf(" c RCA q data <CR> -> control the specified address\n");
+            printf("                   RCA is the Relative CAN Address.\n");
+            printf("                       It can be in decimal or exadecimal (0x...) format\n");
+            printf("                   q is the qualifier for the payload:\n");
+            printf("                     b for a byte or a boolean\n");
+            printf("                     i for an unsigned integer\n");
+            printf("                     f for a float\n");
+            printf("                   data is the payload in the format specified by the qualifier\n");
+            printf(" d<CR> -> disable console\n");
+            printf(" e<CR> -> reads and display ESNs on the OWB\n");
+            printf(" i<CR> -> display version information\n");
+            printf(" m RCA<CR> -> monitor the specified address\n");
+            printf("           RCA is the Relative CAN Address.\n");
+            printf("               It can be in decimal or exadecimal (0x...) format\n");
+            printf(" q<CR> -> quit\n");
+            printf(" r<CR> -> restart\n");
+            printf("For a list of the RCAs check:\n");
+            printf("- ALMA-40.00.00.00-75.35.25.00-X-ICD\n");
+            printf("- ALMA-40.04.03.03-002-X-DSN\n\n");
+            break;
     }
 }
 

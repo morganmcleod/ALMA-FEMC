@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: paChannel.c,v 1.23 2009/08/25 21:39:39 avaccari Exp $
+    \$Id: paChannel.c,v 1.24 2011/11/09 00:40:30 avaccari Exp $
 
     This files contains all the functions necessary to handle the PA Channel
     events.
@@ -279,12 +279,57 @@ static void gateVoltageHandler(void){
    voltage. */
 static void drainVoltageHandler(void){
 
+    float temp4K,temp12K;
+    unsigned int state=DISABLE;
+
     #ifdef DEBUG
         printf("      Drain Voltage\n");
     #endif /* DEBUG */
 
     /* If control (size !=0) */
     if(CAN_SIZE){
+        /* If the temperature of the dewar is >30K, don't allow the use of the
+           PAs as too much power at this temperature could damage the
+           multipliers. In the LO async loop, the PAs will be turned off if the
+           dewar temepratures grows to above 30K. */
+        temp4K=frontend.
+                cryostat.
+                 cryostatTemp[CRYOCOOLER_4K].
+                  temp[CURRENT_VALUE];
+        temp12K=frontend.
+                 cryostat.
+                  cryostatTemp[CRYOCOOLER_12K].
+                   temp[CURRENT_VALUE];
+
+        if((temp12K==FLOAT_ERROR)||(temp12K==FLOAT_UNINIT)){
+            if((temp4K==FLOAT_ERROR)||(temp4K==FLOAT_UNINIT)||(temp4K>PA_MAX_ALLOWED_TEMP)){
+                state=DISABLE;
+            } else {
+                state=ENABLE;
+            }
+        } else {
+            if(temp12K>PA_MAX_ALLOWED_TEMP){
+                state=DISABLE;
+            } else {
+                state=ENABLE;
+            }
+        }
+
+        if(state==DISABLE){
+            storeError(ERR_PA,
+                       0x0D); // Error 0x0D -> PA temperature above the allowed range -> PAs disabled
+
+            frontend.
+             cartridge[currentModule].
+              lo.
+               pa.
+                paChannel[currentPaChannel()].
+                 lastDrainVoltage.
+                  status=HARDW_BLKD_ERR; // Store the status in the last control message
+
+            return;
+        }
+
         /* Store message in "last control message" location */
         memcpy(&frontend.
                  cartridge[currentModule].

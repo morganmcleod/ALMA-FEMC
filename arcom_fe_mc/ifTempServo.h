@@ -6,7 +6,7 @@
     Created: 2006/11/30 11:30:33 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ifTempServo.h,v 1.2 2006/12/01 22:55:55 avaccari Exp $
+    \$Id: ifTempServo.h,v 1.3 2011/08/05 19:18:06 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the IF switch temperatue servo. */
@@ -27,7 +27,7 @@
         #include "globalDefinitions.h"
     #endif /* _GLOBALDEFINITIONS_H */
 
-        /* CAN module defines */
+    /* CAN module defines */
     #ifndef _CAN_H
         #include "can.h"
     #endif /* _CAN_H */

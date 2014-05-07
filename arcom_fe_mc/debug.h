@@ -6,7 +6,7 @@
 
     <b> CVS informations: </b><br>
 
-    \$Id: debug.h,v 1.42 2009/10/13 15:01:49 avaccari Exp $
+    \$Id: debug.h,v 1.46 2011/11/09 00:40:30 avaccari Exp $
 
     This files contains all the informations necessary to debug the running
     software.
@@ -20,52 +20,63 @@
     /* Defines */
     //#define DEVELOPMENT         // Uncomment this when developping the software
 
-
+    /* If we are developing the software */
     #ifdef DEVELOPMENT
-        #define CONSOLE                 // Turn on the console interface
-        #define DEBUG_CAN               // Turn on CAN interface debug
-        #define DEBUG_SERIAL            // Turn on Serial interface debug
-        #define DEBUG_BIAS_SERIAL       // Turn of Bias serial interface debug
-        #define DEBUG_POWERDIS          // Turn on Power Distribution debug
-        #define DEBUG_POWERDIS_SERIAL   // Turn on Power Distribution serial interface debug
-        #define DEBUG_IFSWITCH          // Turn on IF Switch debug
-        #define DEBUG_IFSWITCH_SERIAL   // Turn on IF Switch serial interface debug
-        #define DEBUG_CRYOSTAT          // Turn on Cryostat debug
-        #define DEBUG_CRYOSTAT_SERIAL   // Turn on Cryostat serial interface debug
-        #define DEBUG_LPR               // Turn on LPR debug
-        #define DEBUG_LPR_SERIAL        // Turn on LPR serial interface debug
-        #define DEBUG_INI               // Turn on INI file access debug
-        #define DEBUG_STARTUP           // Turn on startup debugging
-        #define DEBUG_OWB               // Turn on one wire bus debugging
-        #define DEBUG_PPCOM             // Turn on the parallel port communication debugging
-        #define DEBUG_INIT              // Turn on initialization debugging
-        #define DEBUG_CONSOLE           // Turn on console debugging
-        #define DEBUG                   // Turn on all the rest and error reporting
-        #define ERROR_REPORT            // Uncomment this line to enable the console error report
+        #define CONSOLE                     // Turn on the console interface
+        // #define DEBUG_CONSOLE               // Turn on console debugging
+
+        //#define DEBUG_CAN                   // Turn on CAN interface debug
+        // #define DEBUG_CAN_FAST              // Uncomment this line to enable the minimalistic CAN message debug in fast version
+
+        // #define DEBUG_SERIAL                // Turn on Serial interface debug
+
+        #define DEBUG_POWERDIS              // Turn on Power Distribution debug
+        #define DEBUG_IFSWITCH              // Turn on IF Switch debug
+        #define DEBUG_CRYOSTAT              // Turn on Cryostat debug
+        #define DEBUG_LPR                   // Turn on LPR debug
+        #define DEBUG_FETIM                 // Turn on FETIM debug
+        // #define DEBUG_INI                   // Turn on INI file access debug
+        #define DEBUG_STARTUP               // Turn on startup debugging
+        #define DEBUG_OWB                   // Turn on one wire bus debugging
+        #define DEBUG_PPCOM                 // Turn on the parallel port communication debugging
+        #define DEBUG_INIT                  // Turn on initialization debugging
+        #define DEBUG                       // Turn on all the rest and error reporting
+        #define ERROR_REPORT                // Uncomment this line to enable the console error report
+
+        #define DEBUG_FETIM_ASYNC           // Turn on the FETIM async debugging
+    #else /* If we are NOT developing: for releases build */
+        #define CONSOLE                     // Turn on the console interface
+        // #define DEBUG_CONSOLE               // Turn on console debugging
+
+        // #define DEBUG_CAN                   // Turn on CAN interface debug
+        // #define DEBUG_CAN_FAST              // Uncomment this line to enable the minimalistic CAN message debug in fast version
+
+        // #define DEBUG_SERIAL                // Turn on Serial interface debug
+
+        // #define DEBUG_POWERDIS              // Turn on Power Distribution debug
+        // #define DEBUG_IFSWITCH              // Turn on IF Switch debug
+        // #define DEBUG_CRYOSTAT              // Turn on Cryostat debug
+        // #define DEBUG_LPR                   // Turn on LPR debug
+        // #define DEBUG_FETIM                 // Turn on FETIM debug
+        // #define DEBUG_INI                   // Turn on INI file access debug
+        // #define DEBUG_STARTUP               // Turn on startup debugging
+        // #define DEBUG_OWB                   // Turn on one wire bus debugging
+        // #define DEBUG_PPCOM                 // Turn on the parallel port communication debugging
+        // #define DEBUG_INIT                  // Turn on initialization debugging
+        // #define DEBUG                       // Turn on all the rest and error reporting
+        // #define ERROR_REPORT                // Uncomment this line to enable the console error report
+        // #define DEBUG_FETIM_ASYNC           // Turn on the FETIM async debugging
     #endif /* DEVELOPMENT */
 
-    #ifndef DEVELOPMENT
-        // Add here the desired level of debugging when in fast mode
-        #define CONSOLE                 // Turn on the console interface
-        // #define DEBUG_CAN               // Turn on CAN interface debug
-        // #define DEBUG_SERIAL            // Turn on Serial interface debug
-        // #define DEBUG_BIAS_SERIAL       // Turn of Bias serial interface debug
-        // #define DEBUG_POWERDIS          // Turn on Power Distribution debug
-        // #define DEBUG_POWERDIS_SERIAL   // Turn on Power Distribution serial interface debug
-        // #define DEBUG_IFSWITCH          // Turn on IF Switch debug
-        // #define DEBUG_IFSWITCH_SERIAL   // Turn on IF Switch serial interface debug
-        // #define DEBUG_CRYOSTAT          // Turn on Cryostat debug
-        // #define DEBUG_CRYOSTAT_SERIAL   // Turn on Cryostat serial interface debug
-        // #define DEBUG_LPR               // Turn on LPR debug
-        // #define DEBUG_LPR_SERIAL        // Turn on LPR serial interface debug
-        // #define DEBUG_INI               // Turn on INI file access debug
-        // #define DEBUG_STARTUP           // Turn on startup debugging
-        // #define DEBUG_OWB               // Turn on one wire bus debugging
-        // #define DEBUG_PPCOM             // Turn on the parallel port communication debugging
-        // #define DEBUG_INIT              // Turn on initialization debugging
-        // #define DEBUG_CONSOLE           // Turn on console debugging
-        // #define ERROR_REPORT            // Uncomment this line to enable the console error report
-        // #define DEBUG_CAN_FAST          // Uncomment this line to enable the minimalistic CAN message debug in fast version
-    #endif /* DEVELOPMENT */
+    /* In either cases if DEBUG_SERIAL is enabled */
+    #ifdef DEBUG_SERIAL
+        #define DEBUG_BIAS_SERIAL           // Turn of Bias serial interface debug
+        #define DEBUG_POWERDIS_SERIAL       // Turn on Power Distribution serial interface debug
+        #define DEBUG_IFSWITCH_SERIAL       // Turn on IF Switch serial interface debug
+        #define DEBUG_CRYOSTAT_SERIAL       // Turn on Cryostat serial interface debug
+        #define DEBUG_ASYNC_CRYOSTAT_SERIAL // Turn on Cryostat asynchronous serial interface debug
+        #define DEBUG_LPR_SERIAL            // Turn on LPR serial interface debug
+        #define DEBUG_FETIM_SERIAL          // Turn on FETIM serial interface debug
+    #endif /* DEBUG_SERIAL */
 
 #endif /* _DEBUG_H */

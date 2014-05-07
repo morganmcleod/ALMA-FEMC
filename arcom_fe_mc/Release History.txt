@@ -9,6 +9,39 @@ Before release, remember to update or get the info from:
 - execute after in the compiler
 
 ****** Release infos here *******
+2011-12-12  002.006.000     (fe_mc.exe or 02-06-00.exe or 20111212.exe)
+    Official Release
+    This version is tagged Ver_02_06_00(ALMA-40_00_00_00-75_35_25_00_C_IDC)
+    - Fully implemented FE operation mode. When in MAINTENANCE_MODE only
+      the special RCA will be available. (FE-6)
+    - Added automatic monitor on control RCA when control issued using
+      serial console.
+    - Modified code to enable a cartridge asychronously. This modifies the
+      5ms latency required by the cartridge hardware from blocking to non
+      blocking (Jira ticket: FE-276).
+    - Incresed size for TVO sensor name field from 7 to 31 characters.
+    - Modified WCA photodetector code to return the absolute value of the
+      bias current (Jira ticket: FE-273).
+    - Modified behavior of initialization of parallel port communication. A
+      timer was implemented while waiting for the AMBSI1 to become ready. If
+      the AMBSI1 is not responsive during intialization, the timer will
+      expire and the bootup continue and an error will be stored. The CAN
+      communication will NOT be available but the console will still be
+      responsive to allow debug.
+    - Added control message and console option to read ESN available on OWB.
+      This allows to search for available ESN whenever is desired without
+      having to reboot the module (Jira ticket: FE-298).
+    - Modified behavior of gate valve behavior due to the change in hardware
+      of the gate valve driver. (Jira ticket: FE-232).
+    - Added shutdown procedure to the LPR to maximize safety of personel
+      (Jira ticket: FE-247).
+    - Implemented software interlock to prevent usage of turbo pump outside
+      allowed temperature range. (Jira ticket: FE-293).
+    - Implemented software interlock to prevent starting of cooldown if
+      dewar pressure > 5x10e-4. Within the async loop, this will be
+      continuously tested and depending on the condition, the FE status bit
+      for the FETIM will be set so SAFE or UNSAFE. (Jira ticket: FE-311).
+
 2010-11-04  002.005.000     (fe_mc.exe or 02-05-00.exe or 2101104.exe)
     Official Release
     This version is tagged Ver_02_05_00(ALMA-40_00_00_00-75_35_25_00_B_ICD).

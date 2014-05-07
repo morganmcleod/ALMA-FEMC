@@ -5,7 +5,7 @@
     Created: 2007/09/05 14:33:15 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: owb.h,v 1.6 2010/04/27 22:08:16 avaccari Exp $
+    \$Id: owb.h,v 1.7 2011/03/24 13:34:10 avaccari Exp $
 
     This file contains the header for the one wire bus access functions. */
 
@@ -102,6 +102,7 @@
     static int writeOwb(int data); // Writes data to the one wire bus
     /* Externs */
     extern int owbInit(void); //!< Performs the initialization of the one wire bus
+    extern int owbGetEsn(void); //!< Gather the available ESN from the OWB
 
 
 

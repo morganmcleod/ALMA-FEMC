@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ppComm.h,v 1.18 2010/11/02 14:36:29 avaccari Exp $
+    \$Id: ppComm.h,v 1.19 2011/03/24 13:34:11 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the parallel port included in the ARCOM Pegasus
@@ -27,7 +27,7 @@
     #define PP_DATA_DIR             0x20    // Data direction line in the control port (bit 5 = PCD: 0 = Write, 1 = Read)
     #define SPP_STATUS_SELECT       0x10    // Select pin on the SPP status port. Used to check the status of the AMBSI: 0 -> Ready
     #define SPP_CONTROL_INIT        0x04    // nInit pin on the SPP control port. Used to report the status to the AMBSI: 0 -> Ready
-    #define WAIT_ON_AMBSI_NOT_READY 5000    // Number of milliseconds to wait before checking AMBSI status at initialization
+    #define WAIT_ON_AMBSI_NOT_READY 100     // Number of milliseconds to wait before checking AMBSI status at initialization
     #define ARCOM_READY             0x5A    // Data to be sent to the AMBSI1 to indicate that the ARCOM is ready
 
     /* Globals */
