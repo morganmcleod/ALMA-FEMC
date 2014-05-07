@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: timer.h,v 1.30 2010/03/03 15:43:18 avaccari Exp $
+    \$Id: timer.h,v 1.31 2010/08/11 22:05:20 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the timers used by the software. */
@@ -53,7 +53,7 @@
     /*** Cryostat Module ***/
     /* ADC */
     #define TIMER_CRYO_ANALOG_WAIT      60      // Timer number
-    #define TIMER_CRYO_TO_ANALOG_WAIT   50      // Timeout in milliseconds
+    #define TIMER_CRYO_TO_ANALOG_WAIT   100     // Timeout in milliseconds
 
     /*** LPR Module ***/
     /* ADC */

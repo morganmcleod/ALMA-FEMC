@@ -6,7 +6,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ifSwitch.h,v 1.17 2010/03/03 15:43:18 avaccari Exp $
+    \$Id: ifSwitch.h,v 1.18 2010/08/11 22:05:20 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the IF switch system. This system allows to
@@ -46,6 +46,10 @@
     #endif /* _IFCHANNEL_H */
 
     /* Defines */
+    /* Hardware revision definitions */
+    #define IF_SWITCH_HRDW_REV0             0
+    #define IF_SWITCH_HRDW_REV1             1
+    /* System definitions */
     #define IF_SWITCH_WAYS                  CARTRIDGES_NUMBER       // Number of 10:1 channels in the switch
     #define WAY0                            0
     #define WAY1                            1
@@ -76,7 +80,7 @@
         \param      lastBandSelect      This contains a copy of the last issued
                                         control message for the band select. */
      typedef struct {
-        //! Current state of the the IF channel
+        //! Current state of the the IF switch
         //! IF Switch M&C board hardware revision level
         /*! This contains the IF switch M&C board hardware revision level */
         unsigned char   hardwRevision;

@@ -5,7 +5,7 @@
     Created: 2006/11/30 16:49:28 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ifSerialInterface.c,v 1.11 2010/03/03 15:43:18 avaccari Exp $
+    \$Id: ifSerialInterface.c,v 1.12 2010/08/11 22:05:20 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     IF Switch serial interface.
@@ -263,7 +263,7 @@ int getIfChannelTemp(void){
     /* If the IF switch M&C module is the old hardware revision */
     if(frontend.
         ifSwitch.
-         hardwRevision==0){
+         hardwRevision==IF_SWITCH_HRDW_REV0){
         /* 1 - Select the desired monitor point
                a - update GREG */
         ifRegisters.

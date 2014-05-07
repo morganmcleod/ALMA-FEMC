@@ -5,7 +5,7 @@
     Created: 2007/04/10 11:26:37 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cryostatSerialInterface.c,v 1.15 2009/09/22 14:46:10 avaccari Exp $
+    \$Id: cryostatSerialInterface.c,v 1.16 2010/08/11 22:05:20 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     cryostat serial interface.
@@ -27,6 +27,7 @@
 
 
 #include "cryostatSerialInterface.h"
+#include "cryostat.h"
 #include "error.h"
 #include "debug.h"
 #include "database.h"
@@ -1003,7 +1004,21 @@ int getCryostatTemp(void){
         case PLATE_12K_FAR_SIDE:
         case SHIELD_TOP_12K:
             /* Find the sensor resistance */
-            resistance=TVO_GAIN*vin;
+            /* Apply the correct scaling depending on the hardware revision */
+            switch(frontend.
+                    cryostat.
+                     hardwRevision){
+                case CRYO_HRDW_REV0:
+                    resistance=TVO_GAIN_REV0*vin;
+                    break;
+                case CRYO_HRDW_REV1:
+                    resistance=TVO_GAIN_REV1*vin;
+                    break;
+                default:
+                    resistance=TVO_GAIN_REV1*vin;
+                    break;
+            }
+
             /* Apply the interpolation */
             resistance=TVO_RESISTOR_SCALE/resistance;
             temperature=frontend.
@@ -1103,3 +1118,44 @@ int getCryostatTemp(void){
 }
 
 
+
+/* Get CRYO M&C board hardware revision level */
+/*! This function reads the hardware revision level of the cryostat M&C board.
+    Different revision require different handling of certain data.
+
+    This function will perform the following operations:
+        -# Perform a parallel read of the hardware revision register
+        -# If no error occurs, update the frontend variable with the revision
+           level
+
+    \return
+        - \ref NO_ERROR -> if no error occurres
+        - \ref ERROR    -> if something wrong happened */
+int getCryoHardwRevision(void){
+
+    #ifdef DEBUG_CRYO_SERIAL
+        printf("         - Reading hardware revision level\n");
+    #endif /* DEBUG_CRYO_SERIAL */
+
+    /* If an error occurs, notify the calling function */
+    if(serialAccess(CRYO_HRDW_REV_READ,
+                    &cryoRegisters.
+                      hrdwRevReg.
+                       integer,
+                    CRYO_HRDW_REV_REG_SIZE,
+                    CRYO_HRDW_REV_REG_SHIFT_SIZE,
+                    CRYO_HRDW_REV_REG_SHIFT_DIR,
+                    SERIAL_READ)==ERROR){
+        return ERROR;
+    }
+
+    /* If no error update frontend variable. */
+    frontend.
+     cryostat.
+      hardwRevision=cryoRegisters.
+                     hrdwRevReg.
+                      bitField.
+                       hardwRev;
+
+    return NO_ERROR;
+}

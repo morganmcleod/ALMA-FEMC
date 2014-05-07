@@ -11,7 +11,7 @@
     Created: 2004/10/25 16:45:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cryostatTemp.h,v 1.9 2009/10/13 15:01:49 avaccari Exp $
+    \$Id: cryostatTemp.h,v 1.10 2010/08/11 22:05:20 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the dewar temperature sensor. */
@@ -52,7 +52,8 @@
     /* Cryostat sensor evaluation defines */
     /* TVO sensors */
     #define TVO_SENSORS_NUMBER  9           // Number of TVO sensor in the dewar
-    #define TVO_GAIN            454.545454  // TVO sensor gain factor
+    #define TVO_GAIN_REV0       454.545454  // TVO sensor gain factor for Rev.0 Hardware
+    #define TVO_GAIN_REV1       603.62173   // TVO sensor gain factor for Rev.1 Hardware
     #define TVO_COEFFS_NUMBER   7           // Coefficients necessary to calculate the TVO temperature
     #define TVO_COEFF_0         0           // Coefficient index for x^0
     #define TVO_COEFF_1         1           // Coefficient index for x^1
@@ -63,7 +64,7 @@
     #define TVO_COEFF_6         6           // Coefficient index for x^6
     #define TVO_RESISTOR_SCALE  1000.0      // Scaling coefficient for resistor readout
     /* PRT sensors */
-    #define PRT_GAIN            125.0       // PRT sensor gain
+    #define PRT_GAIN            124.71872   // PRT sensor gain
     /* PRT sensor interpolation curve. There are 2 curves, the first
        (PRT_A_SCALE) works for values smaller than 124 ohm (~60K), the other
        (PRT_B_SCALE) works for values greater than 124 ohm. */

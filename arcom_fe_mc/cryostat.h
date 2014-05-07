@@ -6,7 +6,7 @@
     Created: 2004/10/25 15:39:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cryostat.h,v 1.22 2009/08/03 21:59:07 avaccari Exp $
+    \$Id: cryostat.h,v 1.23 2010/08/11 22:05:20 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the cryostat system. */
@@ -58,6 +58,9 @@
     #endif  /* _GLOBALDEFINITIONS_H */
 
     /* Defines */
+    /* Hardware revision definitions */
+    #define CRYO_HRDW_REV0              0
+    #define CRYO_HRDW_REV1              1
     /* Configuration data info */
     #define CRYO_CONF_FILE_SECTION      "CRYO"  // Section containing the cryostat configuration file info
     #define CRYO_CONF_FILE_KEY          "FILE"  // Key containing the cryostat configuration file info
@@ -116,8 +119,14 @@
                                             end assembly
         \param      configFile              This contains the configuration file
                                             name as extracted from the frontend
-                                            configuration file. */
+                                            configuration file.
+        \param      hardwRevision           This contains the Cryostat M&C board
+                                            hardware revision level. */
     typedef struct {
+        //! Current state of the Cryostat
+        //! Cryostat M&C board hardware revision level
+        /*! This contains the Cryostat M&C board hardware revision level */
+        unsigned char   hardwRevision;
         //! Cryostat temperature current state
         /*! Sensors \p Se are assigned according to the following:
                 - Se = 00: 4K cryocooler

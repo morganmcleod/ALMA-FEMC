@@ -6,7 +6,7 @@
 
     <b> CVS informations: </b><br>
 
-    \$Id: cryostat.c,v 1.26 2009/10/13 15:01:49 avaccari Exp $
+    \$Id: cryostat.c,v 1.27 2010/08/11 22:05:20 avaccari Exp $
 
     This files contains all the functions necessary to handle cryostat events. */
 
@@ -120,6 +120,29 @@ int cryostatStartup(void){
                                                                "PLATE_12K_LINK",
                                                                "PLATE_12K_FAR",
                                                                "PLATE_12K_SHIELD"};
+
+        /* Set the currentModule variable to reflect the fact that the cryostat
+           is selected. This is necessary because currentModule is the global
+           variable used to select the communication channel. This is only
+           necessary if the serial communication is not initiated by a CAN
+           message. */
+        currentModule=CRYO_MODULE;
+
+        printf(" Initializing Cryostat Module...\n\n");
+        printf("  - Reading Cryostat M&C module hardware revision level...\n");
+
+        /* Call the getCryoHardwRevision() function to read the hardware
+           revision level. If error, return error and abort initialization. */
+        if(getCryoHardwRevision()==ERROR){
+            return ERROR;
+        }
+
+        printf("    Revision level: %d\n",
+               frontend.
+                cryostat.
+                 hardwRevision);
+
+        printf("    done!\n\n"); // Hardware Revision Level
 
         /* Parse the FRONTEND.INI file to extract the name of the configuration
            file for the LPR. */

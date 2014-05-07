@@ -6,7 +6,7 @@
 
     <b> CVS informations: </b><br>
 
-    \$Id: version.h,v 1.45 2010/04/28 22:07:59 avaccari Exp $
+    \$Id: version.h,v 1.46 2010/08/11 22:05:20 avaccari Exp $
 
     This files contains all the informations about the current version of the
     software and its revision history.
@@ -22,6 +22,19 @@
             - ...
 
     REVISION HISTORY
+    2010-08-11  002.004.000     (fe_mc.exe or 02-04-00.exe or 2100811.exe)
+        Official Release
+        This version is tagged Ver_02_04_00(ALMA-40_00_00_00-75_35_25_00_B_ICD).
+        - Modified interface to cryostat to support both hardware revisions of
+          the crysotat M&C board. The two hardware revisions require different
+          scaling to be applied to the readback voltage before a conversion to
+          the actual temperature can be performed. (Jira ticket: FE-220)
+        - Adjusted the scaling for the PRT sensor for higher accuracy.
+        - Increase to 100ms the time between the temperature channel switching
+          and an the initiation of the ADC conversion in the cryostat. This
+          should allow for more stable readings. This timeout doesn't affect any
+          CAN interface timing since it's running in an async process.
+
     2010-04-28  002.003.000     (fe_mc.exe or 02-03-00.exe or 2100428.exe)
         Official Release
         This version is tagged Ver_02_03_00(ALMA-40_00_00_00-75_35_25_00_B_ICD).
@@ -194,17 +207,17 @@
 
 /*! \mainpage
     \section    sectionVersion  Version
-    Documentation relative to Version: 002.003.000 */
+    Documentation relative to Version: 002.004.000 */
 
 #ifndef _VERSION_H
     #define _VERSION_H
 
     /* Defines */
     #define VERSION_MAJOR   002  //!< Major version
-    #define VERSION_MINOR   003  //!< Minor version
+    #define VERSION_MINOR   004  //!< Minor version
     #define VERSION_PATCH   000  //!< Patch level
 
-    #define VERSION_DATE    "2010-04-28" //!< Version Date
+    #define VERSION_DATE    "2010-08-11" //!< Version Date
     #define VERSION_NOTES   "" //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Andrea Vaccari - NRAO (avaccari@nrao.edu)"

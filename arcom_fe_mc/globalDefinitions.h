@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: globalDefinitions.h,v 1.29 2009/09/22 14:46:10 avaccari Exp $
+    \$Id: globalDefinitions.h,v 1.30 2010/08/11 22:05:20 avaccari Exp $
 
     This file contains definitions that are used throughout the various modules
     of the program. */
@@ -80,7 +80,7 @@
 
     // Char[4] to float conversion union
     /* This union define an easy way to convert the incoming CAN message
-       payload to a float and vice versa. */
+       payload to several format and vice versa. */
     typedef union {
         long int        longint;
         unsigned int    uint[2];

@@ -5,7 +5,7 @@
     Created: 2006/12/01 13:24:46 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ifChannel.c,v 1.7 2010/03/03 15:43:18 avaccari Exp $
+    \$Id: ifChannel.c,v 1.8 2010/08/11 22:05:20 avaccari Exp $
 
     This files contains all the functions necessary to handle IF Channel
     events. */
@@ -17,6 +17,7 @@
 #include "error.h"
 #include "frontend.h"
 #include "ifSerialInterface.h"
+#include "ifSwitch.h"
 #include "debug.h"
 #include "database.h"
 #include "globalDefinitions.h"
@@ -193,7 +194,7 @@ void assemblyTempHandler(void){
            ifTempServo.
             enable[CURRENT_VALUE]==IF_TEMP_SERVO_DISABLE)&(frontend.
                                                             ifSwitch.
-                                                             hardwRevision==0)){
+                                                             hardwRevision==IF_SWITCH_HRDW_REV0)){
         storeError(ERR_IF_CHANNEL,
                    0x07); // Error 0x07 -> the temperature servo is not enabled
         CAN_STATUS = HARDW_BLKD_ERR; // Notify the incoming CAN message

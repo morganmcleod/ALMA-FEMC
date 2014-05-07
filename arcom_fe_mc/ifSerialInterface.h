@@ -6,7 +6,7 @@
     Created: 2006/11/30 16:40:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ifSerialInterface.h,v 1.8 2010/03/03 15:43:18 avaccari Exp $
+    \$Id: ifSerialInterface.h,v 1.9 2010/08/11 22:05:20 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the IF switch serial interface. */
@@ -294,6 +294,6 @@
     extern int getIfChannelTemp(void); //!< This function monitors the IF channel temperature
     extern int setIfChannelAttenuation(void); //!< This function controls the IF channel attenuation
     extern int setIfSwitchBandSelect(void); //!< This function controls the IF switch band selection
-    extern int getIfSwitchHardwRevision(void); //!< This function return the IF switch M&C board hardware revision level
+    extern int getIfSwitchHardwRevision(void); //!< This function returns the IF switch M&C board hardware revision level
 
 #endif /* _IFSERIALINTERFACE_H */

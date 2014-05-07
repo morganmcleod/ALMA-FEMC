@@ -6,7 +6,7 @@
     Created: 2007/04/10 11:08:20 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cryostatSerialInterface.h,v 1.14 2009/09/22 14:46:10 avaccari Exp $
+    \$Id: cryostatSerialInterface.h,v 1.15 2010/08/11 22:05:20 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the cryostat serial interface. */
@@ -70,7 +70,8 @@
     /* Command words:
        - Rg is the register */
     #define CRYO_PARALLEL_WRITE(Rg)     (Rg)
-    // 0x02-0x07 -> not used
+    #define CRYO_HRDW_REV_READ          0x02
+    // 0x03-0x07 -> not used
     #define CRYO_ADC_CONVERT_STROBE     0x08
     #define CRYO_ADC_DATA_READ          0x09
     #define CRYO_PARALLEL_READ          0x0A
@@ -113,6 +114,13 @@
     #define CRYO_STATUS_REG_SHIFT_SIZE  NO_SHIFT
     #define CRYO_STATUS_REG_SHIFT_DIR   NO_SHIFT
 
+
+
+    /* --- Hardware revision register definition (2-bit) --- */
+    /* Read only: 2-bit */
+    #define CRYO_HRDW_REV_REG_SIZE          2
+    #define CRYO_HRDW_REV_REG_SHIFT_SIZE    NO_SHIFT
+    #define CRYO_HRDW_REV_REG_SHIFT_DIR     NO_SHIFT
 
 
     /* --- ADC definitions (16-bit) --- */
@@ -215,6 +223,8 @@
     } CRYO_BREG_BITFIELD;
 
 
+
+
     //! CRYO BREG
     /*! The BREG union allows to address the BREG eithr as a single integer or
         as a bitfield structure.
@@ -286,6 +296,9 @@
         unsigned int                        :6;
     } CRYO_STATUS_REG_BITFIELD;
 
+
+
+
     //! CRYO status register
     /*! The status register union allows to address the status register either
         as a single unsigned int or as a bitfield structure.
@@ -302,11 +315,51 @@
     } CRYO_STATUS_REG_UNION;
 
 
+
+
+
+    //! CRYO hardware revision register bitfiels (2-bit+14 -> 16-bit)
+    /*! The CRYO hardware revision register defines the current hardware
+        revision level of the cryostat M&C board:
+        \param hardwRev             an unsigned int     :2 */
+    typedef struct {
+        //! Hardware revision level
+        /*! This 2-bit field returns the current hardware revision level of the
+            cryostat M&C board */
+        unsigned int hardwRev       :2;
+        /* 14 extra bits to fill it up */
+        unsigned int                :14;
+    } CRYO_HRDW_REV_REG_BITFIELD;
+
+
+    //! CRYO hardware revision register
+    /*! The hardware revision register union allows to address the hardware
+        revision register either as a single unsigned int or a bitfield
+        structure.
+        \param  integer         an int
+        \param  bitField        a CRYO_HDRW_REV_REG_BITFIELD */
+    typedef union {
+        //! Hardware revision register in integer format
+        /*! The CRYO hardware revision revister in this format is ready to be
+            read as data from the addressed destination device. */
+        int                         integer;
+        //! Hardware revision register in bit field format
+        /*! The CRYO hardware revision register in this format is very easy to
+            update. */
+        CRYO_HRDW_REV_REG_BITFIELD  bitField;
+    } CRYO_HDRW_REV_REG_UNION;
+
+
+
+
+
+
     //! CRYO registers
     /*! This structure contains the current state of the CRYO registers.
         \param aReg         a CRYO_AREG_UNION
         \param bReg         a CRYO_BREG_UNION
         \param statusReg    a CRYO_STATUS_REG_UNION
+        \param hrdwRevReg   a CRYO_HRDW_REV_REG_UNION
         \param adcData      an unsigned int */
     typedef struct {
         //! AREG
@@ -321,6 +374,10 @@
         /*! The status register contains the current state of several hardware
             subsystems of the cryostat */
         CRYO_STATUS_REG_UNION   statusReg;
+        //! Hardware revision register
+        /*! The hardware revision register contains the hardware revision level
+            of the cryostat M&C board */
+        CRYO_HDRW_REV_REG_UNION hrdwRevReg;
         //! Current ADC data
         /*! This variable contains the latest ADC binary data stored by a read
             operation from the ADC. Due to hardware configuration (unipolar)
@@ -348,5 +405,6 @@
     extern int setVacuumControllerEnable(unsigned char state); //!< This function enables/disables the vacuumn controller
     extern int getVacuumControllerState(void); //!< This function monitors the state of the vacuum controller
     extern int getCryostatTemp(void); //!< This function monitors the cryostat temperature
+    extern int getCryoHardwRevision(void); //!< This function returns the cryostat M&C board hardware revision level
 
 #endif /* _CRYOSTATSERIALINTERFACE_H */
