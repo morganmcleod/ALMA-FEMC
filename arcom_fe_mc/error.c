@@ -6,7 +6,7 @@
     Created: 2004/08/24 16:16:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: error.c,v 1.74 2009/02/10 21:16:39 avaccari Exp $
+    \$Id: error.c,v 1.76 2009/03/25 14:44:36 avaccari Exp $
 
     This file contains the functions necessary to handle the errors that might
     occour during the operation of the ARCOM Pegasus board.*/
@@ -82,6 +82,8 @@ int errorStop(void){
 
     // Free allocated memory
     free(errorHistory);
+
+    printf("done!\n");
 
     return NO_ERROR;
 }
@@ -2544,6 +2546,10 @@ void storeError(unsigned char moduleNo,
                     case 0x05: // Error closing file
                         sprintf(error,
                                 "Error: The was an error while closing the required configuration file.");
+                        break;
+                    case 0x06: // Error updating the file
+                        sprintf(error,
+                                "Error: The was an error while updating the required configuration file.");
                         break;
                     default: // Undefined error
                         sprintf(error,

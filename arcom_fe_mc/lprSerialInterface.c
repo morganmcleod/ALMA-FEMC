@@ -5,7 +5,7 @@
     Created: 2007/06/05 14:59:17 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lprSerialInterface.c,v 1.5 2008/02/07 16:21:24 avaccari Exp $
+    \$Id: lprSerialInterface.c,v 1.7 2009/04/09 02:09:55 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     LPR serial interface.
@@ -31,6 +31,7 @@
 #include "timer.h"
 #include "frontend.h"
 #include "debug.h"
+#include "laser.h"
 
 /* Globals */
 /* Externs */
@@ -99,7 +100,8 @@ static int getLprAnalogMonitor(void){
         - parallel input */
     /* Setup for 1 seconds and start the asynchronous timer */
     if(startAsyncTimer(TIMER_LPR_ADC_RDY,
-                       TIMER_LPR_TO_ADC_RDY)==ERROR){
+                       TIMER_LPR_TO_ADC_RDY,
+                       FALSE)==ERROR){
         return ERROR;
     }
 

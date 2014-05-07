@@ -7,7 +7,7 @@
     Created: 2004/08/24 16:33:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ppComm.c,v 1.31 2008/03/10 22:15:43 avaccari Exp $
+    \$Id: ppComm.c,v 1.33 2009/04/24 22:37:32 avaccari Exp $
 
     This file contains the functions necessary to cummunicate via the
     parallel port of the ARCOM Pegasus board.
@@ -140,7 +140,7 @@ int PPOpen(void){
          inp(SPPControlPort) | PP_DATA_DIR);
 
     /* Set the interrupt vector of the parallel port to point to: PPIntHandler */
-    PicPPIrqCtrl(ENABLE);
+    PicPPIrqCtrl(DISABLE);
     PPIrqCtrl(DISABLE); // Disable interrupt on the parallel port. This should really disable all the interrupts but I still have to find a way to do it
     oldHandler = _dos_getvect(LD3PrimaryInterruptVector);   // Read the current interrupt vector corresponding to PP_IRQ_NO
     _dos_setvect(LD3PrimaryInterruptVector,
@@ -199,7 +199,7 @@ int PPClose(void){
 
     printf("Shutting down parallel port communication...\n");
 
-PPIrqCtrl(DISABLE); // Disable interrupt on the parallel port. This should really disable all the interrupts but I still have to find a way to do it
+    PPIrqCtrl(DISABLE); // Disable interrupt on the parallel port. This should really disable all the interrupts but I still have to find a way to do it
 
     /* Clear the last interrupt request */
     PPClear();
@@ -238,177 +238,112 @@ PPIrqCtrl(DISABLE); // Disable interrupt on the parallel port. This should reall
             Maybe I've to wait or check to make sure the transmission of the
             data is finished before I switch the parallel port direction to input. */
 void PPWrite(unsigned char length){
-    #ifdef __SMALL__
-        _asm{
-            /* Assumes Small Model */
-            /* Push only the register that the compiler didn't push and that we are
-               going to use after the compiler's push */
-            push    ax
-            push    es
+    unsigned char cnt;
 
-            /* Disable PP interrupt and set direction to output */
-            mov     dx,SPPControlPort       ; Select SPP control port
-            in      al,dx                   ; Read control port
-            xor     al,PP_IRQ_ENA           ; Disable parallel port interrupt line
-            xor     al,PP_DATA_DIR          ; Set parallel port direction to output
-            out     dx,al                   ; Update control port
+    outp(SPPControlPort,
+         (inp(SPPControlPort)/*^PP_IRQ_ENA*/)^PP_DATA_DIR);
+    outp(EPPDataPort,
+         length);
 
-            /* Write the first byte that contains the number of unsigned characters to be written */
-            mov     dx,EPPDataPort          ; Select EPP data port
-            mov     cl,length               ; Move number of byte to be transmitted in cl
-            mov     ch,0x0                  ; Clear ch
-            mov     al,cl                   ; Move number of byte to be transmitted in al
-            out     dx,al                   ; Send length to EPP data port
-
-            /* Write the rest of the unsigned characters */
-            cld                             ; Clear increment direction
-            mov     si,OFFSET PPTxBuffer    ; Load the offset of the Tx buffer
-            mov     bx,ds                   ; Load the segment of the Tx buffer (Small model -> DS)
-            mov     es,bx                   ; Setup es to hold the source segment
-            rep     outsb                   ; Output a string cx long from dx into es:si one byte at a time
-
-            /* Maybe I've to wait or check to make sure the transmission of the data is
-               finished before I switch the parallel port direction to input */
-
-            /* Set direction to input and enable PP interrupt */
-            mov     dx,SPPControlPort       ; Select SPP control port
-            xor     al,PP_DATA_DIR          ; Set parallel port direction to input
-            xor     al,PP_IRQ_ENA           ; Enable parallel port interrupt line
-            out     dx,al                   ; Update control port
-
-            quit:
-            pop     es
-            pop     ax
-        }
-    #else
-        unsigned char cnt;
-
-        outp(SPPControlPort,
-             (inp(SPPControlPort)/*^PP_IRQ_ENA*/)^PP_DATA_DIR);
+    for(cnt=0;
+        cnt<length;
+        cnt++){
         outp(EPPDataPort,
-             length);
+             PPTxBuffer[cnt]);
+    }
 
-        for(cnt=0;
-            cnt<length;
-            cnt++){
-            outp(EPPDataPort,
-                 PPTxBuffer[cnt]);
-        }
-
-        outp(SPPControlPort,
-             (inp(SPPControlPort)/*^PP_IRQ_ENA*/)^PP_DATA_DIR);
-    #endif /* __SMALL__ */
+    outp(SPPControlPort,
+         (inp(SPPControlPort)/*^PP_IRQ_ENA*/)^PP_DATA_DIR);
 }
 
 /* Interrupt function receives CAN_MESSAGE_SIZE bytes from the parallel port and stores them in message */
 static void interrupt far PPIntHandler(void){
 
-    #ifdef __SMALL__
-        _asm{
-            /* Assumes Small Model */
-            /* Interrupt function -> Everything is pushed on the stack */
-            /* Input 16 bytes (the full CAN message) from the EPP and store it in message */
-            cld                             ; Clear increment direction
-            mov     di,OFFSET PPRxBuffer    ; Load the offset of the Rx buffer
-            mov     cx,ds                   ; Load the segment of the Rx buffer (Small model -> DS)
-            mov     es,cx                   ; Setup es to hold the destination segment
-            mov     dx,EPPDataPort          ; Load the port number to input data from
-            mov     cx,CAN_RX_HEADER_SIZE   ; Load the number of bytes to be moved
-            rep     insb                    ; Input a string cx long from dx into es:di one byte at a time
+    unsigned char cnt,cnt2,dump;
 
-            mov     cl, byte ptr -0x1[di]   ; Load cl with last byte of message (if control cl contains the number of extra bytes to download)
-            cmp     cl,CAN_RX_MAX_PAYLOAD_SIZE ; Check the received payload size against the maximum allowed
-            ja      ignore                  ; If greater then assume error and ignore other data
+    #ifdef DEBUG_PPCOM
+        printf("Interrupt Received!\n");
+    #endif /* DEBUG_PPCOM */
 
-            cmp     cl,CAN_MONITOR          ; Test if it is a monitor message
-            je      end
+    /* Input the CAN header from the parallel port */
+    #ifdef DEBUG_PPCOM
+        printf("  CAN Header:\n");
+    #endif /* DEBUG_PPCOM */
+    for(cnt=0;
+        cnt<CAN_RX_HEADER_SIZE;
+        cnt++){
+        PPRxBuffer[cnt]=inp(EPPDataPort);
+    }
 
-            rep     insb                    ; Input a string cx long from dx into es:di one byte at a time
-
-            end:
-            /* Notify program of new message arrival */
-            mov     byte ptr newCANMsg, 0x01
-
-            ignore:
-        }
-    #else
-
-        unsigned char cnt,cnt2,dump;
-
-        #ifdef DEBUG_PPCOM
-            printf("Interrupt Received!\n");
-        #endif /* DEBUG_PPCOM */
-
-        /* Input the CAN header from the parallel port */
-        #ifdef DEBUG_PPCOM
-            printf("  CAN Header:\n");
-        #endif /* DEBUG_PPCOM */
+    #ifdef DEBUG_PPCOM
         for(cnt=0;
             cnt<CAN_RX_HEADER_SIZE;
             cnt++){
-            PPRxBuffer[cnt]=inp(EPPDataPort);
-            #ifdef DEBUG_PPCOM
-                printf("    PPRxBuffer[%d]=0x%X\n",
-                       cnt,
-                       PPRxBuffer[cnt]);
-            #endif /* DEBUG_PPCOM */
-
+            printf("    PPRxBuffer[%d]=0x%X\n",
+                   cnt,
+                   PPRxBuffer[cnt]);
         }
+    #endif /* DEBUG_PPCOM */
 
-        cnt2 = PPRxBuffer[CAN_RX_HEADER_SIZE-1];
+    cnt2 = PPRxBuffer[CAN_RX_HEADER_SIZE-1];
 
-        /* If the payload = 0 then is a monitor message */
-        if(cnt2==CAN_MONITOR){
-            #ifdef DEBUG_PPCOM
-                printf("  Monitor message\n");
-            #endif /* DEBUG_PPCOM */
-            newCANMsg=1; // Notify program of new message
-            #ifdef DEBUG_PPCOM
-                printf("Interrupt Serviced!\n");
-            #endif /* DEBUG_PPCOM */
-            return;
-        }
-
-        /* Check the payload size against the limit: if it's to big, clear the
-           interrupt and exit. We read the data anyway to prevent the AMBSI from
-           getting stuck! */
-        if(cnt2>CAN_RX_MAX_PAYLOAD_SIZE){
-            #ifdef DEBUG_PPCOM
-                printf("  Too much data! dumping...");
-            #endif /* DEBUG_PPCOM */
-            for(cnt=0;
-                cnt<cnt2;
-                cnt++){
-                dump=inp(EPPDataPort);
-            }
-            PPClear();
-            return;
-        }
-
-        /* If it's a control message, load the payload */
+    /* If the payload = 0 then is a monitor message */
+    if(cnt2==CAN_MONITOR){
         #ifdef DEBUG_PPCOM
-            printf("  Control message\n");
-            printf("    Payload:\n");
+            printf("  Monitor message\n");
         #endif /* DEBUG_PPCOM */
-        for(cnt=0;
-            cnt<cnt2;
-            cnt++){
-            PPRxBuffer[CAN_RX_HEADER_SIZE+cnt]=inp(EPPDataPort);
-            #ifdef DEBUG_PPCOM
-                printf("      PPRxBuffer[%d]=0x%X\n",
-                       CAN_RX_HEADER_SIZE+cnt,
-                       PPRxBuffer[CAN_RX_HEADER_SIZE+cnt]);
-            #endif /* DEBUG_PPCOM */
-        }
-
-        /* Notify program of new message */
-        newCANMsg=1;
+        newCANMsg=1; // Notify program of new message
 
         #ifdef DEBUG_PPCOM
             printf("Interrupt Serviced!\n");
         #endif /* DEBUG_PPCOM */
+        return;
+    }
 
-    #endif /* __SMALL__ */
+    /* Check the payload size against the limit: if it's to big, clear the
+       interrupt and exit. We read the data anyway to prevent the AMBSI from
+       getting stuck! */
+    if(cnt2>CAN_RX_MAX_PAYLOAD_SIZE){
+        #ifdef DEBUG_PPCOM
+            printf("  Too much data! dumping...");
+        #endif /* DEBUG_PPCOM */
+        for(cnt=0;
+            cnt<cnt2;
+            cnt++){
+            dump=inp(EPPDataPort);
+        }
+        PPClear();
+        return;
+    }
+
+    /* If it's a control message, load the payload */
+    #ifdef DEBUG_PPCOM
+        printf("  Control message\n");
+        printf("    Payload:\n");
+    #endif /* DEBUG_PPCOM */
+    for(cnt=0;
+        cnt<cnt2;
+        cnt++){
+        PPRxBuffer[CAN_RX_HEADER_SIZE+cnt]=inp(EPPDataPort);
+    }
+
+    #ifdef DEBUG_PPCOM
+        for(cnt=0;
+            cnt<cnt2;
+            cnt++){
+            printf("      PPRxBuffer[%d]=0x%X\n",
+                   CAN_RX_HEADER_SIZE+cnt,
+                   PPRxBuffer[CAN_RX_HEADER_SIZE+cnt]);
+        }
+    #endif /* DEBUG_PPCOM */
+
+    /* Notify program of new message */
+    newCANMsg=1;
+
+    #ifdef DEBUG_PPCOM
+        printf("Interrupt Serviced!\n");
+    #endif /* DEBUG_PPCOM */
+
 }
 
 /*! This function clears the IRQ of the parallel port. This will allow the port
@@ -417,19 +352,6 @@ static void interrupt far PPIntHandler(void){
     An alternative would be create a queue to store incoming messages. This
     could create problem with the 150us timing requirement on monitor messages. */
 void PPClear(void){
-    #ifdef __SMALL__
-        _asm {
-            /* Assumes Small Model */
-            /* Push register used that the compiler didn't push */
-            push    ax;
-            /* Clear the interrupt request */
-            mov     al,PPPICAddr
-            out     PIC_INT_CLR,al
-            /* Pop register back */
-            pop     ax;
-        }
-    #else
-        outp(PPPICAddr,
-             PIC_INT_CLR);
-    #endif /* __SMALL__ */
+    outp(PPPICAddr,
+         PIC_INT_CLR);
 }

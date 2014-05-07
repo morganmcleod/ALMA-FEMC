@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: error.h,v 1.42 2009/02/10 21:16:40 avaccari Exp $
+    \$Id: error.h,v 1.43 2009/04/09 02:09:55 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the error handling module. */
@@ -13,6 +13,12 @@
 #ifndef _ERROR_H
 
     #define _ERROR_H
+
+    /* Extra includes */
+    /* Debug defines */
+    #ifndef _DEBUG_H
+        #include "debug.h"
+    #endif /* _DEBUG_H */
 
     /* Defines */
     /* General */

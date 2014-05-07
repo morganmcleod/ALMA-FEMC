@@ -5,7 +5,7 @@
     Created: 2007/09/05 14:33:02 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: owb.c,v 1.2 2007/10/02 22:04:58 avaccari Exp $
+    \$Id: owb.c,v 1.6 2009/04/09 02:09:55 avaccari Exp $
 
     This files contains all the functions necessary to handle the one wire bus
     communication. */
@@ -13,6 +13,8 @@
 /*  Includes */
 #include <conio.h>      /* inp, outp */
 #include <stdio.h>      /* printf */
+#include <stdlib.h>     /* rand, srand */
+#include <time.h>       /* clock, time */
 
 #include "serialMux.h"
 #include "timer.h"
@@ -21,6 +23,7 @@
 #include "globalDefinitions.h"
 #include "debug.h"
 #include "iniWrapper.h"
+#include "pegasus.h"
 
 /* Globals */
 /* Externs */
@@ -37,140 +40,319 @@ int owbInit(void){
 
     /* A few local to deal with the initialization */
     CFG_STRUCT dataIn;
+    unsigned char useSimulator;
     unsigned char esnDevicesStored;
     unsigned char storedESNS[MAX_DEVICES_NUMBER][SERIAL_NUMBER_SIZE];
     unsigned char device;
     unsigned char loop;
     unsigned char swap;
+    char base[6]; // 5 char for up to 65535 + 1 NULL
     int TData[SEARCH_BYTES_LENGTH];
     int RData[SEARCH_BYTES_LENGTH];
     int timedOut=0; // A local to keep track of time out errors
 
+
     printf("Initializing One Wire Bus...\n");
 
-    /* Reset the one wire master in the FPGA. The data sent is not important */
-    printf(" - Reset the one wire master...");
-    outp(MUX_OWB_RESET,
-         0);
-    printf("done!\n"); // Reset one wire master
+    /* Check the configuration file to see if we are using the simulator */
+    printf(" - Checking if we use the simulator...\n");
+    dataIn.
+     Name=ESNS_SIM_USE_KEY;
+    dataIn.
+     VarType=Cfg_Boolean;
+    dataIn.
+     DataPtr=&useSimulator;
 
-    /* Select 10-12 MHz clock */
-    printf(" - Set up clock rate...");
-    outp(MUX_OWB_CLK_DIV,
-         OWB_10_12MHZ);
-    printf("done!\n"); // Setup clock
+    /* Access configuration file, if error, assume no simulator. */
+    if(myReadCfg(ESNS_DATA_FILE,
+                 ESNS_SIM_SECTION,
+                 &dataIn,
+                 ESNS_SIM_USE_EXPECTED)!=NO_ERROR){
+        useSimulator=0;
+    }
 
-    /* Select Long Line Mode and Presence Pulse Masking Mode */
-    printf(" - Set up LLM and PPM mode...");
-    outp(MUX_OWB_CONTROL,
-         OWB_LLM|OWB_PPM);
-    printf("done!\n"); // Setup LLM+PPM
+    if(useSimulator){
+        printf("   Using Simulator\n");
+    } else {
+        printf("   Simulator Disabled\n");
+    }
 
-    /* Initialize the device discovery algorithm */
-    printf(" - Initializing device search algorithm...");
-    RecoverROM(NULL,
-               TData,
-               NULL);
-    printf("done!\n"); // Initialize search algorithm
+    /* If the simulator is enable create the simulated data. The data should be
+       the same every time a particular front end is used. */
+    if(useSimulator){
+        /* Check how many devices to simulate */
+        dataIn.
+         Name=ESNS_SIM_DEV_NO_KEY;
+        dataIn.
+         VarType=Cfg_Byte;
+        dataIn.
+         DataPtr=&esnDevicesFound;
 
-    /* Find available devices */
-    printf(" - Searching devices...\n");
-    for(device=0;
-        device<MAX_DEVICES_NUMBER;
-        device++){
-
-        printf("   - Searching device %d...\n",
-               device);
-
-        /* Send the bus reset and check for presence pulse. */
-        #ifdef DEBUG_OWB
-            printf("     - Send bus reset...\n");
-        #endif /* DEBUG_OWB */
-
-        /* Set up for 10 seconds and start the asynchronous timer */
-        if(startAsyncTimer(TIMER_OWB_RESET,
-                           TIMER_TO_OWB_RESET)==ERROR){
-            return ERROR;
+        /* Access configuration file, if error, assume no simulator */
+        if(myReadCfg(ESNS_DATA_FILE,
+                     ESNS_SIM_SECTION,
+                     &dataIn,
+                     ESNS_SIM_DEV_NO_EXPECTED)!=NO_ERROR){
+            printf(" - Aborting simulator\n");
+            useSimulator=0;
         }
+    }
 
-        /* Wait for the one wire bus to be resetted or for the timer to
-           expire. */
-        do {
-            timedOut=queryAsyncTimer(TIMER_OWB_RESET);
-            if(timedOut==ERROR){
+
+    if(useSimulator){
+        printf(" - Simulating %d devices\n",
+               esnDevicesFound);
+
+        /* Check if the base for the ESN is in the configuration file */
+        dataIn.
+         Name=ESNS_SIM_BASE_KEY;
+        dataIn.
+         VarType=Cfg_Ushort;
+        convert.
+         uint[0]=0; // zero the data
+        dataIn.
+         DataPtr=&convert.
+                   uint[0];
+        /* Access configuration file. */
+        do{
+            printf(" - Loading base\n");
+            switch(myReadCfg(ESNS_DATA_FILE,
+                             ESNS_SIM_SECTION,
+                             &dataIn,
+                             ESNS_SIM_BASE_EXPECTED)){
+                /* If file access error, assume no simulator */
+                case FILE_OPEN_ERROR:
+                case FILE_ERROR:
+                    printf(" - Aborting simulator\n");
+                    useSimulator=0;
+                    break;
+                /* If data missmatch error or zero value, create data */
+                case NO_ERROR:
+                    if(convert.
+                        uint[0]!=0){
+                        /* Reload base with the HEX data */
+                        base[0]=convert.
+                                 chr[0];
+                        base[1]=convert.
+                                 chr[1];
+                                 printf(" - Base: %u (%X %X)\n",
+                                        convert.
+                                         uint[0],
+                                        base[1],
+                                        base[0]);
+                        break;
+                    }
+                case DATA_NOT_FOUND:
+                case ITEMS_NO_ERROR:
+                    /* Generate a unique base for the esns */
+                    printf(" - Generating base\n");
+                    srand((unsigned int)(time(NULL)+clock()));
+                    itoa(rand(),
+                         base,
+                         10);
+                    printf("   New base: %s\n",
+                           base);
+                    /* If error storing the data, assume no simulator */
+                    printf(" - Writing base to configuration file\n");
+                    if(myWriteCfg(ESNS_DATA_FILE,
+                                  ESNS_SIM_SECTION,
+                                  ESNS_SIM_BASE_KEY,
+                                  base)==ERROR){
+                        printf(" - Aborting simulator\n");
+                        useSimulator=0;
+                        break;
+
+                    }
+                    break;
+                default:
+                    /* In any other case assume no simulator */
+                    printf(" - Aborting simulator\n");
+                    useSimulator = 0;
+                    break;
+            }
+        } while (useSimulator&&(convert.
+                                 uint[0]==0));
+    }
+
+    /* Get the serial number of the drive. This will be as well in the base
+       for the ESNs. */
+    if(useSimulator){
+        convert.
+         longint=getVolSerial();
+
+        /* If error, assume no simulator */
+        if(convert.
+            longint==ERROR){
+            printf(" - Aborting simulator\n");
+            useSimulator=0;
+        }
+    }
+
+    /* Generate the ESNs */
+    if(useSimulator){
+        for(device=0;
+            device<esnDevicesFound;
+            device++){
+            /* Set the first number to 0. It might end up holding the Front End
+               serial number, but right now, 0 is good. */
+            ESNS[device][0]=0;
+            /* Set the next 2 numbers to the SIMBASE */
+            ESNS[device][1]=base[1];
+            ESNS[device][2]=base[0];
+            /* Set the next 4 number to the drive serial number */
+            ESNS[device][3]=convert.
+                             chr[3];
+            ESNS[device][4]=convert.
+                             chr[2];
+            ESNS[device][5]=convert.
+                             chr[1];
+            ESNS[device][6]=convert.
+                             chr[0];
+            /* Set LSB to progressive */
+            ESNS[device][7]=device;
+        }
+        device--; // Necessary to simulate the results of the real search
+    } else {
+        /* If we are not using the simulator at this point, gather the data
+           from the OWB */
+
+        /* Enable the section of the bus extending outside the FEMC */
+        printf(" - Enabling external OWB...");
+        outp(MUX_OWB_ENABLE,
+             ENABLE);
+        printf("done!\n");
+
+        /* Reset the one wire master in the FPGA. The data sent is not important */
+        printf(" - Reset the one wire master...");
+        outp(MUX_OWB_RESET,
+             0);
+        printf("done!\n"); // Reset one wire master
+
+        /* Select 10-12 MHz clock */
+        printf(" - Set up clock rate...");
+        outp(MUX_OWB_CLK_DIV,
+             OWB_10_12MHZ);
+        printf("done!\n"); // Setup clock
+
+        /* Select Long Line Mode and Presence Pulse Masking Mode */
+        printf(" - Set up LLM and PPM mode...");
+        outp(MUX_OWB_CONTROL,
+             OWB_LLM|OWB_PPM);
+        printf("done!\n"); // Setup LLM+PPM
+
+        /* Initialize the device discovery algorithm */
+        printf(" - Initializing device search algorithm...");
+        RecoverROM(NULL,
+                   TData,
+                   NULL);
+        printf("done!\n"); // Initialize search algorithm
+
+        /* Find available devices */
+        printf(" - Searching devices...\n");
+        for(device=0;
+            device<MAX_DEVICES_NUMBER;
+            device++){
+
+            printf("   - Searching device %d...\n",
+                   device);
+
+            /* Send the bus reset and check for presence pulse. */
+            #ifdef DEBUG_OWB
+                printf("     - Send bus reset...\n");
+            #endif /* DEBUG_OWB */
+
+            /* Set up for 10 seconds and start the asynchronous timer */
+            if(startAsyncTimer(TIMER_OWB_RESET,
+                               TIMER_TO_OWB_RESET,
+                               FALSE)==ERROR){
                 return ERROR;
             }
-        } while(owbReset()&&!timedOut);
 
-        /* If the timer has expired signal the error */
-        if(timedOut==TIMER_EXPIRED){
-            criticalError(ERR_OWB,
-                          0x04); // Error 0x04 -> Timeout while waiting for the bus reset
-            return ERROR;
-        }
+            /* Wait for the one wire bus to be resetted or for the timer to
+               expire. */
+            do {
+                timedOut=queryAsyncTimer(TIMER_OWB_RESET);
+                if(timedOut==ERROR){
+                    return ERROR;
+                }
+            } while(owbReset()&&!timedOut);
 
-        /* In case of no error, clear the asynchronous timer. */
-        if(stopAsyncTimer(TIMER_OWB_RESET)==ERROR){
-            return ERROR;
-        }
+            /* If the timer has expired signal the error */
+            if(timedOut==TIMER_EXPIRED){
+                storeError(ERR_OWB,
+                           0x04); // Error 0x04 -> Timeout while waiting for the bus reset
+                return ERROR;
+            }
 
-        #ifdef DEBUG_OWB
-            printf("       done!\n"); // Bus reset
-        #endif /* DEBUG_OWB */
+            /* In case of no error, clear the asynchronous timer. */
+            if(stopAsyncTimer(TIMER_OWB_RESET)==ERROR){
+                return ERROR;
+            }
 
-        /* Send "search ROM" command to the bus */
-        #ifdef DEBUG_OWB
-            printf("     - Send search ROM code...\n");
-        #endif /* DEBUG_OWB */
-        writeOwb(SEARCH_ROM_CODE);
-        #ifdef DEBUG_OWB
-            printf("       done!\n"); // Search ROM code
-        #endif /* DEBUG_OWB */
+            #ifdef DEBUG_OWB
+                printf("       done!\n"); // Bus reset
+            #endif /* DEBUG_OWB */
 
-        /* Enter accelerated search mode */
-        #ifdef DEBUG_OWB
-            printf("     - Enter accelerated search mode...");
-        #endif /* DEBUG_OWB */
-        outp(MUX_OWB_COMMAND,
-             ACC_SEARCH_MODE);
-        #ifdef DEBUG_OWB
-            printf("done!\n"); // Enter accelerated search
-        #endif /* DEBUG_OWB */
+            /* Send "search ROM" command to the bus */
+            #ifdef DEBUG_OWB
+                printf("     - Send search ROM code...\n");
+            #endif /* DEBUG_OWB */
+            writeOwb(SEARCH_ROM_CODE);
+            #ifdef DEBUG_OWB
+                printf("       done!\n"); // Search ROM code
+            #endif /* DEBUG_OWB */
 
-        /* Transmit first set of search data */
-        #ifdef DEBUG_OWB
-            printf("     - Sending search data...\n");
-        #endif /* DEBUG_OWB */
-        for(loop=0;
-            loop<SEARCH_BYTES_LENGTH;
-            loop++){
-            RData[loop]=writeOwb(TData[loop]);
-        }
-        #ifdef DEBUG_OWB
-            printf("       done!\n"); // Send search data
-        #endif /* DEBUG_OWB */
+            /* Enter accelerated search mode */
+            #ifdef DEBUG_OWB
+                printf("     - Enter accelerated search mode...");
+            #endif /* DEBUG_OWB */
+            outp(MUX_OWB_COMMAND,
+                 ACC_SEARCH_MODE);
+            #ifdef DEBUG_OWB
+                printf("done!\n"); // Enter accelerated search
+            #endif /* DEBUG_OWB */
 
-        /* Check state of search tree */
-        #ifdef DEBUG_OWB
-            printf("     - Check state of search tree...");
-        #endif /* DEBUG_OWB */
-        if(RecoverROM(RData,
-                      TData,
-                      ESNS[device])==TRUE){
+            /* Transmit first set of search data */
+            #ifdef DEBUG_OWB
+                printf("     - Sending search data...\n");
+            #endif /* DEBUG_OWB */
+            for(loop=0;
+                loop<SEARCH_BYTES_LENGTH;
+                loop++){
+                RData[loop]=writeOwb(TData[loop]);
+            }
+            #ifdef DEBUG_OWB
+                printf("       done!\n"); // Send search data
+            #endif /* DEBUG_OWB */
+
+            /* Check state of search tree */
+            #ifdef DEBUG_OWB
+                printf("     - Check state of search tree...");
+            #endif /* DEBUG_OWB */
+            if(RecoverROM(RData,
+                          TData,
+                          ESNS[device])==TRUE){
+                #ifdef DEBUG_OWB
+                    printf("done!\n"); // Search tree state
+                #endif /* DEBUG_OWB */
+                printf("     done!\n"); // Searching device No.x
+                break;
+            }
             #ifdef DEBUG_OWB
                 printf("done!\n"); // Search tree state
             #endif /* DEBUG_OWB */
+
             printf("     done!\n"); // Searching device No.x
-            break;
+
         }
-        #ifdef DEBUG_OWB
-            printf("done!\n"); // Search tree state
-        #endif /* DEBUG_OWB */
-
-        printf("     done!\n"); // Searching device No.x
-
+        printf("   done!\n"); // Search devices
     }
-    printf("   done!\n"); // Search devices
+
+    /* Disable the section of the bus extending outside the FEMC */
+    printf("   - Disabling external OWB...");
+    outp(MUX_OWB_ENABLE,
+         DISABLE);
+    printf("done!\n");
 
     /* If the maximum number of devices was reached, it is likely that there is
        a problem with the bus. Notify the system and set the number of found
@@ -188,6 +370,9 @@ int owbInit(void){
            esnDevicesFound);
 
     /* Set the ESN of the FEMC at index 0 */
+/** This will need revision because Rev.B mux boards have extra OWB devices.
+    Probably the best thing is to just return the ESNs of the attached hardware
+    and don't return any of the internal FEMC's. **/
     for(device=1;
         device<esnDevicesFound;
         device++){
@@ -234,8 +419,7 @@ int owbInit(void){
     if(myReadCfg(ESNS_DATA_FILE,
                  ESNS_NO_SECTION,
                  &dataIn,
-                 ESNS_NO_EXPECTED)==ERROR){
-// update status register *******************************************************************
+                 ESNS_NO_EXPECTED)!=NO_ERROR){
     } else {
         /* If no error accessing the file, process the file */
         printf("   - Number of stored devices: %d\n",
@@ -258,8 +442,7 @@ int owbInit(void){
             if(myReadCfg(ESNS_DATA_FILE,
                          ESNS_DEVICE_SECTION,
                          &dataIn,
-                         ESNS_DEVICE_EXPECTED)==ERROR){
-// update status register *******************************************************************
+                         ESNS_DEVICE_EXPECTED)!=NO_ERROR){
                 break;
             }
         }
@@ -360,7 +543,8 @@ int waitIrq(unsigned char irq){
 
     /* Setup for 1 seconds and start the asynchronous timer */
     if(startAsyncTimer(TIMER_OWB_IRQ,
-                       TIMER_TO_OWB_IRQ)==ERROR){
+                       TIMER_TO_OWB_IRQ,
+                       FALSE)==ERROR){
         return ERROR;
     }
 

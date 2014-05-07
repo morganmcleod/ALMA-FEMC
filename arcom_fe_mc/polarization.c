@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: polarization.c,v 1.15 2007/08/28 21:46:47 avaccari Exp $
+    \$Id: polarization.c,v 1.16 2009/03/23 19:22:04 avaccari Exp $
 
     This files contains all the functions necessary to handle polarization
     events. */
@@ -39,8 +39,10 @@ static HANDLER  polarizationModulesHandler[POLARIZATION_MODULES_NUMBER]={sideban
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
 int polarizationInit(void){
-        printf(" - Initializing polarization %d...\n",
-               currentBiasModule);
+        #ifdef DEBUG_INIT
+            printf(" - Initializing polarization %d...\n",
+                   currentBiasModule);
+        #endif // DEBUG_INIT
 
         #ifdef DATABASE_HARDW
             if(frontend.
@@ -48,7 +50,9 @@ int polarizationInit(void){
                  polarization[currentBiasModule].
                   available==AVAILABLE){
 
-                printf("   - 10MHz...\n");
+                #ifdef DEBUG_INIT
+                    printf("   - 10MHz...\n");
+                #endif // DEBUG_INIT
 
                 if(serialAccess(BIAS_10MHZ_MODE(currentBiasModule),
                             NULL,
@@ -63,11 +67,15 @@ int polarizationInit(void){
                   polarization[currentBiasModule].
                    ssi10MHzEnable=ENABLE;
 
-                printf("     done!\n"); // 10MHz
+                #ifdef DEBUG_INIT
+                    printf("     done!\n"); // 10MHz
+                #endif // DEBUG_INIT
             }
         #else
 
-            printf("   - 10MHz...\n");
+            #ifdef DEBUG_INIT
+                printf("   - 10MHz...\n");
+            #endif // DEBUG_INIT
 
             if(serialAccess(BIAS_10MHZ_MODE(currentBiasModule),
                         NULL,
@@ -82,11 +90,16 @@ int polarizationInit(void){
               polarization[currentBiasModule].
                ssi10MHzEnable=ENABLE;
 
-            printf("     done!\n"); // 10MHz
+            #ifdef DEBUG_INIT
+                printf("     done!\n"); // 10MHz
+            #endif // DEBUG_INIT
 
         #endif /* DATABASE_HARDW */
 
-        printf("   done!\n"); // Polarization
+        #ifdef DEBUG_INIT
+            printf("   done!\n"); // Polarization
+        #endif // DEBUG_INIT
+
     return NO_ERROR;
 }
 

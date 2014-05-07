@@ -5,7 +5,7 @@
     Created: 2007/09/05 14:33:15 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: owb.h,v 1.3 2008/02/16 00:13:08 avaccari Exp $
+    \$Id: owb.h,v 1.5 2009/03/25 14:45:21 avaccari Exp $
 
     This file contains the header for the one wire bus access functions. */
 
@@ -39,6 +39,16 @@
     #define SEARCH_BYTES_LENGTH 16      // Lenght in bytes of the search
 
     #define ESNS_DATA_FILE  "esns.ini"  // File containing the ESNs data
+
+    #define ESNS_SIM_SECTION        "SIMULATOR" // Section containing the setting for the ESN simulator
+    #define ESNS_SIM_USE_KEY        "USE"       // Key defining if the simulator should be used or not
+    #define ESNS_SIM_USE_EXPECTED   1           // Expected keys in section containing the use setup
+
+    #define ESNS_SIM_DEV_NO_KEY         "SIMDEV"    // Key defining how many devices to simulate
+    #define ESNS_SIM_DEV_NO_EXPECTED    1           // Expected keys in section containing the number of devices to simulate
+
+    #define ESNS_SIM_BASE_KEY       "SIMBASE"   // Key defining the base for the simulated ESNs
+    #define ESNS_SIM_BASE_EXPECTED  1           // Expected keys in section containing the base for the simulated ESNs
 
     #define ESNS_NO_SECTION     "ESNS"      // Section containing the stored ESNs number
     #define ESNS_NO_KEY         "DEVICES"   // Key containing the stored ESNs number

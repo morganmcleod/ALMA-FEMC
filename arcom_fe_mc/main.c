@@ -6,7 +6,7 @@
     Created: 2004/08/24 16:46:19 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: main.c,v 1.33 2008/03/10 22:15:43 avaccari Exp $
+    \$Id: main.c,v 1.34 2009/04/09 02:09:55 avaccari Exp $
 
     This is \ref main.c
 
@@ -26,6 +26,8 @@
 #include "can.h"
 #include "pegasus.h"
 #include "console.h"
+#include "async.h"
+#include "timer.h"
 
 /* Globals */
 /* Externs */
@@ -55,24 +57,34 @@ int main(void){
         while(!newCANMsg&&!stop){
             /* Call the console handling. Make sure this doesn't affect
                performances. */
-            console();
+            if(consoleEnable){
+                console();
+            }
+
+            /* Perform the required asynchronous operations */
+            if(asyncRequired){
+                async();
+            }
 
             /* Query the RSS update timer. */
-            //if(queryAsyncTimer(TIMER_RSS)){
+//            if(queryAsyncTimer(TIMER_RSS)){
                 #ifdef DEBUG
-            //        printf("Updating RSS...");
+                    printf("Updating RSS...");
                 #endif /* DEBUG */
                 // UPDATE RSS
                 #ifdef DEBUG
-            //        printf("...done!\n");
+                    printf("...done!\n");
                 #endif /* DEBUG */
+/*
+                startAsyncTimer(TIMER_RSS,
+                                TIMER_TO_RSS,
+                                FALSE); // Restart the timer
 
-            //    startAsyncTimer(TIMER_RSS,
-            //                    TIMER_TO_RSS); // Restart the timer
-            //}
-        }
+            }
+*/      }
 
         /* If the software was stopped via console, don't handle the message */
+
         if(stop==TRUE){
             break;
         }
@@ -96,3 +108,5 @@ int main(void){
 
     return NO_ERROR;
 }
+
+

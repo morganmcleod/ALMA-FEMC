@@ -5,7 +5,7 @@
     Created: 2006/11/30 16:49:28 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: ifSerialInterface.c,v 1.9 2008/02/07 16:21:24 avaccari Exp $
+    \$Id: ifSerialInterface.c,v 1.10 2009/04/09 02:09:55 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     IF Switch serial interface.
@@ -96,7 +96,8 @@ static int getIfAnalogMonitor(void){
        - parallel input */
     /* Setup for 1 second and start the asynchronous timer */
     if(startAsyncTimer(TIMER_IF_ADC_RDY,
-                       TIMER_IF_TO_ADC_RDY)==ERROR){
+                       TIMER_IF_TO_ADC_RDY,
+                       FALSE)==ERROR){
         return ERROR;
     }
 

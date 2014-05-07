@@ -18,7 +18,7 @@
     Created: 2004/08/24 16:16:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: can.c,v 1.41 2008/09/26 23:00:38 avaccari Exp $
+    \$Id: can.c,v 1.43 2009/04/24 22:37:32 avaccari Exp $
 
     This file contains the functions necessary to deal with the received CAN
     messages. */
@@ -347,10 +347,15 @@ static void specialRCAsHandler(void){
                                GET_FPGA_VERSION_INFO);
                     #endif /* DEBUG_CAN */
 
-                    /* The ADD-2 part can be dropped once all the FPGA versions
+                    /* The ADD-4 part can be dropped once all the FPGA versions
                        are consistent. */
-                    fpgaVersion.
-                     integer=inpw(MUX_FPGA_VERSION)&inpw(MUX_FPGA_VERSION-2);
+                    if(inpw(MUX_FPGA_RDY_ADD)==FPGA_READY){
+                        fpgaVersion.
+                         integer=inpw(MUX_FPGA_VERSION);
+                    } else {
+                        fpgaVersion.
+                         integer=inpw(MUX_FPGA_VERSION-2);
+                    }
 
                     CAN_DATA(0)=fpgaVersion.
                                  bitField.
@@ -386,7 +391,15 @@ static void specialRCAsHandler(void){
                     #endif /* DEBUG_CAN */
                     /* If no devices were found return error */
                     if(esnDevicesFound==0){
-                        CAN_STATUS=HARDW_BLKD_ERR;
+                        CAN_DATA(7)=0xFF;
+                        CAN_DATA(6)=0xFF;
+                        CAN_DATA(5)=0xFF;
+                        CAN_DATA(4)=0xFF;
+                        CAN_DATA(3)=0xFF;
+                        CAN_DATA(2)=0xFF;
+                        CAN_DATA(1)=0xFF;
+                        CAN_DATA(0)=0xFF;
+                        CAN_SIZE=CAN_FULL_SIZE;
                         break;
                     }
 
@@ -417,6 +430,29 @@ static void specialRCAsHandler(void){
                     CAN_DATA(0)=ESNS[device][0];
                     CAN_SIZE=CAN_FULL_SIZE;
                     device++;
+                    break;
+/* This needs to be implemented
+                case GET_ERRORS_NUMBER: // 0x2000C -> Returns the number of unread errors
+                    #ifdef DEBUG_CAN
+                        printf("  0x%lX->GET_ERROR_NUMBER\n\n",
+                               GET_ERRORS_NUMBER);
+                    #endif // DEBUG_CAN
+                    break;
+                case GET_NEXT_ERROR: // 0x2000D -> Returns the next unread error
+                    #ifdef DEBUG_CAN
+                        printf("  0x%lX->GET_NEXT_ERROR\n\n",
+                               GET_NEXT_ERROR);
+                    #endif // DEBUG_CAN
+                    break;
+*/
+                case GET_FE_MODE: // 0x2000E -> Returns the FE operating mode
+                    #ifdef DEBUG_CAN
+                        printf("  0x%lX->GET_FE_MODE\n\n",
+                               GET_FE_MODE);
+                    #endif /* DEBUG_CAN */
+                    CAN_DATA(0)=frontend.
+                                 mode[CURRENT_VALUE];
+                    CAN_SIZE=CAN_BYTE;
                     break;
                 default: // This will take care also of all the monitor request on special CAN control RCAs
                     #ifdef DEBUG_CAN
@@ -456,6 +492,17 @@ static void specialRCAsHandler(void){
                     consoleEnable=(CAN_BYTE==DISABLE)?DISABLE:
                                                       ENABLE;
                     break;
+/* This should be implemented right now, only operation mode is allowed
+                case SET_FE_MODE: // 0x2100E -> Set the FE operating mode
+                    #ifdef DEBUG_CAN
+                        printf("  0x%lX->SET_FE_MODE\n\n",
+                               SET_FE_MODE);
+                    #endif // DEBUG_CAN
+// The range should be checked according to the usual scheme before setting.
+                    frontend.
+                     mode[CURRENT_VALUE]=CAN_DATA(0);
+                    break;
+*/
                 default:
                     #ifdef DEBUG_CAN
                         printf("  Out of Range!\n\n");

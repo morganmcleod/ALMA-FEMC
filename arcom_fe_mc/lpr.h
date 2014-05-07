@@ -6,7 +6,7 @@
     Created: 2007/05/29 14:49:12 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lpr.h,v 1.6 2007/08/28 21:46:47 avaccari Exp $
+    \$Id: lpr.h,v 1.7 2009/03/23 19:22:04 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the LO photonic receiver. */
@@ -115,6 +115,6 @@
     /* Prototypes */
     /* Externs */
     extern void lprHandler(void); //!< This function deals with the incoming CAN messages
-    extern int lprInit(void); //!< This function initializes the LPR
+    extern int lprStartup(void); //!< This function initializes the LPR
 
 #endif /* _LPR_H */

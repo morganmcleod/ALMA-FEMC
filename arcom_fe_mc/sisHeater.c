@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: sisHeater.c,v 1.15 2006/09/15 14:28:27 avaccari Exp $
+    \$Id: sisHeater.c,v 1.16 2009/04/09 02:09:55 avaccari Exp $
 
     This files contains all the functions necessary to handle SIS heater
     events. */
@@ -107,8 +107,6 @@ static void enableHandler(void){
             return;
         }
 
-
-        /* If everything went fine, it's a control message, we're done. */
         return;
     }
 

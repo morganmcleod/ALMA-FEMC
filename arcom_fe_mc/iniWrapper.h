@@ -5,7 +5,7 @@
     Created: 2007/06/29 16:47:04 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: iniWrapper.h,v 1.2 2007/08/16 14:09:38 avaccari Exp $
+    \$Id: iniWrapper.h,v 1.3 2009/03/25 14:45:06 avaccari Exp $
 
     This file is a wrapper to interface with a 3rd party library to access
     configuration files written in INI format. */
@@ -21,10 +21,11 @@
     #endif /* INI_H_ */
 
     /* Defines */
-    #define DATA_NOT_FOUND      (-1)
-    #define FILE_OPEN_ERROR     (-2)
-    #define FILE_ERROR          (-3)
-    #define FILE_CLOSE_ERROR    (-4)
+    #define DATA_NOT_FOUND      (-2)
+    #define FILE_OPEN_ERROR     (-3)
+    #define FILE_ERROR          (-4)
+    #define FILE_CLOSE_ERROR    (-5)
+    #define ITEMS_NO_ERROR      (-6)
 
 
     /* Prototypes */
@@ -34,4 +35,8 @@
                          char *sectionName,
                          CFG_STRUCT *searchVar,
                          unsigned char expectedItems); //!< This function will read the specified data from the specified file
+    extern int myWriteCfg(const char *fileName,
+                          char *sectionName,
+                          char *varWanted,
+                          char *newData); //! This function will update the INI file
 #endif /* _INIWRAPPER_H */

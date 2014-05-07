@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: serialMux.h,v 1.14 2007/09/07 22:00:06 avaccari Exp $
+    \$Id: serialMux.h,v 1.16 2009/04/24 22:37:32 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the serial multiplexing board.
@@ -32,10 +32,8 @@
     /* I/O register defines */
     #define FPGA_READY          0x5A5A          //!< FPGA ready data
     #define MUX_BASE            0x300           //!< I/O base address used by the multiplexing board
-    #define SSC_BASE            MUX_BASE        //!< I/O base address used by the SSC
-    #define FPGA_BASE           (MUX_BASE+0x10) //!< I/O base address used by the FPGA
-    #define OWB_BASE            (MUX_BASE+0x20) //!< I/O base address used by the OWB
 
+    #define SSC_BASE            MUX_BASE                //!< I/O base address used by the SSC
     #define MUX_PORT_ADD        SSC_BASE                //!< Port select register address
     #define MUX_DATA_ADD(Wo)    (2*Wo+SSC_BASE+0x02)    //!< Data words register address
     #define MUX_WLENGTH_ADD     (SSC_BASE+0x08)         //!< Write length register
@@ -43,17 +41,20 @@
     #define MUX_COMMAND_ADD     (SSC_BASE+0x0C)         //!< Command word register
     #define MUX_BUSY_ADD        (SSC_BASE+0x0C)         //!< Busy status register
 
+    #define FPGA_BASE           (MUX_BASE+0x10)         //!< I/O base address used by the FPGA
     #define MUX_FPGA_RDY_ADD    FPGA_BASE               //!< FPGA ready register (0x5A5A -> Ready)
     #define MUX_FPGA_VERSION    (FPGA_BASE+0x02)        //!< FPGA version info register
     #define MUX_BUSY_MASK       0x0001                  // Busy status register mask
 
+    #define OWB_BASE            (MUX_BASE+0x20)         //!< I/O base address used by the OWB
     #define MUX_OWB_COMMAND     OWB_BASE                //!< OWB command register (R/W)
     #define MUX_OWB_TXRX        (OWB_BASE+0x01)         //!< OWB Transmit(W)/Receive(R) Buffer
     #define MUX_OWB_IRQ         (OWB_BASE+0x02)         //!< OWB Interrupt register (R)
     #define MUX_OWB_IRQ_EN      (OWB_BASE+0x03)         //!< OWB Interrupt enable regiaster (R/W)
     #define MUX_OWB_CLK_DIV     (OWB_BASE+0x04)         //!< OWB Clock divisor register (R/W)
     #define MUX_OWB_CONTROL     (OWB_BASE+0x05)         //!< OWB Control Register (R/W)
-    #define MUX_OWB_RESET       (OWB_BASE+0x0F)         //!< Reset the one wire master in the FPGA
+    #define MUX_OWB_ENABLE      (OWB_BASE+0x0E)         //!< Enables the bus extending outside the FEMC (W)
+    #define MUX_OWB_RESET       (OWB_BASE+0x0F)         //!< Reset the one wire master in the FPGA (W)
 
     /* Typedefs */
     //! Serial multiplexing board's frame

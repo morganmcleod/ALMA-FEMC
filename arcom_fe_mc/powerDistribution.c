@@ -5,7 +5,9 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: powerDistribution.c,v 1.15 2008/02/07 16:21:24 avaccari Exp $
+
+    \$Id: powerDistribution.c,v 1.17 2009/03/23 20:43:04 avaccari Exp $
+
 
     This files contains all the functions necessary to handle power distribution
     events. */
@@ -16,6 +18,7 @@
 #include "debug.h"
 #include "frontend.h"
 #include "error.h"
+#include "pdSerialInterface.h"
 
 
 /* Globals */
@@ -96,11 +99,11 @@ static void poweredModulesHandler(void){
 
 /* Power distribution Initialization */
 /*! This function performs all the necessary initialization for the power
-    distribution system.
+    distribution system. These are executed only once at startup.
     \return
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
-int powerDistributionInit(void){
+int powerDistributionStartup(void){
 
     /* Set the currentModule variable to reflect the fact that the CPDS is
        selected. This is necessary because currentModule is the global variable
@@ -110,15 +113,50 @@ int powerDistributionInit(void){
 
     printf(" Initializing Power Distribution System...\n");
 
+    /* Power down all the cartridges to prevent misalignment between software
+       status and hardware status. */
+    powerDistributionStop();
+
+    /* Now we can proceed with initialization */
+
     frontend.
      powerDistribution.
       poweredModules[MAX_SET_VALUE]=(frontend.
-                                      mode[CURRENT_VALUE]==DEBUG_MODE)?MAX_POWERED_BANDS_DEBUG:
-                                                                       MAX_POWERED_BANDS_OPERATION;
+                                      mode[CURRENT_VALUE]==TROUBLESHOOTING_MODE)?MAX_POWERED_BANDS_TROUBLESHOOTING:
+                                                                                 MAX_POWERED_BANDS_OPERATIONAL;
 
     printf(" done!\n\n");
 
     return NO_ERROR;
 }
 
+/* Power distribution shutdown */
+/*! This function performs all the functions necessary to stop the power
+    distribution system.
+    \return
+        - \ref NO_ERROR -> if no error occurred
+        - \ref ERROR    -> if something wrong happened */
+int powerDistributionStop(void){
 
+    /* Set the currentModule variable to reflect the fact that the CPDS is
+       selected. This is necessary because currentModule is the global variable
+       used to select the communication channel. This is only necessary if
+       serial communication have to be implemented. */
+    currentModule=POWER_DIST_MODULE;
+
+    printf(" Powering down Power Distribution System...\n");
+
+    /* Unconditionally turn off all the modules */
+    for(currentPowerDistributionModule=0;
+        currentPowerDistributionModule<CARTRIDGES_NUMBER;
+        currentPowerDistributionModule++){
+        printf(" - Powering down module: %d...",
+               currentPowerDistributionModule);
+        setPdModuleEnable(PD_MODULE_DISABLE);
+        printf(" done!\n");
+    }
+
+    printf(" done!\n\n");
+
+    return NO_ERROR;
+}

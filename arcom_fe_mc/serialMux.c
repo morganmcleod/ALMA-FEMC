@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: serialMux.c,v 1.17 2007/10/02 22:04:58 avaccari Exp $
+    \$Id: serialMux.c,v 1.18 2009/04/09 02:09:55 avaccari Exp $
 
     This files contains all the functions necessary to control the serial
     multiplexing board.
@@ -32,6 +32,7 @@
 #include "serialMux.h"
 #include "timer.h"
 #include "debug.h"
+#include "globalDefinitions.h"
 
 /* Globals */
 /* Externs */
@@ -258,7 +259,8 @@ static int waitOnBusy(void){
 
     /* Setup for 1 seconds and start the asynchronous timer */
     if(startAsyncTimer(TIMER_SERIAL_MUX,
-                       TIMER_TO_SERIAL_MUX)==ERROR){
+                       TIMER_TO_SERIAL_MUX,
+                       FALSE)==ERROR){
         return ERROR;
     }
 

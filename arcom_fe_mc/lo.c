@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lo.c,v 1.17 2008/05/01 14:16:24 avaccari Exp $
+    \$Id: lo.c,v 1.19 2009/03/25 14:45:13 avaccari Exp $
 
     This files contains all the functions necessary to handle LO events. */
 
@@ -32,15 +32,19 @@ static HANDLER  loModulesHandler[LO_MODULES_NUMBER]={ytoHandler,
 
 /* LO init */
 /*! This function performs the operations necessary to initialize a LO at
-    runtime.
+    runtime. These are executed everytime a cartridge is powered up.
     \return
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
 int loInit(void){
-    printf(" - Initializing LO...\n");
+    #ifdef DEBUG_INIT
+        printf(" - Initializing LO...\n");
+    #endif // DEBUG_INIT
 
     /* Set the 10MHz */
-    printf("   - 10MHz...\n");
+    #ifdef DEBUG_INIT
+        printf("   - 10MHz...\n");
+    #endif // DEBUG_INIT
 
     if(serialAccess(LO_10MHZ_MODE,
                     NULL,
@@ -55,11 +59,85 @@ int loInit(void){
       lo.
        ssi10MHzEnable=ENABLE;
 
-    printf("     done!\n"); // 10MHz
+    #ifdef DEBUG_INIT
+        printf("     done!\n"); // 10MHz
+    #endif // DEBUG_INIT
+
+    /* Set the PA's drain voltage to 0. The mapping from channel to actual
+       polarization is not relevant since we are zeroing all of them. */
+    #ifdef DEBUG_INIT
+        printf("   - Setting PAs drain voltage to 0\n");
+    #endif // DEBUG_INIT
+
+    CAN_FLOAT=0.0;
+    currentPaChannelModule=PA_CHANNEL_DRAIN_VOLTAGE;
+
+    /* PA Channel A */
+    #ifdef DEBUG_INIT
+        printf("     - Channel A\n");
+    #endif // DEBUG_INIT
+    currentPaModule=PA_CHANNEL_A;
+    /* Set Channel. If error, return error and abort initialization */
+    if(setPaChannel()==ERROR){
+        return ERROR;
+    }
+    #ifdef DEBUG_INIT
+        printf("       done!\n"); // Channel A
+    #endif // DEBUG_INIT
+
+    /* PA Channel B */
+    #ifdef DEBUG_INIT
+        printf("     - Channel B\n");
+    #endif // DEBUG_INIT
+    currentPaModule=PA_CHANNEL_B;
+    /* Set Channel. If error, return error and abort initialization */
+    if(setPaChannel()==ERROR){
+        return ERROR;
+    }
+    #ifdef DEBUG_INIT
+        printf("       done!\n"); // Channel B
+        printf("     done!\n"); // Set PA drain voltage to 0
+    #endif // DEBUG_INIT
+
+    /* Set the PA's gate voltage to 0 */
+    #ifdef DEBUG_INIT
+        printf("   - Setting PAs gate voltage to 0\n");
+    #endif // DEBUG_INIT
+    CAN_FLOAT=0.0;
+    currentPaChannelModule=PA_CHANNEL_GATE_VOLTAGE;
+
+    /* PA Channel A */
+    #ifdef DEBUG_INIT
+        printf("     - Channel A\n");
+    #endif // DEBUG_INIT
+    currentPaModule=PA_CHANNEL_A;
+    /* Set Channel. If error, return error and abort initialization */
+    if(setPaChannel()==ERROR){
+        return ERROR;
+    }
+    #ifdef DEBUG_INIT
+        printf("       done!\n"); // Channel A
+    #endif // DEBUG_INIT
+
+    /* PA Channel B */
+    #ifdef DEBUG_INIT
+        printf("     - Channel B\n");
+    #endif // DEBUG_INIT
+    currentPaModule=PA_CHANNEL_B;
+    /* Set Channel. If error, return error and abort initialization */
+    if(setPaChannel()==ERROR){
+        return ERROR;
+    }
+    #ifdef DEBUG_INIT
+        printf("       done!\n"); // Channel B
+        printf("     done!\n"); // Set PA get voltage to 0
+    #endif // DEBUG_INIT
 
     /* Set correct loop bandwidth. If it is not defined return the undefined
        warning. */
-    printf("   - PLL Loop Bandwidth...\n");
+    #ifdef DEBUG_INIT
+       printf("   - PLL Loop Bandwidth...\n");
+    #endif // DEBUG_INIT
     if(frontend.
         cartridge[currentModule].
          lo.
@@ -67,7 +145,11 @@ int loInit(void){
            loopBandwidthSelect[DEFAULT_VALUE]==PLL_LOOP_BANDWIDTH_UNDEFINED){
        storeError(ERR_LO,
                   0x03); // Error 0x03 -> Warning: The addressed hardware is not properly defined yet
-        return NO_ERROR;
+       #ifdef DEBUG_INIT
+           printf("     done!\n"); // PLL loop bandwidth
+           printf("   done!\n"); // LO
+       #endif // DEBUG_INIT
+       return NO_ERROR;
     }
 
     /* If the value is defined then set it to the default value. */
@@ -77,14 +159,16 @@ int loInit(void){
                               pll.
                                loopBandwidthSelect[DEFAULT_VALUE]);
 
-    printf("     done!\n"); // PLL loop bandwidth
-    printf("   done!\n"); // LO
+    #ifdef DEBUG_INIT
+        printf("     done!\n"); // PLL loop bandwidth
+        printf("   done!\n"); // LO
+    #endif // DEBUG_INIT
 
     return NO_ERROR;
 }
 
 
-/* LOe startup init */
+/* LO startup init */
 /*! This function performs the operations necessary to initialize a LO during
     startup. These operations are performed only once during the startup
     sequence.
@@ -126,7 +210,7 @@ int loStartup(void){
                     configFile,
                  LO_ESN_SECTION,
                  &dataIn,
-                 LO_ESN_EXPECTED)==ERROR){
+                 LO_ESN_EXPECTED)!=NO_ERROR){
         return NO_ERROR;
     }
 
@@ -166,7 +250,7 @@ int loStartup(void){
                     configFile,
                  PLL_LOOP_BW_SECTION,
                  &dataIn,
-                 PLL_LOOP_BW_EXPECTED)==ERROR){
+                 PLL_LOOP_BW_EXPECTED)!=NO_ERROR){
         return NO_ERROR;
     }
 
@@ -207,7 +291,7 @@ int loStartup(void){
                     configFile,
                  PLL_LOCK_SECTION,
                  &dataIn,
-                 PLL_LOCK_EXPECTED)==ERROR){
+                 PLL_LOCK_EXPECTED)!=NO_ERROR){
         return NO_ERROR;
     }
 
@@ -248,7 +332,7 @@ int loStartup(void){
                     configFile,
                  PLL_CORR_SECTION,
                  &dataIn,
-                 PLL_CORR_EXPECTED)==ERROR){
+                 PLL_CORR_EXPECTED)!=NO_ERROR){
         return NO_ERROR;
     }
 
@@ -288,7 +372,7 @@ int loStartup(void){
                     configFile,
                  PLL_YIG_C_SCALE_SECTION,
                  &dataIn,
-                 PLL_YIG_C_SCALE_EXPECTED)==ERROR){
+                 PLL_YIG_C_SCALE_EXPECTED)!=NO_ERROR){
         return NO_ERROR;
     }
 
@@ -328,7 +412,7 @@ int loStartup(void){
                 configFile,
              PLL_YIG_C_OFFSET_SECTION,
              &dataIn,
-             PLL_YIG_C_OFFSET_EXPECTED)==ERROR){
+             PLL_YIG_C_OFFSET_EXPECTED)!=NO_ERROR){
         return NO_ERROR;
     }
 
@@ -368,7 +452,7 @@ int loStartup(void){
                 configFile,
              LO_SUPPLY_V_SECTION,
              &dataIn,
-             LO_SUPPLY_V_EXPECTED)==ERROR){
+             LO_SUPPLY_V_EXPECTED)!=NO_ERROR){
         return NO_ERROR;
     }
 
@@ -406,7 +490,7 @@ int loStartup(void){
                 configFile,
              LO_MULTIPLIER_C_SECTION,
              &dataIn,
-             LO_MULTIPLIER_C_EXPECTED)==ERROR){
+             LO_MULTIPLIER_C_EXPECTED)!=NO_ERROR){
         return NO_ERROR;
     }
 

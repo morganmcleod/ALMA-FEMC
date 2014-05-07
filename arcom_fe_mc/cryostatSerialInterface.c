@@ -5,7 +5,7 @@
     Created: 2007/04/10 11:26:37 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cryostatSerialInterface.c,v 1.11 2008/02/28 22:15:05 avaccari Exp $
+    \$Id: cryostatSerialInterface.c,v 1.12 2009/04/09 02:09:55 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     cryostat serial interface.
@@ -118,7 +118,8 @@ static int getCryoAnalogMonitor(void){
        - parallel input */
     /* Setup for 1 second and start th asynchronous timer */
     if(startAsyncTimer(TIMER_CRYO_ADC_RDY,
-                       TIMER_CRYO_TO_ADC_RDY)==ERROR){
+                       TIMER_CRYO_TO_ADC_RDY,
+                       FALSE)==ERROR){
         return ERROR;
     }
 

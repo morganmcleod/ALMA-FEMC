@@ -5,7 +5,8 @@
     Created: 2004/10/06 16:47:08 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: version.h,v 1.33 2009/02/25 23:33:27 avaccari Exp $
+
+    \$Id: version.h,v 1.36 2009/04/24 22:37:32 avaccari Exp $
 
     This files contains all the informations about the current version of the
     software and its revision history.
@@ -21,6 +22,27 @@
             - ...
 
     REVISION HISTORY
+    2009-04-24  002.001.001     (02-01-00.exe)
+        Debug Release.
+        This release contains a fix to prevent the CIPT from operating the mixer
+        heaters incorrectly during the control software testing.
+        This version is tagged Ver_02_00_01.
+
+    2009-04-24  002.001.000     (fe_mc.exe or 02-01-00.exe or 2k90424.exe)
+        Official Release.
+        This version is tagged Ver_02_01_00(ALMA-40_00_00_00-75_35_25_00_B_ICD).
+        - Added simulator for ESNs number. The option can be controlled with
+          the ESNS.INI configuration file.
+        - Now when the software is terminated, all the cartridges will be turned
+          off.
+        - The storing of the PA channels information now follows the cartridge
+          dependent mapping rather than just the CAN message.
+        - The drain and gate voltages of the PAs are set to 0.0V every time a
+          cartridge is initialized.
+        - The current operation mode of the front end can be monitored. The setting
+          is not implemented yet and it will not untill the safety checks are in
+          place.
+
     2009-02-25  002.000.000     (fe_mc.exe or 02-00-00.exe or 2k90225.exe)
         Official Release.
         This version is tagged Ver_02_00_00(ALMA-40_00_00_00-75_35_25_00_B_ICD).
@@ -58,6 +80,12 @@
           a change in the CPLD code inside the LO monitor and control.
           (JIRA issue FEIC-73)
         This version is tagged Ver_01_00_02b1.
+
+    2008-05-15  001.000.001     (01-00-01.exe)
+        Debug Release.
+        This release contains a fix to prevent the CIPT from operating the mixer
+        heaters incorrectly during the control software testing.
+        This version is tagged Ver_01_00_01.
 
     2008-04-09  001.000.000
         First Official Release.
@@ -106,16 +134,18 @@
 
 /*! \mainpage
     \section    sectionVersion  Version
-    Documentation relative to Version: 002.000.000 */
+    Documentation relative to Version: 002.001.000 */
 
 #ifndef _VERSION_H
     #define _VERSION_H
 
     /* Defines */
     #define VERSION_MAJOR   002  //!< Major version
-    #define VERSION_MINOR   000  //!< Minor version
+    #define VERSION_MINOR   001  //!< Minor version
     #define VERSION_PATCH   000  //!< Patch level
-    #define VERSION_DATE    "2009-02-25" //!< Version Date
+
+    #define VERSION_DATE    "2009-04-24" //!< Version Date
+    #define VERSION_NOTES   "" //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Andrea Vaccari - NRAO (avaccari@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"

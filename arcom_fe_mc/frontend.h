@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: frontend.h,v 1.23 2008/05/01 14:16:24 avaccari Exp $
+    \$Id: frontend.h,v 1.24 2009/03/23 20:43:04 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the entire frontend system.
@@ -78,8 +78,9 @@
     #define WCA_FILE_EXPECTED       1               // Expected keys containing the configuration file name
 
     /* Operation mode defines */
-    #define DEBUG_MODE      1
-    #define OPERATION_MODE  0
+    #define OPERATIONAL_MODE        0
+    #define TROUBLESHOOTING_MODE    1
+    #define MAINTENANCE_MODE        2
 
     /* Typedefs */
     //! Current state of the frontend
@@ -94,12 +95,21 @@
     typedef struct {
         //! Frontend current state
         /*! The receiver can be in one of the following modes:
-                - \ref DEBUG_MODE       -> The receiver is in debug mode. This
-                                           will allow to perform all possible
-                                           operation with the receiver.
-                - \ref OPERATION_MODE   -> The receiver is in standard operation
-                                           mode. This will prevent certain
-                                           operation from being executed. */
+                - \ref OPERATIONAL_MODE     -> The receiver is in standard
+                                               operation mode. This will prevent
+                                               certain operation from being
+                                               executed.
+                - \ref TROUBLESHOOTING_MODE -> The receiver is in
+                                               troubleshooting mode.
+                                               This will allow to perform all
+                                               possible operation with the
+                                               receiver.
+                - \ref MAINTENANCE_MODE     -> The receiver is in maintenance
+                                               mode. In this mode operation
+                                               allowed are: warm up, cool down,
+                                               power on self test, power on
+                                               configuration, configuration
+                                               data exchange. */
         unsigned char       mode[OPERATION_ARRAY_SIZE];
         //! Cartridge current state
         /*! Cartridges \p Ca are assigned according to the following:

@@ -5,7 +5,8 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cryostat.c,v 1.18 2008/09/26 23:00:38 avaccari Exp $
+
+    \$Id: cryostat.c,v 1.21 2009/03/25 14:44:14 avaccari Exp $
 
     This files contains all the functions necessary to handle cryostat events. */
 
@@ -70,19 +71,19 @@ void cryostatHandler(void){
 
 /* Cryostat initialization */
 /*! This function performs all the necessary initialization for the cryostat.
+    These are executed only once at startup.
     \return
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
-int cryostatInit(void){
+int cryostatStartup(void){
 
     #ifdef DATABASE_HARDW
-        /* Few variables to help load the coefficient in the frontend table */
-        unsigned char sensor, sensorNo[8], cnt;
         #ifdef DEBUG_STARTUP
             unsigned char coeff;
         #endif /* DEBUG_STARTUP */
-        CFG_STRUCT  dataIn;
 
+        CFG_STRUCT  dataIn;
+        unsigned char sensor, sensorNo[8], cnt;
         /* A variable to hold the section names of the cryostat configuration file
            where the TVO coefficients can be found. */
         char sensors[TVO_SENSORS_NUMBER+1][TVO_SEC_NAME_SIZE]={"CRYOCOOLER_4K",
@@ -113,7 +114,7 @@ int cryostatInit(void){
         if(myReadCfg(FRONTEND_CONF_FILE,
                      CRYO_CONF_FILE_SECTION,
                      &dataIn,
-                     CRYO_CONF_FILE_EXPECTED)==ERROR){
+                     CRYO_CONF_FILE_EXPECTED)!=NO_ERROR){
             return NO_ERROR;
         }
 
@@ -149,7 +150,7 @@ int cryostatInit(void){
                        configFile,
                      CRYO_ESN_SECTION,
                      &dataIn,
-                     CRYO_ESN_EXPECTED)==ERROR){
+                     CRYO_ESN_EXPECTED)!=NO_ERROR){
             return NO_ERROR;
         }
 
@@ -186,7 +187,7 @@ int cryostatInit(void){
                            configFile,
                          TVO_NO_SECTION(sensor),
                          &dataIn,
-                         TVO_NO_EXPECTED)==ERROR){
+                         TVO_NO_EXPECTED)!=NO_ERROR){
                 return NO_ERROR;
             }
 
@@ -213,7 +214,7 @@ int cryostatInit(void){
                            configFile,
                          TVO_COEFFS_SECTION(sensor),
                          &dataIn,
-                         TVO_COEFFS_EXPECTED)==ERROR){
+                         TVO_COEFFS_EXPECTED)!=NO_ERROR){
                 return NO_ERROR;
             }
 
@@ -233,6 +234,7 @@ int cryostatInit(void){
 
             printf("    done!\n"); // TVO coefficients
         }
+
     #else // If the hardware configuration database is not available
         printf(" Initializing Cryostat...\n");
     #endif /* DATABASE_HARDW */
@@ -255,6 +257,8 @@ int cryostatInit(void){
 
     return NO_ERROR;
 }
+
+
 
 /* Supply Current 230V Handler */
 /* This function deals with all the monitor requests diected to the 230V supply

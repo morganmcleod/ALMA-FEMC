@@ -5,7 +5,7 @@
     Created: 2006/10/24 11:52:13 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: globalOperations.c,v 1.18 2008/09/26 23:00:38 avaccari Exp $
+    \$Id: globalOperations.c,v 1.19 2009/03/23 19:22:04 avaccari Exp $
 
     This files contains all the functions necessary to handle global frontend
     operations. */
@@ -96,6 +96,8 @@ int shutDown(void){
     if(errorStop()==ERROR){
 /**************************************************** Do something? ******/
     }
+
+    printf("Shut down complete! Exiting...\n\n");
 
     return NO_ERROR;
 }

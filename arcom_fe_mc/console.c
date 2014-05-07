@@ -5,18 +5,17 @@
     Created: 2007/05/22 11:31:31 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: console.c,v 1.9 2008/09/26 23:00:38 avaccari Exp $
+    \$Id: console.c,v 1.10 2009/04/09 02:09:55 avaccari Exp $
 
     This files contains all the functions necessary to handle console accesses
     to the software. */
 
 
 /* Includes */
-#include <conio.h>      /* getch, kbhit */
-#include <string.h>     /* strcmp */
-#include <stdio.h>      /* printf */
-#include <stdlib.h>     /* atol */
-#include <math.h>       /* pow */
+#include <conio.h>      /* getch, kbhit, putch */
+#include <string.h>     /* strcmp, memcpy, strcpy, strtok */
+#include <stdio.h>      /* printf, flushall */
+#include <stdlib.h>     /* atoi, atof */
 
 #include "console.h"
 #include "can.h"
@@ -45,11 +44,6 @@ static unsigned char lastBufferIndex=0;
 void console(void){
     unsigned char key;
     unsigned char counter;
-
-    /* Check if the console is enable */
-    if(consoleEnable==DISABLE){
-        return;
-    }
 
     /* Echo data typed to console and store into circular buffer */
     if(kbhit()){
@@ -266,28 +260,4 @@ static void parseBuffer(void){
     }
 }
 
-/* Alow to use exadecimal in the command line */
-static long htol(char *hex){
-
-    unsigned char len,bas,cnt,val;
-	long longInt=0;
-
-	if(strstr(hex,"0x")){
-		len=strlen(hex);
-
-		for(cnt=0;cnt<len;cnt++){
-
-	    	val=hex[cnt];
-
-		    if(((val>47)&&(val<58))||((val>64)&&(val<71))||((val>96)&&(val<103))){
-				bas=val>64?(val>96?87:55):48;
-				longInt+=(val-bas)*pow(16,len-cnt-1);
-		    }
-		}
-	} else {
-		longInt=atol(hex);
-	}
-
-	return longInt;
-}
 

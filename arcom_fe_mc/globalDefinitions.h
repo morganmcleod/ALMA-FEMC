@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: globalDefinitions.h,v 1.24 2008/02/28 22:15:05 avaccari Exp $
+    \$Id: globalDefinitions.h,v 1.26 2009/04/09 02:09:55 avaccari Exp $
 
     This file contains definitions that are used throughout the various modules
     of the program. */
@@ -82,6 +82,7 @@
     /* This union define an easy way to convert the incoming CAN message
        payload to a float and vice versa. */
     typedef union {
+        long int        longint;
         unsigned int    uint[2];
         float           flt;
         unsigned char   chr[4];
@@ -97,5 +98,6 @@
     extern unsigned char checkRange(float low, float test, float high); //!< Check range
     extern void changeEndian(unsigned char *destination, unsigned char *source); //!< Change endianicity
     extern void bogoFunction(void); //!< Place holder function
+    extern long htol(char *hex); //!< Conversion from Hex to long int
 
 #endif /* _GLOBALDEFINITIONS_H */

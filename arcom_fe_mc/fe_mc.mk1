@@ -3,518 +3,525 @@ C:\Program_Files\projects\fe_mc\ini.obj : C:\Program_Files\projects\fe_mc\3R&
 DPARTY\ini.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc 3RDPARTY\ini.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi8&
-7 -5 -bt=dos -ml
+ *wcc 3RDPARTY\ini.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5&
+ -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\amc.obj : C:\Program_Files\projects\fe_mc\am&
 c.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc amc.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -bt=&
-dos -ml
+ *wcc amc.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi87 -&
+5 -bt=dos -fo=.obj -ml
+
+C:\Program_Files\projects\fe_mc\async.obj : C:\Program_Files\projects\fe_mc\&
+async.c .AUTODEPEND
+ @C:
+ cd C:\Program_Files\projects\fe_mc
+ *wcc async.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi87&
+ -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\backingPump.obj : C:\Program_Files\projects\&
 fe_mc\backingPump.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc backingPump.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87&
- -5 -bt=dos -ml
+ *wcc backingPump.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 &
+-fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\biasSerialInterface.obj : C:\Program_Files\p&
 rojects\fe_mc\biasSerialInterface.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc biasSerialInterface.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp&
-5 -fpi87 -5 -bt=dos -ml
+ *wcc biasSerialInterface.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otex&
+an -fp5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\can.obj : C:\Program_Files\projects\fe_mc\ca&
 n.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc can.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -bt=&
-dos -ml
+ *wcc can.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi87 -&
+5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\cartridge.obj : C:\Program_Files\projects\fe&
 _mc\cartridge.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc cartridge.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -&
-5 -bt=dos -ml
+ *wcc cartridge.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -f&
+pi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\cartridgeTemp.obj : C:\Program_Files\project&
 s\fe_mc\cartridgeTemp.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc cartridgeTemp.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi&
-87 -5 -bt=dos -ml
+ *wcc cartridgeTemp.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp&
+5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\console.obj : C:\Program_Files\projects\fe_m&
 c\console.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc console.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 &
--bt=dos -ml
+ *wcc console.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi&
+87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\cryostat.obj : C:\Program_Files\projects\fe_&
 mc\cryostat.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc cryostat.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5&
- -bt=dos -ml
+ *wcc cryostat.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fp&
+i87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\cryostatSerialInterface.obj : C:\Program_Fil&
 es\projects\fe_mc\cryostatSerialInterface.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc cryostatSerialInterface.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan&
- -fp5 -fpi87 -5 -bt=dos -ml
+ *wcc cryostatSerialInterface.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -&
+otexan -fp5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\cryostatTemp.obj : C:\Program_Files\projects&
 \fe_mc\cryostatTemp.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc cryostatTemp.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi8&
-7 -5 -bt=dos -ml
+ *wcc cryostatTemp.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5&
+ -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\edfa.obj : C:\Program_Files\projects\fe_mc\e&
 dfa.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc edfa.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -bt&
-=dos -ml
+ *wcc edfa.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi87 &
+-5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\error.obj : C:\Program_Files\projects\fe_mc\&
 error.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc error.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -b&
-t=dos -ml
+ *wcc error.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi87&
+ -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\frontend.obj : C:\Program_Files\projects\fe_&
 mc\frontend.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc frontend.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5&
- -bt=dos -ml
+ *wcc frontend.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fp&
+i87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\gateValve.obj : C:\Program_Files\projects\fe&
 _mc\gateValve.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc gateValve.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -&
-5 -bt=dos -ml
+ *wcc gateValve.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -f&
+pi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\globalDefinitions.obj : C:\Program_Files\pro&
 jects\fe_mc\globalDefinitions.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc globalDefinitions.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 &
--fpi87 -5 -bt=dos -ml
+ *wcc globalDefinitions.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan&
+ -fp5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\globalOperations.obj : C:\Program_Files\proj&
 ects\fe_mc\globalOperations.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc globalOperations.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -&
-fpi87 -5 -bt=dos -ml
+ *wcc globalOperations.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan &
+-fp5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\ifChannel.obj : C:\Program_Files\projects\fe&
 _mc\ifChannel.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc ifChannel.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -&
-5 -bt=dos -ml
+ *wcc ifChannel.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -f&
+pi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\ifSerialInterface.obj : C:\Program_Files\pro&
 jects\fe_mc\ifSerialInterface.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc ifSerialInterface.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 &
--fpi87 -5 -bt=dos -ml
+ *wcc ifSerialInterface.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan&
+ -fp5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\ifSwitch.obj : C:\Program_Files\projects\fe_&
 mc\ifSwitch.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc ifSwitch.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5&
- -bt=dos -ml
+ *wcc ifSwitch.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fp&
+i87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\ifTempServo.obj : C:\Program_Files\projects\&
 fe_mc\ifTempServo.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc ifTempServo.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87&
- -5 -bt=dos -ml
+ *wcc ifTempServo.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 &
+-fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\iniWrapper.obj : C:\Program_Files\projects\f&
 e_mc\iniWrapper.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc iniWrapper.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 &
--5 -bt=dos -ml
+ *wcc iniWrapper.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -&
+fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\laser.obj : C:\Program_Files\projects\fe_mc\&
 laser.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc laser.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -b&
-t=dos -ml
+ *wcc laser.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi87&
+ -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\lna.obj : C:\Program_Files\projects\fe_mc\ln&
 a.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc lna.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -bt=&
-dos -ml
+ *wcc lna.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi87 -&
+5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\lnaLed.obj : C:\Program_Files\projects\fe_mc&
 \lnaLed.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc lnaLed.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -&
-bt=dos -ml
+ *wcc lnaLed.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi8&
+7 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\lnaStage.obj : C:\Program_Files\projects\fe_&
 mc\lnaStage.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc lnaStage.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5&
- -bt=dos -ml
+ *wcc lnaStage.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fp&
+i87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\lo.obj : C:\Program_Files\projects\fe_mc\lo.&
 c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc lo.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -bt=d&
-os -ml
+ *wcc lo.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi87 -5&
+ -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\loSerialInterface.obj : C:\Program_Files\pro&
 jects\fe_mc\loSerialInterface.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc loSerialInterface.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 &
--fpi87 -5 -bt=dos -ml
+ *wcc loSerialInterface.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan&
+ -fp5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\lpr.obj : C:\Program_Files\projects\fe_mc\lp&
 r.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc lpr.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -bt=&
-dos -ml
+ *wcc lpr.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi87 -&
+5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\lprSerialInterface.obj : C:\Program_Files\pr&
 ojects\fe_mc\lprSerialInterface.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc lprSerialInterface.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5&
- -fpi87 -5 -bt=dos -ml
+ *wcc lprSerialInterface.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexa&
+n -fp5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\lprTemp.obj : C:\Program_Files\projects\fe_m&
 c\lprTemp.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc lprTemp.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 &
--bt=dos -ml
+ *wcc lprTemp.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi&
+87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\main.obj : C:\Program_Files\projects\fe_mc\m&
 ain.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc main.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -bt&
-=dos -ml
+ *wcc main.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi87 &
+-5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\miDac.obj : C:\Program_Files\projects\fe_mc\&
 miDac.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc miDac.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -b&
-t=dos -ml
+ *wcc miDac.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi87&
+ -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\miSpecialMsgs.obj : C:\Program_Files\project&
 s\fe_mc\miSpecialMsgs.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc miSpecialMsgs.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi&
-87 -5 -bt=dos -ml
+ *wcc miSpecialMsgs.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp&
+5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\modulationInput.obj : C:\Program_Files\proje&
 cts\fe_mc\modulationInput.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc modulationInput.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -f&
-pi87 -5 -bt=dos -ml
+ *wcc modulationInput.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -&
+fp5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\opticalSwitch.obj : C:\Program_Files\project&
 s\fe_mc\opticalSwitch.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc opticalSwitch.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi&
-87 -5 -bt=dos -ml
+ *wcc opticalSwitch.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp&
+5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\owb.obj : C:\Program_Files\projects\fe_mc\ow&
 b.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc owb.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -bt=&
-dos -ml
+ *wcc owb.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi87 -&
+5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\pa.obj : C:\Program_Files\projects\fe_mc\pa.&
 c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc pa.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -bt=d&
-os -ml
+ *wcc pa.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi87 -5&
+ -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\paChannel.obj : C:\Program_Files\projects\fe&
 _mc\paChannel.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc paChannel.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -&
-5 -bt=dos -ml
+ *wcc paChannel.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -f&
+pi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\pdChannel.obj : C:\Program_Files\projects\fe&
 _mc\pdChannel.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc pdChannel.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -&
-5 -bt=dos -ml
+ *wcc pdChannel.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -f&
+pi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\pdModule.obj : C:\Program_Files\projects\fe_&
 mc\pdModule.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc pdModule.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5&
- -bt=dos -ml
+ *wcc pdModule.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fp&
+i87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\pdSerialInterface.obj : C:\Program_Files\pro&
 jects\fe_mc\pdSerialInterface.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc pdSerialInterface.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 &
--fpi87 -5 -bt=dos -ml
+ *wcc pdSerialInterface.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan&
+ -fp5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\pegasus.obj : C:\Program_Files\projects\fe_m&
 c\pegasus.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc pegasus.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 &
--bt=dos -ml
+ *wcc pegasus.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi&
+87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\photoDetector.obj : C:\Program_Files\project&
 s\fe_mc\photoDetector.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc photoDetector.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi&
-87 -5 -bt=dos -ml
+ *wcc photoDetector.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp&
+5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\photomixer.obj : C:\Program_Files\projects\f&
 e_mc\photomixer.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc photomixer.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 &
--5 -bt=dos -ml
+ *wcc photomixer.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -&
+fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\pll.obj : C:\Program_Files\projects\fe_mc\pl&
 l.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc pll.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -bt=&
-dos -ml
+ *wcc pll.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi87 -&
+5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\polarization.obj : C:\Program_Files\projects&
 \fe_mc\polarization.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc polarization.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi8&
-7 -5 -bt=dos -ml
+ *wcc polarization.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5&
+ -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\polDac.obj : C:\Program_Files\projects\fe_mc&
 \polDac.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc polDac.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -&
-bt=dos -ml
+ *wcc polDac.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi8&
+7 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\polSpecialMsgs.obj : C:\Program_Files\projec&
 ts\fe_mc\polSpecialMsgs.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc polSpecialMsgs.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fp&
-i87 -5 -bt=dos -ml
+ *wcc polSpecialMsgs.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -f&
+p5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\powerDistribution.obj : C:\Program_Files\pro&
 jects\fe_mc\powerDistribution.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc powerDistribution.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 &
--fpi87 -5 -bt=dos -ml
+ *wcc powerDistribution.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan&
+ -fp5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\ppComm.obj : C:\Program_Files\projects\fe_mc&
 \ppComm.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc ppComm.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -&
-bt=dos -ml
+ *wcc ppComm.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi8&
+7 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\schottkyMixer.obj : C:\Program_Files\project&
 s\fe_mc\schottkyMixer.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc schottkyMixer.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi&
-87 -5 -bt=dos -ml
+ *wcc schottkyMixer.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp&
+5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\serialInterface.obj : C:\Program_Files\proje&
 cts\fe_mc\serialInterface.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc serialInterface.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -f&
-pi87 -5 -bt=dos -ml
+ *wcc serialInterface.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -&
+fp5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\serialMux.obj : C:\Program_Files\projects\fe&
 _mc\serialMux.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc serialMux.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -&
-5 -bt=dos -ml
+ *wcc serialMux.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -f&
+pi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\sideband.obj : C:\Program_Files\projects\fe_&
 mc\sideband.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc sideband.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5&
- -bt=dos -ml
+ *wcc sideband.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fp&
+i87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\sis.obj : C:\Program_Files\projects\fe_mc\si&
 s.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc sis.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -bt=&
-dos -ml
+ *wcc sis.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi87 -&
+5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\sisHeater.obj : C:\Program_Files\projects\fe&
 _mc\sisHeater.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc sisHeater.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -&
-5 -bt=dos -ml
+ *wcc sisHeater.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -f&
+pi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\sisMagnet.obj : C:\Program_Files\projects\fe&
 _mc\sisMagnet.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc sisMagnet.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -&
-5 -bt=dos -ml
+ *wcc sisMagnet.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -f&
+pi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\solenoidValve.obj : C:\Program_Files\project&
 s\fe_mc\solenoidValve.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc solenoidValve.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi&
-87 -5 -bt=dos -ml
+ *wcc solenoidValve.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp&
+5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\timer.obj : C:\Program_Files\projects\fe_mc\&
 timer.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc timer.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -b&
-t=dos -ml
+ *wcc timer.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi87&
+ -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\turboPump.obj : C:\Program_Files\projects\fe&
 _mc\turboPump.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc turboPump.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -&
-5 -bt=dos -ml
+ *wcc turboPump.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -f&
+pi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\vacuumController.obj : C:\Program_Files\proj&
 ects\fe_mc\vacuumController.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc vacuumController.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -&
-fpi87 -5 -bt=dos -ml
+ *wcc vacuumController.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan &
+-fp5 -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\vacuumSensor.obj : C:\Program_Files\projects&
 \fe_mc\vacuumSensor.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc vacuumSensor.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi8&
-7 -5 -bt=dos -ml
+ *wcc vacuumSensor.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5&
+ -fpi87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\version.obj : C:\Program_Files\projects\fe_m&
 c\version.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc version.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 &
--bt=dos -ml
+ *wcc version.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi&
+87 -5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\yto.obj : C:\Program_Files\projects\fe_mc\yt&
 o.c .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- *wcc yto.c -i=C:\Program_Files\watcom\h -w4 -zq -otexan -fp5 -fpi87 -5 -bt=&
-dos -ml
+ *wcc yto.c -i="C:\Program_Files\watcom/h" -w4 -we -zq -otexan -fp5 -fpi87 -&
+5 -bt=dos -fo=.obj -ml
 
 C:\Program_Files\projects\fe_mc\fe_mc.exe : C:\Program_Files\projects\fe_mc\&
 ini.obj C:\Program_Files\projects\fe_mc\amc.obj C:\Program_Files\projects\fe&
-_mc\backingPump.obj C:\Program_Files\projects\fe_mc\biasSerialInterface.obj &
-C:\Program_Files\projects\fe_mc\can.obj C:\Program_Files\projects\fe_mc\cart&
-ridge.obj C:\Program_Files\projects\fe_mc\cartridgeTemp.obj C:\Program_Files&
-\projects\fe_mc\console.obj C:\Program_Files\projects\fe_mc\cryostat.obj C:\&
-Program_Files\projects\fe_mc\cryostatSerialInterface.obj C:\Program_Files\pr&
-ojects\fe_mc\cryostatTemp.obj C:\Program_Files\projects\fe_mc\edfa.obj C:\Pr&
-ogram_Files\projects\fe_mc\error.obj C:\Program_Files\projects\fe_mc\fronten&
-d.obj C:\Program_Files\projects\fe_mc\gateValve.obj C:\Program_Files\project&
-s\fe_mc\globalDefinitions.obj C:\Program_Files\projects\fe_mc\globalOperatio&
-ns.obj C:\Program_Files\projects\fe_mc\ifChannel.obj C:\Program_Files\projec&
-ts\fe_mc\ifSerialInterface.obj C:\Program_Files\projects\fe_mc\ifSwitch.obj &
-C:\Program_Files\projects\fe_mc\ifTempServo.obj C:\Program_Files\projects\fe&
-_mc\iniWrapper.obj C:\Program_Files\projects\fe_mc\laser.obj C:\Program_File&
-s\projects\fe_mc\lna.obj C:\Program_Files\projects\fe_mc\lnaLed.obj C:\Progr&
-am_Files\projects\fe_mc\lnaStage.obj C:\Program_Files\projects\fe_mc\lo.obj &
-C:\Program_Files\projects\fe_mc\loSerialInterface.obj C:\Program_Files\proje&
-cts\fe_mc\lpr.obj C:\Program_Files\projects\fe_mc\lprSerialInterface.obj C:\&
-Program_Files\projects\fe_mc\lprTemp.obj C:\Program_Files\projects\fe_mc\mai&
-n.obj C:\Program_Files\projects\fe_mc\miDac.obj C:\Program_Files\projects\fe&
-_mc\miSpecialMsgs.obj C:\Program_Files\projects\fe_mc\modulationInput.obj C:&
-\Program_Files\projects\fe_mc\opticalSwitch.obj C:\Program_Files\projects\fe&
-_mc\owb.obj C:\Program_Files\projects\fe_mc\pa.obj C:\Program_Files\projects&
-\fe_mc\paChannel.obj C:\Program_Files\projects\fe_mc\pdChannel.obj C:\Progra&
-m_Files\projects\fe_mc\pdModule.obj C:\Program_Files\projects\fe_mc\pdSerial&
-Interface.obj C:\Program_Files\projects\fe_mc\pegasus.obj C:\Program_Files\p&
-rojects\fe_mc\photoDetector.obj C:\Program_Files\projects\fe_mc\photomixer.o&
-bj C:\Program_Files\projects\fe_mc\pll.obj C:\Program_Files\projects\fe_mc\p&
-olarization.obj C:\Program_Files\projects\fe_mc\polDac.obj C:\Program_Files\&
-projects\fe_mc\polSpecialMsgs.obj C:\Program_Files\projects\fe_mc\powerDistr&
-ibution.obj C:\Program_Files\projects\fe_mc\ppComm.obj C:\Program_Files\proj&
-ects\fe_mc\schottkyMixer.obj C:\Program_Files\projects\fe_mc\serialInterface&
-.obj C:\Program_Files\projects\fe_mc\serialMux.obj C:\Program_Files\projects&
-\fe_mc\sideband.obj C:\Program_Files\projects\fe_mc\sis.obj C:\Program_Files&
-\projects\fe_mc\sisHeater.obj C:\Program_Files\projects\fe_mc\sisMagnet.obj &
-C:\Program_Files\projects\fe_mc\solenoidValve.obj C:\Program_Files\projects\&
-fe_mc\timer.obj C:\Program_Files\projects\fe_mc\turboPump.obj C:\Program_Fil&
-es\projects\fe_mc\vacuumController.obj C:\Program_Files\projects\fe_mc\vacuu&
-mSensor.obj C:\Program_Files\projects\fe_mc\version.obj C:\Program_Files\pro&
-jects\fe_mc\yto.obj .AUTODEPEND
+_mc\async.obj C:\Program_Files\projects\fe_mc\backingPump.obj C:\Program_Fil&
+es\projects\fe_mc\biasSerialInterface.obj C:\Program_Files\projects\fe_mc\ca&
+n.obj C:\Program_Files\projects\fe_mc\cartridge.obj C:\Program_Files\project&
+s\fe_mc\cartridgeTemp.obj C:\Program_Files\projects\fe_mc\console.obj C:\Pro&
+gram_Files\projects\fe_mc\cryostat.obj C:\Program_Files\projects\fe_mc\cryos&
+tatSerialInterface.obj C:\Program_Files\projects\fe_mc\cryostatTemp.obj C:\P&
+rogram_Files\projects\fe_mc\edfa.obj C:\Program_Files\projects\fe_mc\error.o&
+bj C:\Program_Files\projects\fe_mc\frontend.obj C:\Program_Files\projects\fe&
+_mc\gateValve.obj C:\Program_Files\projects\fe_mc\globalDefinitions.obj C:\P&
+rogram_Files\projects\fe_mc\globalOperations.obj C:\Program_Files\projects\f&
+e_mc\ifChannel.obj C:\Program_Files\projects\fe_mc\ifSerialInterface.obj C:\&
+Program_Files\projects\fe_mc\ifSwitch.obj C:\Program_Files\projects\fe_mc\if&
+TempServo.obj C:\Program_Files\projects\fe_mc\iniWrapper.obj C:\Program_File&
+s\projects\fe_mc\laser.obj C:\Program_Files\projects\fe_mc\lna.obj C:\Progra&
+m_Files\projects\fe_mc\lnaLed.obj C:\Program_Files\projects\fe_mc\lnaStage.o&
+bj C:\Program_Files\projects\fe_mc\lo.obj C:\Program_Files\projects\fe_mc\lo&
+SerialInterface.obj C:\Program_Files\projects\fe_mc\lpr.obj C:\Program_Files&
+\projects\fe_mc\lprSerialInterface.obj C:\Program_Files\projects\fe_mc\lprTe&
+mp.obj C:\Program_Files\projects\fe_mc\main.obj C:\Program_Files\projects\fe&
+_mc\miDac.obj C:\Program_Files\projects\fe_mc\miSpecialMsgs.obj C:\Program_F&
+iles\projects\fe_mc\modulationInput.obj C:\Program_Files\projects\fe_mc\opti&
+calSwitch.obj C:\Program_Files\projects\fe_mc\owb.obj C:\Program_Files\proje&
+cts\fe_mc\pa.obj C:\Program_Files\projects\fe_mc\paChannel.obj C:\Program_Fi&
+les\projects\fe_mc\pdChannel.obj C:\Program_Files\projects\fe_mc\pdModule.ob&
+j C:\Program_Files\projects\fe_mc\pdSerialInterface.obj C:\Program_Files\pro&
+jects\fe_mc\pegasus.obj C:\Program_Files\projects\fe_mc\photoDetector.obj C:&
+\Program_Files\projects\fe_mc\photomixer.obj C:\Program_Files\projects\fe_mc&
+\pll.obj C:\Program_Files\projects\fe_mc\polarization.obj C:\Program_Files\p&
+rojects\fe_mc\polDac.obj C:\Program_Files\projects\fe_mc\polSpecialMsgs.obj &
+C:\Program_Files\projects\fe_mc\powerDistribution.obj C:\Program_Files\proje&
+cts\fe_mc\ppComm.obj C:\Program_Files\projects\fe_mc\schottkyMixer.obj C:\Pr&
+ogram_Files\projects\fe_mc\serialInterface.obj C:\Program_Files\projects\fe_&
+mc\serialMux.obj C:\Program_Files\projects\fe_mc\sideband.obj C:\Program_Fil&
+es\projects\fe_mc\sis.obj C:\Program_Files\projects\fe_mc\sisHeater.obj C:\P&
+rogram_Files\projects\fe_mc\sisMagnet.obj C:\Program_Files\projects\fe_mc\so&
+lenoidValve.obj C:\Program_Files\projects\fe_mc\timer.obj C:\Program_Files\p&
+rojects\fe_mc\turboPump.obj C:\Program_Files\projects\fe_mc\vacuumController&
+.obj C:\Program_Files\projects\fe_mc\vacuumSensor.obj C:\Program_Files\proje&
+cts\fe_mc\version.obj C:\Program_Files\projects\fe_mc\yto.obj .AUTODEPEND
  @C:
  cd C:\Program_Files\projects\fe_mc
- @%write fe_mc.lk1 FIL ini.obj,amc.obj,backingPump.obj,biasSerialInterface.o&
-bj,can.obj,cartridge.obj,cartridgeTemp.obj,console.obj,cryostat.obj,cryostat&
-SerialInterface.obj,cryostatTemp.obj,edfa.obj,error.obj,frontend.obj,gateVal&
-ve.obj,globalDefinitions.obj,globalOperations.obj,ifChannel.obj,ifSerialInte&
-rface.obj,ifSwitch.obj,ifTempServo.obj,iniWrapper.obj,laser.obj,lna.obj,lnaL&
-ed.obj,lnaStage.obj,lo.obj,loSerialInterface.obj,lpr.obj,lprSerialInterface.&
-obj,lprTemp.obj,main.obj,miDac.obj,miSpecialMsgs.obj,modulationInput.obj,opt&
-icalSwitch.obj,owb.obj,pa.obj,paChannel.obj,pdChannel.obj,pdModule.obj,pdSer&
-ialInterface.obj,pegasus.obj,photoDetector.obj,photomixer.obj,pll.obj,polari&
-zation.obj,polDac.obj,polSpecialMsgs.obj,powerDistribution.obj,ppComm.obj,sc&
-hottkyMixer.obj,serialInterface.obj,serialMux.obj,sideband.obj,sis.obj,sisHe&
-ater.obj,sisMagnet.obj,solenoidValve.obj,timer.obj,turboPump.obj,vacuumContr&
-oller.obj,vacuumSensor.obj,version.obj,yto.obj
+ @%write fe_mc.lk1 FIL ini.obj,amc.obj,async.obj,backingPump.obj,biasSerialI&
+nterface.obj,can.obj,cartridge.obj,cartridgeTemp.obj,console.obj,cryostat.ob&
+j,cryostatSerialInterface.obj,cryostatTemp.obj,edfa.obj,error.obj,frontend.o&
+bj,gateValve.obj,globalDefinitions.obj,globalOperations.obj,ifChannel.obj,if&
+SerialInterface.obj,ifSwitch.obj,ifTempServo.obj,iniWrapper.obj,laser.obj,ln&
+a.obj,lnaLed.obj,lnaStage.obj,lo.obj,loSerialInterface.obj,lpr.obj,lprSerial&
+Interface.obj,lprTemp.obj,main.obj,miDac.obj,miSpecialMsgs.obj,modulationInp&
+ut.obj,opticalSwitch.obj,owb.obj,pa.obj,paChannel.obj,pdChannel.obj,pdModule&
+.obj,pdSerialInterface.obj,pegasus.obj,photoDetector.obj,photomixer.obj,pll.&
+obj,polarization.obj,polDac.obj,polSpecialMsgs.obj,powerDistribution.obj,ppC&
+omm.obj,schottkyMixer.obj,serialInterface.obj,serialMux.obj,sideband.obj,sis&
+.obj,sisHeater.obj,sisMagnet.obj,solenoidValve.obj,timer.obj,turboPump.obj,v&
+acuumController.obj,vacuumSensor.obj,version.obj,yto.obj
  @%append fe_mc.lk1 
  *wlink name fe_mc SYS dos op maxe=25 op q op el @fe_mc.lk1
- copy fe_mc.exe releases\02-00-00.exe /y
- copy fe_mc.exe releases\2k90225.exe /y
+ copy fe_mc.exe releases\02-01-00.exe /y
+ copy fe_mc.exe releases\2k90424.exe /y
  copy fe_mc.exe releases\fe_mc.exe /y
- #copy fe_mc.exe releases\candidates\2-0-00b1.exe /y
+ #copy fe_mc.exe releases\candidates\2-0-lofx.exe /y
  #ftp -n -s:updateFemc.scr
 

@@ -5,7 +5,8 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cartridge.c,v 1.41 2008/09/26 23:00:38 avaccari Exp $
+
+    \$Id: cartridge.c,v 1.45 2009/04/09 02:09:55 avaccari Exp $
 
     This files contains all the functions necessary to handle cartridge events.
 
@@ -174,14 +175,19 @@ static void biasSubsystemHandler(void){
         - \ref ERROR    -> if something wrong happened */
 int cartridgeStop(unsigned char cartridge){
 
-    printf("- Shutting down cartridge %d...\n",cartridge);
+    #ifdef DEBUG_INIT
+        printf("- Shutting down cartridge %d...\n",
+               cartridge);
+    #endif  // DEBUG_INIT
 
     /* Change the state of the addressed cartridge to OFF */
     frontend.
      cartridge[cartridge].
       state = CARTRIDGE_OFF;
 
-    printf("done!\n\n");
+    #ifdef DEBUG_INIT
+        printf("  done!\n\n");
+    #endif  // DEBUG_INIT
 
     return NO_ERROR;
 }
@@ -238,7 +244,7 @@ int cartridgeStartup(void){
                    configFile,
                  CARTRIDGE_ESN_SECTION,
                  &dataIn,
-                 CARTRIDGE_ESN_EXPECTED)==ERROR){
+                 CARTRIDGE_ESN_EXPECTED)!=NO_ERROR){
         return NO_ERROR;
     }
 
@@ -279,7 +285,7 @@ int cartridgeStartup(void){
                        configFile,
                      POL_AVAIL_SECT(currentBiasModule),
                      &dataIn,
-                     POL_AVAIL_EXPECTED)==ERROR){
+                     POL_AVAIL_EXPECTED)!=NO_ERROR){
             return NO_ERROR;
         }
         #ifdef DEBUG_STARTUP
@@ -318,7 +324,7 @@ int cartridgeStartup(void){
                          SB_AVAIL_SECT(currentBiasModule,
                                        currentPolarizationModule),
                          &dataIn,
-                         SB_AVAIL_EXPECTED)==ERROR){
+                         SB_AVAIL_EXPECTED)!=NO_ERROR){
                 return NO_ERROR;
             }
 
@@ -354,7 +360,7 @@ int cartridgeStartup(void){
                          SIS_AVAIL_SECT(currentBiasModule,
                                         currentPolarizationModule),
                          &dataIn,
-                         SIS_AVAIL_EXPECTED)==ERROR){
+                         SIS_AVAIL_EXPECTED)!=NO_ERROR){
                 return NO_ERROR;
             }
 
@@ -390,7 +396,7 @@ int cartridgeStartup(void){
                          SIS_MAG_AVAIL_SECT(currentBiasModule,
                                             currentPolarizationModule),
                          &dataIn,
-                         SIS_MAG_AVAIL_EXPECTED)==ERROR){
+                         SIS_MAG_AVAIL_EXPECTED)!=NO_ERROR){
                 return NO_ERROR;
             }
 
@@ -427,7 +433,7 @@ int cartridgeStartup(void){
                          LNA_AVAIL_SECT(currentBiasModule,
                                         currentPolarizationModule),
                          &dataIn,
-                         LNA_AVAIL_EXPECTED)==ERROR){
+                         LNA_AVAIL_EXPECTED)!=NO_ERROR){
                 return NO_ERROR;
             }
 
@@ -471,7 +477,7 @@ int cartridgeStartup(void){
                                                   currentPolarizationModule,
                                                   currentLnaModule),
                              &dataIn,
-                             LNA_STAGE_AVAIL_EXPECTED)==ERROR){
+                             LNA_STAGE_AVAIL_EXPECTED)!=NO_ERROR){
                     return NO_ERROR;
                 }
 
@@ -510,7 +516,7 @@ int cartridgeStartup(void){
                        configFile,
                      LNA_LED_AVAIL_SECT(currentBiasModule),
                      &dataIn,
-                     LNA_LED_AVAIL_EXPECTED)==ERROR){
+                     LNA_LED_AVAIL_EXPECTED)!=NO_ERROR){
             return NO_ERROR;
         }
 
@@ -545,7 +551,7 @@ int cartridgeStartup(void){
                        configFile,
                      SIS_HEATER_AVAIL_SECT(currentBiasModule),
                      &dataIn,
-                     SIS_HEATER_AVAIL_EXPECTED)==ERROR){
+                     SIS_HEATER_AVAIL_EXPECTED)!=NO_ERROR){
             return NO_ERROR;
         }
 
@@ -579,7 +585,7 @@ int cartridgeStartup(void){
                        configFile,
                      SCHOTTKY_AVAIL_SECT(currentBiasModule),
                      &dataIn,
-                     SCHOTTKY_AVAIL_EXPECTED)==ERROR){
+                     SCHOTTKY_AVAIL_EXPECTED)!=NO_ERROR){
             return NO_ERROR;
         }
 
@@ -620,7 +626,7 @@ int cartridgeStartup(void){
                    configFile,
                  RESISTOR_VALUE_SECTION,
                  &dataIn,
-                 RESISTOR_VALUE_EXPECTED)==ERROR){
+                 RESISTOR_VALUE_EXPECTED)!=NO_ERROR){
         return NO_ERROR;
     }
 
@@ -680,7 +686,7 @@ int cartridgeStartup(void){
                        configFile,
                      SENSOR_AVAIL_SECTION(sensor),
                      &dataIn,
-                     SENSOR_AVAIL_EXPECTED)==ERROR){
+                     SENSOR_AVAIL_EXPECTED)!=NO_ERROR){
             return NO_ERROR;
         }
 
@@ -708,7 +714,7 @@ int cartridgeStartup(void){
                            configFile,
                          SENSOR_OFFSET_SECTION(sensor),
                          &dataIn,
-                         SENSOR_OFFSET_EXPECTED)==ERROR){
+                         SENSOR_OFFSET_EXPECTED)!=NO_ERROR){
                 return NO_ERROR;
             }
 
@@ -740,7 +746,7 @@ int cartridgeStartup(void){
 
 /* Cartrige init */
 /*! This function performs the operations necessary to initialize a cartrdige at
-    runtime.
+    runtime. These are executed everytime a cartridge is powered up.
     \param cartridge    This is the selected cartrdige to initialize
     \return
         - \ref NO_ERROR -> if no error occurred
@@ -766,8 +772,10 @@ int cartridgeInit(unsigned char cartridge){
         }
     #endif /* DATABASE_HARDW */
 
-    printf("Initializing cartrdige (%d)\n",
-           currentModule+1);
+    #ifdef DEBUG_INIT
+        printf("Initializing cartrdige (%d)\n",
+                currentModule+1);
+    #endif // DEBUG_INIT
 
     /* Enable the 10MHz communication for the BIAS and the LO and update the
        relative state variable. Initialize both polarization even if there might
@@ -800,15 +808,19 @@ int cartridgeInit(unsigned char cartridge){
 
 
     /* Change the state of the addressed cartridge to ON */
-    printf(" - Turning cartridge ON...");
+    #ifdef DEBUG_INIT
+        printf(" - Turning cartridge ON...");
+    #endif // DEBUG_INIT
 
     frontend.
      cartridge[currentModule].
       state = CARTRIDGE_ON;
 
-    printf("done!\n"); // Turning cartrdige on
+    #ifdef DEBUG_INIT
+        printf("done!\n"); // Turning cartrdige on
 
-    printf("done!\n\n"); // Cartridge
+        printf("done!\n\n"); // Cartridge
+    #endif // DEBUG_INIT
 
     return NO_ERROR;
 

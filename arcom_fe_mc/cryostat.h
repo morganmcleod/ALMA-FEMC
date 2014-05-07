@@ -6,7 +6,7 @@
     Created: 2004/10/25 15:39:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: cryostat.h,v 1.20 2008/09/26 23:00:38 avaccari Exp $
+    \$Id: cryostat.h,v 1.21 2009/03/23 19:22:04 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the cryostat system. */
@@ -174,6 +174,6 @@
     static void supplyCurrent230VHandler(void);
     /* Externs */
     extern void cryostatHandler(void); //!< This function deals with the incoming CAN messages
-    extern int cryostatInit(void); //!< This function deals with the initialization of the cryostat
+    extern int cryostatStartup(void); //!< This function deals with the initialization of the cryostat
 
 #endif /* _CRYTOSTAT_H */

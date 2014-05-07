@@ -22,10 +22,10 @@ MCommand
 5
 MCommand
 197
-copy fe_mc.exe releases\02-00-00.exe /y
-copy fe_mc.exe releases\2k90225.exe /y
+copy fe_mc.exe releases\02-01-00.exe /y
+copy fe_mc.exe releases\2k90424.exe /y
 copy fe_mc.exe releases\fe_mc.exe /y
-#copy fe_mc.exe releases\candidates\2-0-00b1.exe /y
+#copy fe_mc.exe releases\candidates\2-0-lofx.exe /y
 #ftp -n -s:updateFemc.scr
 6
 MItem
@@ -125,7 +125,7 @@ WVList
 0
 31
 WPickList
-66
+67
 32
 MItem
 3
@@ -138,31 +138,31 @@ COBJ
 WVList
 12
 35
-MVState
+MCState
 36
 WString
 3
 WCC
 37
 WString
-17
-?????Error count:
+29
+?????Treat warnings as errors
+1
 1
 38
-WString
-0
-0
+MVState
 39
-MRState
-40
 WString
 3
 WCC
+40
+WString
+17
+?????Error count:
+1
 41
 WString
-21
-?????No optimizations
-1
+0
 0
 42
 MRState
@@ -172,10 +172,10 @@ WString
 WCC
 44
 WString
-26
-?????Fastest possible code
+21
+?????No optimizations
 1
-1
+0
 45
 MRState
 46
@@ -184,8 +184,8 @@ WString
 WCC
 47
 WString
-29
-?????No debugging information
+26
+?????Fastest possible code
 1
 1
 48
@@ -196,10 +196,10 @@ WString
 WCC
 50
 WString
-24
-?????Full debugging info
+29
+?????No debugging information
 1
-0
+1
 51
 MRState
 52
@@ -208,8 +208,8 @@ WString
 WCC
 53
 WString
-21
-?????Compiler default
+24
+?????Full debugging info
 1
 0
 54
@@ -329,8 +329,8 @@ WVList
 0
 81
 MItem
-13
-backingPump.c
+7
+async.c
 82
 WString
 4
@@ -347,8 +347,8 @@ WVList
 0
 85
 MItem
-21
-biasSerialInterface.c
+13
+backingPump.c
 86
 WString
 4
@@ -365,8 +365,8 @@ WVList
 0
 89
 MItem
-5
-can.c
+21
+biasSerialInterface.c
 90
 WString
 4
@@ -383,8 +383,8 @@ WVList
 0
 93
 MItem
-11
-cartridge.c
+5
+can.c
 94
 WString
 4
@@ -401,8 +401,8 @@ WVList
 0
 97
 MItem
-15
-cartridgeTemp.c
+11
+cartridge.c
 98
 WString
 4
@@ -419,8 +419,8 @@ WVList
 0
 101
 MItem
-9
-console.c
+15
+cartridgeTemp.c
 102
 WString
 4
@@ -437,8 +437,8 @@ WVList
 0
 105
 MItem
-10
-cryostat.c
+9
+console.c
 106
 WString
 4
@@ -455,8 +455,8 @@ WVList
 0
 109
 MItem
-25
-cryostatSerialInterface.c
+10
+cryostat.c
 110
 WString
 4
@@ -473,8 +473,8 @@ WVList
 0
 113
 MItem
-14
-cryostatTemp.c
+25
+cryostatSerialInterface.c
 114
 WString
 4
@@ -491,8 +491,8 @@ WVList
 0
 117
 MItem
-6
-edfa.c
+14
+cryostatTemp.c
 118
 WString
 4
@@ -509,8 +509,8 @@ WVList
 0
 121
 MItem
-7
-error.c
+6
+edfa.c
 122
 WString
 4
@@ -527,8 +527,8 @@ WVList
 0
 125
 MItem
-10
-frontend.c
+7
+error.c
 126
 WString
 4
@@ -545,8 +545,8 @@ WVList
 0
 129
 MItem
-11
-gateValve.c
+10
+frontend.c
 130
 WString
 4
@@ -563,8 +563,8 @@ WVList
 0
 133
 MItem
-19
-globalDefinitions.c
+11
+gateValve.c
 134
 WString
 4
@@ -581,8 +581,8 @@ WVList
 0
 137
 MItem
-18
-globalOperations.c
+19
+globalDefinitions.c
 138
 WString
 4
@@ -599,8 +599,8 @@ WVList
 0
 141
 MItem
-11
-ifChannel.c
+18
+globalOperations.c
 142
 WString
 4
@@ -617,8 +617,8 @@ WVList
 0
 145
 MItem
-19
-ifSerialInterface.c
+11
+ifChannel.c
 146
 WString
 4
@@ -635,8 +635,8 @@ WVList
 0
 149
 MItem
-10
-ifSwitch.c
+19
+ifSerialInterface.c
 150
 WString
 4
@@ -653,8 +653,8 @@ WVList
 0
 153
 MItem
-13
-ifTempServo.c
+10
+ifSwitch.c
 154
 WString
 4
@@ -671,8 +671,8 @@ WVList
 0
 157
 MItem
-12
-iniWrapper.c
+13
+ifTempServo.c
 158
 WString
 4
@@ -689,8 +689,8 @@ WVList
 0
 161
 MItem
-7
-laser.c
+12
+iniWrapper.c
 162
 WString
 4
@@ -707,8 +707,8 @@ WVList
 0
 165
 MItem
-5
-lna.c
+7
+laser.c
 166
 WString
 4
@@ -725,8 +725,8 @@ WVList
 0
 169
 MItem
-8
-lnaLed.c
+5
+lna.c
 170
 WString
 4
@@ -743,8 +743,8 @@ WVList
 0
 173
 MItem
-10
-lnaStage.c
+8
+lnaLed.c
 174
 WString
 4
@@ -761,8 +761,8 @@ WVList
 0
 177
 MItem
-4
-lo.c
+10
+lnaStage.c
 178
 WString
 4
@@ -779,8 +779,8 @@ WVList
 0
 181
 MItem
-19
-loSerialInterface.c
+4
+lo.c
 182
 WString
 4
@@ -797,8 +797,8 @@ WVList
 0
 185
 MItem
-5
-lpr.c
+19
+loSerialInterface.c
 186
 WString
 4
@@ -815,8 +815,8 @@ WVList
 0
 189
 MItem
-20
-lprSerialInterface.c
+5
+lpr.c
 190
 WString
 4
@@ -833,8 +833,8 @@ WVList
 0
 193
 MItem
-9
-lprTemp.c
+20
+lprSerialInterface.c
 194
 WString
 4
@@ -851,8 +851,8 @@ WVList
 0
 197
 MItem
-6
-main.c
+9
+lprTemp.c
 198
 WString
 4
@@ -869,8 +869,8 @@ WVList
 0
 201
 MItem
-7
-miDac.c
+6
+main.c
 202
 WString
 4
@@ -887,8 +887,8 @@ WVList
 0
 205
 MItem
-15
-miSpecialMsgs.c
+7
+miDac.c
 206
 WString
 4
@@ -905,8 +905,8 @@ WVList
 0
 209
 MItem
-17
-modulationInput.c
+15
+miSpecialMsgs.c
 210
 WString
 4
@@ -923,8 +923,8 @@ WVList
 0
 213
 MItem
-15
-opticalSwitch.c
+17
+modulationInput.c
 214
 WString
 4
@@ -941,8 +941,8 @@ WVList
 0
 217
 MItem
-5
-owb.c
+15
+opticalSwitch.c
 218
 WString
 4
@@ -959,8 +959,8 @@ WVList
 0
 221
 MItem
-4
-pa.c
+5
+owb.c
 222
 WString
 4
@@ -977,8 +977,8 @@ WVList
 0
 225
 MItem
-11
-paChannel.c
+4
+pa.c
 226
 WString
 4
@@ -996,7 +996,7 @@ WVList
 229
 MItem
 11
-pdChannel.c
+paChannel.c
 230
 WString
 4
@@ -1013,8 +1013,8 @@ WVList
 0
 233
 MItem
-10
-pdModule.c
+11
+pdChannel.c
 234
 WString
 4
@@ -1031,8 +1031,8 @@ WVList
 0
 237
 MItem
-19
-pdSerialInterface.c
+10
+pdModule.c
 238
 WString
 4
@@ -1049,8 +1049,8 @@ WVList
 0
 241
 MItem
-9
-pegasus.c
+19
+pdSerialInterface.c
 242
 WString
 4
@@ -1067,8 +1067,8 @@ WVList
 0
 245
 MItem
-15
-photoDetector.c
+9
+pegasus.c
 246
 WString
 4
@@ -1085,8 +1085,8 @@ WVList
 0
 249
 MItem
-12
-photomixer.c
+15
+photoDetector.c
 250
 WString
 4
@@ -1103,8 +1103,8 @@ WVList
 0
 253
 MItem
-5
-pll.c
+12
+photomixer.c
 254
 WString
 4
@@ -1121,8 +1121,8 @@ WVList
 0
 257
 MItem
-14
-polarization.c
+5
+pll.c
 258
 WString
 4
@@ -1139,8 +1139,8 @@ WVList
 0
 261
 MItem
-8
-polDac.c
+14
+polarization.c
 262
 WString
 4
@@ -1157,8 +1157,8 @@ WVList
 0
 265
 MItem
-16
-polSpecialMsgs.c
+8
+polDac.c
 266
 WString
 4
@@ -1175,8 +1175,8 @@ WVList
 0
 269
 MItem
-19
-powerDistribution.c
+16
+polSpecialMsgs.c
 270
 WString
 4
@@ -1193,8 +1193,8 @@ WVList
 0
 273
 MItem
-8
-ppComm.c
+19
+powerDistribution.c
 274
 WString
 4
@@ -1211,8 +1211,8 @@ WVList
 0
 277
 MItem
-15
-schottkyMixer.c
+8
+ppComm.c
 278
 WString
 4
@@ -1229,8 +1229,8 @@ WVList
 0
 281
 MItem
-17
-serialInterface.c
+15
+schottkyMixer.c
 282
 WString
 4
@@ -1247,8 +1247,8 @@ WVList
 0
 285
 MItem
-11
-serialMux.c
+17
+serialInterface.c
 286
 WString
 4
@@ -1265,8 +1265,8 @@ WVList
 0
 289
 MItem
-10
-sideband.c
+11
+serialMux.c
 290
 WString
 4
@@ -1283,8 +1283,8 @@ WVList
 0
 293
 MItem
-5
-sis.c
+10
+sideband.c
 294
 WString
 4
@@ -1301,8 +1301,8 @@ WVList
 0
 297
 MItem
-11
-sisHeater.c
+5
+sis.c
 298
 WString
 4
@@ -1320,7 +1320,7 @@ WVList
 301
 MItem
 11
-sisMagnet.c
+sisHeater.c
 302
 WString
 4
@@ -1337,8 +1337,8 @@ WVList
 0
 305
 MItem
-15
-solenoidValve.c
+11
+sisMagnet.c
 306
 WString
 4
@@ -1355,8 +1355,8 @@ WVList
 0
 309
 MItem
-7
-timer.c
+15
+solenoidValve.c
 310
 WString
 4
@@ -1373,8 +1373,8 @@ WVList
 0
 313
 MItem
-11
-turboPump.c
+7
+timer.c
 314
 WString
 4
@@ -1391,8 +1391,8 @@ WVList
 0
 317
 MItem
-18
-vacuumController.c
+11
+turboPump.c
 318
 WString
 4
@@ -1409,8 +1409,8 @@ WVList
 0
 321
 MItem
-14
-vacuumSensor.c
+18
+vacuumController.c
 322
 WString
 4
@@ -1427,8 +1427,8 @@ WVList
 0
 325
 MItem
-9
-version.c
+14
+vacuumSensor.c
 326
 WString
 4
@@ -1445,8 +1445,8 @@ WVList
 0
 329
 MItem
-5
-yto.c
+9
+version.c
 330
 WString
 4
@@ -1455,6 +1455,24 @@ COBJ
 WVList
 0
 332
+WVList
+0
+32
+1
+1
+0
+333
+MItem
+5
+yto.c
+334
+WString
+4
+COBJ
+335
+WVList
+0
+336
 WVList
 0
 32

@@ -5,13 +5,16 @@
     Created: 2004/08/24 16:16:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: globalDefinitions.c,v 1.15 2008/02/16 00:13:08 avaccari Exp $
+    \$Id: globalDefinitions.c,v 1.16 2009/04/09 02:09:55 avaccari Exp $
 
     This file contains general use functions and variables. */
 
 /* Includes */
 #define __STDC_WANT_LIB_EXT1__  1   // Use the Safer C Library extension
 #include <stdio.h>                  /* sprintf_s */
+#include <stdlib.h>                 /* atol */
+#include <string.h>                 /* strstr, strlen */
+#include <math.h>                   /* pow */
 
 #include "globalDefinitions.h"
 #include "can.h"
@@ -129,3 +132,31 @@ void bogoFunction(void) {
 
     return;
 }
+
+/* htol */
+/*! This function allow conversion from hexadecimal string to long int. */
+long htol(char *hex){
+
+    unsigned char len,bas,cnt,val;
+	long longInt=0;
+
+	if(strstr(hex,
+              "0x")){
+		len=strlen(hex);
+
+		for(cnt=0;cnt<len;cnt++){
+
+	    	val=hex[cnt];
+
+		    if(((val>47)&&(val<58))||((val>64)&&(val<71))||((val>96)&&(val<103))){
+				bas=val>64?(val>96?87:55):48;
+				longInt+=(val-bas)*pow(16,len-cnt-1);
+		    }
+		}
+	} else {
+		longInt=atol(hex);
+	}
+
+	return longInt;
+}
+

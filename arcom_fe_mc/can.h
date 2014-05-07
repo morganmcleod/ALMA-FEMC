@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: can.h,v 1.33 2008/09/26 23:00:38 avaccari Exp $
+    \$Id: can.h,v 1.34 2009/04/24 22:37:32 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the Controlled Area Network interface included
@@ -118,6 +118,9 @@
     #define GET_CONSOLE_ENABLE          (GET_FPGA_VERSION_INFO+0x01)        //!< \b BASE+0x09 -> Returns the current state of the console (0->disabled 1->enabled)
     #define GET_ESNS_FOUND              (GET_CONSOLE_ENABLE+0x01)           //!< \b BASE+0x0A -> Returns the number of ESNs found
     #define GET_ESNS                    (GET_ESNS_FOUND+0x01)               //!< \b BASE+0x0B -> Returns the list of the found ESNs
+    #define GET_ERRORS_NUMBER           (GET_ESNS+0x01)                     //!< \b BASE+0x0C -> Returns the number unread errors in the error buffer
+    #define GET_NEXT_ERROR              (GET_ERRORS_NUMBER+0x01)            //!< \b BASE+0x0D -> Returns the next unread error
+    #define GET_FE_MODE                 (GET_NEXT_ERROR+0x01)               //!< \b BASE+0x0E -> Returns the current FE operating mode
     #define LAST_SPECIAL_MONITOR_RCA    (BASE_SPECIAL_MONITOR_RCA+0x00FFF)  // Last possible special monitor RCA
     /* Control */
     //! \b 0x21000 -> Base address for the special control RCAs
@@ -128,6 +131,7 @@
     #define SET_EXIT_PROGRAM            BASE_SPECIAL_CONTROL_RCA            //!< \b BASE+0x00 -> Ends the execution of the main program
     #define SET_REBOOT                  (SET_EXIT_PROGRAM+0x01)             //!< \b BASE+0x01 -> Reboots the ARCOM board
     #define SET_CONSOLE_ENABLE          (SET_EXIT_PROGRAM+0x09)             //!< \b BASE+0x09 -> Enables/Disables the console
+    #define SET_FE_MODE                 (SET_EXIT_PROGRAM+0x0E)             //!< \b BASE+0x0E -> Changes the current FE operating mode
     #define LAST_SPECIAL_CONTROL_RCA    (BASE_SPECIAL_CONTROL_RCA+0x00FFF)  // Last possible special monitor RCA
 
 

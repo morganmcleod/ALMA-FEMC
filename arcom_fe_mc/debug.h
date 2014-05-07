@@ -5,7 +5,8 @@
     Created: 2004/08/31 18:21:05 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: debug.h,v 1.37 2008/09/26 23:00:38 avaccari Exp $
+
+    \$Id: debug.h,v 1.39 2009/03/23 20:43:04 avaccari Exp $
 
     This files contains all the informations necessary to debug the running
     software.
@@ -17,7 +18,7 @@
     #define _DEBUG_H
 
     /* Defines */
-    // #define DEVELOPMENT         // Uncomment this when developping the software
+    //#define DEVELOPMENT         // Uncomment this when developping the software
 
 
     #ifdef DEVELOPMENT

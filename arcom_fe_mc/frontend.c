@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:16:14 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: frontend.c,v 1.15 2008/02/07 16:21:24 avaccari Exp $
+    \$Id: frontend.c,v 1.19 2009/04/24 22:37:32 avaccari Exp $
 
     This file contains the functions and the informations necessary to deal with
     the frontend system. */
@@ -31,16 +31,12 @@ FRONTEND    frontend;   /*!< This variable contains the current status of
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
 int frontendStop(void){
-    unsigned char cartridge;
 
-    /* Shut down the cartrdiges */
-    for(cartridge=0;
-        cartridge<CARTRIDGES_NUMBER;
-        cartridge++){
-        if(cartridgeStop(cartridge)==ERROR){
-/**************************************************** Do something? ******/
-        }
+    /* Shut down power distribution system */
+    if(powerDistributionStop()==ERROR){
+        return ERROR;
     }
+
 
     return NO_ERROR;
 }
@@ -100,7 +96,7 @@ int frontendInit(void){
             if(myReadCfg(FRONTEND_CONF_FILE,
                          BAND_AVAIL_SECTION(currentModule),
                          &dataIn,
-                         BAND_AVAIL_EXPECTED)==ERROR){
+                         BAND_AVAIL_EXPECTED)!=NO_ERROR){
                 return NO_ERROR;
             }
 
@@ -125,7 +121,7 @@ int frontendInit(void){
                 if(myReadCfg(FRONTEND_CONF_FILE,
                              CART_FILE_SECTION(currentModule),
                              &dataIn,
-                             CART_FILE_EXPECTED)==ERROR){
+                             CART_FILE_EXPECTED)!=NO_ERROR){
                     return NO_ERROR;
                 }
 
@@ -146,7 +142,7 @@ int frontendInit(void){
                 if(myReadCfg(FRONTEND_CONF_FILE,
                              WCA_FILE_SECTION(currentModule),
                              &dataIn,
-                             WCA_FILE_EXPECTED)==ERROR){
+                             WCA_FILE_EXPECTED)!=NO_ERROR){
                     return NO_ERROR;
                 }
 
@@ -166,26 +162,27 @@ int frontendInit(void){
     #endif /* DATABASE_HARDW */
 
     /* Initialize the LPR */
-    if(lprInit()==ERROR){
+    if(lprStartup()==ERROR){
         return ERROR;
     }
 
     /* Initialize the cryostat system */
-    if(cryostatInit()==ERROR){
+    if(cryostatStartup()==ERROR){
         return ERROR;
     }
 
     /* Initialize the power distribution system */
-    if(powerDistributionInit()==ERROR){
+    if(powerDistributionStartup()==ERROR){
         return ERROR;
     }
 
 
 /*********************** ONLY DEBUG ? ****************************/
     /* How do I deal if I want to be in debug mode without all the shit turned
-       on? */
+       on? Right now I start in OPERATIONAL_MODE but it can be changed with
+       CAN message to address 0x2000E. */
     frontend.
-     mode[CURRENT_VALUE] = OPERATION_MODE;
+     mode[CURRENT_VALUE] = OPERATIONAL_MODE;
 
     printf("done!\n\n");
 

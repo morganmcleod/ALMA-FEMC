@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: timer.c,v 1.16 2007/05/29 14:56:11 avaccari Exp $
+    \$Id: timer.c,v 1.17 2009/04/09 02:09:55 avaccari Exp $
 
     This files contains all the functions necessary to handle time events.
     There are two different timers available:
@@ -24,6 +24,7 @@
 
 #include "timer.h"
 #include "error.h"
+#include "globalDefinitions.h"
 
 /* Globals */
 static clock_t asyncStartTime[MAX_TIMERS_NUMBER]; // A global for the async timer start time
@@ -40,13 +41,15 @@ void waitSeconds(unsigned int seconds){
     will wait the ammount specified in the parameter.
     \param timerNo  The timer to activate. The maximum number of timers is
                     defined by \ref MAX_TIMERS_NUMBER
-    \param seconds  The number of milli seconds to wait
+    \param seconds  The number of milliseconds to wait
+    \param reload   If \ref TRUE then reload the timer with the new value
 
     \return
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
 int startAsyncTimer(unsigned char timerNo,
-                    unsigned long mSeconds){
+                    unsigned long mSeconds,
+                    unsigned char reload){
     /* If there is an attempt to initialize a timer that is not available, don't
        initialize and return an error */
     if(timerNo>MAX_TIMERS_NUMBER){
@@ -55,11 +58,14 @@ int startAsyncTimer(unsigned char timerNo,
         return ERROR;
     }
 
-    /* If the timer is already running don't initialize and return an error */
+    /* If the timer is already running and this is not a reload, don't
+       initialize and return an error */
     if(asyncRunning[timerNo]){
-        storeError(ERR_TIMER,
-                   0x01); // Error 0x01 -> Async timer already running
-        return ERROR;
+        if(reload==FALSE){
+            storeError(ERR_TIMER,
+                       0x01); // Error 0x01 -> Async timer already running
+            return ERROR;
+        }
     }
 
     asyncStartTime[timerNo]=clock(); // Store the current time

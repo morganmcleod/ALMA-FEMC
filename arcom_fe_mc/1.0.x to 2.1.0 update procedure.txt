@@ -1,0 +1,92 @@
+If you are running a version different than 1.0.0 and the FEMC is installed in a Front End, please contact avaccari@nrao.edu before updating to the new version.
+
+
+You will need:
+- access to the front panel of the FEMC
+- a computer with a terminal software such as (hyperterminal, secureCRT or equivalent that support z-modem transfer) and a serial port
+- a null modem cable
+
+
+Notes:
+
+The provided frontend.v2 file only differs from the previous version by the numbering of the bands, they now reflect the human numbering 1-10 instead of 0-9.
+Also in this file, all the cartridges are available. You might want to edit the file before or after installing it (beware of the CR/LF when crossing OSs) to mark the unused cartridges as not available replacing the "Y" with an "N". The file is self-explanatory once opened. This step is not necessary but it will speed up the booting process.
+To edit the file after is transferred to the module and renamed, you can use the command:
+"ned frontend.ini"
+this will open an editor:
+- you can control the cursor with CTRL+"a"(left), "s" (down), "w" (up), "d" (right)
+- to save <esc>,"f","s"
+- to exit <esc>,"f","x"
+- to access the editor menu <esc> and then the desired letter.
+
+The provided esns.v2 file now includes a [SIMULATOR] section with parameters relative to the ESN simulator:
+ - USE defines if the simulator should be used or not.
+ - SIMDEV is the number of devices to be simulated (35 MAX)
+ - SIMBASE is a unique number calculated the first time the software is run and used from that point on. If a special number is required, the value can be entered in this file and it will not be overwritten.
+
+Procedure:
+- download the 02-01-00.exe and download and uncompress frontend.zip and esns.zip files from EDM:
+  http://edm.alma.cl/forums/alma/dispatch.cgi/iptfedocs/showFolder/104236/def/def/3752931
+- turn off any activity on the CAN bus but leave the FEMC powered
+- connect the serial cable to the computer and the FEMC
+- start your terminal software with the following options:
+  - Baud rate: 115200
+  - Data Bits: 8
+  - Stop Bits: 1
+  - Parity: none
+  - No flow control
+- once the communication is established push <enter> a couple of time to verify that you can talk to the FEMC.
+- push "i" <enter>. This should give you the software revision information. 
+- push "q" <enter>. This should bring you to the dos promt C:\ALMA>
+- create a directory with the command "mkdir v1" <enter>
+- copy the fe_mc.exe, frontend.ini and esns.ini files to v1 for backup:
+  - "copy fe_mc.exe v1" <enter>
+  - "copy frontend.ini v1" <enter>
+  - "copy ensn.ini v1" <enter>
+- delete the fe_mc.exe, frontend.ini and esns.ini files from the ALMA directory:
+  - "del fe_mc.exe" <enter>
+  - "del frontend.ini" <enter>
+  - "del esns.ini" <enter>
+- use whatever is required by your terminal software to transfer with z-modem the 02-01-00.exe, frontend.v2 and esns.v2 files. If the FEMC doesn't automatically activate the z-modem reception, type the following in the DOS prompt:
+  - "rz" <enter>
+- copy the 02-01-00.exe, frontend.v2 and esns.v2 files to fe_mc.exe, frontend.ini and esns.ini:
+  - "copy 02-01-00.exe fe_mc.exe" <enter>
+  - "copy frontend.v2 frontend.ini" <enter>
+  - "copy esns.v2 esns.ini" <enter>
+- delete the 02-01-00.exe, frontend.v2 and esns.v2 files from the ALMA directory:
+  - "del 02-01-00.exe" <enter>
+  - "del frontend.v2" <enter>
+  - "del esns.v2" <enter>
+- power cycle the unit and verify that the software is going through initialization
+- push <enter> once the initialization is finished and you should see the following:
+  
+  Front End Monitor and Control Firmware (FEND-40.04.03.03-011-A-FRM)
+  Andrea Vaccari - NRAO (avaccari@nrao.edu)
+  Revision: 2.1.0 (2009-04-09)
+
+  Bug report: jira.alma.cl
+
+  Console help
+   ' -> retypes last command
+   " -> repeats last command
+   q<CR> -> quit
+   r<CR> -> restart
+   d<CR> -> disable console
+   i<CR> -> display version information
+   m RCA<CR> -> monitor the specified address
+             RCA is the Relative CAN Address.
+                 It can be in decimal or exadecimal (0x...) format
+                 For a list of the RCAs check:
+                 - ALMA-40.00.00.00-75.35.25.00-X-ICD
+   c RCA q data <CR> -> control the specified address
+                     RCA is the Relative CAN Address.
+                         It can be in decimal or exadecimal (0x...) format
+                         For a list of the RCAs check:
+                         - ALMA-40.00.00.00-75.35.25.00-X-ICD
+                     q is the qualifier for the payload:
+                       b for a byte or a boolean
+                       i for an unsigned integer
+                       f for a float
+                     data is the payload in the format specified by the qualifier
+
+- Disconnect the serial cable and restart your CAN control software.

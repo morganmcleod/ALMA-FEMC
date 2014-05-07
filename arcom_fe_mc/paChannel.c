@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: paChannel.c,v 1.19 2007/06/22 22:03:00 avaccari Exp $
+    \$Id: paChannel.c,v 1.21 2009/04/09 02:09:55 avaccari Exp $
 
     This files contains all the functions necessary to handle the PA Channel
     events.
@@ -47,8 +47,9 @@ static HANDLER  paChannelModulesHandler[PA_CHANNEL_MODULES_NUMBER]={gateVoltageH
 void paChannelHandler(void){
 
     #ifdef DEBUG
-        printf("     PA Channel: %d\n",
-               currentPaModule);
+    printf("     PA Channel: %d (mapped to Polarization: %d)\n",
+               currentPaModule,
+               currentPaChannel());
     #endif /* DEBUG */
 
     /* Since the LO is always outfitted with all the modules, no hardware check
@@ -62,6 +63,14 @@ void paChannelHandler(void){
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
         return;
     }
+
+
+/****** If it is a control message, we should check that the temperature of the
+4k mixers is < 30k before allowing any control. If it not, notify, store the
+hardware blocked error and return. */
+
+
+
     /* Call the correct handler */
     (paChannelModulesHandler[currentPaChannelModule])();
 }
@@ -82,7 +91,7 @@ static void gateVoltageHandler(void){
                  cartridge[currentModule].
                   lo.
                    pa.
-                    paChannel[currentBiasModule].
+                    paChannel[currentPaChannel()].
                      lastGateVoltage,
                &CAN_SIZE,
                CAN_LAST_CONTROL_MESSAGE_SIZE);
@@ -93,7 +102,7 @@ static void gateVoltageHandler(void){
          cartridge[currentModule].
           lo.
            pa.
-            paChannel[currentBiasModule].
+            paChannel[currentPaChannel()].
              lastGateVoltage.
               status=NO_ERROR;
 
@@ -109,14 +118,14 @@ static void gateVoltageHandler(void){
                            cartridge[currentModule].
                             lo.
                              pa.
-                              paChannel[currentBiasModule].
+                              paChannel[currentPaChannel()].
                                gateVoltage[MIN_SET_VALUE],
                           CAN_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
                              pa.
-                              paChannel[currentBiasModule].
+                              paChannel[currentPaChannel()].
                                gateVoltage[MAX_SET_VALUE])){
                 storeError(ERR_PA_CHANNEL,
                            0x02); // Error 0x02: Gate voltage set value out of range
@@ -126,7 +135,7 @@ static void gateVoltageHandler(void){
                  cartridge[currentModule].
                   lo.
                    pa.
-                    paChannel[currentBiasModule].
+                    paChannel[currentPaChannel()].
                      lastGateVoltage.
                       status=CON_ERROR_RNG;
 
@@ -142,7 +151,7 @@ static void gateVoltageHandler(void){
              cartridge[currentModule].
               lo.
                pa.
-                paChannel[currentBiasModule].
+                paChannel[currentPaChannel()].
                  lastGateVoltage.
                   status=ERROR;
 
@@ -157,7 +166,7 @@ static void gateVoltageHandler(void){
              cartridge[currentModule].
               lo.
                pa.
-                paChannel[currentBiasModule].
+                paChannel[currentPaChannel()].
                  lastGateVoltage.
                   status=HARDW_UPD_WARN;
         }
@@ -174,7 +183,7 @@ static void gateVoltageHandler(void){
                  cartridge[currentModule].
                   lo.
                    pa.
-                    paChannel[currentBiasModule].
+                    paChannel[currentPaChannel()].
                      lastGateVoltage,
                CAN_LAST_CONTROL_MESSAGE_SIZE);
 
@@ -192,7 +201,7 @@ static void gateVoltageHandler(void){
                    cartridge[currentModule].
                     lo.
                      pa.
-                      paChannel[currentBiasModule].
+                      paChannel[currentPaChannel()].
                        gateVoltage[CURRENT_VALUE];
     } else {
 
@@ -201,7 +210,7 @@ static void gateVoltageHandler(void){
                    cartridge[currentModule].
                     lo.
                      pa.
-                      paChannel[currentBiasModule].
+                      paChannel[currentPaChannel()].
                        gateVoltage[CURRENT_VALUE];
 
         /* Check the result against the warning and error range. Right now
@@ -212,27 +221,27 @@ static void gateVoltageHandler(void){
                            cartridge[currentModule].
                             lo.
                              pa.
-                              paChannel[currentBiasModule].
+                              paChannel[currentPaChannel()].
                                gateVoltage[LOW_WARNING_RANGE],
                           CAN_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
                              pa.
-                              paChannel[currentBiasModule].
+                              paChannel[currentPaChannel()].
                                gateVoltage[HI_WARNING_RANGE])){
                 if(checkRange(frontend.
                                cartridge[currentModule].
                                 lo.
                                  pa.
-                                  paChannel[currentBiasModule].
+                                  paChannel[currentPaChannel()].
                                    gateVoltage[LOW_ERROR_RANGE],
                               CAN_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
                                  pa.
-                                  paChannel[currentBiasModule].
+                                  paChannel[currentPaChannel()].
                                    gateVoltage[HI_ERROR_RANGE])){
                     storeError(ERR_PA_CHANNEL,
                                0x03); // Error 0x03: Error: PA channel gate voltage in error range.
@@ -283,7 +292,7 @@ static void drainVoltageHandler(void){
                  cartridge[currentModule].
                   lo.
                    pa.
-                    paChannel[currentBiasModule].
+                    paChannel[currentPaChannel()].
                      lastDrainVoltage,
                &CAN_SIZE,
                CAN_LAST_CONTROL_MESSAGE_SIZE);
@@ -294,7 +303,7 @@ static void drainVoltageHandler(void){
          cartridge[currentModule].
           lo.
            pa.
-            paChannel[currentBiasModule].
+            paChannel[currentPaChannel()].
              lastDrainVoltage.
               status=NO_ERROR;
 
@@ -310,14 +319,14 @@ static void drainVoltageHandler(void){
                            cartridge[currentModule].
                             lo.
                              pa.
-                              paChannel[currentBiasModule].
+                              paChannel[currentPaChannel()].
                                drainVoltage[MIN_SET_VALUE],
                           CAN_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
                              pa.
-                              paChannel[currentBiasModule].
+                              paChannel[currentPaChannel()].
                                drainVoltage[MAX_SET_VALUE])){
                 storeError(ERR_PA_CHANNEL,
                            0x05); // Error 0x05: Gate voltage set value out of range
@@ -327,7 +336,7 @@ static void drainVoltageHandler(void){
                  cartridge[currentModule].
                   lo.
                    pa.
-                    paChannel[currentBiasModule].
+                    paChannel[currentPaChannel()].
                      lastDrainVoltage.
                       status=CON_ERROR_RNG;
 
@@ -343,7 +352,7 @@ static void drainVoltageHandler(void){
              cartridge[currentModule].
               lo.
                pa.
-                paChannel[currentBiasModule].
+                paChannel[currentPaChannel()].
                  lastDrainVoltage.
                   status=ERROR;
 
@@ -358,7 +367,7 @@ static void drainVoltageHandler(void){
              cartridge[currentModule].
               lo.
                pa.
-                paChannel[currentBiasModule].
+                paChannel[currentPaChannel()].
                  lastDrainVoltage.
                   status=HARDW_UPD_WARN;
         }
@@ -375,7 +384,7 @@ static void drainVoltageHandler(void){
                  cartridge[currentModule].
                   lo.
                    pa.
-                    paChannel[currentBiasModule].
+                    paChannel[currentPaChannel()].
                      lastDrainVoltage,
                CAN_LAST_CONTROL_MESSAGE_SIZE);
 
@@ -393,7 +402,7 @@ static void drainVoltageHandler(void){
                    cartridge[currentModule].
                     lo.
                      pa.
-                      paChannel[currentBiasModule].
+                      paChannel[currentPaChannel()].
                        drainVoltage[CURRENT_VALUE];
     } else {
 
@@ -402,7 +411,7 @@ static void drainVoltageHandler(void){
                    cartridge[currentModule].
                     lo.
                      pa.
-                      paChannel[currentBiasModule].
+                      paChannel[currentPaChannel()].
                        drainVoltage[CURRENT_VALUE];
 
         /* Check the result against the warning and error range. Right now
@@ -413,27 +422,27 @@ static void drainVoltageHandler(void){
                            cartridge[currentModule].
                             lo.
                              pa.
-                              paChannel[currentBiasModule].
+                              paChannel[currentPaChannel()].
                                drainVoltage[LOW_WARNING_RANGE],
                           CAN_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
                              pa.
-                              paChannel[currentBiasModule].
+                              paChannel[currentPaChannel()].
                                drainVoltage[HI_WARNING_RANGE])){
                 if(checkRange(frontend.
                                cartridge[currentModule].
                                 lo.
                                  pa.
-                                  paChannel[currentBiasModule].
+                                  paChannel[currentPaChannel()].
                                    drainVoltage[LOW_ERROR_RANGE],
                               CAN_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
                                  pa.
-                                  paChannel[currentBiasModule].
+                                  paChannel[currentPaChannel()].
                                    drainVoltage[HI_ERROR_RANGE])){
                     storeError(ERR_PA_CHANNEL,
                                0x06); // Error 0x06: Error: PA channel drain voltage in error range.
@@ -507,7 +516,7 @@ static void drainCurrentHandler(void){
                    cartridge[currentModule].
                     lo.
                      pa.
-                      paChannel[currentBiasModule].
+                      paChannel[currentPaChannel()].
                        drainCurrent[CURRENT_VALUE];
     } else {
         /* If no error during monitor process, gather the stored data */
@@ -515,7 +524,7 @@ static void drainCurrentHandler(void){
                      cartridge[currentModule].
                       lo.
                        pa.
-                        paChannel[currentBiasModule].
+                        paChannel[currentPaChannel()].
                          drainCurrent[CURRENT_VALUE];
 
         /* Check the result against the warning and error range. Right now
@@ -526,27 +535,27 @@ static void drainCurrentHandler(void){
                            cartridge[currentModule].
                             lo.
                              pa.
-                              paChannel[currentBiasModule].
+                              paChannel[currentPaChannel()].
                                drainCurrent[LOW_WARNING_RANGE],
                           CAN_FLOAT,
                           frontend.
                            cartridge[currentModule].
                             lo.
                              pa.
-                              paChannel[currentBiasModule].
+                              paChannel[currentPaChannel()].
                                drainCurrent[HI_WARNING_RANGE])){
                 if(checkRange(frontend.
                                cartridge[currentModule].
                                 lo.
                                  pa.
-                                  paChannel[currentBiasModule].
+                                  paChannel[currentPaChannel()].
                                    drainCurrent[LOW_ERROR_RANGE],
                               CAN_FLOAT,
                               frontend.
                                cartridge[currentModule].
                                 lo.
                                  pa.
-                                  paChannel[currentBiasModule].
+                                  paChannel[currentPaChannel()].
                                    drainCurrent[HI_ERROR_RANGE])){
                     storeError(ERR_PA_CHANNEL,
                                0x0A); // Error 0x0A: Error: PA channel drain currrent in error range

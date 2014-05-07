@@ -5,7 +5,7 @@
     Created: 2004/08/24 16:24:39 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: biasSerialInterface.c,v 1.48 2008/02/28 22:15:05 avaccari Exp $
+    \$Id: biasSerialInterface.c,v 1.49 2009/04/09 02:09:55 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     BIAS serial interface.
@@ -178,7 +178,8 @@ static int getBiasAnalogMonitor(void){
         - parallel input */
     /* Setup for 1 seconds and start the asynchronous timer */
     if(startAsyncTimer(TIMER_BIAS_ADC_RDY,
-                       TIMER_BIAS_TO_ADC_RDY)==ERROR){
+                       TIMER_BIAS_TO_ADC_RDY,
+                       FALSE)==ERROR){
         return ERROR;
     }
 
@@ -793,7 +794,8 @@ int setLnaStage(void){
 
    /* Setup for 1 seconds and start the asynchronous timer */
    if(startAsyncTimer(TIMER_BIAS_DAC1_RDY,
-                       TIMER_BIAS_TO_DAC1_RDY)==ERROR){
+                      TIMER_BIAS_TO_DAC1_RDY,
+                      FALSE)==ERROR){
        return ERROR;
    }
 

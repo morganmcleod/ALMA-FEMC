@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: timer.h,v 1.24 2008/09/26 23:00:38 avaccari Exp $
+    \$Id: timer.h,v 1.25 2009/04/09 02:09:55 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the timers used by the software. */
@@ -14,58 +14,58 @@
     #define _TIMER_H
 
     /* Defines */
-    #define MAX_TIMERS_NUMBER       20      //!< Max number of timers
+    #define MAX_TIMERS_NUMBER       90       //!< Max number of timers
 
     /*** RSS ***/
-    #define TIMER_RSS               0       // Timer number
+    #define TIMER_RSS               0        // Timer number
     #define TIMER_TO_RSS            3600000L // Timeout in milliseconds
 
     /*** Serial Mux Board ***/
-    #define TIMER_SERIAL_MUX        1       // Timer number
+    #define TIMER_SERIAL_MUX        10      // Timer number
     #define TIMER_TO_SERIAL_MUX     100     // Timeout in milliseconds
 
     /*** Bias Module ***/
     /* ADC */
-    #define TIMER_BIAS_ADC_RDY      2       // Timer number
+    #define TIMER_BIAS_ADC_RDY      20      // Timer number
     #define TIMER_BIAS_TO_ADC_RDY   100     // Timeout in milliseconds
     /* DAC1 */
-    #define TIMER_BIAS_DAC1_RDY     3       // Timer number
+    #define TIMER_BIAS_DAC1_RDY     21      // Timer number
     #define TIMER_BIAS_TO_DAC1_RDY  100     // Timeout in milliseconds
 
     /*** LO Module ***/
     /* ADC */
-    #define TIMER_LO_ADC_RDY        4       // Timer number
+    #define TIMER_LO_ADC_RDY        30      // Timer number
     #define TIMER_LO_TO_ADC_RDY     100     // Timeout in milliseconds
 
     /*** Power distribution Module */
     /* ADC */
-    #define TIMER_PD_ADC_RDY        5       // Timer number
+    #define TIMER_PD_ADC_RDY        40      // Timer number
     #define TIMER_PD_TO_ADC_RDY     100     // Timeout in milliseconds
 
     /*** IF Switch Module ***/
     /* ADC */
-    #define TIMER_IF_ADC_RDY        6       // Timer number
+    #define TIMER_IF_ADC_RDY        50      // Timer number
     #define TIMER_IF_TO_ADC_RDY     100     // Timeout in milliseconds
 
     /*** Cryostat Module ***/
     /* ADC */
-    #define TIMER_CRYO_ADC_RDY      7       // Timer number
+    #define TIMER_CRYO_ADC_RDY      60      // Timer number
     #define TIMER_CRYO_TO_ADC_RDY   100     // Timeout in milliseconds
 
     /*** LPR Module ***/
     /* ADC */
-    #define TIMER_LPR_ADC_RDY       8       // Timer number
+    #define TIMER_LPR_ADC_RDY       70      // Timer number
     #define TIMER_LPR_TO_ADC_RDY    100     // Timeout in milliseconds
     /* SWITCH READY */
-    #define TIMER_LPR_SWITCH_RDY    9       // Timer number
+    #define TIMER_LPR_SWITCH_RDY    71      // Timer number
     #define TIMER_LPR_TO_SWITCH_RDY 5000    // Timeout in milliseconds
 
     /*** One Wire Bus Module ***/
     /* IRQ */
-    #define TIMER_OWB_IRQ           10      // Timer number
+    #define TIMER_OWB_IRQ           80      // Timer number
     #define TIMER_TO_OWB_IRQ        1000    // Timeout in milliseconds
     /* RESET */
-    #define TIMER_OWB_RESET         11      // Timer number
+    #define TIMER_OWB_RESET         81      // Timer number
     #define TIMER_TO_OWB_RESET      10000   // Timeout in milliseconds
 
     /* Timer control */
@@ -82,7 +82,8 @@
     /* Externs */
     extern void waitSeconds(unsigned int seconds);  //!< Wait a defined number of seconds
     extern int startAsyncTimer(unsigned char timerNo,
-                               unsigned long mSeconds); //!< Setup and start the asynchronous timer
+                               unsigned long mSeconds,
+                               unsigned char reload); //!< Setup and start the asynchronous timer
     extern int queryAsyncTimer(unsigned char timerNo); //!< Query the state of the asynchronous timer
     extern int stopAsyncTimer(unsigned char timerNo); //!< Clear the state of the asynchronous timer
 #endif /* _TIMER_H */

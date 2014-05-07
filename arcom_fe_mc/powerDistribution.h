@@ -6,7 +6,8 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: powerDistribution.h,v 1.14 2006/11/30 23:01:42 avaccari Exp $
+
+    \$Id: powerDistribution.h,v 1.16 2009/03/23 20:43:04 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the power distribution system. The part of the
@@ -37,8 +38,8 @@
     #endif /* _PDMODULE_H */
 
     /* Defines */
-    #define MAX_POWERED_BANDS_OPERATION     3   //!< Max number of cartridges powered during normal operation
-    #define MAX_POWERED_BANDS_DEBUG         10  //!< Max number of cartridges powered in debug mode
+    #define MAX_POWERED_BANDS_OPERATIONAL       3   //!< Max number of cartridges powered during normal operation
+    #define MAX_POWERED_BANDS_TROUBLESHOOTING   10  //!< Max number of cartridges powered in troubleshooting mode
 
     /* Submodules definitions */
     #define POWER_DISTRIBUTION_MODULES_NUMBER       11      // See list below
@@ -106,7 +107,8 @@
     /* Statics */
     static void poweredModulesHandler(void);
     /* Externs */
-    extern int powerDistributionInit(void); //!< This function deals with the initialization of the power distribution system
+    extern int powerDistributionStartup(void); //!< This function deals with the initialization of the power distribution system
     extern void powerDistributionHandler(void); //!< This function deals with the incoming can message
+    extern int powerDistributionStop(void); //!< This function deals with the shut down of the power distribution system
 
 #endif /* _POWERDISTRIBUTION_H */

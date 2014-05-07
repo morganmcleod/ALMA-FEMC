@@ -5,7 +5,7 @@
     Created: 2004/08/24 13:24:53 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: pegasus.h,v 1.8 2006/11/30 23:01:42 avaccari Exp $
+    \$Id: pegasus.h,v 1.9 2009/03/23 20:43:04 avaccari Exp $
 
     This files contains all the informations necessary to define the
     characteristics and operate the ARCOM Pegasus board. */
@@ -44,11 +44,20 @@
     #define PIC_ADDR2       0xA0    //!< Base address of secondary PIC
     #define PIC_INT_CLR     0x20    //!< Data to clear the interrupt request
 
+    /* Typedefs */
+    typedef struct PACKETIN {
+        unsigned int        Info_Level;
+        unsigned long int   Serial;
+        unsigned char       Label[11];
+        unsigned char       File_Sys_Type[8];
+    };
+
     /* Globals */
     /* Externs */
 
     /* Prototypes */
     /* Externs */
     extern void reboot(void);   //!< Perform a reboot
+    extern long int getVolSerial(void); //! Returns the serial number of the current drive
 
 #endif /* _PEGASUS_H */

@@ -5,7 +5,7 @@
     Created: 2006/09/06 11:52:38 by avaccari
 
     <b> CVS Informations: </b><br>
-    \$Id: loSerialInterface.c,v 1.9 2008/03/10 22:15:43 avaccari Exp $
+    \$Id: loSerialInterface.c,v 1.11 2009/04/09 02:09:55 avaccari Exp $
 
     This files contains all the functions necessary to control and operate the
     LO serial interface.
@@ -77,6 +77,45 @@ static int getLoAnalogMonitor(void){
         return ERROR;
     }
 
+
+
+/********* TEST FIX ****************/
+/*** Repeat the previous operation to add 40us */
+    if(serialAccess(LO_PARALLEL_WRITE(LO_BREG),
+                    &loRegisters[currentModule].
+                      bReg.
+                       integer,
+                    LO_BREG_SIZE,
+                    LO_BREG_SHIFT_SIZE,
+                    LO_BREG_SHIFT_DIR,
+                    SERIAL_WRITE)==ERROR){
+        return ERROR;
+    }
+    if(serialAccess(LO_PARALLEL_WRITE(LO_BREG),
+                    &loRegisters[currentModule].
+                      bReg.
+                       integer,
+                    LO_BREG_SIZE,
+                    LO_BREG_SHIFT_SIZE,
+                    LO_BREG_SHIFT_DIR,
+                    SERIAL_WRITE)==ERROR){
+        return ERROR;
+    }
+    if(serialAccess(LO_PARALLEL_WRITE(LO_BREG),
+                    &loRegisters[currentModule].
+                      bReg.
+                       integer,
+                    LO_BREG_SIZE,
+                    LO_BREG_SHIFT_SIZE,
+                    LO_BREG_SHIFT_DIR,
+                    SERIAL_WRITE)==ERROR){
+        return ERROR;
+    }
+/************* END TEST FIX ************/
+
+
+
+
     /* Initiate ADC conversion:
        - send ADC convert strobe command */
     #ifdef DEBUG
@@ -97,7 +136,8 @@ static int getLoAnalogMonitor(void){
        - parallel input */
     /* Setup for 1 second and start the asynchronous timer */
     if(startAsyncTimer(TIMER_LO_ADC_RDY,
-                       TIMER_LO_TO_ADC_RDY)==ERROR){
+                       TIMER_LO_TO_ADC_RDY,
+                       FALSE)==ERROR){
         return ERROR;
     }
 
@@ -1245,7 +1285,7 @@ int getPaChannel(void){
              cartridge[currentModule].
               lo.
                pa.
-                paChannel[currentBiasModule].
+                paChannel[currentPaChannel()].
                  gateVoltage[CURRENT_VALUE]=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
                                                                     adcData/LO_ADC_RANGE);
             break;
@@ -1255,7 +1295,7 @@ int getPaChannel(void){
              cartridge[currentModule].
               lo.
                pa.
-                paChannel[currentBiasModule].
+                paChannel[currentPaChannel()].
                  drainVoltage[CURRENT_VALUE]=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
                                                                      adcData/LO_ADC_RANGE);
             break;
@@ -1265,7 +1305,7 @@ int getPaChannel(void){
              cartridge[currentModule].
               lo.
                pa.
-                paChannel[currentBiasModule].
+                paChannel[currentPaChannel()].
                  drainCurrent[CURRENT_VALUE]=(LO_DRAIN_C_SCALE*loRegisters[currentModule].
                                                                 adcData/LO_ADC_RANGE);
             break;

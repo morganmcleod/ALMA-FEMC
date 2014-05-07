@@ -5,7 +5,7 @@
     Created: 2007/06/02 17:01:27 by avaccari
 
     <b> CVS informations: </b><br>
-    \$Id: lpr.c,v 1.10 2007/09/07 22:00:06 avaccari Exp $
+    \$Id: lpr.c,v 1.13 2009/04/09 02:09:55 avaccari Exp $
 
     This file contains all the functions necessary to handle LPR events. */
 
@@ -58,12 +58,13 @@ void lprHandler(void){
     (lprModulesHandler[currentLprModule])();
 }
 
-/* LPR Init */
-/*! This function performs the operations necessary to initialize the LPR.
+/* LPR Startup */
+/*! This function performs the operations necessary to initialize the LPR. This
+    are performed only once at startup.
     \return
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
-int lprInit(void){
+int lprStartup(void){
 
     /* Few variables to help load the coefficient in the frontend table */
     int timedOut;
@@ -91,7 +92,7 @@ int lprInit(void){
         if(myReadCfg(FRONTEND_CONF_FILE,
                      LPR_CONF_FILE_SECTION,
                      &dataIn,
-                     LPR_CONF_FILE_EXPECTED)==ERROR){
+                     LPR_CONF_FILE_EXPECTED)!=NO_ERROR){
             return NO_ERROR;
         }
 
@@ -122,7 +123,7 @@ int lprInit(void){
                        configFile,
                      LPR_ESN_SECTION,
                      &dataIn,
-                     LPR_ESN_EXPECTED)==ERROR){
+                     LPR_ESN_EXPECTED)!=NO_ERROR){
             return NO_ERROR;
         }
 
@@ -158,7 +159,7 @@ int lprInit(void){
                        configFile,
                      POWER_COEFF_SECTION,
                      &dataIn,
-                     POWER_COEFF_EXPECTED)==ERROR){
+                     POWER_COEFF_EXPECTED)!=NO_ERROR){
             return NO_ERROR;
         }
 
@@ -232,7 +233,8 @@ int lprInit(void){
     printf("    - Set optical switch in shutter mode...\n");
     /* Setup for 5 seconds and start the asynchornous timer */
     if(startAsyncTimer(TIMER_LPR_SWITCH_RDY,
-                       TIMER_LPR_TO_SWITCH_RDY)==ERROR){
+                       TIMER_LPR_TO_SWITCH_RDY,
+                       FALSE)==ERROR){
         return ERROR;
     }
 
