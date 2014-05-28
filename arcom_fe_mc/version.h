@@ -24,9 +24,12 @@
     REVISION HISTORY
 
     2014-04-22  002.006.004 beta
-        Beta release for FETIM testing at the OSF.
-        Beta release for testing cryostat temperature sensor check when
+        Beta release for testing at the OSF.
+          Prints some debugging messages NOT SUIATABLE FOR RELEASE TO ANTENNA
+        Implements LO PA max output power features.
+        In TROUBLESHOOTING mode ignore cryostat temperature sensor check when
           setting LO PA drain voltage.
+        In TROUBLESHOOTING mode ignore LO PA max output power restrictions.
 
     2013-12-10  002.006.003 beta
         Beta release for FETIM testing at the OSF.
@@ -310,8 +313,8 @@
     #define VERSION_MINOR   006  //!< Minor version
     #define VERSION_PATCH   004  //!< Patch level
 
-    #define VERSION_DATE    "2014-04-22" //!< Version Date
-    #define VERSION_NOTES   "beta 4 for FETIM testing." //!<Version Notes
+    #define VERSION_DATE    "2014-05-27" //!< Version Date
+    #define VERSION_NOTES   "beta 5 for FETIM testing." //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"

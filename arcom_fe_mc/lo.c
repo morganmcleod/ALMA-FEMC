@@ -118,6 +118,8 @@ int loInit(void){
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
 int loZeroPaDrainVoltage(void) {
+    unsigned char *lastCommandData;
+
     /* Set the PA's drain voltage to 0. The mapping from channel to actual
        polarization is not relevant since we are zeroing all of them. */
     #ifdef DEBUG_INIT
@@ -136,6 +138,19 @@ int loZeroPaDrainVoltage(void) {
     if(setPaChannel()==ERROR){
         return ERROR;
     }
+
+    // make a pointer to the data word in the last commanded PA drain voltage:
+    lastCommandData = &(frontend.
+                         cartridge[currentModule].
+                          lo.
+                           pa.
+                            paChannel[currentPaModule].
+                             lastDrainVoltage.
+                              data);
+
+    // save the zero we just sent as the last commanded value:
+    changeEndian(lastCommandData, CONV_CHR_ADD);
+
     #ifdef DEBUG_INIT
         printf("       done!\n"); // Channel A
     #endif // DEBUG_INIT
@@ -149,6 +164,19 @@ int loZeroPaDrainVoltage(void) {
     if(setPaChannel()==ERROR){
         return ERROR;
     }
+
+    // make a pointer to the data word in the last commanded PA drain voltage:
+    lastCommandData = &(frontend.
+                         cartridge[currentModule].
+                          lo.
+                           pa.
+                            paChannel[currentPaModule].
+                             lastDrainVoltage.
+                              data);
+
+    // save the zero we just sent as the last commanded value:
+    changeEndian(lastCommandData, CONV_CHR_ADD);
+
     #ifdef DEBUG_INIT
         printf("       done!\n"); // Channel B
         printf("     done!\n"); // Set PA drain voltage to 0
@@ -595,13 +623,12 @@ int loStartup(void){
      DataPtr=&cnt;
 
     /* Access configuration file. */
-    if (myReadCfg(frontend.
-                   cartridge[currentModule].
-                    lo.
-                     configFile,
-                  LO_PA_LIMITS_SECTION,
-                  &dataIn,
-                  LO_PA_LIMITS_EXPECTED)!=NO_ERROR) {
+    if (ReadCfg(frontend.
+                 cartridge[currentModule].
+                  lo.
+                   configFile,
+                LO_PA_LIMITS_SECTION,
+                &dataIn) != LO_PA_LIMITS_EXPECTED) {
         /* not found: */
         cnt = 0;
     }

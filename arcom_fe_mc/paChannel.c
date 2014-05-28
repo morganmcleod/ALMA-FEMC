@@ -424,10 +424,14 @@ static void drainVoltageHandler(void){
             }
         #endif /* DATABASE_RANGE */
 
-        /* Limit the CONV_FLOAT value about to be sent to the PA channel for drain voltage
-             to the safe maximum for the current YTO tuning.
+        /* if not in TROUBLESHOOTING mode, 
+            Limit the CONV_FLOAT value about to be sent to the PA channel for drain voltage
+            to the safe maximum for the current YTO tuning.
            Returns HARDW_BLKD_ERR if the value was reduced. */
-        ret = limitSafePaDrainVoltage(currentPaModule);
+        if (frontend.mode[CURRENT_VALUE] == TROUBLESHOOTING_MODE)
+            ret = NO_ERROR;
+        else
+            ret = limitSafePaDrainVoltage(currentPaModule);
 
         if (ret != NO_ERROR) {
             // report that the limit was violated:

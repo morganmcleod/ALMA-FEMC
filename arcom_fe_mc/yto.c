@@ -110,7 +110,11 @@ static void ytoCoarseTuneHandler(void){
             return;
         }
 
-        ret = limitSafeYtoTuning();
+        // if not in TROUBLESHOOTING mode, check that the LO PA setting is safe for the new YTO tuning:
+        if (frontend.mode[CURRENT_VALUE] == TROUBLESHOOTING_MODE)
+            ret = NO_ERROR;
+        else
+            ret = limitSafeYtoTuning();
 
         if (ret == HARDW_BLKD_ERR) {
             // report that the limit was violated:
