@@ -23,6 +23,9 @@
 
     REVISION HISTORY
 
+    2014-07-22  002.006.005 beta1
+        Testing version for FE-15 at OSF.
+
     2014-04-22  002.006.004 beta
         Beta release for testing at the OSF.
           Prints some debugging messages NOT SUIATABLE FOR RELEASE TO ANTENNA
@@ -311,10 +314,10 @@
     /* Defines */
     #define VERSION_MAJOR   002  //!< Major version
     #define VERSION_MINOR   006  //!< Minor version
-    #define VERSION_PATCH   004  //!< Patch level
+    #define VERSION_PATCH   005  //!< Patch level
 
-    #define VERSION_DATE    "2014-05-27" //!< Version Date
-    #define VERSION_NOTES   "beta 5 for FETIM testing." //!<Version Notes
+    #define VERSION_DATE    "2014-07-22" //!< Version Date
+    #define VERSION_NOTES   "beta 1 for FETIM testing." //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"

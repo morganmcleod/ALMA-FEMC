@@ -311,7 +311,7 @@ void storeError(unsigned char moduleNo,
                                 "%s%d%s",
                                 "The selected Front End mode (",
                                 CAN_DATA(0),
-                                ") in not allowed");
+                                ") is not allowed");
                         break;
                     case 0x08: // Front End in maintenance mode: standard RCAs blocked
                         sprintf(error,
@@ -347,14 +347,14 @@ void storeError(unsigned char moduleNo,
                     case 0x03: // LO and cartridge temperature submodule out of Range
                         sprintf(error,
                                 "%s%d%s",
-                                "Error: The addressed LO and cartrdige temperature module (",
+                                "Error: The addressed LO and cartridge temperature module (",
                                 currentLoAndTempModule,
                                 ") is out of the defined range");
                         break;
                     case 0x04: // cartridge temperature submodule out of Range
                         sprintf(error,
                                 "%s%d%s",
-                                "Error: The addressed Cartrdige temperature module (",
+                                "Error: The addressed cartridge temperature module (",
                                 currentCartridgeTempSubsystemModule,
                                 ") is out of the defined range");
                         break;
@@ -625,7 +625,7 @@ void storeError(unsigned char moduleNo,
                     case 0x04: // LO PA drain voltages were limited before YTO tuning
                         sprintf(error,
                                 "%s%u%s",
-                                "Error: The commanded YTO coarse tune set point (",
+                                "Warning: The commanded YTO coarse tune set point (",
                                 CONV_UINT(0),
                                 ") required one or both LO PA drain voltages to be reduced prior to tuning");
                         break;
@@ -1051,9 +1051,9 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "Warning: The addressed hardware is not properly defined yet. Firmware needs updating.");
                         break;
-                    case 0x0D: // Warning: The PA temperature is outside the allowed range
+                    case 0x0D: // Warning: The cryostat temperature is outside the allowed range
                         sprintf(error,
-                                "Warning: The PA temperature is outside the allowed range. PA blocked.");
+                                "Warning: The cryostat temperature is outside the allowed range. PA blocked.");
                         break;
                     case 0x0E: // Warning: Attempted to set LO PA above max safe power level.
                         sprintf(error,
@@ -1847,7 +1847,7 @@ void storeError(unsigned char moduleNo,
                     case 0x05: // Monitored IF channel assembly temperature in warning range
                         sprintf(error,
                                 "%s%f%s",
-                                "Warning: The monitored IF channel assembly temperaturet (",
+                                "Warning: The monitored IF channel assembly temperature (",
                                 CONV_FLOAT,
                                 ") is in the warning range");
                         break;
