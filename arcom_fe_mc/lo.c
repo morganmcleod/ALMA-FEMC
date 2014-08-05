@@ -897,19 +897,19 @@ int limitSafePaDrainVoltage(unsigned char paModule) {
                           yto.
                            ytoCoarseTune[CURRENT_VALUE];
 
-    printf("limitSafePaDrainVoltage yto=%u ", yto);
+//    printf("limitSafePaDrainVoltage yto=%u ", yto);
 
     entry = findMaxSafeLoPaEntry(yto);
 
     if (!entry) {   
-        printf("\n");
+//        printf("\n");
         return NO_ERROR;
     }
 
-    printf("maxVD0=%.2f maxVD1=%.2f ", (*entry).maxVD0, (*entry).maxVD1);
+//    printf("maxVD0=%.2f maxVD1=%.2f ", (*entry).maxVD0, (*entry).maxVD1);
 
     if (paModule == 0) {
-        printf("vd0=%.2f\n", CONV_FLOAT);
+//        printf("vd0=%.2f\n", CONV_FLOAT);
         if (CONV_FLOAT > (*entry).maxVD0) {
             CONV_FLOAT = (*entry).maxVD0;
             return HARDW_BLKD_ERR;
@@ -917,7 +917,7 @@ int limitSafePaDrainVoltage(unsigned char paModule) {
     }
 
     if (paModule == 1) {
-        printf("vd1=%.2f\n", CONV_FLOAT);
+//        printf("vd1=%.2f\n", CONV_FLOAT);
         if (CONV_FLOAT > (*entry).maxVD1) {
             CONV_FLOAT = (*entry).maxVD1;
             return HARDW_BLKD_ERR;
@@ -945,12 +945,12 @@ int limitSafeYtoTuning(){
     int ret0 = NO_ERROR;
     int ret1 = NO_ERROR;
 
-    printf("limitSafeYtoTuning yto=%u ", yto);
+//    printf("limitSafeYtoTuning yto=%u ", yto);
 
     entry = findMaxSafeLoPaEntry(yto);
     
     if (!entry) {
-        printf("\n");
+//        printf("\n");
         return NO_ERROR;
     }
 
@@ -1014,7 +1014,7 @@ int limitSafeYtoTuning(){
             ret1 = HARDW_BLKD_ERR;
     }
 
-    printf("maxVD0=%.2f maxVD1=%.2f vd0=%.2f vd1=%.2f\n", (*entry).maxVD0, (*entry).maxVD1, vd0, vd1);
+//    printf("maxVD0=%.2f maxVD1=%.2f vd0=%.2f vd1=%.2f\n", (*entry).maxVD0, (*entry).maxVD1, vd0, vd1);
 
     // restore the conversion buffer to its prior state:
     CONV_LONGINT = backup;

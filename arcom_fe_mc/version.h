@@ -23,6 +23,12 @@
 
     REVISION HISTORY
 
+    2014-07-28  002.006.005
+        Release version for continued testing at OSF
+
+    2014-07-23  002.006.005 beta2
+        Turned off console debugging.   Commented out printfs.
+
     2014-07-22  002.006.005 beta1
         Testing version for FE-15 at OSF.
 
@@ -316,8 +322,8 @@
     #define VERSION_MINOR   006  //!< Minor version
     #define VERSION_PATCH   005  //!< Patch level
 
-    #define VERSION_DATE    "2014-07-22" //!< Version Date
-    #define VERSION_NOTES   "beta 1 for FETIM testing." //!<Version Notes
+    #define VERSION_DATE    "2014-07-28" //!< Version Date
+    #define VERSION_NOTES   "Release version for continued testing at OSF." //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"
