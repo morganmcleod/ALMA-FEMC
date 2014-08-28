@@ -346,14 +346,14 @@ static void specialRCAsHandler(void){
                        an estimate on the longest time necessary to acknowledge and respond to the largest
                        monitor request without performing any operation: it is a measure of the longest
                        communication time between the ARCOM and the AMBSI1 board */
-                    CAN_DATA(7)=0x00;
-                    CAN_DATA(6)=0x00;
-                    CAN_DATA(5)=0x00;
-                    CAN_DATA(4)=0x00;
-                    CAN_DATA(3)=0x00;
-                    CAN_DATA(2)=0x00;
-                    CAN_DATA(1)=0x00;
-                    CAN_DATA(0)=0x00;
+                    CAN_DATA(7)=0xFF;
+                    CAN_DATA(6)=0xFF;
+                    CAN_DATA(5)=0xFF;
+                    CAN_DATA(4)=0xFF;
+                    CAN_DATA(3)=0xFF;
+                    CAN_DATA(2)=0xFF;
+                    CAN_DATA(1)=0xFF;
+                    CAN_DATA(0)=0xFF;
                     CAN_SIZE=CAN_FULL_SIZE;
                     break;
                 case GET_FPGA_VERSION_INFO: // 0x20008 -> Get FPGA firmware info

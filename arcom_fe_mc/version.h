@@ -23,6 +23,12 @@
 
     REVISION HISTORY
 
+    2014-08-22  002.006.006
+        Release version for continued testing at OSF
+        GET_PPCOMM_TIME now returns 8 bytes of 0xFF, as the ICD says it should.
+        SET_IF_SWITCH_CHANNEL[Po][Sb]_TEMP_SERVO_ENABLE now returns error if a value
+          than 0 or 1 is sent.
+
     2014-07-28  002.006.005
         Release version for continued testing at OSF
 
@@ -320,9 +326,9 @@
     /* Defines */
     #define VERSION_MAJOR   002  //!< Major version
     #define VERSION_MINOR   006  //!< Minor version
-    #define VERSION_PATCH   005  //!< Patch level
+    #define VERSION_PATCH   006  //!< Patch level
 
-    #define VERSION_DATE    "2014-07-28" //!< Version Date
+    #define VERSION_DATE    "2014-08-22" //!< Version Date
     #define VERSION_NOTES   "Release version for continued testing at OSF." //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"

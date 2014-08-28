@@ -1862,6 +1862,13 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "Error: The temperature servo is OFF: Monitoring of temperature disabled.");
                         break;
+                    case 0x08: // Temp servo bad enable/disable command.
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: The commanded temperature servo command (",
+                                CAN_BYTE,
+                                ") is out of the allowed range");
+                        break;
                     default: // Undefined error
                         sprintf(error,
                                 "%s%d%s",

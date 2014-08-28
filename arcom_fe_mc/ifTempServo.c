@@ -79,6 +79,21 @@ static void enableHandler(void){
             lastEnable.
              status=NO_ERROR;
 
+        /* Check that the CAN_BYTE is a legal value for enable/disable */
+        if(CAN_BYTE!=IF_TEMP_SERVO_ENABLE && CAN_BYTE!=IF_TEMP_SERVO_DISABLE){
+            storeError(ERR_IF_CHANNEL,
+                       0x08); // Error 0x08 -> Bad command for servo enable/disable
+            /* Store the ERROR state in the last control message variable */
+            frontend.
+             ifSwitch.
+              ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
+                       [currentIfChannelSideband[currentIfSwitchModule]].
+               ifTempServo.
+                lastEnable.
+                 status=ERROR;
+            return;
+        }
+        
         /* Change the status of the temperature servo according to the content
            of the CAN message. */
         if(setIfTempServoEnable(CAN_BYTE?IF_TEMP_SERVO_ENABLE:
