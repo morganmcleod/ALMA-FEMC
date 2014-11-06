@@ -1,0 +1,47 @@
+#Coarse VD steps:
+select distinct FreqLO from WCA_OutputPower where fkFacility = 40 and `fkHeader` = '16455' and keyDataSet=2;
+
+#Fine VD steps:
+select distinct FreqLO from WCA_OutputPower where fkFacility = 40 and `fkHeader` = '16455' and keyDataSet=3;
+
+#Coarse VD voltages:
+select distinct VD0 from WCA_OutputPower where fkFacility = 40 and `fkHeader` = '16455' and keyDataSet=2;
+
+#fine VD voltages:
+select distinct VD0 from WCA_OutputPower where fkFacility = 40 and `fkHeader` = '16455' and keyDataSet=3;
+
+
+select distinct FreqLO, Pol, max(VD0), max(VD1), max(Power) from WCA_OutputPower where 
+fkFacility = 40 and `fkHeader` = '16455' and keyDataSet=3
+group by FreqLO, Pol;
+
+#all data for pol0:
+select FreqLO, VD0, Power from WCA_OutputPower where 
+fkFacility = 40 and `fkHeader` = '16455' and (keyDataSet=2 or keyDataSet=3) and Pol=0
+order by FreqLO ASC, VD0 DESC;
+
+
+Steps:
+For each polarization:
+	1) convert fine-sweep power vs drain voltage data to course sweep resolution,
+	1.1) For each fine sweep frequency:
+	1.1.1) Sort the fine sweep data points by ascending drain voltage
+	1.1.1.1) For each course sweep voltage:
+	1.1.1.1.1) If there is an exact voltage match between the course and fine sweep data that data point is kept, Else the two closest fine sweep frequency points are found and linear interpolation on the data is used to determine the correct power data for that voltage.
+
+	2) Concatenate the array of converted fine-sweep data with course sweep data
+
+	3) reorder the array of voltage sweep data so that the data points ascend in both frequency and voltage
+
+	4) For each frequency:
+	4.1) Sequentially go through the voltage array starting at lowest value (should be zero, note that this array was previously sorted to be in ascending order)
+	4.1.1) Find first voltage value that is higher than max safe value, if found record the previous voltage value as the highest possible safe value.
+	4.1.2) If the end of the voltage array is reached without finding a power level higher than the max safe value, record this highest voltage value as the maximum possible safe value.
+	4.2) convert the voltage values previously found into the unitless 0-2.5 range
+
+	5) Find max safe power values that are redundant:
+	5.1) Find and remove any frequency points in the previously determined array of max safe voltages that have an adjacent upper and lower frequency points with exactly the same max safe value
+
+Combine the polarization data together into a listing of frequency vs max safe voltage level for Pol 0 and Pol 1:
+	Note that there is the possibility of having redundant values for one polarization if the power level of one polarization is above the max safe level and power level of the other polarization is below the max safe level.
+   
