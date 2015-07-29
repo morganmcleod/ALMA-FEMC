@@ -327,9 +327,9 @@
     #define _VERSION_H
 
     /* Defines */
-    #define VERSION_MAJOR   002  //!< Major version
-    #define VERSION_MINOR   006  //!< Minor version
-    #define VERSION_PATCH   010  //!< Patch level
+    #define VERSION_MAJOR   2  //!< Major version
+    #define VERSION_MINOR   6  //!< Minor version
+    #define VERSION_PATCH   10  //!< Patch level
 
     #define VERSION_DATE    "2015-07-29" //!< Version Date
     #define VERSION_NOTES   "Prototype band 2 support." //!<Version Notes
