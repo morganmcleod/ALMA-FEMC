@@ -2029,6 +2029,11 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "Warning: The turbo pump temperature is outside the allowed range. Turbo pump disabled.");
                         break;
+                    case 0x0A: // Turbo pump error state
+                        sprintf(error,
+                                "Warning: The turbo pump state is ERROR.");
+                        break;
+                        
                     default: // Undefined error
                         sprintf(error,
                                 "%s%d%s",
