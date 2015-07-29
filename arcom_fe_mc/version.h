@@ -23,6 +23,9 @@
 
     REVISION HISTORY
 
+    2015-07-29  002.006.010 beta
+        Prototype band 2 support
+
     2014-08-22  002.006.006
         Release version for continued testing at OSF
         GET_PPCOMM_TIME now returns 8 bytes of 0xFF, as the ICD says it should.
@@ -326,10 +329,10 @@
     /* Defines */
     #define VERSION_MAJOR   002  //!< Major version
     #define VERSION_MINOR   006  //!< Minor version
-    #define VERSION_PATCH   006  //!< Patch level
+    #define VERSION_PATCH   010  //!< Patch level
 
-    #define VERSION_DATE    "2014-08-22" //!< Version Date
-    #define VERSION_NOTES   "Release version for continued testing at OSF." //!<Version Notes
+    #define VERSION_DATE    "2015-07-29" //!< Version Date
+    #define VERSION_NOTES   "Prototype band 2 support." //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"
