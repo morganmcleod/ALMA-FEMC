@@ -21,11 +21,9 @@ MCommand
 0
 5
 MCommand
-198
-copy fe_mc.exe releases\02-06-01.exe /y
-copy fe_mc.exe releases\20120413.exe /y
+104
+copy fe_mc.exe releases\02-06-10.exe /y
 copy fe_mc.exe releases\fe_mc.exe /y
-#copy fe_mc.exe releases\candidates\2-06-01b.exe /y
 #ftp -n -s:updateFemc.scr
 6
 MItem

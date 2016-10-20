@@ -177,6 +177,8 @@ static void enableHandler(void){
    turbo pump in the cryostat module. */
 static void stateHandler(void){
 
+    unsigned char prevErrorState;
+
     #ifdef DEBUG_CRYOSTAT
         printf("   Turbo state\n");
     #endif /* DEBUG_CRYOSTAT */
@@ -199,6 +201,15 @@ static void stateHandler(void){
 
         return;
     }
+
+    /* Cache the previous error state to detect change to ERROR */
+    prevErrorState = frontend.
+                      cryostat.
+                       turboPump.
+                        state[CURRENT_VALUE]=cryoRegisters.
+                                              statusReg.
+                                               bitField.
+                                                turboPumpError;
 
     /* Get the turbo pump error state */
     if(getTurboPumpStates()==ERROR){
@@ -248,6 +259,21 @@ static void stateHandler(void){
                 }
             }
         #endif /* DATABASE_RANGE */
+    }
+
+    /* If the monitor state is not the same as previous and is ERROR: return a warning. */
+    if(prevErrorState != frontend.
+                          cryostat.
+                           turboPump.
+                            state[CURRENT_VALUE])
+    {   
+        if(frontend.
+            cryostat.
+             turboPump.
+              state[CURRENT_VALUE] == 1)
+        {
+            storeError(ERR_TURBO_PUMP, 0x0A); // The turbo pump state is ERROR.
+        }
     }
 
     /* Load the CAN message payload with the returned value and set the size */

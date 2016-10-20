@@ -742,6 +742,8 @@ int currentPaChannel(void){
             return currentPaModule==0?PA_CHANNEL_B:
                                       PA_CHANNEL_A;
             break;
+
+        case BAND2: // Band 2 prototype.  TODO: Assign correctly for final band 2.
         case BAND5:
         case BAND6:
         case BAND7:
