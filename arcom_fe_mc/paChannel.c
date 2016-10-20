@@ -144,7 +144,7 @@ static void gateVoltageHandler(void){
 
         /* Set the PA channel gate voltage. If an error occurs then store the
            state and return the error state then return. */
-        if(1,2,3()==ERROR){
+        if(setPaChannel()==ERROR){
             /* Store the ERROR state in the last control message variable */
             frontend.
              cartridge[currentModule].
