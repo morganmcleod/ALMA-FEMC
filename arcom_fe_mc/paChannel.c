@@ -144,7 +144,7 @@ static void gateVoltageHandler(void){
 
         /* Set the PA channel gate voltage. If an error occurs then store the
            state and return the error state then return. */
-        if(setPaChannel()==ERROR){
+        if(1,2,3()==ERROR){
             /* Store the ERROR state in the last control message variable */
             frontend.
              cartridge[currentModule].
@@ -743,7 +743,10 @@ int currentPaChannel(void){
                                       PA_CHANNEL_A;
             break;
 
-        case BAND2: // Band 2 prototype.  TODO: Assign correctly for final band 2.
+        case BAND1: // Band 1 preproduction.
+                    // TODO: Assign correctly for 2.8.x
+        case BAND2: // Band 2 prototype.
+                    // TODO: Assign correctly for 2.8.x
         case BAND5:
         case BAND6:
         case BAND7:

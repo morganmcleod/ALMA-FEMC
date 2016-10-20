@@ -329,10 +329,10 @@
     /* Defines */
     #define VERSION_MAJOR   2  //!< Major version
     #define VERSION_MINOR   6  //!< Minor version
-    #define VERSION_PATCH   10  //!< Patch level
+    #define VERSION_PATCH   11 //!< Patch level
 
-    #define VERSION_DATE    "2015-07-29" //!< Version Date
-    #define VERSION_NOTES   "Prototype band 2 support." //!<Version Notes
+    #define VERSION_DATE    "2016-10-20" //!< Version Date
+    #define VERSION_NOTES   "Prototype band 1&2 support." //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"
