@@ -93,6 +93,22 @@ static void enableHandler(void){
             lastEnable.
              status=NO_ERROR;
 
+        // If we are in STANDBY2 mode, return HARDW_BLKD_ERR
+        if (frontend.
+             cartridge[currentModule].
+              standby2) 
+        {
+            /* Store the ERROR state in the last control message variable */
+            frontend.
+             cartridge[currentModule].
+              polarization[currentBiasModule].
+               sisHeater.
+                lastEnable.
+                 status=HARDW_BLKD_ERR;
+            
+            return;
+        }
+
         /* Check if message is addressed to band 9 and if it is an enable
            message. If it is, check if the timer has expired. If not, return
            the hardware blocked message. This is necessary to prevent the
@@ -276,4 +292,38 @@ static void currentHandler(void){
                  CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 
+}
+
+// set the specified SIS heater to STANDBY2 mode
+void sisHeaterGoStandby2(int cartridge, int polarization) {
+    int bakModule, bakBiasModule, ret;
+
+    #ifdef DATABASE_HARDW
+        /* Check if the selected sideband is outfitted with the desired SIS */
+        if(frontend.
+            cartridge[cartridge].
+             polarization[polarization].
+              sisHeater.
+               available==UNAVAILABLE) {
+
+            // nothing to do:
+            return;
+        }
+    #endif /* DATABASE_HARDW */
+
+    // backup state variables used inside the serialInterface functions:
+    bakModule = currentModule;
+    bakBiasModule = currentBiasModule;
+    ret = 0;
+
+    // set the state variables to the selected subsystem:
+    currentModule = cartridge;
+    currentBiasModule = polarization;
+    
+    // disable the SIS heater:
+    ret = setSisHeaterEnable(SIS_HEATER_DISABLE);
+
+    // restore the state variables:
+    currentModule = bakModule;
+    currentBiasModule = bakBiasModule;
 }

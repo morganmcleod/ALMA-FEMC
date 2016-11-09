@@ -541,7 +541,7 @@ band.obj,sis.obj,sisHeater.obj,sisMagnet.obj,solenoidValve.obj,timer.obj,tur&
 boPump.obj,vacuumController.obj,vacuumSensor.obj,version.obj,yto.obj
  @%append fe_mc.lk1 
  *wlink name fe_mc d all sys dos op maxe=25 op q op symf op el @fe_mc.lk1
- copy fe_mc.exe releases\02-06-11.exe /y
+ copy fe_mc.exe releases\2-8-0d.exe /y
  copy fe_mc.exe releases\fe_mc.exe /y
  #ftp -n -s:updateFemc.scr
 

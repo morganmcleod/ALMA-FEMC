@@ -106,4 +106,7 @@
     /* Externs */
     extern void lnaHandler(void); //!< This function deals with the incoming can message
 
+    extern void lnaGoStandby2(int cartridge, int polarization, int sideband);
+    //!< set the specified LNA to STANDBY2 mode
+
 #endif /* _LNA_H */

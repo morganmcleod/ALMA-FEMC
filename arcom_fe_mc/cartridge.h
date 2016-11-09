@@ -140,12 +140,12 @@
     #define BAND10  CARTRIDGE9  //!< 9: Band 10
 
     /* Cartrdge states */
-    #define CARTRIDGE_ERROR     (-1) // Cartridge is in error state: should be turned off
-    #define CARTRIDGE_OFF       0    // Cartridge is off
-    #define CARTRIDGE_ON        1    // Cartridge is powered but not initialized
-    #define CARTRIDGE_READY     2    // Cartridge is ready to be used
-    #define CARTRIDGE_OBSERVING 3    // Cartridge is observing
-    #define CARTRIDGE_INITING   4    // Cartridge is initializing
+    #define CARTRIDGE_ERROR       (-1)  // Cartridge is in error state: should be turned off
+    #define CARTRIDGE_OFF           0   // Cartridge is off
+    #define CARTRIDGE_ON            1   // Cartridge is powered but not initialized
+    #define CARTRIDGE_INITING       2   // Cartridge is initializing
+    #define CARTRIDGE_READY         3   // Cartridge is ready to be used
+    #define CARTRIDGE_GO_STANDBY2   4   // Cartridge is about to enter STANDBY2 in the async process
 
     /* Subsystem definition */
     #define CARTRIDGE_SUBSYSTEMS_NUMBER     2       // See the list below
@@ -197,17 +197,18 @@
             receiver. This will be determined at startup time depending on the
             results of the handshake with the main software. */
         unsigned char   available;
+        
         //! Cartrdige current state
         /*! This field indicates the current state of the cartridge.
-            The cartrdige can be in one of the following states:
-                - \ref CARTRIDGE_OFF        -> Cartrdige is not powered
-                - \ref CARTRIDGE_ON         -> Cartridge is powered but not yet
-                                               initialized
-                - \ref CARTRIDGE_READY      -> Cartridge is initialized
-                - \ref CARTRIDGE_OBSERVING  -> Cartridge is observing
-                - \ref CARTRIDGE_INITING    -> Cartridge being initialized
-                - \ref CARTRIDGE_ERROR      -> Cartrdige in error state */
+            See definitions above. */
         int             state;
+        
+        //! Cartridge STANDBY2 setting (TRUE/FALSE)
+        /*! When a cartridge is operating in STANDBY2 mode, 
+            LO may be operated normally but
+            cold bias electronics may not be powered on. */
+        unsigned char   standby2;
+
         //! Polarization current state
         /*! Polarizations \p Po are assigned according to the following:
                 - Po = 0: Polarization 0
@@ -216,18 +217,22 @@
             Please see the definition of the \ref POLARIZATION structure for
             more informations.*/
         POLARIZATION    polarization[POLARIZATIONS_NUMBER];
+        
         //! 1st local oscillator current state
         /*! Please see the definition of the \ref LO structures for more
             informations. */
         LO              lo;
+        
         //! Cartridge temperature sensor current state
         /*! Temperature sensors are assigned to different locations in the
             cartridge according the the ICD. */
         CARTRIDGE_TEMP  cartridgeTemp[CARTRIDGE_TEMP_SENSORS_NUMBER];
+        
         //! Serial Number
         /*! This contains the serial number of the currently addressed
             cartridge. */
         char            serialNumber[SERIAL_NUMBER_SIZE];
+        
         //! Configuration File
         /*! This contains the configuration file name as extracted from the
             frontend configuration file. */
@@ -247,6 +252,8 @@
     static void cartridgeTempSubsystemHandler(void);
     static void biasSubsystemHandler(void);
     static int asyncCartridgeInit(void);
+    static int asyncCartridgeGoStandby2(void);
+    
     /* Externs */
     extern int cartridgeStartup(void); //!< This function initializes the selected cartridge during startup
     extern void cartridgeHandler(void); //!< This function deals with the incoming can message

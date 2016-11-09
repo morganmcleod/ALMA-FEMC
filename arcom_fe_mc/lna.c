@@ -99,6 +99,23 @@ static void enableHandler(void){
              lastEnable.
               status=NO_ERROR;
 
+        // If we are in STANDBY2 mode, return HARDW_BLKD_ERR
+        if (frontend.
+             cartridge[currentModule].
+              standby2) 
+        {
+            /* Store the ERROR state in the last control message variable */
+            frontend.
+             cartridge[currentModule].
+              polarization[currentBiasModule].
+               sideband[currentPolarizationModule].
+                lna.
+                 lastEnable.
+                  status=HARDW_BLKD_ERR;
+            
+            return;
+        }
+
         /* Change the status of the LNA according to the content of the CAN
            message. */
         if(setLnaBiasEnable(CAN_BYTE?LNA_BIAS_ENABLE:
@@ -147,4 +164,42 @@ static void enableHandler(void){
                  lna.
                   enable[CURRENT_VALUE];
     CAN_SIZE=CAN_BOOLEAN_SIZE;
+}
+
+// set the specified LNA to STANDBY2 mode
+void lnaGoStandby2(int cartridge, int polarization, int sideband) {
+    int bakModule, bakBiasModule, bakPolModule, ret;
+
+    #ifdef DATABASE_HARDW
+        /* Check if the selected sideband is outfitted with the desired SIS */
+        if(frontend.
+            cartridge[cartridge].
+             polarization[polarization].
+              sideband[sideband].
+               lna.
+                available==UNAVAILABLE) {
+
+            // nothing to do:
+            return;
+        }
+    #endif /* DATABASE_HARDW */
+
+    // backup state variables used inside the serialInterface functions:
+    bakModule = currentModule;
+    bakBiasModule = currentBiasModule;
+    bakPolModule = currentPolarizationModule;
+    ret = 0;
+
+    // set the state variables to the selected subsystem:
+    currentModule = cartridge;
+    currentBiasModule = polarization;
+    currentPolarizationModule = sideband;
+
+    // disable the LNA:
+    ret = setLnaBiasEnable(LNA_BIAS_DISABLE);
+
+    // restore the state variables:
+    currentModule = bakModule;
+    currentBiasModule = bakBiasModule;
+    currentPolarizationModule = bakPolModule; 
 }

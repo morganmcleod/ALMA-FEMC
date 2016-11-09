@@ -145,6 +145,24 @@ static void drainVoltageHandler(void){
             }
         #endif /* DATABASE_RANGE */
 
+        // If we are in STANDBY2 mode, return HARDW_BLKD_ERR
+        if (frontend.
+             cartridge[currentModule].
+              standby2) 
+        {            
+            /* Store the ERROR state in the last control message variable */
+            frontend.
+             cartridge[currentModule].
+              polarization[currentBiasModule].
+               sideband[currentPolarizationModule].
+                lna.
+                 stage[currentLnaModule].
+                  lastDrainVoltage.
+                   status=HARDW_BLKD_ERR;
+            
+            return;
+        }
+
         /* Set the lna stage. If an error occurs then store the state and
            then return. */
         if(setLnaStage()==ERROR){
@@ -339,6 +357,23 @@ static void drainCurrentHandler(void){
             }
         #endif /* DATABASE_RANGE */
 
+        // If we are in STANDBY2 mode, return HARDW_BLKD_ERR
+        if (frontend.
+             cartridge[currentModule].
+              standby2) 
+        {
+            /* Store the ERROR state in the last control message variable */
+            frontend.
+             cartridge[currentModule].
+              polarization[currentBiasModule].
+               sideband[currentPolarizationModule].
+                lna.
+                 stage[currentLnaModule].
+                  lastDrainCurrent.
+                   status=HARDW_BLKD_ERR;
+            
+            return;
+        }
         /* Set the lna stage. If and error occurs then store the state and
            return the error state then return. */
         if(setLnaStage()==ERROR){

@@ -81,4 +81,7 @@
     /* Externs */
     extern void lnaLedHandler(void); //!< This function deals with the incoming can message
 
+    extern void lnaLedGoStandby2(int cartridge, int polarization);
+    //!< set the specified LNA LED to STANDBY2 mode
+
 #endif /* _LNALED_H */

@@ -169,6 +169,23 @@ static void voltageHandler(void){
             }
         #endif /* DATABASE_RANGE */
 
+        // If we are in STANDBY2 mode, return HARDW_BLKD_ERR
+        if (frontend.
+             cartridge[currentModule].
+              standby2) 
+        {
+            /* Store the ERROR state in the last control message variable */
+            frontend.
+             cartridge[currentModule].
+              polarization[currentBiasModule].
+               sideband[currentPolarizationModule].
+                sis.
+                 lastVoltage.
+                  status=HARDW_BLKD_ERR;
+            
+            return;
+        }
+
         /* Set the SIS mixer bias voltage. If an error occurs, store the state
            and then return. */
         if(setSisMixerBias()==ERROR){
@@ -410,6 +427,23 @@ static void openLoopHandler(void){
              lastOpenLoop.
               status=NO_ERROR;
 
+        // If we are in STANDBY2 mode, return HARDW_BLKD_ERR
+        if (frontend.
+             cartridge[currentModule].
+              standby2) 
+        {
+            /* Store the ERROR state in the last control message variable */
+            frontend.
+             cartridge[currentModule].
+              polarization[currentBiasModule].
+               sideband[currentPolarizationModule].
+                sis.
+                 lastOpenLoop.
+                  status=HARDW_BLKD_ERR;
+            
+            return;
+        }
+
         /* Change the status of the loop according to the content of the CAN
            message. */
         if(setSisMixerLoop(CAN_BYTE?SIS_MIXER_BIAS_MODE_OPEN:
@@ -459,4 +493,46 @@ static void openLoopHandler(void){
                  sis.
                   openLoop;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
+}
+
+// set the specified SIS to STANDBY2 mode
+void sisGoStandby2(int cartridge, int polarization, int sideband) {
+    int bakModule, bakBiasModule, bakPolModule, ret;
+
+    #ifdef DATABASE_HARDW
+        /* Check if the selected sideband is outfitted with the desired SIS */
+        if(frontend.
+            cartridge[cartridge].
+             polarization[polarization].
+              sideband[sideband].
+               sis.
+                available == UNAVAILABLE) {
+
+            // nothing to do:
+            return;
+        }
+    #endif /* DATABASE_HARDW */
+
+    // backup state variables used inside the serialInterface functions:
+    bakModule = currentModule;
+    bakBiasModule = currentBiasModule;
+    bakPolModule = currentPolarizationModule;
+    ret = 0;
+
+    // set the state variables to the selected subsystem:
+    currentModule = cartridge;
+    currentBiasModule = polarization;
+    currentPolarizationModule = sideband;
+
+    // set the SIS voltage to 0:
+    CONV_FLOAT = 0.0;
+    ret = setSisMixerBias();
+
+    // set the SIS to OPEN LOOP mode:
+    ret = setSisMixerLoop(SIS_MIXER_BIAS_MODE_CLOSE);
+
+    // restore the state variables:
+    currentModule = bakModule;
+    currentBiasModule = bakBiasModule;
+    currentPolarizationModule = bakPolModule;    
 }

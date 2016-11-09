@@ -39,6 +39,7 @@
 
     /* Defines */
     #define MAX_POWERED_BANDS_OPERATIONAL       3   //!< Max number of cartridges powered during normal operation
+    #define MAX_STANDBY2_BANDS_OPERATIONAL      1   //!< Max number in STANDBY2 mode during normal operation
     #define MAX_POWERED_BANDS_TROUBLESHOOTING   10  //!< Max number of cartridges powered in troubleshooting mode
 
     /* Submodules definitions */
@@ -59,18 +60,6 @@
 
     /* Typedefs */
     //! Current state of the power distribution system
-    /*! This structure represent the current state of the power distribution
-        system.
-        \ingroup    frontend
-        \param      pdModule[Ca]        This contains the information about the
-                                        distribution modules. There can be up to
-                                        \ref PD_MODULES_NUMBER in the power
-                                        distribution system.
-        \param      poweredModules[Op]  This contains the number of modules
-                                        (cartridges) currently powered on. The
-                                        max number of cartridges powered at one
-                                        time depends on the operation mode the
-                                        receiver is in at the current time. */
     typedef struct {
         //! Current state of the different power distribution modules.
         /*! There is one power distribution module available for each cartridge.
@@ -90,13 +79,19 @@
 
             Please see \ref PD_MODULE for more informations. */
         PD_MODULE       pdModule[PD_MODULES_NUMBER];
+
         //! Current number of cartridges powered
-        /*! This variables stores the number of modules currently powered up.
-            There can be at most:
+        unsigned char   poweredModules;
+
+        /*! Maximum number of cartridges powered, depends on FE mode:
                 - \ref MAX_POWERED_BANDS_OPERATION in operational mode
-                - \ref MAX_POWERED_BANDS_DEBUG in debug mode
-            cartridges on simultaneously. */
-        unsigned char   poweredModules[OPERATION_ARRAY_SIZE];
+                - \ref MAX_POWERED_BANDS_DEBUG in debug mode */
+        unsigned char   maxPoweredModules;
+
+        /*! Number of cartridges in STANDBY2 mode, 
+            limited to MAX_STANDBY2_BANDS_OPERATIONAL */
+        unsigned char   standby2Modules;
+
     } POWER_DISTRIBUTION;
 
     /* Globals */

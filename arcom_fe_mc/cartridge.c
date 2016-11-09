@@ -153,7 +153,7 @@ static void loAndTempSubsystemHandler(void){
     (loAndTempModulesHandler[currentLoAndTempModule])();
 }
 
-/* Cartrdige temperature sensor handler. */
+/* Cartridge temperature sensor handler. */
 static void cartridgeTempSubsystemHandler(void){
     #ifdef DEBUG
         printf("   Cartridge Temperature\n");
@@ -220,6 +220,11 @@ int cartridgeStop(unsigned char cartridge){
     frontend.
      cartridge[cartridge].
       state = CARTRIDGE_OFF;
+
+    /* Force clear STANDBY2 mode */
+    frontend.
+     cartridge[cartridge].
+      standby2 = FALSE;
 
     #ifdef DEBUG_INIT
         printf("  done!\n\n");
@@ -767,18 +772,11 @@ int cartridgeStartup(void){
     }
 
     printf("    done!\n"); // Temperature sensor offsets
-
-
-
-
-
-
-
-
     printf(" done!\n\n"); // Cartridge
 
     return NO_ERROR;
 }
+
 
 /* Cartrige init */
 /*! This function performs the operations necessary to initialize a cartrdige at
@@ -849,9 +847,11 @@ int cartridgeInit(unsigned char cartridge){
         printf(" - Turning cartridge ON...");
     #endif // DEBUG_INIT
 
-    frontend.
-     cartridge[currentModule].
-      state = CARTRIDGE_READY;
+//TODO: redundant
+    // this is done below in 1,2,3:
+    // frontend.
+    //  cartridge[currentModule].
+    //   state = CARTRIDGE_READY;
 
     #ifdef DEBUG_INIT
         printf("done!\n"); // Turning cartrdige on
@@ -863,6 +863,7 @@ int cartridgeInit(unsigned char cartridge){
 
 }
 
+
 /* Cartrdige async */
 /*! This function deals with the asynchronous operations related to a cartridge
     \return
@@ -872,12 +873,13 @@ int cartridgeInit(unsigned char cartridge){
 int cartridgeAsync(void){
 
     /* A static to keep track of the currently addressed cartridge */
-    static unsigned char currentAsyncCartridge=0;
+    static unsigned char currentAsyncCartridge = 0;
 
     /* A static to keep track of the current async task for each cartridge */
     static enum {
         ASYNC_CARTRIDGE_IDLE,
-        ASYNC_CARTRIDGE_INIT
+        ASYNC_CARTRIDGE_INIT,
+        ASYNC_CARTRIDGE_GO_STANDBY2
     } asyncCartridgeTask = ASYNC_CARTRIDGE_IDLE;
     /* Address the current async cartridge */
     currentModule=currentAsyncCartridge;
@@ -885,22 +887,33 @@ int cartridgeAsync(void){
     /* Switch depending on the cartridge task */
     switch(asyncCartridgeTask){
         case ASYNC_CARTRIDGE_IDLE:
-            /* Check if the cartridge was turned on */
+            // Check if the cartridge was turned on
             if(frontend.
                 cartridge[currentAsyncCartridge].
-                 state==CARTRIDGE_ON){
+                 state==CARTRIDGE_ON) {
 
-                /* If CARTRIDGE_ON, then next task is initialization */
+                // If CARTRIDGE_ON, then next task is initialization
                 asyncCartridgeTask=ASYNC_CARTRIDGE_INIT;
 
-                /* Stay with this cartridge */
+                // Stay with this cartridge
+                return NO_ERROR;
+            }
+            // Check if the cartridge was put from CARTRIDGE_READY into STANDBY2 mode:
+            if(frontend.
+                cartridge[currentAsyncCartridge].
+                 state==CARTRIDGE_GO_STANDBY2) {
+
+                // If CARTRIDGE_ON, then next task is entering STANDBY2 mode
+                asyncCartridgeTask=ASYNC_CARTRIDGE_GO_STANDBY2;
+
+                // Stay with this cartridge
                 return NO_ERROR;
             }
             break;
 
         case ASYNC_CARTRIDGE_INIT:
             /* Initialize cartridge and switch on result */
-            switch(asyncCartridgeInit()){
+            switch(asyncCartridgeInit()) {
                 case NO_ERROR:
                     return NO_ERROR;
                     break;
@@ -934,7 +947,8 @@ int cartridgeAsync(void){
 
                         /* Next state: IDLE */
                         asyncCartridgeTask=ASYNC_CARTRIDGE_IDLE;
-                        break;
+                        break; //TODO:  this break is confusing.  I think it exits the case stmt.
+                               //       so none of the next steps execute.
                     }
 
                     /*  If it worked. Mark the catridge as off. */
@@ -950,14 +964,24 @@ int cartridgeAsync(void){
                     /* Decrease the number of currently turned on cartridges. */
                     frontend.
                      powerDistribution.
-                      poweredModules[CURRENT_VALUE]--;
+                      poweredModules--;
 
+                    #ifdef DEBUG_POWERDIS
+                        printPoweredModuleCounts();
+                    #endif /* DEBUG_POWERDIS */
 
-                    asyncCartridgeTask=ASYNC_CARTRIDGE_IDLE;
+                    asyncCartridgeTask = ASYNC_CARTRIDGE_IDLE;
                     break;
+
                 default:
                     break;
             }
+            break;
+
+        case ASYNC_CARTRIDGE_GO_STANDBY2:
+            asyncCartridgeGoStandby2();
+            // no errors propagate so just go back to idle state.
+            asyncCartridgeTask = ASYNC_CARTRIDGE_IDLE; 
             break;
 
         default:
@@ -965,25 +989,24 @@ int cartridgeAsync(void){
     }
 
     /* Next cartridge, if wrap around, then we are done with cartridges. */
-    if(++currentAsyncCartridge==CARTRIDGES_NUMBER){
-        currentAsyncCartridge-=CARTRIDGES_NUMBER;
+    if(++currentAsyncCartridge == CARTRIDGES_NUMBER) {
+        currentAsyncCartridge = 0;
 
         /* If all the cartrdiges have been handled then we are done */
         return ASYNC_DONE;
     }
-
     return NO_ERROR;
 }
 
 
-/* Asynchronously initialize a cartrdige */
+/* Asynchronously initialize a cartridge */
 int asyncCartridgeInit(void){
 
     /* A static enum to track the state of the async init function */
     static enum {
         ASYNC_CARTRIDGE_INIT_SET_WAIT,
         ASYNC_CARTRIDGE_INIT_WAIT,
-        ASYNC_CARTRDIGE_INIT_INIT
+        ASYNC_CARTRIDGE_INIT_INIT
     } asyncCartridgeInitState = ASYNC_CARTRIDGE_INIT_SET_WAIT;
 
     /* Check if the cartridge was turned off in the meantime */
@@ -1047,16 +1070,16 @@ int asyncCartridgeInit(void){
                    it is done by the queryAsyncTimer function if expired. */
                 if(timedOut==TIMER_EXPIRED){
                     /* Set next state */
-                    asyncCartridgeInitState=ASYNC_CARTRDIGE_INIT_INIT;
+                    asyncCartridgeInitState=ASYNC_CARTRIDGE_INIT_INIT;
                 }
 
                 break;
             }
-        case ASYNC_CARTRDIGE_INIT_INIT:
+        case ASYNC_CARTRIDGE_INIT_INIT:
             /* Perform the actual initialization */
             if(cartridgeInit(currentModule)==ERROR){
                 /* Set next state */
-                asyncCartridgeInitState=ASYNC_CARTRDIGE_INIT_INIT;
+                asyncCartridgeInitState=ASYNC_CARTRIDGE_INIT_INIT;
 
                 return ERROR;
             }
@@ -1076,6 +1099,30 @@ int asyncCartridgeInit(void){
             return ERROR;
             break;
     }
+
+    return NO_ERROR;
+}
+
+// Asynchronously set a cartridge to STANDBY2 mode:
+int asyncCartridgeGoStandby2(void) {
+    int polarization;
+
+    // Check if the cartridge was turned off in the meantime
+    if(frontend.
+        cartridge[currentModule].
+         state == CARTRIDGE_OFF) {
+
+        // Cartridge was turned off so nothing else to do
+        return ASYNC_DONE;
+    }
+
+    for(polarization=0; polarization < POLARIZATIONS_NUMBER; polarization++)
+        polarizationGoStandby2(currentModule, polarization);
+
+    // Set the state of the cartridge to READY:
+    frontend.
+     cartridge[currentModule].
+      state=CARTRIDGE_READY;
 
     return NO_ERROR;
 }

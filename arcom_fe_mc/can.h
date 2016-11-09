@@ -212,7 +212,7 @@
     /* Statics */
     /* A function to build CANMessage with the incoming data */
     static void receiveCANMessage(void);
-    static void sendCANMessage(void);
+    static void sendCANMessage(int appendStatusByte);
     /* All the handlers for the different messages */
     /* Classes */
     static void standardRCAsHandler(void);

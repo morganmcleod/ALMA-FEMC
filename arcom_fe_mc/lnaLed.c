@@ -90,6 +90,22 @@ static void enableHandler(void){
             lastEnable.
              status=NO_ERROR;
 
+        // If we are in STANDBY2 mode, return HARDW_BLKD_ERR
+        if (frontend.
+             cartridge[currentModule].
+              standby2) 
+        {
+            /* Store the ERROR state in the last control message variable */
+            frontend.
+             cartridge[currentModule].
+              polarization[currentBiasModule].
+               lnaLed.
+                lastEnable.
+                 status=HARDW_BLKD_ERR;
+                
+            return;
+        }
+        
         /* Change the status of the LNA led according to the content of the CAN
            message. */
         if(setLnaLedEnable(CAN_BYTE?LNA_LED_ENABLE:
@@ -138,4 +154,36 @@ static void enableHandler(void){
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }
 
+// set the specified LNA LED to STANDBY2 mode
+void lnaLedGoStandby2(int cartridge, int polarization) {
+    int bakModule, bakBiasModule, ret;
 
+    #ifdef DATABASE_HARDW
+        /* Check if the selected sideband is outfitted with the desired SIS */
+        if(frontend.
+            cartridge[cartridge].
+             polarization[polarization].
+              lnaLed.
+               available==UNAVAILABLE) {
+
+            // nothing to do:
+            return;
+        }
+    #endif /* DATABASE_HARDW */
+
+    // backup state variables used inside the serialInterface functions:
+    bakModule = currentModule;
+    bakBiasModule = currentBiasModule;
+    ret = 0;
+
+    // set the state variables to the selected subsystem:
+    currentModule = cartridge;
+    currentBiasModule = polarization;
+    
+    // disable the LNA LED:
+    ret = setLnaLedEnable(LNA_LED_DISABLE);
+
+    // restore the state variables:
+    currentModule = bakModule;
+    currentBiasModule = bakBiasModule;
+}

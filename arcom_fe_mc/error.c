@@ -1724,11 +1724,29 @@ void storeError(unsigned char moduleNo,
                     case 0x03: // Max number of cartrdiges already on
                         sprintf(error,
                                 "%s%d%s",
-                                "Error: The maximum allowed number of powered cartrdiges (",
+                                "Error: The maximum allowed number of cartridges (",
                                 frontend.
                                  powerDistribution.
-                                  poweredModules[MAX_SET_VALUE],
-                                ") is already turned on");
+                                  maxPoweredModules,
+                                ") are already turned on");
+                        break;
+                    case 0x04: // CAN payload was not CARTRIDGE_OFF, CARTRIDGE_ON, or CARTRIDGE_STANDBY2
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: illegal parameter (",
+                                CAN_BYTE,
+                                ") to SET_POWER_DISTRIBUTION_MODULE[Ca]_ENABLE");
+                        break;
+                    case 0x05: // STANDBY2 not allowed for band
+                        sprintf(error,
+                                "%s%d",
+                                "Error: STANDBY2 mode not allowed for band ",
+                                currentPowerDistributionModule);
+                        break;
+                    case 0x06: // illegal state transition
+                        sprintf(error,
+                                "%s",
+                                "Error: Illegal state transtion in pdModule::enableHandler()");
                         break;
                     default: // Undefined error
                         sprintf(error,

@@ -154,7 +154,7 @@ static void standardRCAsHandler(void){
             CAN_STATUS = HARDW_BLKD_ERR;
 
             /* Return the error since it was a monitor message */
-            sendCANMessage();
+            sendCANMessage(TRUE);
 
             return;
         }
@@ -178,7 +178,7 @@ static void standardRCAsHandler(void){
 
         /* Since it was a monitor request, then the reply message was assembled
            by the previous call, send the message! */
-        sendCANMessage();
+        sendCANMessage(TRUE);
 
         return;
     }
@@ -464,9 +464,11 @@ static void specialRCAsHandler(void){
                         printf("  0x%lX->GET_ERROR_NUMBER\n\n",
                                GET_ERRORS_NUMBER);
                     #endif // DEBUG_CAN
-                    CAN_SIZE=CAN_BYTE_SIZE;
-                    CAN_BYTE=(errorNewest>=errorOldest)?errorNewest-errorOldest:
-                                                        ERROR_HISTORY_LENGTH-(errorOldest-errorNewest)+1;
+                    CONV_UINT(0) = (errorNewest >= errorOldest) ? errorNewest - errorOldest :
+                                    ERROR_HISTORY_LENGTH - (errorOldest - errorNewest) + 1;
+                    CAN_DATA(0)=CONV_CHR(1);
+                    CAN_DATA(1)=CONV_CHR(0);
+                    CAN_SIZE = CAN_INT_SIZE;
                     break;
                 case GET_NEXT_ERROR: // 0x2000D -> Returns the next unread error
                     #ifdef DEBUG_CAN
@@ -504,7 +506,7 @@ static void specialRCAsHandler(void){
                     CAN_STATUS = MON_CAN_RNG; // Message out of range
                     break;
             }
-            sendCANMessage();
+            sendCANMessage(FALSE);
             break;
         default: // If special message is control
             #ifdef DEBUG_CAN
@@ -620,15 +622,14 @@ static void receiveCANMessage(void){
 
 
 /* A function to build the outgoing message from CANMessage */
-static void sendCANMessage(void){
+static void sendCANMessage(int appendStatusByte){
     unsigned char cnt;
 
     /* If there is space in the message then store the status byte as first
        after the payload and increase the size of the message by 1 */
-    if(CAN_SIZE<CAN_TX_MAX_PAYLOAD_SIZE){
+    if(appendStatusByte && CAN_SIZE<CAN_TX_MAX_PAYLOAD_SIZE){
         CAN_DATA(CAN_SIZE++)=CAN_STATUS;
     }
-
 
     #ifdef DEBUG_CAN
         printf("\nSending...\n");

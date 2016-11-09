@@ -140,6 +140,9 @@
     /* Externs */
     extern unsigned char currentPolarizationModule; //!< Current addressed polarization submodule
 
+    extern void polarizationGoStandby2(int cartridge, int polarization);
+    //!< Set the specified polarization to STANDBY2 mode
+
     /* Prototypes */
     /* Externs */
     extern void polarizationHandler(void); //!< This function deals with the incoming can message
