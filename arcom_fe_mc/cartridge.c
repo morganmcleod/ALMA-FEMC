@@ -246,8 +246,8 @@ int cartridgeStartup(void){
     /* Few variables to help load the data from the configuration file */
     CFG_STRUCT dataIn;
     float resistor=0.0;
-    unsigned char sensor, cnt;
-
+    unsigned char sensor;
+    unsigned char RESISTOR_VALUE_EXPECTED;
 
     /* A variable to hold the section names of the cartridge configuration file
        where the temperature sensors offsets can be found. */
@@ -265,49 +265,14 @@ int cartridgeStartup(void){
             cartridge[currentModule].
              configFile);
 
-    printf(" Initializing Cartridge %d ESN:",
-           currentModule+1);
-
-    /* Get the serial number from the configuration file */
-    /* Configure the read array */
-    dataIn.
-     Name=CARTRIDGE_ESN_KEY;
-    dataIn.
-     VarType=Cfg_HB_Array;
-    dataIn.
-     DataPtr=frontend.
-              cartridge[currentModule].
-               serialNumber;
-
-    /* Access configuration file, if error, then skip the configuration. */
-    if(myReadCfg(frontend.
-                  cartridge[currentModule].
-                   configFile,
-                 CARTRIDGE_ESN_SECTION,
-                 &dataIn,
-                 CARTRIDGE_ESN_EXPECTED)!=NO_ERROR){
-        return NO_ERROR;
-    }
-
-    /* Print the serial number */
-    for(cnt=0;
-        cnt<SERIAL_NUMBER_SIZE;
-        cnt++){
-        printf(" %x",
-               frontend.
-                cartridge[currentModule].
-                 serialNumber[cnt]);
-    }
-    printf("...\n"); // Serial number
-
     /* Load the hardware availability information for the selected cartridge. */
     printf("  - Hardware availability...\n");
 
     /* Polarization Level */
     for(currentBiasModule=0;
         currentBiasModule<POLARIZATIONS_NUMBER;
-        currentBiasModule++){
-
+        currentBiasModule++)
+    {
         /* Polarization availability */
         /* Configure the read array for polarization availability info */
         dataIn.
@@ -326,7 +291,8 @@ int cartridgeStartup(void){
                        configFile,
                      POL_AVAIL_SECT(currentBiasModule),
                      &dataIn,
-                     POL_AVAIL_EXPECTED)!=NO_ERROR){
+                     POL_AVAIL_EXPECTED)!=NO_ERROR)
+        {
             return NO_ERROR;
         }
         #ifdef DEBUG_STARTUP
@@ -343,8 +309,8 @@ int cartridgeStartup(void){
         /* Sideband Level */
         for(currentPolarizationModule=0;
             currentPolarizationModule<SIDEBANDS_NUMBER;
-            currentPolarizationModule++){
-
+            currentPolarizationModule++)
+        {
             /* Sideband availability */
             /* Configure the read array for sideband availability info */
             dataIn.
@@ -452,7 +418,6 @@ int cartridgeStartup(void){
                             available);
             #endif /* DEBUG_STARTUP */
 
-
             /* LNA availability */
             /* Configure the read array for LNA availability info */
             dataIn.
@@ -489,12 +454,11 @@ int cartridgeStartup(void){
                             available);
             #endif /* DEBUG_STARTUP */
 
-
             /* LNA STAGE Level */
             for(currentLnaModule=0;
                 currentLnaModule<LNA_STAGES_NUMBER;
-                currentLnaModule++){
-
+                currentLnaModule++)
+            {
                 /* LNA STAGE availability */
                 /* Configure the read array for LNA STAGE availability info */
                 dataIn.
@@ -518,7 +482,8 @@ int cartridgeStartup(void){
                                                   currentPolarizationModule,
                                                   currentLnaModule),
                              &dataIn,
-                             LNA_STAGE_AVAIL_EXPECTED)!=NO_ERROR){
+                             LNA_STAGE_AVAIL_EXPECTED)!=NO_ERROR)
+                {
                     return NO_ERROR;
                 }
 
@@ -557,7 +522,8 @@ int cartridgeStartup(void){
                        configFile,
                      LNA_LED_AVAIL_SECT(currentBiasModule),
                      &dataIn,
-                     LNA_LED_AVAIL_EXPECTED)!=NO_ERROR){
+                     LNA_LED_AVAIL_EXPECTED)!=NO_ERROR)
+        {
             return NO_ERROR;
         }
 
@@ -570,8 +536,6 @@ int cartridgeStartup(void){
                       lnaLed.
                        available);
         #endif /* DEBUG_STARTUP */
-
-
 
         /* SIS heater availability */
         /* Configure the read array for SIS heater availability info */
@@ -592,7 +556,8 @@ int cartridgeStartup(void){
                        configFile,
                      SIS_HEATER_AVAIL_SECT(currentBiasModule),
                      &dataIn,
-                     SIS_HEATER_AVAIL_EXPECTED)!=NO_ERROR){
+                     SIS_HEATER_AVAIL_EXPECTED)!=NO_ERROR)
+        {
             return NO_ERROR;
         }
 
@@ -603,40 +568,6 @@ int cartridgeStartup(void){
                     cartridge[currentModule].
                      polarization[currentBiasModule].
                       sisHeater.
-                       available);
-        #endif /* DEBUG_STARTUP */
-
-
-        /* Schottky mixer availability */
-        /* Configure the read array for Schottky mixer availability info */
-        dataIn.
-         Name=SCHOTTKY_AVAIL_KEY;
-        dataIn.
-         VarType=Cfg_Boolean;
-        dataIn.
-         DataPtr=&frontend.
-                   cartridge[currentModule].
-                    polarization[currentBiasModule].
-                     schottkyMixer.
-                      available;
-
-        /* Access configuration file, if error, then skip the configuration. */
-        if(myReadCfg(frontend.
-                      cartridge[currentModule].
-                       configFile,
-                     SCHOTTKY_AVAIL_SECT(currentBiasModule),
-                     &dataIn,
-                     SCHOTTKY_AVAIL_EXPECTED)!=NO_ERROR){
-            return NO_ERROR;
-        }
-
-        #ifdef DEBUG_STARTUP
-            /* Print the availability info */
-            printf("      - Schottky mixer available: %d\n",
-                   frontend.
-                    cartridge[currentModule].
-                     polarization[currentBiasModule].
-                      schottkyMixer.
                        available);
         #endif /* DEBUG_STARTUP */
     }
@@ -661,20 +592,26 @@ int cartridgeStartup(void){
     dataIn.
      DataPtr=&resistor;
 
+    // Resistor value is expected for bands 3-10:
+
+    RESISTOR_VALUE_EXPECTED = ((currentModule + 1) >= 3) ? 1 : 0;
+
     /* Access configuration file, if error, skip the configuration. */
     if(myReadCfg(frontend.
                   cartridge[currentModule].
                    configFile,
                  RESISTOR_VALUE_SECTION,
                  &dataIn,
-                 RESISTOR_VALUE_EXPECTED)!=NO_ERROR){
+                 RESISTOR_VALUE_EXPECTED)!=NO_ERROR)
+    {
         return NO_ERROR;
     }
 
     /* Store the value in all polarizations sidebands. */
     for(currentBiasModule=0;
         currentBiasModule<POLARIZATIONS_NUMBER;
-        currentBiasModule++){
+        currentBiasModule++)
+    {
         for(currentPolarizationModule=0;
             currentPolarizationModule<SIDEBANDS_NUMBER;
             currentPolarizationModule++){
@@ -708,7 +645,8 @@ int cartridgeStartup(void){
 
     for(sensor=0;
         sensor<CARTRIDGE_TEMP_SENSORS_NUMBER;
-        sensor++){
+        sensor++)
+    {
 
         /* Load the configuration for the available sensors */
         dataIn.
@@ -735,8 +673,8 @@ int cartridgeStartup(void){
         if(frontend.
             cartridge[currentModule].
              cartridgeTemp[sensor].
-              available==AVAILABLE){
-
+              available==AVAILABLE)
+        {
             /* If available, red the offset and store it in the frontend
                variable. */
             dataIn.

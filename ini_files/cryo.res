@@ -6,12 +6,6 @@
 ; Make sure to end every line containing data with a LF or CR/LF
 ;
 
-[INFO]
-;Electronic Serial Number (ESN)
-ESN=0a 0b a0 d0 0e ff 71 83
-;Cryostat Serial Number (SN)
-SN="40.03.00.00-001-x"
-
 [CRYOCOOLER_4K]
 ;TVO Sensor Serial Number
 TVO_NO=""

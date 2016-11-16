@@ -34,7 +34,9 @@
     extern int myReadCfg(const char *fileName,
                          char *sectionName,
                          CFG_STRUCT *searchVar,
-                         unsigned char expectedItems); //!< This function will read the specified data from the specified file
+                         unsigned char expectedItems); 
+    //!< This function will read the specified data from the specified file
+    //!< If expectedItems == 0 then no error if zero or too many items returned.
     extern int myWriteCfg(const char *fileName,
                           char *sectionName,
                           char *varWanted,

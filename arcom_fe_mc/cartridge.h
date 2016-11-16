@@ -96,13 +96,8 @@
     #define LNA_STAGE_AVAIL_KEY             "AVAILABLE"                                 // Key containing the LNA STAGE availability info
     #define LNA_STAGE_AVAIL_EXPECTED        1                                           // Expected keys in the section containing the LNA STAGE availability info
 
-    #define CARTRIDGE_ESN_SECTION   "INFO"  // Section containing the cartridge serial number
-    #define CARTRIDGE_ESN_KEY       "ESN"   // Key containing the cartridge serial number
-    #define CARTRIDGE_ESN_EXPECTED  1       // Expected keys containing the cartridge serial number
-
     #define RESISTOR_VALUE_SECTION  "RESISTOR"  // Section containing the resistor value
     #define RESISTOR_VALUE_KEY      "VALUE"     // Key containing the resistor value
-    #define RESISTOR_VALUE_EXPECTED 1           // Expected keys containing the resistor value
 
     #define SENSOR_SEC_NAME_SIZE    20  // Number of character needed to describe the section names for the cartridge temperature sensors
 
@@ -227,11 +222,6 @@
         /*! Temperature sensors are assigned to different locations in the
             cartridge according the the ICD. */
         CARTRIDGE_TEMP  cartridgeTemp[CARTRIDGE_TEMP_SENSORS_NUMBER];
-        
-        //! Serial Number
-        /*! This contains the serial number of the currently addressed
-            cartridge. */
-        char            serialNumber[SERIAL_NUMBER_SIZE];
         
         //! Configuration File
         /*! This contains the configuration file name as extracted from the
