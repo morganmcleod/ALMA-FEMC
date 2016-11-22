@@ -153,7 +153,7 @@ static void enableHandler(void){
         }
 
 
-        /* Change the status of the LNA led according to the content of the CAN
+        /* Change the status of the SIS heater according to the content of the CAN
            message. */
         if(setSisHeaterEnable(CAN_BYTE?SIS_HEATER_ENABLE:
                                        SIS_HEATER_DISABLE)==ERROR){

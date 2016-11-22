@@ -48,10 +48,6 @@
     #define POWER_COEFF_EXPECTED    1               // Expected keys containing the power detector scaling info in the section
     #define POWER_COEFF_DEFAULT     18.6            // Default value to use if no database is available
 
-    #define LPR_ESN_SECTION         "INFO"  // Section containing the LPR serial number
-    #define LPR_ESN_KEY             "ESN"   // Key containing the LPR serial number
-    #define LPR_ESN_EXPECTED        1       // Expected keys containing the LPR serial number
-
     /* Submodule definitions */
     #define LPR_MODULES_NUMBER      4       // See list below
     #define LPR_MODULES_RCA_MASK    0x00030 /* Mask to extract the submodule number:
@@ -62,26 +58,7 @@
 
     /* Typedefs */
     //! Current state of the LPR system
-    /*! This structure represent the current state of the LPR system
-        \ingroup    frontend
-        \param      ssi10MHzEnable  This contains the current state of the 10MHz
-                                    speed at the remote SSI interface:
-                                        - \ref ENABLE   -> Speed is set to 10MHz
-                                        - \ref DISABLE  -> Speed is set to 5MHz
-        \param      lprTemp[Sn]     This contains the information about the lpr
-                                    temperature sensors. There are
-                                    \ref LPR_TEMP_SENSORS_NUMBER sensor in each
-                                    lpr.
-        \param      opticalSwitch   This contains the information about the
-                                    state for the optical switch.
-        \param      edfa            This contains the information about the
-                                    state of the erbium doped fiber
-                                    amplifier.
-        \param      serialNumber    This contains the serial number of the
-                                    LPR in the current front end assembly
-        \param      configFile      This contains the configuration file name as
-                                    extracted from the frontend configuration
-                                    file. */
+    /*! This structure represent the current state of the LPR system */
     typedef struct {
         //! SSI 10MHz Enable
         /*! This variable indicates the current communication speed for the
@@ -89,23 +66,24 @@
                 - \ref ENABLE   -> Speed is set to 10 MHz
                 - \ref DISABLE  -> Speed is set to 5 MHz */
         unsigned char   ssi10MHzEnable;
+
         //! Lpr temperature current state
         /*! This is the state of the temperature sensors in the lpr. */
         LPR_TEMP        lprTemp[LPR_TEMP_SENSORS_NUMBER];
+
         //! Optical switch current state
         /*! Please see \ref OPTICAL_SWITCH for more information. */
         OPTICAL_SWITCH  opticalSwitch;
+
         //! EDFA current state
         /*! Please see \ref EDFA for more information. */
         EDFA            edfa;
-        //! Serial Number
-        /*! This contains the serial number of the LPR in the current front end
-            assembly. */
-        char            serialNumber[SERIAL_NUMBER_SIZE];
+
         //! Configuration File
         /*! This contains the configuration file name as extracted from the
             frontend configuration file. */
         char            configFile[MAX_FILE_NAME_SIZE];
+
     } LPR;
 
     /* Globals */

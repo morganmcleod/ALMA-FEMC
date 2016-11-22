@@ -55,10 +55,6 @@
 
     /* Defines */
     /* Configuration data info */
-    #define LO_ESN_SECTION   "INFO"  // Section containing the LO serial number
-    #define LO_ESN_KEY       "ESN"   // Key containing the LO serial number
-    #define LO_ESN_EXPECTED  1       // Expected keys containing the LO serial number
-
     #define PLL_LOOP_BW_SECTION  "PLL"      // Section containing the PLL loop bandwidth
     #define PLL_LOOP_BW_KEY      "LOOP_BW"  // Key containing the PLL loop bandwidth
     #define PLL_LOOP_BW_EXPECTED 1          // Expected keys containing the PLL loop bandwidth
@@ -132,34 +128,7 @@
     } MAX_SAFE_LO_PA_ENTRY;
 
     //! Current state of the LO
-    /*! This structure represent the current state of the LO.
-        \ingroup    cartridge
-        \param      ssi10MHzEnable  This contains the current state of the 10MHz
-                                    speed at the remote SSI interface:
-                                        - \ref ENABLE   -> Speed is set to 10MHz
-                                        - \ref DISABLE  -> Speed is set to 5MHz
-        \param      amc             This contains the information about the AMC
-                                    available for this LO. For more information
-                                    refer to \ref AMC.
-        \param      pll             This contains the information about the PLL
-                                    available for this LO. For more information
-                                    refer to \ref PLL.
-        \param      photomixer      This contains the information about the
-                                    PHOTOMIXER available for this LO. For more
-                                    information refer to \ref PHOTOMIXER.
-        \param      yto             This contains the information about the YTO
-                                    available for this LO. For more information
-                                    refer to \ref YTO
-        \param      serialNumber    This contains the serial number of the LO.
-        \param      configFile[MAX_FILE_NAME_SIZE]  This contains the
-                                                    configuration file name as
-                                                    extracted from the frontend
-                                                    configuration file.
-        \param      supplyVoltagesScale This contains the scale factor for all
-                                        the supply voltages in the LO.
-        \param      multiplierCurrentsScale This contains the scale factor for
-                                            all the multiplier currents in the
-                                            LO. */
+    /*! This structure represent the current state of the LO. */
     typedef struct {
         //! SSI 10MHz Enable
         /*! This variable indicates the current communication speed for the
@@ -167,37 +136,42 @@
                 - \ref ENABLE   -> Speed is set to 10 MHz
                 - \ref DISABLE  -> Speed is set to 5 MHz */
         unsigned char   ssi10MHzEnable;
+
         //! AMC current state
         /*! Please see the definition of the \ref AMC structure for more
             informations. */
         AMC         amc;
+
         //! PLL current state
         /*! Please see the definition of the \ref PLL structure for more
             informations. */
         PLL         pll;
+
         //! PA current state
         /*! Please see the definition of the \ref PA structure for more
             informations. */
         PA          pa;
+
         //! Photomixer current state
         /*! Please see the definition of the \ref PHOTOMIXER structure for more
             informations. */
         PHOTOMIXER  photomixer;
+
         //! YTO current state
         /*! Please see the definition of the \ref YTO structure for more
             informations. */
         YTO         yto;
-        //! Serial Number
-        /*! This contains the serial number of the currently addressed LO. */
-        char        serialNumber[SERIAL_NUMBER_SIZE];
+
         //! Configuration File
         /*! This contains the configuration file name as extracted from the
             frontend configuration file. */
         char        configFile[MAX_FILE_NAME_SIZE];
+
         //! Supply voltage scale facotr
         /*! This contains the scale factor of all the supply voltages monitored
             in the LO. */
         float       supplyVoltagesScale;
+
         //! Multiplier currents scale facotr
         /*! This contains the scale factor of all the multiplier currents
             monitored in the LO. */
@@ -206,6 +180,7 @@
         //! Max safe LO PA entries table size
         //* Size of the max safe LO PA entries table */
         unsigned char maxSafeLoPaTableSize;
+
         //! Max safe LO PA entries table
         /*! Table of max safe LO PA entries.  See definition above */
         MAX_SAFE_LO_PA_ENTRY *maxSafeLoPaTable;

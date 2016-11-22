@@ -70,8 +70,6 @@ int lprStartup(void){
     int timedOut;
 
     #ifdef DATABASE_HARDW
-        unsigned char cnt;
-
         /* Few variables to help load the coefficient in the frontend table */
         CFG_STRUCT  dataIn;
 
@@ -105,39 +103,7 @@ int lprStartup(void){
 
 
         /* Start the configuration */
-        printf(" Initializing LPR ESN:");
-
-        /* Get the serial number from the configuration file */
-        /* Configure the read array */
-        dataIn.
-         Name=LPR_ESN_KEY;
-        dataIn.
-         VarType=Cfg_HB_Array;
-        dataIn.
-         DataPtr=frontend.
-                  lpr.
-                   serialNumber;
-
-        /* Access configuration file, if error, return skip the configuration. */
-        if(myReadCfg(frontend.
-                      lpr.
-                       configFile,
-                     LPR_ESN_SECTION,
-                     &dataIn,
-                     LPR_ESN_EXPECTED)!=NO_ERROR){
-            return NO_ERROR;
-        }
-
-        /* Print serial number */
-        for(cnt=0;
-            cnt<SERIAL_NUMBER_SIZE;
-            cnt++){
-            printf(" %x",
-                   frontend.
-                    lpr.
-                     serialNumber[cnt]);
-        }
-        printf("...\n");
+        printf(" Initializing LPR...\n");
 
         /* Load the calibrated coefficient for the EDFA photodetector power
            redout. */

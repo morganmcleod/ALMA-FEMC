@@ -247,7 +247,6 @@ int cartridgeStartup(void){
     CFG_STRUCT dataIn;
     float resistor=0.0;
     unsigned char sensor;
-    unsigned char RESISTOR_VALUE_EXPECTED;
 
     /* A variable to hold the section names of the cartridge configuration file
        where the temperature sensors offsets can be found. */
@@ -573,38 +572,37 @@ int cartridgeStartup(void){
     }
     printf("    done!\n"); // Hardware availability
 
-
-    /* Load the SIS current sense resistor value. This assumes that all the
-       sidebands in all the polarizations have the same sense resistor. If this
-       is not the case then the software and the configuration files will have
-       to be update to allow for different values for different sidebands and
-       polarizations.
-       Also the availability of polarization and sideband should be checked
-       before this step. The check is skipped because no harm is done if the
-       value of the resistor is set for a not installed*/
-    printf("  - Sense resistor...\n");
-
-    /* Configure read array */
-    dataIn.
-     Name=RESISTOR_VALUE_KEY;
-    dataIn.
-     VarType=Cfg_Float;
-    dataIn.
-     DataPtr=&resistor;
-
     // Resistor value is expected for bands 3-10:
+    if ((currentModule + 1) >= 3) {
 
-    RESISTOR_VALUE_EXPECTED = ((currentModule + 1) >= 3) ? 1 : 0;
+        /* Load the SIS current sense resistor value. This assumes that all the
+           sidebands in all the polarizations have the same sense resistor. If this
+           is not the case then the software and the configuration files will have
+           to be update to allow for different values for different sidebands and
+           polarizations.
+           Also the availability of polarization and sideband should be checked
+           before this step. The check is skipped because no harm is done if the
+           value of the resistor is set for a not installed*/
+        printf("  - Sense resistor...\n");
 
-    /* Access configuration file, if error, skip the configuration. */
-    if(myReadCfg(frontend.
-                  cartridge[currentModule].
-                   configFile,
-                 RESISTOR_VALUE_SECTION,
-                 &dataIn,
-                 RESISTOR_VALUE_EXPECTED)!=NO_ERROR)
-    {
-        return NO_ERROR;
+        /* Configure read array */
+        dataIn.
+         Name=RESISTOR_VALUE_KEY;
+        dataIn.
+         VarType=Cfg_Float;
+        dataIn.
+         DataPtr=&resistor;
+
+        /* Access configuration file, if error, skip the configuration. */
+        if(myReadCfg(frontend.
+                      cartridge[currentModule].
+                       configFile,
+                     RESISTOR_VALUE_SECTION,
+                     &dataIn,
+                     RESISTOR_VALUE_EXPECTED)!=NO_ERROR)
+        {
+            return NO_ERROR;
+        }
     }
 
     /* Store the value in all polarizations sidebands. */

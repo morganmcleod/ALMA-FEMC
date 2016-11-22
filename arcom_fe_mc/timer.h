@@ -59,6 +59,9 @@
     /* ADC */
     #define TIMER_CRYO_ANALOG_WAIT      60      // Timer number
     #define TIMER_CRYO_TO_ANALOG_WAIT   100     // Timeout in milliseconds
+    /* CRYOSTAT_LOG_HOURS */
+    #define TIMER_CRYO_LOG_HOURS        61      // Timer number
+    #define TIMER_CRYO_LOG_HOURS_WAIT   3600000L // Timeout in milliseconds
 
     /*** LPR Module ***/
     /* ADC */

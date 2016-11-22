@@ -272,44 +272,7 @@ int loStartup(void){
              lo.
               configFile);
 
-    printf(" Initializing LO %d ESN:",
-           currentModule+1);
-
-    /* Get the serial number from the configuration file */
-    /* Configure the read array */
-    dataIn.
-     Name=LO_ESN_KEY;
-    dataIn.
-     VarType=Cfg_HB_Array;
-    dataIn.
-     DataPtr=frontend.
-              cartridge[currentModule].
-               lo.
-                serialNumber;
-
-    /* Access configuration file, if error, then skip the configuration. */
-    if(myReadCfg(frontend.
-                  cartridge[currentModule].
-                   lo.
-                    configFile,
-                 LO_ESN_SECTION,
-                 &dataIn,
-                 LO_ESN_EXPECTED)!=NO_ERROR){
-        return NO_ERROR;
-    }
-
-    /* Print the serial number */
-    for(cnt=0;
-        cnt<SERIAL_NUMBER_SIZE;
-        cnt++){
-        printf(" %x",
-               frontend.
-                cartridge[currentModule].
-                 lo.
-                  serialNumber[cnt]);
-    }
-    printf("...\n"); // Serial number
-
+    printf(" Initializing LO %d...\n", currentModule+1);
 
     /* Load the PLL Loop Bandwidth value in the frontend variable default
        value. */

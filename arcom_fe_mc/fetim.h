@@ -47,47 +47,30 @@
 
     /* Typedefs */
     //! Current state of the FETIM system
-    /*! This structure represent the curren tstate of the FETIM system
-        \ingroup    frontend
-        \param      available       This contains information about the
-                                    availability of the FETIM hardware. This
-                                    is going to be detected during the start up
-                                    sequence.
-        \param      serialNumber    This contains the serial number of the FETIM
-                                    in the current front end assembly
-        \param      configFile      This contains the configuration file name as
-                                    extracted from the frontend configuration
-                                    file.
-        \param      hardwRevision   This contains the hardware revision info
-                                    for the FETIM board.
-        \param      interlock       This contains the information about the
-                                    state of the thermal interlock subsystem.
-        \param      compressor      This contains the information about the
-                                    state of the compressor interlock subsystem.
-        \param      dewar           This contains the information about the
-                                    dewar subsystem. */
+    /*! This structure represent the curren tstate of the FETIM system */
     typedef struct {
         //! FETIM availability
         /*! This field indicated if the FETIM is installed or not in the front
             end. This will be determined at startup by the FEMC hardware. */
         unsigned char   available;
-        //! Serial Number
-        /*! This contains the serial number of the FETIM in the current front
-            end assembly. */
-        char            serialNumber[SERIAL_NUMBER_SIZE];
+
         //! Configuration File
         /*! This contains the configuration file name as extracted from the
             frontend configuration file. */
         char            configFile[MAX_FILE_NAME_SIZE];
+
         //! FETIM board hardware revision level
         /*! This contains the FETIM board hardware revision level */
         unsigned char   hardwRevision;
+
         //! FETIM thermal interlock
         /*! Please see \ref INTERLOCK for more information. */
         INTERLOCK       interlock;
+
         //! FETIM compressor interlock
         /*! Please see \ref COMPRESSOR for more information. */
         COMPRESSOR      compressor;
+
         //! FETIM dewar module
         /*! Please see \ref DEWAR for more information. */
         DEWAR           dewar;

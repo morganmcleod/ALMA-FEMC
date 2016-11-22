@@ -98,7 +98,7 @@
 
     #define RESISTOR_VALUE_SECTION  "RESISTOR"  // Section containing the resistor value
     #define RESISTOR_VALUE_KEY      "VALUE"     // Key containing the resistor value
-
+    #define RESISTOR_VALUE_EXPECTED 1           // Expected keys in for resistor value
     #define SENSOR_SEC_NAME_SIZE    20  // Number of character needed to describe the section names for the cartridge temperature sensors
 
     #define SENSOR_AVAIL_SECTION(Se)    sensors[Se]     // Section containing the availability for the temperature sensor
@@ -174,18 +174,7 @@
 
     /* Typedefs */
     //! Current state of the cartridge
-    /*! This structure represent the current state of the cartridge.
-        \ingroup    frontend
-        \param      available           an unsigned char
-        \param      state               an unsigned char
-        \param      polarization[Po]    a POLARIZATION
-        \param      lo                  a LO
-        \param      cartridgeTemp[Te]   a CARTRIDGE_TEMP
-        \param      serialNumber        This contains the serial number of the
-                                        cartridge
-        \param      configFile          This contains the configuration file
-                                        name as extracted from the frontend
-                                        configuration file. */
+    /*! This structure represent the current state of the cartridge. */
     typedef struct {
         //! Cartridge availability
         /*! This field indicates if a cartridge is installed or not in the

@@ -686,11 +686,11 @@ static void sendCANMessage(int appendStatusByte){
                 changeEndianInt(CONV_CHR_ADD,
                                 CAN_DATA_ADD);
             }
-            printf("%d",
+            printf("%u",
                    CONV_UINT(0));
             break;
         case CAN_BYTE_SIZE+1:
-            printf("%d",
+            printf("%u",
                    CAN_BYTE);
             break;
         default:

@@ -25,7 +25,7 @@
         #define CONSOLE                     // Turn on the console interface
         // #define DEBUG_CONSOLE               // Turn on console debugging
 
-        //#define DEBUG_CAN                   // Turn on CAN interface debug
+        // #define DEBUG_CAN                   // Turn on CAN interface debug
         // #define DEBUG_CAN_FAST              // Uncomment this line to enable the minimalistic CAN message debug in fast version
 
         // #define DEBUG_SERIAL                // Turn on Serial interface debug
@@ -37,14 +37,15 @@
         #define DEBUG_LPR                   // Turn on LPR debug
         #define DEBUG_FETIM                 // Turn on FETIM debug
         // #define DEBUG_INI                   // Turn on INI file access debug
-        #define DEBUG_STARTUP               // Turn on startup debugging
-        #define DEBUG_OWB                   // Turn on one wire bus debugging
+        // #define DEBUG_STARTUP               // Turn on startup debugging
+        // #define DEBUG_OWB                   // Turn on one wire bus debugging
         // #define DEBUG_PPCOM                 // Turn on the parallel port communication debugging
         // #define DEBUG_MSG_LOOP              // Turn on debugging the main() message loop
         #define DEBUG_INIT                  // Turn on initialization debugging
         #define DEBUG                       // Turn on all the rest and error reporting
         #define ERROR_REPORT                // Uncomment this line to enable the console error report
 
+        #define DEBUG_CRYOSTAT_ASYNC        // Turn on cryotat async debugging
         // #define DEBUG_FETIM_ASYNC           // Turn on the FETIM async debugging
     #else /* If we are NOT developing: for releases build */
         #define CONSOLE                     // Turn on the console interface
@@ -68,6 +69,7 @@
         // #define DEBUG_INIT                  // Turn on initialization debugging
         // #define DEBUG                       // Turn on all the rest and error reporting
         // #define ERROR_REPORT                // Uncomment this line to enable the console error report
+        // #define DEBUG_CRYOSTAT_ASYNC        // Turn on cryotat async debugging
         // #define DEBUG_FETIM_ASYNC           // Turn on the FETIM async debugging
     #endif /* DEVELOPMENT */
 
