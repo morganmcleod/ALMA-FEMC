@@ -439,12 +439,11 @@ void storeError(unsigned char moduleNo,
                 sprintf(module,
                         "LO in cartridge (%d)",
                         currentModule+1);
-                switch(errorNo){
-/*                  case 0x01: // LO module not installed
+                switch(errorNo) {
+                    case 0x01: // Control message out of range
                         sprintf(error,
-                                "%s%d%s",
-                                "Error: The LO in the cartridge is not installed");
-                        break; */
+                                "Error: The control message is out of range");
+                        break;
                     case 0x02: // LO submodule out of range
                         sprintf(error,
                                 "%s%d%s",
@@ -455,6 +454,10 @@ void storeError(unsigned char moduleNo,
                     case 0x03: // Warning: The addressed hardware is not properly defined yet
                         sprintf(error,
                                 "Warning: The addressed hardware is not properly defined yet. Firmware needs updating.");
+                        break;
+                    case 0x04: // Monitor message out of range
+                        sprintf(error,
+                                "Error: The monitor message is out of range");
                         break;
                     default: // Undefined error
                         sprintf(error,

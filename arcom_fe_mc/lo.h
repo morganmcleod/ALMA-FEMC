@@ -84,6 +84,8 @@
     #define LO_MULTIPLIER_C_EXPECTED    1                   // Expected keys containing the multiplier current scaling factor
 
     #define LO_PA_LIMITS_SECTION        "PA_LIMITS"         // Section containing the PA max safe power limits
+    #define LO_PA_LIMITS_ESN_KEY        "ESN"               // Key for the WCA ESN to which the table applies
+    #define LO_PA_LIMITS_ESN_EXPECTED   1                   // Expected keys containting ESN
     #define LO_PA_LIMITS_ENTRIES_KEY    "ENTRIES"           // Key containing number of PA limits entries
     #define LO_PA_LIMITS_EXPECTED       1                   // Expected keys containing PA limits
     #define LO_PA_LIMITS_MAX_ENTRIES    255                 // Maximum number of entries allowed
@@ -177,6 +179,10 @@
             monitored in the LO. */
         float       multiplierCurrentsScale;
         
+        //! ESN from LO PA entries table
+        /*! Contains the WCA ESN to which the max safe LO PA table should apply. */
+        char        maxSafeLoPaESN[SERIAL_NUMBER_SIZE];
+
         //! Max safe LO PA entries table size
         //* Size of the max safe LO PA entries table */
         unsigned char maxSafeLoPaTableSize;

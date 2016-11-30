@@ -494,6 +494,43 @@ static void specialRCAsHandler(void){
                               mode[CURRENT_VALUE];
                     CAN_SIZE=CAN_BYTE_SIZE;
                     break;
+
+                case GET_LO_PA_LIMITS_TABLE_ESN + 0:
+                case GET_LO_PA_LIMITS_TABLE_ESN + 1:
+                case GET_LO_PA_LIMITS_TABLE_ESN + 2:
+                case GET_LO_PA_LIMITS_TABLE_ESN + 3:
+                case GET_LO_PA_LIMITS_TABLE_ESN + 4:
+                case GET_LO_PA_LIMITS_TABLE_ESN + 5:
+                case GET_LO_PA_LIMITS_TABLE_ESN + 6:
+                case GET_LO_PA_LIMITS_TABLE_ESN + 7:
+                case GET_LO_PA_LIMITS_TABLE_ESN + 8:
+                case GET_LO_PA_LIMITS_TABLE_ESN + 9: 
+                    // handler to retrieve maxSafeLoPaESN is here so it can be called
+                    //  even if the cartridge is powered off.
+                    {
+                        char *str = frontend.
+                                     cartridge[(CAN_ADDRESS - GET_LO_PA_LIMITS_TABLE_ESN)].
+                                      lo.
+                                       maxSafeLoPaESN;
+
+                        #ifdef DEBUG_CAN
+                            printf("  0x%lX->GET_CARTRIDGE[%d]LO_PA_LIMITS_TABLE_ESN\n\n",
+                                   CAN_ADDRESS,
+                                   (CAN_ADDRESS - GET_LO_PA_LIMITS_TABLE_ESN + 1));
+                        #endif /* DEBUG_CAN */
+
+                        CAN_DATA(7)=str[7];
+                        CAN_DATA(6)=str[6];
+                        CAN_DATA(5)=str[5];
+                        CAN_DATA(4)=str[4];
+                        CAN_DATA(3)=str[3];
+                        CAN_DATA(2)=str[2];
+                        CAN_DATA(1)=str[1];
+                        CAN_DATA(0)=str[0];
+                        CAN_SIZE=CAN_FULL_SIZE;
+                    }
+                    break;
+                
                 /* This will take care also of all the monitor request on
                    special CAN control RCAs. It should be replaced by a proper
                    structure as the one used for standard RCAs */

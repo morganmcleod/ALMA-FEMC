@@ -288,7 +288,7 @@ static void drainVoltageHandler(void){
     #endif /* DEBUG */
 
     /* If control (size !=0) */
-    if(CAN_SIZE){
+    if(CAN_SIZE) {
         /* If the temperature of the dewar is >30K, don't allow the use of the
            PAs as too much power at this temperature could damage the
            multipliers. In the LO async loop, the PAs will be turned off if the
@@ -310,28 +310,17 @@ static void drainVoltageHandler(void){
         // start by assuming the command will be blocked:
         state=DISABLE;
 
-        // is the 4K cryostat sensor reading valid?
-        if((temp4K != FLOAT_ERROR) && (temp4K != FLOAT_UNINIT)) {
-            // yes, is it a reasonable real-world temperature?            
-            if (PA_TEMP_SANITY_CHECK(temp4K)) {
-                // yes, is it low enough to allow the PA to be enabled?
-                if (temp4K <= PA_MAX_ALLOWED_TEMP)
-                    state=ENABLE;   // yes.
-            }
+        // is the 4K cryostat sensor reading valid and below the threshold indicating cryocooling?
+        if (CRYOSTAT_TEMP_BELOW_MAX(temp4K, PA_MAX_ALLOWED_TEMP)) {
+            state=ENABLE;   // yes.
         }
 
         // may need to use the 12K sensor instead:
         if (state == DISABLE) {
-            // is the 12K cryostat sensor reading valid?
-            if((temp12K != FLOAT_ERROR) && (temp12K != FLOAT_UNINIT)) {
-                // yes, is it a reasonable real-world temperature?            
-                if (PA_TEMP_SANITY_CHECK(temp12K)) {
-                    // yes, is it low enough to allow the PA to be enabled?
-                    if (temp12K <= PA_MAX_ALLOWED_TEMP)
-                        state=ENABLE;   // yes.
-                }
+            if (CRYOSTAT_TEMP_BELOW_MAX(temp12K, PA_MAX_ALLOWED_TEMP)) {
+                state=ENABLE;   // yes.
             }
-        }            
+        }
 
         // If we are in TROUBLESHOOTING mode, ignore all the above safety checks and allow the voltage to be set:
         if (frontend.mode[CURRENT_VALUE] == TROUBLESHOOTING_MODE)

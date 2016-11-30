@@ -793,39 +793,22 @@ int cryostatAsyncLogHours(void) {
                       cryostatTemp[CRYOCOOLER_90K].
                        temp[CURRENT_VALUE];
 
-            // is the 4K cryostat sensor reading valid?
-            if((temp4K != FLOAT_ERROR) && (temp4K != FLOAT_UNINIT)) {
-                // yes, is it a reasonable real-world temperature?            
-                if (PA_TEMP_SANITY_CHECK(temp4K)) {
-                    // yes, is it below the threshold indicating cryocooling?
-                    if (temp4K <= CRYOSTAT_LOG_HOURS_THRESHOLD)
-                        state=ENABLE;   // yes.
-                }
+            // is the 4K cryostat sensor reading valid and below the threshold indicating cryocooling?
+            if (CRYOSTAT_TEMP_BELOW_MAX(temp4K, CRYOSTAT_LOG_HOURS_THRESHOLD)) {
+                state=ENABLE;   // yes.
             }
 
             // may need to use the 12K sensor instead:
             if (state == DISABLE) {
-                // is the 12K cryostat sensor reading valid?
-                if((temp12K != FLOAT_ERROR) && (temp12K != FLOAT_UNINIT)) {
-                    // yes, is it a reasonable real-world temperature?            
-                    if (PA_TEMP_SANITY_CHECK(temp12K)) {
-                        // yes, is it below the threshold indicating cryocooling?
-                        if (temp12K <= CRYOSTAT_LOG_HOURS_THRESHOLD)
-                            state=ENABLE;   // yes.
-                    }
+                if (CRYOSTAT_TEMP_BELOW_MAX(temp12K, CRYOSTAT_LOG_HOURS_THRESHOLD)) {
+                    state=ENABLE;   // yes.
                 }
-            }           
-
+            }
+            
             // may need to use the 90K sensor instead:
             if (state == DISABLE) {
-                // is the 90K cryostat sensor reading valid?
-                if((temp90K != FLOAT_ERROR) && (temp90K != FLOAT_UNINIT)) {
-                    // yes, is it a reasonable real-world temperature?            
-                    if (PA_TEMP_SANITY_CHECK(temp90K)) {
-                        // yes, is it below the threshold indicating cryocooling?
-                        if (temp90K <= CRYOSTAT_LOG_HOURS_THRESHOLD)
-                            state=ENABLE;   // yes.
-                    }
+                if (CRYOSTAT_TEMP_BELOW_MAX(temp90K, CRYOSTAT_LOG_HOURS_THRESHOLD)) {
+                    state=ENABLE;   // yes.
                 }
             }
 

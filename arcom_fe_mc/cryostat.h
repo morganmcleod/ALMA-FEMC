@@ -98,7 +98,17 @@
     #define CRYO_HOURS_MODULES_RCA_MASK  0x00001 /* Mask to extract the submodule number:
                                                            0 -> coldHeadHoursHandler
                                                            1 -> coldHeadHoursResetHandler */
+    #define CRYOSTAT_TEMP_RANGE_LOW   0.0       // cryostat sensor readings are considered valid if they
+    #define CRYOSTAT_TEMP_RANGE_HIGH  350.0     //   are within this range of real-world temperatures.
 
+    #define CRYOSTAT_TEMP_SANITY_CHECK(T) \
+        ((T != FLOAT_ERROR) && (T != FLOAT_UNINIT) && \
+         (CRYOSTAT_TEMP_RANGE_LOW < T) && (T < CRYOSTAT_TEMP_RANGE_HIGH))
+                                                //!< sanity check macro for testing temperature values
+
+    #define CRYOSTAT_TEMP_BELOW_MAX(T, MAX) \
+        (CRYOSTAT_TEMP_SANITY_CHECK(T) && (T < MAX))
+                                                //!< below threshold and sanity check macro for temps.
 
     #define CRYOSTAT_LOG_HOURS_THRESHOLD 260    // if any cryocooler stage is below this value,
                                                 // we log cryostat cooling hours.

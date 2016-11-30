@@ -27,7 +27,6 @@
 
         // #define DEBUG_CAN                   // Turn on CAN interface debug
         // #define DEBUG_CAN_FAST              // Uncomment this line to enable the minimalistic CAN message debug in fast version
-
         // #define DEBUG_SERIAL                // Turn on Serial interface debug
 
         #define DEBUG_POWERDIS              // Turn on Power Distribution debug

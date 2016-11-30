@@ -107,21 +107,22 @@
                     firmware version so this request should never be received by
                     this software. */
     #define BASE_SPECIAL_MONITOR_RCA    0x20000L
-    #define GET_AMBSI1_VERSION_INFO     BASE_SPECIAL_MONITOR_RCA            //!< \b BASE+0x00 -> AMBSI1 dedicated message to get firmware version. It should never be received from this software
-    #define GET_SETUP_INFO              (GET_AMBSI1_VERSION_INFO+0x01)      //!< \b BASE+0x01 -> AMBSI1 dedicated message to get setup info. It should never be received from this software
-    #define GET_ARCOM_VERSION_INFO      (GET_SETUP_INFO+0x01)               //!< \b BASE+0x02 -> Information about the ARCOM Pegasus firware version. This is the first addressable special RCA (Don't change the offset of this RCA, since it is register with the same number in the AMBSI1)
-    #define GET_SPECIAL_MONITOR_RCAS    (GET_ARCOM_VERSION_INFO+0x01)       //!< \b BASE+0x03 -> Information about the special monitor RCA range (Don't change the offset of this RCA, since it is register with the same number in the AMBSI1)
-    #define GET_SPECIAL_CONTROL_RCAS    (GET_SPECIAL_MONITOR_RCAS+0x01)     //!< \b BASE+0x04 -> Information about the special control RCA range (Don't change the offset of this RCA, since it is register with the same number in the AMBSI1)
-    #define GET_MONITOR_RCAS            (GET_SPECIAL_CONTROL_RCAS+0x01)     //!< \b BASE+0x05 -> Information about the monitor RCA range (Don't change the offset of this RCA, since it is register with the same number in the AMBSI1)
-    #define GET_CONTROL_RCAS            (GET_MONITOR_RCAS+0x01)             //!< \b BASE+0x06 -> Information about the control RCA range (Don't change the offset of this RCA, since it is register with the same number in the AMBSI1)
-    #define GET_PPCOMM_TIME             (GET_CONTROL_RCAS+0x01)             //!< \b BASE+0x07 -> Returns 8 bytes message allowing to evaluate the longest communication time on the parallel port (Don't change the offset of this RCA, since it is register with the same number in the AMBSI1)
-    #define GET_FPGA_VERSION_INFO       (GET_PPCOMM_TIME+0x01)              //!< \b BASE+0x08 -> Information about the FPGA firmware version.
-    #define GET_CONSOLE_ENABLE          (GET_FPGA_VERSION_INFO+0x01)        //!< \b BASE+0x09 -> Returns the current state of the console (0->disabled 1->enabled)
-    #define GET_ESNS_FOUND              (GET_CONSOLE_ENABLE+0x01)           //!< \b BASE+0x0A -> Returns the number of ESNs found
-    #define GET_ESNS                    (GET_ESNS_FOUND+0x01)               //!< \b BASE+0x0B -> Returns the list of the found ESNs
-    #define GET_ERRORS_NUMBER           (GET_ESNS+0x01)                     //!< \b BASE+0x0C -> Returns the number unread errors in the error buffer
-    #define GET_NEXT_ERROR              (GET_ERRORS_NUMBER+0x01)            //!< \b BASE+0x0D -> Returns the next unread error
-    #define GET_FE_MODE                 (GET_NEXT_ERROR+0x01)               //!< \b BASE+0x0E -> Returns the current FE operating mode
+    #define GET_AMBSI1_VERSION_INFO     0x20000L    //!< \b BASE+0x00 -> AMBSI1 dedicated message to get firmware version. It should never be received from this software
+    #define GET_SETUP_INFO              0x20001L    //!< \b BASE+0x01 -> AMBSI1 dedicated message to get setup info. It should never be received from this software
+    #define GET_ARCOM_VERSION_INFO      0x20002L    //!< \b BASE+0x02 -> Information about the ARCOM Pegasus firware version. This is the first addressable special RCA (Don't change the offset of this RCA, since it is register with the same number in the AMBSI1)
+    #define GET_SPECIAL_MONITOR_RCAS    0x20003L    //!< \b BASE+0x03 -> Information about the special monitor RCA range (Don't change the offset of this RCA, since it is register with the same number in the AMBSI1)
+    #define GET_SPECIAL_CONTROL_RCAS    0x20004L    //!< \b BASE+0x04 -> Information about the special control RCA range (Don't change the offset of this RCA, since it is register with the same number in the AMBSI1)
+    #define GET_MONITOR_RCAS            0x20005L    //!< \b BASE+0x05 -> Information about the monitor RCA range (Don't change the offset of this RCA, since it is register with the same number in the AMBSI1)
+    #define GET_CONTROL_RCAS            0x20006L    //!< \b BASE+0x06 -> Information about the control RCA range (Don't change the offset of this RCA, since it is register with the same number in the AMBSI1)
+    #define GET_PPCOMM_TIME             0x20007L    //!< \b BASE+0x07 -> Returns 8 bytes message allowing to evaluate the longest communication time on the parallel port (Don't change the offset of this RCA, since it is register with the same number in the AMBSI1)
+    #define GET_FPGA_VERSION_INFO       0x20008L    //!< \b BASE+0x08 -> Information about the FPGA firmware version.
+    #define GET_CONSOLE_ENABLE          0x20009L    //!< \b BASE+0x09 -> Returns the current state of the console (0->disabled 1->enabled)
+    #define GET_ESNS_FOUND              0x2000AL    //!< \b BASE+0x0A -> Returns the number of ESNs found
+    #define GET_ESNS                    0x2000BL    //!< \b BASE+0x0B -> Returns the list of the found ESNs
+    #define GET_ERRORS_NUMBER           0x2000CL    //!< \b BASE+0x0C -> Returns the number unread errors in the error buffer
+    #define GET_NEXT_ERROR              0x2000DL    //!< \b BASE+0x0D -> Returns the next unread error
+    #define GET_FE_MODE                 0x2000EL    //!< \b BASE+0x0E -> Returns the current FE operating mode
+    #define GET_LO_PA_LIMITS_TABLE_ESN  0x20010L    //!< \b BASE+0x10 through 0x19 return the PA LIMITS table ESN
     #define LAST_SPECIAL_MONITOR_RCA    (BASE_SPECIAL_MONITOR_RCA+0x00FFF)  // Last possible special monitor RCA
     /* Control */
     //! \b 0x21000 -> Base address for the special control RCAs
@@ -129,11 +130,11 @@
         requests available in the firmware. */
 
     #define BASE_SPECIAL_CONTROL_RCA    0x21000L
-    #define SET_EXIT_PROGRAM            BASE_SPECIAL_CONTROL_RCA            //!< \b BASE+0x00 -> Ends the execution of the main program
-    #define SET_REBOOT                  (SET_EXIT_PROGRAM+0x01)             //!< \b BASE+0x01 -> Reboots the ARCOM board
-    #define SET_CONSOLE_ENABLE          (SET_EXIT_PROGRAM+0x09)             //!< \b BASE+0x09 -> Enables/Disables the console
-    #define SET_FE_MODE                 (SET_EXIT_PROGRAM+0x0E)             //!< \b BASE+0x0E -> Changes the current FE operating mode
-    #define SET_READ_ESN                (SET_EXIT_PROGRAM+0x0F)             //!< \b BASE+0x0F -> Forces the firmware to read again the ESN available on the OWB
+    #define SET_EXIT_PROGRAM            0x21000L    //!< \b BASE+0x00 -> Ends the execution of the main program
+    #define SET_REBOOT                  0x21001L    //!< \b BASE+0x01 -> Reboots the ARCOM board
+    #define SET_CONSOLE_ENABLE          0x21009L    //!< \b BASE+0x09 -> Enables/Disables the console
+    #define SET_FE_MODE                 0x2100EL    //!< \b BASE+0x0E -> Changes the current FE operating mode
+    #define SET_READ_ESN                0x2100FL    //!< \b BASE+0x0F -> Forces the firmware to read again the ESN available on the OWB
     #define LAST_SPECIAL_CONTROL_RCA    (BASE_SPECIAL_CONTROL_RCA+0x00FFF)  // Last possible special monitor RCA
 
 

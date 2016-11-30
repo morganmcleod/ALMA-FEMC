@@ -554,28 +554,40 @@ int loStartup(void){
     /* Set the limits for control messages */
     printf("  - Setting limits for control messages\n");
     printf("    - YTO coarse tuning\n");
-        frontend.
-         cartridge[currentModule].
-          lo.
-          yto.
-           ytoCoarseTune[MIN_SET_VALUE]=YTO_COARSE_SET_MIN;
+    frontend.
+     cartridge[currentModule].
+      lo.
+      yto.
+       ytoCoarseTune[MIN_SET_VALUE]=YTO_COARSE_SET_MIN;
 
-        frontend.
-         cartridge[currentModule].
-          lo.
-           yto.
-            ytoCoarseTune[MAX_SET_VALUE]=YTO_COARSE_SET_MAX;
+    frontend.
+     cartridge[currentModule].
+      lo.
+       yto.
+        ytoCoarseTune[MAX_SET_VALUE]=YTO_COARSE_SET_MAX;
 
     printf("      done!\n"); // YTO course tuning
-    printf("    - Setting max safe power limits\n");
-        frontend.
-          cartridge[currentModule].
-            lo.
-              maxSafeLoPaTableSize=0;
-        frontend.
-          cartridge[currentModule].
-            lo.
-              maxSafeLoPaTable=NULL;
+    printf("    - Loading max safe power limits\n");
+
+    // maxSafeLoPaESN gets filled:
+    //  A valid 8-byte ESN -> The ESN data item from the PA_LIMITS table.
+    //  8 bytes 00 -> No PA_LIMITS table was found.
+    //  8 bytes FF -> PA_LIMITS table was found but no ESN entry found.
+
+    frontend.
+      cartridge[currentModule].
+        lo.
+          maxSafeLoPaTableSize=0;
+    
+    frontend.
+      cartridge[currentModule].
+        lo.
+          maxSafeLoPaTable=NULL;
+
+    memset(frontend.
+            cartridge[currentModule].
+             lo.
+              maxSafeLoPaESN, 0, SERIAL_NUMBER_SIZE);
 
     /* Configure read array */
     dataIn.
@@ -597,7 +609,7 @@ int loStartup(void){
     }
 
     /* Allocate the max safe LO PA entries table. */
-    if (cnt > 0){
+    if (cnt > 0) {
         frontend.
          cartridge[currentModule].
           lo.
@@ -607,19 +619,19 @@ int loStartup(void){
         if (frontend.
              cartridge[currentModule].
               lo.
-               maxSafeLoPaTable != NULL){
+               maxSafeLoPaTable != NULL) {
 
             /* store the table size. */
             frontend.
              cartridge[currentModule].
               lo.
-               maxSafeLoPaTableSize=cnt;
+               maxSafeLoPaTableSize = cnt;
 
-            printf("ENTRIES=%d\n", (int) cnt);
+            printf("    - ENTRIES=%d\n", (int) cnt);
         }
     }
 
-    if (cnt > 0){
+    if (cnt > 0) {
         /* start loading the entries */
         
         unsigned char actualCnt=0;
@@ -634,61 +646,103 @@ int loStartup(void){
                  cartridge[currentModule].
                   lo.
                    maxSafeLoPaTableSize;
-            cnt++){
+            cnt++)
+        {
+            /* format entry name */
+            sprintf(entryName, LO_PA_LIMITS_ENTRY_KEY, (int) (cnt + 1));
+            printf(entryName);
+            printf("=");
 
-                /* format entry name */
-                sprintf(entryName, LO_PA_LIMITS_ENTRY_KEY, (int) (cnt + 1));
-                printf(entryName);
-                printf("=");
+            /* Configure read array */
+            dataIn.
+             Name=entryName;
+            dataIn.
+             VarType=Cfg_String;
+            dataIn.
+             DataPtr=entryText;
 
-                /* Configure read array */
-                dataIn.
-                 Name=entryName;
-                dataIn.
-                 VarType=Cfg_String;
-                dataIn.
-                 DataPtr=entryText;
+            /* Access configuration file.  If error, ignore this entry */
+            if(myReadCfg(frontend.
+                          cartridge[currentModule].
+                           lo.
+                            configFile,
+                         LO_PA_LIMITS_SECTION,
+                         &dataIn,
+                         LO_PA_LIMITS_EXPECTED)==NO_ERROR){
 
-                /* Access configuration file.  If error, ignore this entry */
-                if(myReadCfg(frontend.
-                              cartridge[currentModule].
-                               lo.
-                                configFile,
-                             LO_PA_LIMITS_SECTION,
-                             &dataIn,
-                             LO_PA_LIMITS_EXPECTED)==NO_ERROR){
+                //printf(entryText);
 
-                    //printf(entryText);
+                memset(nextEntry, 0, sizeof(MAX_SAFE_LO_PA_ENTRY));
 
-                    memset(nextEntry, 0, sizeof(MAX_SAFE_LO_PA_ENTRY));
+                str = strtok(entryText, " ,\t");
+                if (str) {
+                    (*nextEntry).ytoEndpoint = (unsigned int) atoi(str);
+                    str = strtok(NULL, " ,\t");
+                }
+                if (str) {
+                    (*nextEntry).maxVD0 = atof(str);
+                    str = strtok(NULL, " ,\t");
+                }
+                if (str) {
+                    (*nextEntry).maxVD1 = atof(str);
+                }
 
-                    str = strtok(entryText, " ,\t");
-                    if (str) {
-                        (*nextEntry).ytoEndpoint = (unsigned int) atoi(str);
-                        str = strtok(NULL, " ,\t");
-                    }
-                    if (str) {
-                        (*nextEntry).maxVD0 = atof(str);
-                        str = strtok(NULL, " ,\t");
-                    }
-                    if (str) {
-                        (*nextEntry).maxVD1 = atof(str);
-                    }
+                printf("yto=%u, vd0=%f, vd1=%f", 
+                       (*nextEntry).ytoEndpoint, (*nextEntry).maxVD0, (*nextEntry).maxVD1);
 
-                    printf("yto=%u, vd0=%f, vd1=%f", 
-                           (*nextEntry).ytoEndpoint, (*nextEntry).maxVD0, (*nextEntry).maxVD1);
-
-                    nextEntry++;
-                    actualCnt++;
-                }                        
-                printf("\n");
-
+                nextEntry++;
+                actualCnt++;
+            }                        
+            printf("\n");
         }
+
         /* save the number of entries actually loaded */
         frontend.
          cartridge[currentModule].
           lo.
-           maxSafeLoPaTableSize=actualCnt;
+           maxSafeLoPaTableSize = actualCnt;
+
+        if (actualCnt) {
+            // Get the ESN from LO PA entries table
+            dataIn.
+             Name=LO_PA_LIMITS_ESN_KEY;
+            dataIn.
+             VarType=Cfg_HB_Array;
+            dataIn.
+             DataPtr=frontend.
+                      cartridge[currentModule].
+                       lo.
+                        maxSafeLoPaESN;
+
+            if (ReadCfg(frontend.
+                         cartridge[currentModule].
+                          lo.
+                           configFile,
+                        LO_PA_LIMITS_SECTION,
+                        &dataIn) != LO_PA_LIMITS_ESN_EXPECTED) {
+
+                // not found.  Save 8-bytes FF to the table:
+                memset(frontend.
+                        cartridge[currentModule].
+                         lo.
+                          maxSafeLoPaESN, 0xFF, SERIAL_NUMBER_SIZE);
+            }
+
+            str = frontend.
+                   cartridge[currentModule].
+                    lo.
+                     maxSafeLoPaESN;
+
+            printf("    - ESN: %02X %02X %02X %02X %02X %02X %02X %02X\n",
+                   str[0],
+                   str[1],
+                   str[2],
+                   str[3],
+                   str[4],
+                   str[5],
+                   str[6],
+                   str[7]);
+        }
     }
     printf("      done!\n"); // max safe power
     printf("    done!\n"); // Control message limits
