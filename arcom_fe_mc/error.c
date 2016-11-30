@@ -1978,10 +1978,6 @@ void storeError(unsigned char moduleNo,
                                 CONV_FLOAT,
                                 ") is in the warning range");
                         break;
-                    case 0x06: // Warning: Backing pump OFF
-                        sprintf(error,
-                                "Warning: The backing pump is OFF. Supply current monitoring disabled.");
-                        break;
                     default: // Undefined error
                         sprintf(error,
                                 "%s%d%s",

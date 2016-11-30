@@ -78,7 +78,7 @@ static HANDLER  cryostatModulesHandler[CRYOSTAT_MODULES_NUMBER]={cryostatTempHan
 
 
 static HANDLER  coldHeadModulesHandler[CRYO_HOURS_MODULES_NUMBER]={coldHeadHoursHandler,
-                                                                  coldHeadHoursResetHandler};
+                                                                   coldHeadHoursResetHandler};
 
 /* Cryostat handler */
 /*! This function will be called by the CAN message handler when the received
@@ -379,19 +379,6 @@ void supplyCurrent230VHandler(void){
         printf("  230V Supply current\n");
     #endif /* DEBUG_CRYOSTAT */
 
-    /* Check if the backing pump is enabled. If it's not then the electronics to
-       monitor the supply current is off. In that case, return the
-       HARDW_BLKD_ERR and return. */
-    if(frontend.
-        cryostat.
-         backingPump.
-          enable[CURRENT_VALUE]==BACKING_PUMP_DISABLE){
-        storeError(ERR_CRYOSTAT,
-                   0x06); // Error 0x06 -> Backing Pump off -> Reading disabled
-        CAN_STATUS = HARDW_BLKD_ERR; // Notify the incoming CAN message
-        return;
-    }
-
     /* If control (size!=0) store error and return. No control messages are
        allowed on this RCA. */
     if(CAN_SIZE){
@@ -457,8 +444,18 @@ void supplyCurrent230VHandler(void){
         #endif /* DATABASE_RANGE */
     }
 
+    /* If monitor on a monitor RCA */
+    if (frontend.
+         cryostat.
+          backingPump.
+           enable[CURRENT_VALUE] == BACKING_PUMP_DISABLE) 
+    {
+        // always return HARDW_BLKD when the backing pump is off
+        CAN_STATUS = HARDW_BLKD_ERR;
+    }
+
     /* If the async monitoring is disabled, notify the monitored message */
-    if(asyncState==ASYNC_OFF){
+    if (asyncState == ASYNC_OFF) {
         CAN_STATUS = HARDW_BLKD_ERR;
     }
 
@@ -532,8 +529,8 @@ void coldHeadHoursHandler(void) {
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big endian
        (CAN). */
-    changeEndian(CAN_DATA_ADD,
-                 CONV_CHR_ADD);
+    changeEndianInt(CAN_DATA_ADD,
+                    CONV_CHR_ADD);
     CAN_SIZE=CAN_INT_SIZE;
 }
 
@@ -547,18 +544,11 @@ void coldHeadHoursResetHandler(void) {
 
     /* If control (size !=0) */
     if (CAN_SIZE) {
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cryostat.
-                  lastResetColdHeadHours,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
 
-        // Overwrite the last control message status with the default NO_ERROR status.
-        frontend.
-         cryostat.
-          lastResetColdHeadHours.
-           status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cryostat.
+                                    lastResetColdHeadHours)
 
         // If the payload is 1, reset the cold head hours:
         if (CAN_BYTE == 1) {
@@ -587,31 +577,19 @@ void coldHeadHoursResetHandler(void) {
     }
 
     /* If monitor on a control RCA */
-    if(currentClass==CONTROL_CLASS){
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   sisHeater.
-                    lastEnable,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+    if (currentClass==CONTROL_CLASS) {
+        // Return the last control message and status:
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cryostat.
+                                      lastResetColdHeadHours)
         return;
     }
 
     /* If monitor on a monitor RCA */
-    /* Since the change to the hardware introducing the automatic shutoff of the
-       SIS heater after 1 second (starting with Rev.D2 of the BIAS mdoule), this
-       monitor point is no longer meaningful since is just the repetition of the
-       monitor on the control RCA. */
     storeError(ERR_CRYOSTAT,
                0x03); // Error 0x06: Monitor message out of range
     /* Store the state in the outgoing CAN message */
     CAN_STATUS = MON_CAN_RNG;
-
 }
 
 

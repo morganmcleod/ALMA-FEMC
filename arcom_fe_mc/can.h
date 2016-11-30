@@ -201,6 +201,18 @@
         unsigned char   status;
     } LAST_CONTROL_MESSAGE;
 
+    //! A macro to save the incoming control message into a LAST_CONTROL_MESSAGE struct
+    //!  then reset its status to NO_ERROR prior to command processing.
+    //!  This pattern is repeated all over the code!
+    #define SAVE_LAST_CONTROL_MESSAGE(target) { \
+        memcpy(&target, &CAN_SIZE, CAN_LAST_CONTROL_MESSAGE_SIZE); \
+        target.status = NO_ERROR; }
+
+    //! A macro to return the last control mesage and status.
+    //!  This pattern is repeated all over the code!
+    #define RETURN_LAST_CONTROL_MESSAGE(source) { \
+        memcpy(&CAN_SIZE, &source, CAN_LAST_CONTROL_MESSAGE_SIZE); }
+
     /* Globals */
     /* Externs */
     extern volatile unsigned char newCANMsg;    //!< Notifier to the main program that a new CAN message has arrived

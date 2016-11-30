@@ -36,23 +36,7 @@ void solenoidValveHandler(void){
         printf("  Solenoid Valve\n");
     #endif /* DEBUG_CRYOSTAT */
 
-    /* Check if the backing pump is enabled. If it's not then the electronics to
-       monitor and control the solenoid valve is off. In that case, return the
-       HARDW_BLKD_ERR and return. */
-    if(frontend.
-        cryostat.
-         backingPump.
-          enable[CURRENT_VALUE]==BACKING_PUMP_DISABLE){
-        storeError(ERR_SOLENOID_VALVE,
-                   0x03); // Error 0x03 -> Backing Pump off -> Solenoid valve disabled
-        CAN_STATUS = HARDW_BLKD_ERR; // Notify the incoming CAN message
-        return;
-    }
-
-    /* Since there is only one submodule in the turbo valve, the check to see if
-       the desired submodule is in range, is not neede and we can directly call
-       the correct handler. */
-    /* Call the correct handler */
+    /* Call the correct handler -- there is only one for this subsystem */
     (solenoidValveModulesHandler[currentSolenoidValveModule])();
 
     return;
@@ -61,29 +45,38 @@ void solenoidValveHandler(void){
 /* Solenoid valve state handler */
 /* This function deals with the messages directed to the solenoid valve
    state. */
-static void stateHandler(void){
+static void stateHandler(void) {
 
     #ifdef DEBUG_CRYOSTAT
         printf("   State\n");
     #endif /* DEBUG_CRYOSTAT */
 
     /* If control (size !=0) */
-    if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cryostat.
-                  solenoidValve.
-                   lastState,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
+    if(CAN_SIZE) {
 
-        /* Overwrite the last control message status with the default NO_ERROR
-           status */
-        frontend.
-         cryostat.
-          solenoidValve.
-           lastState.
-            status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cryostat.
+                                    solenoidValve.
+                                     lastState)
+
+        /* Check if the backing pump is enabled. If it's not then the electronics to
+           control the solenoid valve is off. In that case, return the
+           HARDW_BLKD_ERR and return. */
+        if(frontend.
+            cryostat.
+             backingPump.
+              enable[CURRENT_VALUE] == BACKING_PUMP_DISABLE) {
+            storeError(ERR_SOLENOID_VALVE,
+                       0x03); // Error 0x03 -> Backing Pump off -> Solenoid valve disabled
+            
+            frontend.
+             cryostat.
+              solenoidValve.
+               lastState.
+                status=HARDW_BLKD_ERR;
+            return;
+        }
 
         /* Change the status of the solenoid valve according to the content of the
            CAN message. */
@@ -104,16 +97,11 @@ static void stateHandler(void){
 
     /* If monitor on a control RCA */
     if(currentClass==CONTROL_CLASS){
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized. */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cryostat.
-                  solenoidValve.
-                   lastState,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cryostat.
+                                      solenoidValve.
+                                       lastState)
         return;
     }
 
@@ -168,14 +156,23 @@ static void stateHandler(void){
         #endif /* DATABASE_RANGE */
     }
 
-    /* If the monitor state return differs from the control register status,
-       then the interlock has closed the valve: return a warning. */
-    if(CAN_BYTE!=cryoRegisters.
-                  bReg.
-                   bitField.
-                    solenoidValve){
-        storeError(ERR_SOLENOID_VALVE,
-                   0x04); // Error 0x04 -> Warning: Solenoid valve closed by interlock
+    // If the solenoid valve monitor state differs from the control register status..
+    if (CAN_BYTE != cryoRegisters.
+                     bReg.
+                      bitField.
+                       solenoidValve)
+    { 
+        // But the backing pump is enabled..
+        if (frontend.
+             cryostat.
+              backingPump.
+               enable[CURRENT_VALUE] == BACKING_PUMP_ENABLE)
+        {
+            // Report a wanrning that the interlock is in control:
+            storeError(ERR_SOLENOID_VALVE,
+                       0x04); // Error 0x04 -> Warning: Solenoid valve closed by interlock
+        }
+        // Either way, respond that the hardware is blocked:
         CAN_STATUS = HARDW_BLKD_ERR;
     }
 

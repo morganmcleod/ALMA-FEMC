@@ -38,19 +38,6 @@ void turboPumpHandler(void){
         printf("  Turbo Pump\n");
     #endif /* DEBUG_CRYOSTAT */
 
-    /* Check if the backing pump is enabled. If it's not then the electronics to
-       monitor and control the turbo pump is off. In that case, return the
-       HARDW_BLKD_ERR and return. */
-    if(frontend.
-        cryostat.
-         backingPump.
-          enable[CURRENT_VALUE]==BACKING_PUMP_DISABLE){
-        storeError(ERR_TURBO_PUMP,
-                   0x08); // Error 0x08 -> Backing Pump off -> Turbo pump disabled
-        CAN_STATUS = HARDW_BLKD_ERR; // Notify the incoming CAN message
-        return;
-    }
-
     /* Since the cryostat is always outfitted with the turbo pump, no hardware
        check is required. */
 
@@ -79,22 +66,53 @@ static void enableHandler(void){
     #endif /* DEBUG_CRYOSTAT */
 
     /* If control (size !=0) */
-    if(CAN_SIZE){
-        /* If FETIM available and external sensors temperature < 15C, do not start
-           and return HARDW_BLK_ERROR. */
-        if(frontend.
-            fetim.
-             available==AVAILABLE){
+    if(CAN_SIZE) {
+        
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cryostat.
+                                    turboPump.
+                                     lastEnable)
+
+        /* Check if the backing pump is enabled. If it's not then the electronics to
+           control the turbo pump are off.  Store HARDW_BLKD_ERR and return. */
+
+        if (frontend.
+             cryostat.
+              backingPump.
+               enable[CURRENT_VALUE] == BACKING_PUMP_DISABLE) 
+        {
+            frontend.
+             cryostat.
+              turboPump.
+               lastEnable.
+                status=HARDW_BLKD_ERR; // Store the status in the last control message
+
+            // if the command was to enable, register an error too:
+            if (CAN_BYTE) {
+                storeError(ERR_TURBO_PUMP,
+                           0x08); // Error 0x08 -> Backing Pump off -> Turbo pump disabled
+            }
+            return;
+        }
+
+        /* If FETIM available and external sensors temperature out of range, return HARDW_BLK_ERROR. */
+        if (CAN_BYTE &&
+            frontend.
+             fetim.
+              available==AVAILABLE) 
+        {
             if((frontend.
                  fetim.
                   compressor.
                    temp[COMP_TEMP_SENSOR_TURBO].
-                    temp[CURRENT_VALUE]<TURBO_PUMP_MIN_TEMPERATURE)||(frontend.
-                                                                       fetim.
-                                                                        compressor.
-                                                                         temp[COMP_TEMP_SENSOR_TURBO].
-                                                                          temp[CURRENT_VALUE]>TURBO_PUMP_MAX_TEMPERATURE)){
-
+                    temp[CURRENT_VALUE] < TURBO_PUMP_MIN_TEMPERATURE) ||
+               (frontend.
+                fetim.
+                 compressor.
+                  temp[COMP_TEMP_SENSOR_TURBO].
+                   temp[CURRENT_VALUE] > TURBO_PUMP_MAX_TEMPERATURE)) 
+            {
                 storeError(ERR_TURBO_PUMP,
                            0x09); // Error 0x09 -> Temperature below allowed range -> Turbo pump disabled
                 frontend.
@@ -102,31 +120,20 @@ static void enableHandler(void){
                   turboPump.
                    lastEnable.
                     status=HARDW_BLKD_ERR; // Store the status in the last control message
-
+             
+                frontend.
+                 cryostat.
+                  turboPump.
+                   enable[CURRENT_VALUE] = TURBO_PUMP_DISABLE;
                 return;
             }
         }
 
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cryostat.
-                  turboPump.
-                   lastEnable,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         cryostat.
-          turboPump.
-           lastEnable.
-            status=NO_ERROR;
-
         /* Change the status of the turbo pump according to the content of the
            CAN message. */
         if(setTurboPumpEnable(CAN_BYTE?TURBO_PUMP_ENABLE:
-                                       TURBO_PUMP_DISABLE)==ERROR){
+                                       TURBO_PUMP_DISABLE)==ERROR)
+        {
             /* Store the ERROR state in the last control message variable */
             frontend.
              cryostat.
@@ -142,34 +149,31 @@ static void enableHandler(void){
 
     /* If monitor on a control RCA */
     if(currentClass==CONTROL_CLASS){
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized. */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cryostat.
-                  turboPump.
-                   lastEnable,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cryostat.
+                                      turboPump.
+                                       lastEnable)
         return;
     }
 
     /* If monitor on a monitor RCA */
-    /* This monitor point doesn't return an hardware status but just the current
-       status that is stored in memory. The memory status is updated when the
-       state of the turbo pump is changed by a control command. */
-    CAN_BYTE=frontend.
-              cryostat.
-               turboPump.
-                enable[CURRENT_VALUE];
-    CAN_SIZE=CAN_BOOLEAN_SIZE;
+    if (frontend.
+         cryostat.
+          backingPump.
+           enable[CURRENT_VALUE] == BACKING_PUMP_DISABLE) 
+    {
+        // always return HARDW_BLKD when the backing pump is off
+        CAN_STATUS = HARDW_BLKD_ERR;
+    }
+
+    // return whatever was the last command sent:
+    CAN_BYTE = frontend.
+                cryostat.
+                 turboPump.
+                  enable[CURRENT_VALUE];
+    CAN_SIZE = CAN_BOOLEAN_SIZE;
 }
-
-
-
-
-
 
 
 /* Turbo pump state handler */
@@ -276,6 +280,16 @@ static void stateHandler(void){
         }
     }
 
+    /* If monitor on a monitor RCA */
+    if (frontend.
+         cryostat.
+          backingPump.
+           enable[CURRENT_VALUE] == BACKING_PUMP_DISABLE) 
+    {
+        // always return HARDW_BLKD when the backing pump is off
+        CAN_STATUS = HARDW_BLKD_ERR;
+    }
+
     /* Load the CAN message payload with the returned value and set the size */
     CAN_BYTE=frontend.
               cryostat.
@@ -283,11 +297,6 @@ static void stateHandler(void){
                 state[CURRENT_VALUE];
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }
-
-
-
-
-
 
 
 /* Turbo pump speed handler */
@@ -367,6 +376,16 @@ static void speedHandler(void){
                 }
             }
         #endif /* DATABASE_RANGE */
+    }
+
+    /* If monitor on a monitor RCA */
+    if (frontend.
+         cryostat.
+          backingPump.
+           enable[CURRENT_VALUE] == BACKING_PUMP_DISABLE) 
+    {
+        // always return HARDW_BLKD when the backing pump is off
+        CAN_STATUS = HARDW_BLKD_ERR;
     }
 
     /* Load the CAN message payload with the returned value and set the size */

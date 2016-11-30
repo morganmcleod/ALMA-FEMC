@@ -333,22 +333,6 @@ static void drainVoltageHandler(void){
             }
         }            
 
-        // MTM commented out cryostat temp check algorithm from 2.6.1.
-        // 
-        // if((temp12K==FLOAT_ERROR)||(temp12K==FLOAT_UNINIT)){
-        //     if((temp4K==FLOAT_ERROR)||(temp4K==FLOAT_UNINIT)||(temp4K>PA_MAX_ALLOWED_TEMP)){
-        //         state=DISABLE;
-        //     } else {
-        //         state=ENABLE;
-        //     }
-        // } else {
-        //     if(temp12K>PA_MAX_ALLOWED_TEMP){
-        //         state=DISABLE;
-        //     } else {
-        //         state=ENABLE;
-        //     }
-        // }
-
         // If we are in TROUBLESHOOTING mode, ignore all the above safety checks and allow the voltage to be set:
         if (frontend.mode[CURRENT_VALUE] == TROUBLESHOOTING_MODE)
             state=ENABLE;
