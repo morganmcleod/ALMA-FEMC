@@ -419,13 +419,6 @@ ODEPEND
  cd L:\ALMA-FEMC\arcom_fe_mc
  *wcc ppComm.c -i="C:\WATCOM/h" -w4 -zq -od -d1 -5 -bt=dos -fo=.obj -ml
 
-L:\ALMA-FEMC\arcom_fe_mc\schottkyMixer.obj : L:\ALMA-FEMC\arcom_fe_mc\schott&
-kyMixer.c .AUTODEPEND
- @L:
- cd L:\ALMA-FEMC\arcom_fe_mc
- *wcc schottkyMixer.c -i="C:\WATCOM/h" -w4 -zq -od -d1 -5 -bt=dos -fo=.obj -&
-ml
-
 L:\ALMA-FEMC\arcom_fe_mc\serialInterface.obj : L:\ALMA-FEMC\arcom_fe_mc\seri&
 alInterface.c .AUTODEPEND
  @L:
@@ -543,14 +536,13 @@ MA-FEMC\arcom_fe_mc\photoDetector.obj L:\ALMA-FEMC\arcom_fe_mc\photomixer.ob&
 j L:\ALMA-FEMC\arcom_fe_mc\pll.obj L:\ALMA-FEMC\arcom_fe_mc\polarization.obj&
  L:\ALMA-FEMC\arcom_fe_mc\polDac.obj L:\ALMA-FEMC\arcom_fe_mc\polSpecialMsgs&
 .obj L:\ALMA-FEMC\arcom_fe_mc\powerDistribution.obj L:\ALMA-FEMC\arcom_fe_mc&
-\ppComm.obj L:\ALMA-FEMC\arcom_fe_mc\schottkyMixer.obj L:\ALMA-FEMC\arcom_fe&
-_mc\serialInterface.obj L:\ALMA-FEMC\arcom_fe_mc\serialMux.obj L:\ALMA-FEMC\&
-arcom_fe_mc\sideband.obj L:\ALMA-FEMC\arcom_fe_mc\sis.obj L:\ALMA-FEMC\arcom&
-_fe_mc\sisHeater.obj L:\ALMA-FEMC\arcom_fe_mc\sisMagnet.obj L:\ALMA-FEMC\arc&
-om_fe_mc\solenoidValve.obj L:\ALMA-FEMC\arcom_fe_mc\timer.obj L:\ALMA-FEMC\a&
-rcom_fe_mc\turboPump.obj L:\ALMA-FEMC\arcom_fe_mc\vacuumController.obj L:\AL&
-MA-FEMC\arcom_fe_mc\vacuumSensor.obj L:\ALMA-FEMC\arcom_fe_mc\version.obj L:&
-\ALMA-FEMC\arcom_fe_mc\yto.obj .AUTODEPEND
+\ppComm.obj L:\ALMA-FEMC\arcom_fe_mc\serialInterface.obj L:\ALMA-FEMC\arcom_&
+fe_mc\serialMux.obj L:\ALMA-FEMC\arcom_fe_mc\sideband.obj L:\ALMA-FEMC\arcom&
+_fe_mc\sis.obj L:\ALMA-FEMC\arcom_fe_mc\sisHeater.obj L:\ALMA-FEMC\arcom_fe_&
+mc\sisMagnet.obj L:\ALMA-FEMC\arcom_fe_mc\solenoidValve.obj L:\ALMA-FEMC\arc&
+om_fe_mc\timer.obj L:\ALMA-FEMC\arcom_fe_mc\turboPump.obj L:\ALMA-FEMC\arcom&
+_fe_mc\vacuumController.obj L:\ALMA-FEMC\arcom_fe_mc\vacuumSensor.obj L:\ALM&
+A-FEMC\arcom_fe_mc\version.obj L:\ALMA-FEMC\arcom_fe_mc\yto.obj .AUTODEPEND
  @L:
  cd L:\ALMA-FEMC\arcom_fe_mc
  @%write fe_mc.lk1 FIL ini.obj,amc.obj,async.obj,backingPump.obj,biasSerialI&
@@ -566,9 +558,9 @@ bj,lprSerialInterface.obj,lprTemp.obj,main.obj,miDac.obj,miSpecialMsgs.obj,m&
 odulationInput.obj,opticalSwitch.obj,owb.obj,pa.obj,paChannel.obj,pdChannel.&
 obj,pdModule.obj,pdSerialInterface.obj,pegasus.obj,photoDetector.obj,photomi&
 xer.obj,pll.obj,polarization.obj,polDac.obj,polSpecialMsgs.obj,powerDistribu&
-tion.obj,ppComm.obj,schottkyMixer.obj,serialInterface.obj,serialMux.obj,side&
-band.obj,sis.obj,sisHeater.obj,sisMagnet.obj,solenoidValve.obj,timer.obj,tur&
-boPump.obj,vacuumController.obj,vacuumSensor.obj,version.obj,yto.obj
+tion.obj,ppComm.obj,serialInterface.obj,serialMux.obj,sideband.obj,sis.obj,s&
+isHeater.obj,sisMagnet.obj,solenoidValve.obj,timer.obj,turboPump.obj,vacuumC&
+ontroller.obj,vacuumSensor.obj,version.obj,yto.obj
  @%append fe_mc.lk1 
  *wlink name fe_mc d all sys dos op maxe=25 op q op symf op el @fe_mc.lk1
  copy fe_mc.exe releases\2-8-0d.exe /y

@@ -55,34 +55,6 @@
 
     /* Defines */
     /* Configuration data info */
-    #define PLL_LOOP_BW_SECTION  "PLL"      // Section containing the PLL loop bandwidth
-    #define PLL_LOOP_BW_KEY      "LOOP_BW"  // Key containing the PLL loop bandwidth
-    #define PLL_LOOP_BW_EXPECTED 1          // Expected keys containing the PLL loop bandwidth
-
-    #define PLL_LOCK_SECTION    "SCALING"   // Section containing the PLL lock voltage scaling factor
-    #define PLL_LOCK_KEY        "PLL_LOCK"  // Key containing the PLL lock voltage scaling factor
-    #define PLL_LOCK_EXPECTED   1           // Expected keys containing the PLL lock voltage scaling factor
-
-    #define PLL_CORR_SECTION    "SCALING"   // Section containing the PLL correction voltage scaling factor
-    #define PLL_CORR_KEY        "PLL_CORR"  // Key containing the PLL correction voltage scaling factor
-    #define PLL_CORR_EXPECTED   1           // Expected keys containing the PLL correction voltage scaling factor
-
-    #define PLL_YIG_C_SCALE_SECTION     "SCALING"           // Section containing the PLL YIG heater current scaling factor
-    #define PLL_YIG_C_SCALE_KEY         "PLL_YIG_C_SCALE"   // Key containing the PLL YIG heater current scaling factor
-    #define PLL_YIG_C_SCALE_EXPECTED    1                   // Expected keys containing the PLL YIG heater current scaling factor
-
-    #define PLL_YIG_C_OFFSET_SECTION    "SCALING"           // Section containing the PLL YIG heater current scaling factor
-    #define PLL_YIG_C_OFFSET_KEY        "PLL_YIG_C_OFFSET"  // Key containing the PLL YIG heater current scaling factor
-    #define PLL_YIG_C_OFFSET_EXPECTED   1                   // Expected keys containing the PLL YIG heater current scaling factor
-
-    #define LO_SUPPLY_V_SECTION         "SCALING"           // Section containing the supply voltage scaling factor
-    #define LO_SUPPLY_V_KEY             "SUPPLY_V"          // Key containing the supply voltage scaling factor
-    #define LO_SUPPLY_V_EXPECTED        1                   // Expected keys containing the supply voltage scaling factor
-
-    #define LO_MULTIPLIER_C_SECTION     "SCALING"           // Section containing the multiplier current scaling factor
-    #define LO_MULTIPLIER_C_KEY         "MULT_C"            // Key containing the multiplier current scaling factor
-    #define LO_MULTIPLIER_C_EXPECTED    1                   // Expected keys containing the multiplier current scaling factor
-
     #define LO_PA_LIMITS_SECTION        "PA_LIMITS"         // Section containing the PA max safe power limits
     #define LO_PA_LIMITS_ESN_KEY        "ESN"               // Key for the WCA ESN to which the table applies
     #define LO_PA_LIMITS_ESN_EXPECTED   1                   // Expected keys containting ESN
@@ -168,16 +140,6 @@
         /*! This contains the configuration file name as extracted from the
             frontend configuration file. */
         char        configFile[MAX_FILE_NAME_SIZE];
-
-        //! Supply voltage scale facotr
-        /*! This contains the scale factor of all the supply voltages monitored
-            in the LO. */
-        float       supplyVoltagesScale;
-
-        //! Multiplier currents scale facotr
-        /*! This contains the scale factor of all the multiplier currents
-            monitored in the LO. */
-        float       multiplierCurrentsScale;
         
         //! ESN from LO PA entries table
         /*! Contains the WCA ESN to which the max safe LO PA table should apply. */

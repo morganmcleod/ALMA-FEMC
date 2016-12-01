@@ -11,6 +11,7 @@
     detector. */
 
 /* Includes */
+#include <string.h>     /* memcpy */
 #include <stdio.h>      /* printf */
 
 #include "debug.h"
@@ -23,6 +24,7 @@
 /* Externs */
 unsigned char   currentPhotoDetectorModule=0;
 static HANDLER  photoDetectorModulesHandler[PHOTO_DETECTOR_MODULES_NUMBER]={currentHandler,
+                                                                            conversionCoeffHandler,
                                                                             powerHandler};
 
 /* Photo Detector handler */
@@ -37,8 +39,8 @@ void photoDetectorHandler(void){
        check is performed. */
 
     /* Check if the specified submodule is in range */
-    currentPhotoDetectorModule=(CAN_ADDRESS&PHOTO_DETECTOR_MODULES_RCA_MASK)>>PHOTO_DETECTOR_MODULES_MASK_SHIFT;
-    if(currentPhotoDetectorModule>=PHOTO_DETECTOR_MODULES_NUMBER){
+    currentPhotoDetectorModule = (CAN_ADDRESS & PHOTO_DETECTOR_MODULES_RCA_MASK);
+    if (currentPhotoDetectorModule >= PHOTO_DETECTOR_MODULES_NUMBER) {
         storeError(ERR_PHOTO_DETECTOR,
                    0x01); // Error 0x01 -> EDFA photo detector submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
@@ -143,6 +145,53 @@ static void currentHandler(void){
     CAN_SIZE=CAN_FLOAT_SIZE;
 
     return;
+}
+
+/* EDFA photo detector conversion coefficient handler */
+void conversionCoeffHandler(void) {
+    #ifdef DEBUG_LPR
+        printf("    Conversion Coeff\n");
+    #endif /* DEBUG_LPR */
+
+    /* If control (size !=0) */
+    if(CAN_SIZE) {
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   lpr.
+                                    edfa.
+                                     photoDetector.
+                                      lastCoeff)
+
+        /* Extract the float from the can message. */
+        changeEndian(CONV_CHR_ADD,
+                     CAN_DATA_ADD);
+
+        // Save the new coefficient and return:
+        frontend.
+         lpr.
+          edfa.
+           photoDetector.coeff = CONV_FLOAT;
+
+        return;
+    }
+
+    /* If monitor on a control RCA */
+    if(currentClass==CONTROL_CLASS){
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                   lpr.
+                                    edfa.
+                                     photoDetector.
+                                      lastCoeff)
+        return;
+    }
+    
+    /* If monitor on a monitor RCA */
+    storeError(ERR_LPR,
+               0x02); // Error 0x02: Monitor message out of range
+    
+    /* Store the state in the outgoing CAN message */
+    CAN_STATUS = MON_CAN_RNG;
 }
 
 /* EDFA photo detector power handler */

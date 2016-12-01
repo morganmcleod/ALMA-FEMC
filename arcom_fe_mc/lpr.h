@@ -43,11 +43,6 @@
     #define LPR_CONF_FILE_KEY       "FILE"  // Key containing the LPR configuration file info
     #define LPR_CONF_FILE_EXPECTED  1       // Expected keys containing the LPR configuration file info
 
-    #define POWER_COEFF_SECTION     "EDFA_PD"       // Section containing the power detector scaling info
-    #define POWER_COEFF_KEY         "POWER_COEFF"   // Key containing the power detector scaling info
-    #define POWER_COEFF_EXPECTED    1               // Expected keys containing the power detector scaling info in the section
-    #define POWER_COEFF_DEFAULT     18.6            // Default value to use if no database is available
-
     /* Submodule definitions */
     #define LPR_MODULES_NUMBER      4       // See list below
     #define LPR_MODULES_RCA_MASK    0x00030 /* Mask to extract the submodule number:

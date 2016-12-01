@@ -264,6 +264,18 @@ int loStartup(void){
     char *str;
     char entryName[15];
     char entryText[50];
+    static char loopBandwidthDefaults[10] = {
+        99,     // band 1: don't care. fixed 2.5 MHz/V
+        1,      // band 2: 1 -> 15MHz/V (Band 2,3,5,6,7,10)
+        1,      // band 3
+        0,      // band 4: 0 -> 7.5MHz/V (Band 4,8,9)
+        1,      // band 5
+        1,      // band 6
+        1,      // band 7
+        0,      // band 8
+        0,      // band 9
+        1       // band 10
+    };
 
     printf(" LO %d configuration file: %s\n",
            currentModule+1,
@@ -278,29 +290,12 @@ int loStartup(void){
        value. */
     printf("  - PLL Loop Bandwidth...\n");
 
-    /* Configure read array */
-    dataIn.
-     Name=PLL_LOOP_BW_KEY;
-    dataIn.
-     VarType=Cfg_Byte;
-    dataIn.
-     DataPtr=&frontend.
-               cartridge[currentModule].
-                lo.
-                 pll.
-                  loopBandwidthSelect[DEFAULT_VALUE];
-
-    /* Access configuration file, if error, skip the configuration. */
-    if(myReadCfg(frontend.
-                  cartridge[currentModule].
-                   lo.
-                    configFile,
-                 PLL_LOOP_BW_SECTION,
-                 &dataIn,
-                 PLL_LOOP_BW_EXPECTED)!=NO_ERROR){
-        return NO_ERROR;
-    }
-
+    // No longer loading from INI file:
+    frontend.
+     cartridge[currentModule].
+      lo.
+       pll.
+        loopBandwidthSelect[DEFAULT_VALUE] = loopBandwidthDefaults[currentModule];
 
     #ifdef DEBUG_STARTUP
         printf("    - PLL loop bandwidth default value %d...done!\n",
@@ -312,245 +307,7 @@ int loStartup(void){
     #endif /* DEBUG_STARTUP */
 
     printf("    done!\n"); // PLL loop bandwidth
-
-
-
-    /* Load the PLL lock detect voltage scale factor the frontend variable
-       value. */
-    printf("  - PLL Lock detect voltage scaling factor...\n");
-
-    /* Configure read array */
-    dataIn.
-     Name=PLL_LOCK_KEY;
-    dataIn.
-     VarType=Cfg_Float;
-    dataIn.
-     DataPtr=&frontend.
-               cartridge[currentModule].
-                lo.
-                 pll.
-                  lockDetectVoltageScale;
-
-    /* Access configuration file, if error, skip the configuration. */
-    if(myReadCfg(frontend.
-                  cartridge[currentModule].
-                   lo.
-                    configFile,
-                 PLL_LOCK_SECTION,
-                 &dataIn,
-                 PLL_LOCK_EXPECTED)!=NO_ERROR){
-        return NO_ERROR;
-    }
-
-
-    #ifdef DEBUG_STARTUP
-        printf("    - PLL lock detect voltage scaling factor %f...done!\n",
-               frontend.
-                cartridge[currentModule].
-                 lo.
-                  pll.
-                   lockDetectVoltageScale);
-    #endif /* DEBUG_STARTUP */
-
-    printf("    done!\n"); // PLL lock detect voltage scaling factor
-
-
-
-    /* Load the PLL correction voltage scale factor the frontend variable
-       value. */
-    printf("  - PLL Correction voltage scaling factor...\n");
-
-    /* Configure read array */
-    dataIn.
-     Name=PLL_CORR_KEY;
-    dataIn.
-     VarType=Cfg_Float;
-    dataIn.
-     DataPtr=&frontend.
-               cartridge[currentModule].
-                lo.
-                 pll.
-                  correctionVoltageScale;
-
-    /* Access configuration file, if error, skip the configuration. */
-    if(myReadCfg(frontend.
-                  cartridge[currentModule].
-                   lo.
-                    configFile,
-                 PLL_CORR_SECTION,
-                 &dataIn,
-                 PLL_CORR_EXPECTED)!=NO_ERROR){
-        return NO_ERROR;
-    }
-
-
-    #ifdef DEBUG_STARTUP
-        printf("    - PLL correction voltage scaling factor %f...done!\n",
-               frontend.
-                cartridge[currentModule].
-                 lo.
-                  pll.
-                   correctionVoltageScale);
-    #endif /* DEBUG_STARTUP */
-
-    printf("    done!\n"); // PLL correction voltage scaling factor
-
-
-
-    /* Load the PLL YIG current scale factor the frontend variable value. */
-    printf("  - PLL YIG Current scaling factor...\n");
-
-    /* Configure read array */
-    dataIn.
-     Name=PLL_YIG_C_SCALE_KEY;
-    dataIn.
-     VarType=Cfg_Float;
-    dataIn.
-     DataPtr=&frontend.
-               cartridge[currentModule].
-                lo.
-                 pll.
-                  YIGHeaterCurrentScale;
-
-    /* Access configuration file, if error, skip the configuration. */
-    if(myReadCfg(frontend.
-                  cartridge[currentModule].
-                   lo.
-                    configFile,
-                 PLL_YIG_C_SCALE_SECTION,
-                 &dataIn,
-                 PLL_YIG_C_SCALE_EXPECTED)!=NO_ERROR){
-        return NO_ERROR;
-    }
-
-
-    #ifdef DEBUG_STARTUP
-        printf("    - PLL YIG heater current scaling factor %f...done!\n",
-               frontend.
-                cartridge[currentModule].
-                 lo.
-                  pll.
-                   YIGHeaterCurrentScale);
-    #endif /* DEBUG_STARTUP */
-
-    printf("    done!\n"); // PLL YIG heater current scaling factor
-
-
-
-    /* Load the PLL YIG current offset factor the frontend variable value. */
-    printf("  - PLL YIG Current offset factor...\n");
-
-    /* Configure read array */
-    dataIn.
-     Name=PLL_YIG_C_OFFSET_KEY;
-    dataIn.
-     VarType=Cfg_Float;
-    dataIn.
-     DataPtr=&frontend.
-               cartridge[currentModule].
-                lo.
-                 pll.
-                  YIGHeaterCurrentOffset;
-
-    /* Access configuration file, if error, skip the configuration. */
-    if(myReadCfg(frontend.
-                  cartridge[currentModule].
-                   lo.
-                    configFile,
-                 PLL_YIG_C_OFFSET_SECTION,
-                 &dataIn,
-                 PLL_YIG_C_OFFSET_EXPECTED)!=NO_ERROR){
-        return NO_ERROR;
-    }
-
-
-    #ifdef DEBUG_STARTUP
-        printf("    - PLL YIG heater current offset factor %f...done!\n",
-               frontend.
-                cartridge[currentModule].
-                 lo.
-                  pll.
-                   YIGHeaterCurrentOffset);
-    #endif /* DEBUG_STARTUP */
-
-    printf("    done!\n"); // PLL YIG heater current offset factor
-
-
-
-
-    /* Load the LO supply voltages scaling factor the frontend variable value. */
-    printf("  - LO supply voltages scaling factor...\n");
-
-    /* Configure read array */
-    dataIn.
-     Name=LO_SUPPLY_V_KEY;
-    dataIn.
-     VarType=Cfg_Float;
-    dataIn.
-     DataPtr=&frontend.
-               cartridge[currentModule].
-                lo.
-                 supplyVoltagesScale;
-
-    /* Access configuration file, if error, skip the configuration. */
-    if(myReadCfg(frontend.
-                  cartridge[currentModule].
-                   lo.
-                    configFile,
-                 LO_SUPPLY_V_SECTION,
-                 &dataIn,
-                 LO_SUPPLY_V_EXPECTED)!=NO_ERROR){
-        return NO_ERROR;
-    }
-
-
-    #ifdef DEBUG_STARTUP
-        printf("    - LO supply voltages scaling factor %f...done!\n",
-               frontend.
-                cartridge[currentModule].
-                 lo.
-                  supplyVoltagesScale);
-    #endif /* DEBUG_STARTUP */
-
-    printf("    done!\n"); // LO supply voltages scaling factor
-
-
-
-    /* Load the LO multiplier currents scaling factor the frontend variable value. */
-    printf("  - LO multiplier currents scaling factor...\n");
-
-    /* Configure read array */
-    dataIn.
-     Name=LO_MULTIPLIER_C_KEY;
-    dataIn.
-     VarType=Cfg_Float;
-    dataIn.
-     DataPtr=&frontend.
-               cartridge[currentModule].
-                lo.
-                 multiplierCurrentsScale;
-
-    /* Access configuration file, if error, skip the configuration. */
-    if(myReadCfg(frontend.
-                  cartridge[currentModule].
-                   lo.
-                    configFile,
-                 LO_MULTIPLIER_C_SECTION,
-                 &dataIn,
-                 LO_MULTIPLIER_C_EXPECTED)!=NO_ERROR){
-        return NO_ERROR;
-    }
-
-    #ifdef DEBUG_STARTUP
-        printf("    - LO multiplier currents scaling factor %f...done!\n",
-               frontend.
-                cartridge[currentModule].
-                 lo.
-                  multiplierCurrentsScale);
-    #endif /* DEBUG_STARTUP */
-
-    printf("    done!\n"); // LO multiplier currents scaling factor
-
+    
     /* Set the limits for control messages */
     printf("  - Setting limits for control messages\n");
     printf("    - YTO coarse tuning\n");

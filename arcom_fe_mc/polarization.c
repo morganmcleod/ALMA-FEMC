@@ -29,7 +29,7 @@ static HANDLER  polarizationModulesHandler[POLARIZATION_MODULES_NUMBER]={sideban
                                                                          sidebandHandler,
                                                                          lnaLedHandler,
                                                                          sisHeaterHandler,
-                                                                         schottkyMixerHandler,
+                                                                         RESERVEDHandler,
                                                                          polSpecialMsgsHandler};
 
 /* Polarization init */
@@ -141,6 +141,11 @@ void polarizationHandler(void){
 
     /* Call the correct handler */
     (polarizationModulesHandler[currentPolarizationModule])();
+}
+
+// Dummy handler for where schottkyMixer used to be.
+void RESERVEDHandler(void) {
+
 }
 
 // Set the specified polarization to STANDBY2 mode

@@ -195,8 +195,13 @@
     #define LO_DRAIN_C_SCALE                1000.0      // Scale factor for any drain current
     #define LO_PLL_ASSEMBLY_TEMP_SCALE      1000.0      // Scale factor for the PLL assembly temperature
     #define LO_PLL_TTL_PWR_SCALE            10.0        // Scale factor for the PLL any total power
+    #define LO_LOCK_DETECT_V_SCALE          (210.0 / 11.0) // Scale factor for lock detect voltage
+    #define LO_PLL_CORRECTION_V_SCALE       (260.0 / 11.0) // Scale factor for pll correction voltage
+    #define LO_AMC_MULTIPLIER_I_SCALE       100.0       // Scale factor for AMC multiplier currents
+    #define LO_SUPPLY_V_SCALE               20.0        // Scale factor for LO supply voltages
+    #define LO_YIG_HEATER_I_SCALE           400.0       // Scale factor for PLL YIG heater current
+    #define LO_YIG_HEATER_I_OFFSET          150.0       // Scale factor for PLL YIG heater current
     #define LO_ADC_BUSY                     0           // Busy state signal
-
 
     /* --- Common POT definitions (64-bit) --- */
     #define LO_POT_WORD_SIZE                4   // 4 ints necessary to contain the POT message

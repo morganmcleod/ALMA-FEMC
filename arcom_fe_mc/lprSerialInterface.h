@@ -120,8 +120,9 @@
     #define LPR_ADC_LASER_PD_CURRENT_SCALE      50.0        // Scale factor for the laser photo detector current
     #define LPR_ADC_LASER_PD_CURRRENT_OFFSET    25.0        // Offset value for the laser photo detector current
     #define LPR_ADC_EDFA_PD_CURRENT_SCALE       500.0       // Scale factor for the EDFA photo detector current
+    #define LPR_ADC_EDFA_PD_POWER_COEFF_DFLT    28.0        // Default conversion coefficient for the EDFA photo detector
+    #define LPR_ADC_EDFA_PD_POWER_COEFF_DFLT_OLD 18.6       // Original default coeff (early LPR hw)
     #define LPR_ADC_VOLTAGE_IN_SCALE            5.0         // Scale factor for the standard voltage monitoring
-
 
 
 
