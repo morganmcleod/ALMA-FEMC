@@ -63,25 +63,13 @@ static void resetStrobeHandler(void){
 
     /* Check direction and perform the required operation */
     if(CAN_SIZE){ // If control (size !=0)
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   polSpecialMsgs.
-                    polDac[currentPolSpecialMsgsModule].
-                     lastResetStrobe,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         cartridge[currentModule].
-          polarization[currentBiasModule].
-           polSpecialMsgs.
-            polDac[currentPolSpecialMsgsModule].
-             lastResetStrobe.
-              status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cartridge[currentModule].
+                                    polarization[currentBiasModule].
+                                     polSpecialMsgs.
+                                      polDac[currentPolSpecialMsgsModule].
+                                       lastResetStrobe)
 
         /* Send the strobe */
         if(setBiasDacStrobe()==ERROR){
@@ -101,18 +89,13 @@ static void resetStrobeHandler(void){
 
     /* If it's a monitor message on a control RCA */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   polSpecialMsgs.
-                    polDac[currentPolSpecialMsgsModule].
-                     lastResetStrobe,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cartridge[currentModule].
+                                      polarization[currentBiasModule].
+                                       polSpecialMsgs.
+                                        polDac[currentPolSpecialMsgsModule].
+                                         lastResetStrobe)
         return;
 
     }
@@ -147,25 +130,13 @@ static void clearStrobeHandler(void){
 
     /* Check direction and perform the required operation */
     if(CAN_SIZE){ // If control (size !=0)
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   polSpecialMsgs.
-                    polDac[currentPolSpecialMsgsModule].
-                     lastClearStrobe,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         cartridge[currentModule].
-          polarization[currentBiasModule].
-           polSpecialMsgs.
-            polDac[currentPolSpecialMsgsModule].
-             lastClearStrobe.
-              status=NO_ERROR;
-
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cartridge[currentModule].
+                                    polarization[currentBiasModule].
+                                     polSpecialMsgs.
+                                      polDac[currentPolSpecialMsgsModule].
+                                       lastClearStrobe)
 
         /* Send the strobe */
         if(setBiasDacStrobe()==ERROR){
@@ -185,17 +156,13 @@ static void clearStrobeHandler(void){
 
     /* If it's a monitor message on a control RCA */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   polSpecialMsgs.
-                    polDac[currentPolSpecialMsgsModule].
-                     lastClearStrobe,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cartridge[currentModule].
+                                      polarization[currentBiasModule].
+                                       polSpecialMsgs.
+                                        polDac[currentPolSpecialMsgsModule].
+                                         lastClearStrobe)
     }
 
     /* If monitor on monitor RCA: this should never happen because there are

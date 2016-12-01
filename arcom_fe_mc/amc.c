@@ -452,23 +452,12 @@ static void drainBVoltageHandler(void){
 
     /* If control (size !=0) */
     if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cartridge[currentModule].
-                  lo.
-                   amc.
-                    lastDrainBVoltage,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         cartridge[currentModule].
-          lo.
-           amc.
-            lastDrainBVoltage.
-             status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cartridge[currentModule].
+                                    lo.
+                                     amc.
+                                      lastDrainBVoltage)
 
         /* Extract the float from the can message */
         changeEndian(CONV_CHR_ADD,
@@ -523,14 +512,12 @@ static void drainBVoltageHandler(void){
 
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        /* Return last issued control command */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  lo.
-                   amc.
-                    lastDrainBVoltage,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cartridge[currentModule].
+                                      lo.
+                                       amc.
+                                        lastDrainBVoltage)
 
         return;
     }
@@ -711,23 +698,12 @@ static void multiplierDVoltageHandler(void){
 
     /* If control (size !=0) */
     if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cartridge[currentModule].
-                  lo.
-                   amc.
-                    lastMultiplierDVoltage,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         cartridge[currentModule].
-          lo.
-           amc.
-            lastMultiplierDVoltage.
-             status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cartridge[currentModule].
+                                    lo.
+                                     amc.
+                                      lastMultiplierDVoltage);
 
         /* Check the value against the store limits. The limits are read from
            the configuration database at configuration time. */
@@ -778,15 +754,12 @@ static void multiplierDVoltageHandler(void){
 
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        /* Return last issued control command */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  lo.
-                   amc.
-                    lastMultiplierDVoltage,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cartridge[currentModule].
+                                      lo.
+                                       amc.
+                                        lastMultiplierDVoltage)
         return;
     }
 
@@ -911,23 +884,12 @@ static void gateEVoltageHandler(void){
 
     /* If control (size !=0) */
     if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cartridge[currentModule].
-                  lo.
-                   amc.
-                    lastGateEVoltage,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         cartridge[currentModule].
-          lo.
-           amc.
-            lastGateEVoltage.
-             status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cartridge[currentModule].
+                                    lo.
+                                     amc.
+                                      lastGateEVoltage);
 
         /* Extract the float from the can message */
         changeEndian(CONV_CHR_ADD,
@@ -982,15 +944,12 @@ static void gateEVoltageHandler(void){
 
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        /* Return last issued control command */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  lo.
-                   amc.
-                    lastGateEVoltage,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cartridge[currentModule].
+                                      lo.
+                                       amc.
+                                        lastGateEVoltage)
         return;
     }
 
@@ -1074,23 +1033,12 @@ static void drainEVoltageHandler(void){
 
     /* If control (size !=0) */
     if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cartridge[currentModule].
-                  lo.
-                   amc.
-                    lastDrainEVoltage,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         cartridge[currentModule].
-          lo.
-           amc.
-            lastDrainEVoltage.
-             status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cartridge[currentModule].
+                                    lo.
+                                     amc.
+                                      lastDrainEVoltage)
 
         /* Extract the float from the can message */
         changeEndian(CONV_CHR_ADD,
@@ -1145,15 +1093,12 @@ static void drainEVoltageHandler(void){
 
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        /* Return last issued control command */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  lo.
-                   amc.
-                    lastDrainEVoltage,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cartridge[currentModule].
+                                      lo.
+                                       amc.
+                                        lastDrainEVoltage)
         return;
     }
 

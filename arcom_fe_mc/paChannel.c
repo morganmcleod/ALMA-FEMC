@@ -86,25 +86,13 @@ static void gateVoltageHandler(void){
 
     /* If control (size !=0) */
     if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cartridge[currentModule].
-                  lo.
-                   pa.
-                    paChannel[currentPaChannel()].
-                     lastGateVoltage,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         cartridge[currentModule].
-          lo.
-           pa.
-            paChannel[currentPaChannel()].
-             lastGateVoltage.
-              status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cartridge[currentModule].
+                                    lo.
+                                     pa.
+                                      paChannel[currentPaChannel()].
+                                       lastGateVoltage)
 
         /* Extract the float from the can message */
         changeEndian(CONV_CHR_ADD,
@@ -176,16 +164,13 @@ static void gateVoltageHandler(void){
 
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        /* Return last issued control command */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  lo.
-                   pa.
-                    paChannel[currentPaChannel()].
-                     lastGateVoltage,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cartridge[currentModule].
+                                      lo.
+                                       pa.
+                                        paChannel[currentPaChannel()].
+                                         lastGateVoltage)
         return;
     }
 
@@ -341,25 +326,13 @@ static void drainVoltageHandler(void){
             return;
         }
 
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cartridge[currentModule].
-                  lo.
-                   pa.
-                    paChannel[currentPaChannel()].
-                     lastDrainVoltage,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         cartridge[currentModule].
-          lo.
-           pa.
-            paChannel[currentPaChannel()].
-             lastDrainVoltage.
-              status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cartridge[currentModule].
+                                    lo.
+                                     pa.
+                                      paChannel[currentPaChannel()].
+                                       lastDrainVoltage)
 
         /* Extract the float from the can message */
         changeEndian(CONV_CHR_ADD,
@@ -465,16 +438,13 @@ static void drainVoltageHandler(void){
 
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        /* Return last issued control command */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  lo.
-                   pa.
-                    paChannel[currentPaChannel()].
-                     lastDrainVoltage,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cartridge[currentModule].
+                                      lo.
+                                       pa.
+                                        paChannel[currentPaChannel()].
+                                         lastDrainVoltage)
         return;
     }
 

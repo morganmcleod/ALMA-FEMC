@@ -60,13 +60,11 @@ static void n2FillHandler(void){
 
     /* If control (size !=0) */
     if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 fetim.
-                  dewar.
-                   lastN2Fill,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   fetim.
+                                    dewar.
+                                     lastN2Fill)
 
         /* Overwrite the last control message status with the default NO_ERROR
            status. */
@@ -96,16 +94,11 @@ static void n2FillHandler(void){
 
     /* If monitor on a control RCA */
     if(currentClass==CONTROL_CLASS){
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized. */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 fetim.
-                  dewar.
-                   lastN2Fill,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     fetim.
+                                      dewar.
+                                       lastN2Fill)
         return;
     }
 

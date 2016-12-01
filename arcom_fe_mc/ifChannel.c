@@ -78,23 +78,12 @@ void attenuationHandler(void){
 
     /* If control (size!=0) */
     if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 ifSwitch.
-                  ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
-                           [currentIfChannelSideband[currentIfSwitchModule]].
-                   lastAttenuation,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         ifSwitch.
-          ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
-                   [currentIfChannelSideband[currentIfSwitchModule]].
-           lastAttenuation.
-            status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   ifSwitch.
+                                    ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
+                                             [currentIfChannelSideband[currentIfSwitchModule]].
+                                     lastAttenuation)
 
         /* Since the payload is just a byte, there is no need to conver the
            received data from the can message to any particular format, the
@@ -144,15 +133,12 @@ void attenuationHandler(void){
 
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        /* Return last issued control command */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 ifSwitch.
-                  ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
-                           [currentIfChannelSideband[currentIfSwitchModule]].
-                   lastAttenuation,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     ifSwitch.
+                                      ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
+                                               [currentIfChannelSideband[currentIfSwitchModule]].
+                                       lastAttenuation)
         return;
     }
 

@@ -64,21 +64,11 @@ static void portHandler(void){
 
     /* If control (size!=0) */
     if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 lpr.
-                  opticalSwitch.
-                   lastPort,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status withthe default NO_ERROR
-           status. */
-        frontend.
-         lpr.
-          opticalSwitch.
-           lastPort.
-            status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   lpr.
+                                    opticalSwitch.
+                                     lastPort)
 
         /* Since the payload is just a byte, there is no need to convert the
            received data from the CAN message to any particular format, the
@@ -134,14 +124,11 @@ static void portHandler(void){
 
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){ // If monitor on control RCA
-        /* Return last issued control command */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 lpr.
-                  opticalSwitch.
-                   lastPort,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     lpr.
+                                      opticalSwitch.
+                                       lastPort)
         return;
     }
 
@@ -166,21 +153,11 @@ static void shutterHandler(void){
 
     /* If it's a control message (size!=0) */
     if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 lpr.
-                  opticalSwitch.
-                   lastShutter,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         lpr.
-          opticalSwitch.
-           lastShutter.
-            status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   lpr.
+                                    opticalSwitch.
+                                     lastShutter)
 
         /* The shutter is enable everytime a message is received independently
            of the payload. */
@@ -207,16 +184,11 @@ static void shutterHandler(void){
 
     /* If it's a monitor message on a control RCA */
     if(currentClass==CONTROL_CLASS){
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 lpr.
-                  opticalSwitch.
-                   lastShutter,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     lpr.
+                                      opticalSwitch.
+                                       lastShutter)
         return;
     }
 
@@ -240,21 +212,11 @@ static void forceShutterHandler(void){
 
     /* If it's a control message (size!=0) */
     if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 lpr.
-                  opticalSwitch.
-                   lastForceShutter,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         lpr.
-          opticalSwitch.
-           lastForceShutter.
-            status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   lpr.
+                                    opticalSwitch.
+                                     lastForceShutter)
 
         /* The shutter is enable everytime a message is received independently
            of the payload. */
@@ -281,16 +243,11 @@ static void forceShutterHandler(void){
 
     /* If it's a monitor message on a control RCA */
     if(currentClass==CONTROL_CLASS){
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 lpr.
-                  opticalSwitch.
-                   lastForceShutter,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     lpr.
+                                      opticalSwitch.
+                                       lastForceShutter)
         return;
     }
 

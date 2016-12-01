@@ -754,23 +754,12 @@ static void clearUnlockDetectLatchHandler(void){
 
     /* Check direction and perform the required operation */
     if(CAN_SIZE){ // If control (size !=0)
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cartridge[currentModule].
-                  lo.
-                   pll.
-                    lastClearUnlockDetectLatch,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status .*/
-        frontend.
-         cartridge[currentModule].
-          lo.
-           pll.
-            lastClearUnlockDetectLatch.
-             status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cartridge[currentModule].
+                                    lo.
+                                     pll.
+                                      lastClearUnlockDetectLatch)
 
         /* Change the status of the PLL unlock detect latch according to the
            content of the CAN message. */
@@ -792,17 +781,12 @@ static void clearUnlockDetectLatchHandler(void){
 
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  lo.
-                   pll.
-                    lastClearUnlockDetectLatch,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cartridge[currentModule].
+                                      lo.
+                                       pll.
+                                        lastClearUnlockDetectLatch)
         return;
     }
 
@@ -824,23 +808,12 @@ static void loopBandwidthSelectHandler(void){
 
     /* Check direction and perform the required operation */
     if(CAN_SIZE){ // If control (size !=0)
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cartridge[currentModule].
-                  lo.
-                   pll.
-                    lastLoopBandwidthSelect,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status .*/
-        frontend.
-         cartridge[currentModule].
-          lo.
-           pll.
-            lastLoopBandwidthSelect.
-             status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cartridge[currentModule].
+                                    lo.
+                                     pll.
+                                      lastLoopBandwidthSelect)
 
         /* Change the status of the PLL unlock detect latch according to the
            content of the CAN message. */
@@ -863,17 +836,12 @@ static void loopBandwidthSelectHandler(void){
 
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  lo.
-                   pll.
-                    lastLoopBandwidthSelect,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cartridge[currentModule].
+                                      lo.
+                                       pll.
+                                        lastLoopBandwidthSelect)
         return;
     }
 
@@ -901,23 +869,12 @@ static void sidebandLockPolaritySelectHandler(void){
 
     /* Check direction and perform the required operation */
     if(CAN_SIZE){ // If control (size !=0)
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cartridge[currentModule].
-                  lo.
-                   pll.
-                    lastSidebandLockPolaritySelect,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status .*/
-        frontend.
-         cartridge[currentModule].
-          lo.
-           pll.
-            lastSidebandLockPolaritySelect.
-             status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cartridge[currentModule].
+                                    lo.
+                                     pll.
+                                      lastSidebandLockPolaritySelect)
 
         /* Change the status of the PLL unlock detect latch according to the
            content of the CAN message. */
@@ -940,17 +897,12 @@ static void sidebandLockPolaritySelectHandler(void){
 
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  lo.
-                   pll.
-                    lastSidebandLockPolaritySelect,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cartridge[currentModule].
+                                      lo.
+                                       pll.
+                                        lastSidebandLockPolaritySelect)
         return;
     }
 
@@ -979,23 +931,12 @@ static void nullLoopIntegratorHandler(void){
 
     /* Check direction and perform the required operation */
     if(CAN_SIZE){ // If control (size !=0)
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cartridge[currentModule].
-                  lo.
-                   pll.
-                    lastNullLoopIntegrator,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status .*/
-        frontend.
-         cartridge[currentModule].
-          lo.
-           pll.
-            lastNullLoopIntegrator.
-             status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cartridge[currentModule].
+                                    lo.
+                                     pll.
+                                      lastNullLoopIntegrator)
 
         /* Change the status of the PLL unlock detect latch according to the
            content of the CAN message. */
@@ -1018,17 +959,12 @@ static void nullLoopIntegratorHandler(void){
 
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  lo.
-                   pll.
-                    lastNullLoopIntegrator,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cartridge[currentModule].
+                                      lo.
+                                       pll.
+                                        lastNullLoopIntegrator)
         return;
     }
 

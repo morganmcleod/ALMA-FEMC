@@ -180,27 +180,15 @@ static void currentHandler(void){
 
     /* If control (size !=0) */
     if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   sideband[currentPolarizationModule].
-                    sisMagnet.
-                     lastCurrent,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cartridge[currentModule].
+                                    polarization[currentBiasModule].
+                                     sideband[currentPolarizationModule].
+                                      sisMagnet.
+                                       lastCurrent)
 
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         cartridge[currentModule].
-          polarization[currentBiasModule].
-           sideband[currentPolarizationModule].
-            sisMagnet.
-             lastCurrent.
-              status=NO_ERROR;
-
-              /* Extract the floating data from the CAN message */
+        /* Extract the floating data from the CAN message */
         changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
 
@@ -273,18 +261,13 @@ static void currentHandler(void){
 
     /* If Monitor on Control RCA */
     if(currentClass==CONTROL_CLASS){
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   sideband[currentPolarizationModule].
-                    sisMagnet.
-                     lastCurrent,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cartridge[currentModule].
+                                      polarization[currentBiasModule].
+                                       sideband[currentPolarizationModule].
+                                        sisMagnet.
+                                         lastCurrent)
         return;
     }
 

@@ -63,23 +63,12 @@ static void enableHandler(void){
 
     /* Check direction and perform the required operation */
     if(CAN_SIZE){ // If control (size !=0)
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cartridge[currentModule].
-                  lo.
-                   photomixer.
-                    lastEnable,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status .*/
-        frontend.
-         cartridge[currentModule].
-          lo.
-           photomixer.
-            lastEnable.
-             status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cartridge[currentModule].
+                                    lo.
+                                     photomixer.
+                                      lastEnable)
 
         /* Change the status of the photomixer according to the content of the
            CAN message. */
@@ -102,17 +91,12 @@ static void enableHandler(void){
 
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  lo.
-                   photomixer.
-                    lastEnable,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cartridge[currentModule].
+                                      lo.
+                                       photomixer.
+                                        lastEnable)
         return;
     }
 
