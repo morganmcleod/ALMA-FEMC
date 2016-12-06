@@ -113,6 +113,12 @@ void cartridgeHandler(void){
             return;
             break;
 
+        /* Check if the cartridge is transitioning to STANDBY2.
+           If it is, return the status but no error necessary. */
+        case CARTRIDGE_GO_STANDBY2:
+            CAN_STATUS = HARDW_BLKD_ERR;
+            return;
+            break;
 
         default:
             break;

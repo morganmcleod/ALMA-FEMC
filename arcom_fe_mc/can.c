@@ -734,13 +734,13 @@ static void sendCANMessage(int appendStatusByte){
             for(cnt=0;
                 cnt<CAN_SIZE;
                 cnt++){
-                printf("%#x ",
+                printf("%02X ",
                        CAN_DATA(cnt));
             }
             break;
     }
 
-    printf(" (status: %#x)\n\n",
+    printf(" (status: 0x%02X)\n\n",
            CAN_STATUS);
 
 

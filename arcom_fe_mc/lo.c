@@ -11,7 +11,7 @@
 
 /* Includes */
 #include <stdlib.h>     /* malloc */
-#include <stdio.h>      /* printf */
+#include <stdio.h>      /* printf & sscanf */
 #include <string.h>     /* memset & strtok */
 
 #include "error.h"
@@ -444,7 +444,7 @@ int loStartup(void){
                     (*nextEntry).maxVD1 = atof(str);
                 }
 
-                printf("yto=%u, vd0=%f, vd1=%f", 
+                printf("yto=%u, vd0=%.2f, vd1=%.2f", 
                        (*nextEntry).ytoEndpoint, (*nextEntry).maxVD0, (*nextEntry).maxVD1);
 
                 nextEntry++;
@@ -464,25 +464,33 @@ int loStartup(void){
             dataIn.
              Name=LO_PA_LIMITS_ESN_KEY;
             dataIn.
-             VarType=Cfg_HB_Array;
+             VarType=Cfg_String;
             dataIn.
-             DataPtr=frontend.
-                      cartridge[currentModule].
-                       lo.
-                        maxSafeLoPaESN;
+             DataPtr=entryText;
 
             if (ReadCfg(frontend.
                          cartridge[currentModule].
                           lo.
                            configFile,
                         LO_PA_LIMITS_SECTION,
-                        &dataIn) != LO_PA_LIMITS_ESN_EXPECTED) {
-
+                        &dataIn) != LO_PA_LIMITS_ESN_EXPECTED) 
+            {
                 // not found.  Save 8-bytes FF to the table:
                 memset(frontend.
                         cartridge[currentModule].
                          lo.
                           maxSafeLoPaESN, 0xFF, SERIAL_NUMBER_SIZE);
+            
+            } else {
+                // found.  Parse it into byte array:
+                str = entryText;
+                for (cnt = 0; cnt < 8; cnt++) {
+                    sscanf(str, "%2hhx", &frontend.
+                                           cartridge[currentModule].
+                                            lo.
+                                             maxSafeLoPaESN[cnt]);
+                    str += 2;
+                }   
             }
 
             str = frontend.

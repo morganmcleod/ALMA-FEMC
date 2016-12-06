@@ -110,7 +110,7 @@
         (CRYOSTAT_TEMP_SANITY_CHECK(T) && (T < MAX))
                                                 //!< below threshold and sanity check macro for temps.
 
-    #define CRYOSTAT_LOG_HOURS_THRESHOLD 260    // if any cryocooler stage is below this value,
+    #define CRYOSTAT_LOG_HOURS_THRESHOLD 265.0  // if any cryocooler stage is below this value,
                                                 // we log cryostat cooling hours.
 
     /* Typedefs */

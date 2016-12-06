@@ -20,13 +20,21 @@
 
     REVISION HISTORY
 
-    2016-11-10  2.8.0 beta
-        Starting development toward 2.8.x release
+    2016-12-16 2.8.0-beta5
+        Fixed bug in cryostatAsync(): was only repeating temp measurement once per hour?
 
-    2016-10-20  2.6.11 beta
+    2016-12-14 2.8.0-beta4
+        CRYOSTAT_LOG_HOURS_THRESHOLD changed to 265.0 K
+        CRYOSTAT_LOG_HOURS triggers if 2 of 3 cryostat stage sensors are below the threshold.
+        For testing on 2 antennas
+
+    2016-12-08 2.8.0-beta3
+        Tested on FE-12 for 2.8.0 release
+
+    2016-10-20  2.6.11-beta1
         Prototype band 1 & band 2 support
 
-    2015-07-29  2.6.10 beta
+    2015-07-29  2.6.10-beta1
         Prototype band 2 support
 
     2014-08-22  2.6.6
@@ -336,8 +344,8 @@
     #define VERSION_MINOR   8  //!< Minor version
     #define VERSION_PATCH   0  //!< Patch level
 
-    #define VERSION_DATE    "2016-11-10" //!< Version Date
-    #define VERSION_NOTES   "Development for 2.8.x release." //!<Version Notes
+    #define VERSION_DATE    "2016-12-16" //!< Version Date
+    #define VERSION_NOTES   "Beta 5 for 2.8.x release." //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"

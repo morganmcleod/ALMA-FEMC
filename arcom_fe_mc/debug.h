@@ -18,7 +18,7 @@
     #define _DEBUG_H
 
     /* Defines */
-    #define DEVELOPMENT         // Uncomment this when developping the software
+    // #define DEVELOPMENT         // Uncomment this when developping the software
 
     /* If we are developing the software */
     #ifdef DEVELOPMENT
