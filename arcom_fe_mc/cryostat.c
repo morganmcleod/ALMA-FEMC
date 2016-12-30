@@ -184,63 +184,63 @@ int cryostatStartup(void){
                 cryostat.
                  configFile);
 
+// Rolled back cryostatAsyncLogHours so this is not needed for 2.8.2:
+        // // Parse the FRONTEND.INI file to extract the name cryostat cold head hours file:
+        // printf(" Cryostat cold head hours file:");
 
-        // Parse the FRONTEND.INI file to extract the name cryostat cold head hours file:
-        printf(" Cryostat cold head hours file:");
+        // /* Configure the read array */
+        // dataIn.
+        //  Name=CRYO_HOURS_FILE_KEY;
+        // dataIn.
+        //  VarType=Cfg_String;
+        // dataIn.
+        //  DataPtr=frontend.
+        //           cryostat.
+        //            coldHeadHoursFile;
 
-        /* Configure the read array */
-        dataIn.
-         Name=CRYO_HOURS_FILE_KEY;
-        dataIn.
-         VarType=Cfg_String;
-        dataIn.
-         DataPtr=frontend.
-                  cryostat.
-                   coldHeadHoursFile;
+        // /* Access configuration file, if error, return skip the configuration. */
+        // if(myReadCfg(FRONTEND_CONF_FILE,
+        //              CRYO_HOURS_FILE_SECTION,
+        //              &dataIn,
+        //              CRYO_HOURS_FILE_EXPECTED)!=NO_ERROR){
+        //     return NO_ERROR;
+        // }
 
-        /* Access configuration file, if error, return skip the configuration. */
-        if(myReadCfg(FRONTEND_CONF_FILE,
-                     CRYO_HOURS_FILE_SECTION,
-                     &dataIn,
-                     CRYO_HOURS_FILE_EXPECTED)!=NO_ERROR){
-            return NO_ERROR;
-        }
+        // /* Print config file */
+        // printf(" %s",
+        //        frontend.
+        //         cryostat.
+        //          coldHeadHoursFile);
 
-        /* Print config file */
-        printf(" %s",
-               frontend.
-                cryostat.
-                 coldHeadHoursFile);
+        // // Read the cold head hours:
+        // /* Configure the read array */
+        // dataIn.
+        //  Name = CRYO_HOURS_KEY;
+        // dataIn.
+        //  VarType = Cfg_Ulong;
+        // dataIn.
+        //  DataPtr = &frontend.
+        //              cryostat.
+        //               coldHeadHours;
 
-        // Read the cold head hours:
-        /* Configure the read array */
-        dataIn.
-         Name = CRYO_HOURS_KEY;
-        dataIn.
-         VarType = Cfg_Ulong;
-        dataIn.
-         DataPtr = &frontend.
-                     cryostat.
-                      coldHeadHours;
+        // // Read the previous hours from the config file:
+        // //  if error, assume 0 hours.
+        // if (myReadCfg(frontend.
+        //                cryostat.
+        //                 coldHeadHoursFile,
+        //              CRYO_HOURS_FILE_SECTION,
+        //              &dataIn,
+        //              CRYO_HOURS_FILE_EXPECTED) != NO_ERROR) 
+        // {
+        //     frontend.
+        //      cryostat.
+        //       coldHeadHours = 0;
+        // }
 
-        // Read the previous hours from the config file:
-        //  if error, assume 0 hours.
-        if (myReadCfg(frontend.
-                       cryostat.
-                        coldHeadHoursFile,
-                     CRYO_HOURS_FILE_SECTION,
-                     &dataIn,
-                     CRYO_HOURS_FILE_EXPECTED) != NO_ERROR) 
-        {
-            frontend.
-             cryostat.
-              coldHeadHours = 0;
-        }
-
-        printf(" hours: %lu\n", 
-                frontend.
-                 cryostat.
-                  coldHeadHours);
+        // printf(" hours: %lu\n", 
+        //         frontend.
+        //          cryostat.
+        //           coldHeadHours);
         
         /* Start the configuration */
 
@@ -700,30 +700,10 @@ int cryostatAsync(void){
             }
 
             // Next async state:
-            asyncCryoGetState = ASYNC_CRYO_LOG_HOURS;
-            break;
-
-        case ASYNC_CRYO_LOG_HOURS:
-
-            // perform cryostat cold head logging:
-            asyncCryostaLogHoursError = cryostatAsyncLogHours();
-
-            switch(asyncCryostaLogHoursError) {
-                case NO_ERROR:
-                    return NO_ERROR;
-                    break;
-                case ASYNC_DONE:
-                    asyncCryostaLogHoursError=NO_ERROR;
-                    break;
-                case ERROR:
-                    break;
-                default:
-                    break;
-            }
-            
-            // Wrap back to first async state:
             asyncCryoGetState = ASYNC_CRYO_GET_TEMP;
+
             return ASYNC_DONE;
+
             break;
 
         default:
@@ -731,180 +711,5 @@ int cryostatAsync(void){
             break;
     }
 
-    return NO_ERROR;
-}
-
-int cryostatAsyncLogHours(void) {
-    float temp4K, temp12K, temp90K;
-    int timedOut, cnt;   
-    CFG_STRUCT  dataIn;
-    char buf[20];
-
-    // A static enum to track the state of logging hours:
-    static enum {
-        ASYNC_CRYO_LOG_HOURS_SET_TIMER,
-        ASYNC_CRYO_LOG_HOURS_READ_TIMER,
-        ASYNC_CRYO_LOG_HOURS_CHECK_TEMPS,
-        ASYNC_CRYO_LOG_HOURS_READ_FILE,
-        ASYNC_CRYO_LOG_HOURS_WRITE_FILE
-    } asyncCryoLogHoursState = ASYNC_CRYO_LOG_HOURS_SET_TIMER;
-
-    switch (asyncCryoLogHoursState) {
-        case ASYNC_CRYO_LOG_HOURS_SET_TIMER:
-
-            #ifdef DEBUG_CRYOSTAT_ASYNC
-                printf("Async -> Cryostat -> ASYNC_CRYO_LOG_HOURS_SET_TIMER\n");
-            #endif /* DEBUG_CRYOSTAT_ASYNC */
-
-            // Setup timer to wait for next log hours interval:
-            if (startAsyncTimer(TIMER_CRYO_LOG_HOURS,
-                                TIMER_CRYO_LOG_HOURS_WAIT,
-                                FALSE) == ERROR) {
-
-                // Next state: start state
-                asyncCryoLogHoursState = ASYNC_CRYO_LOG_HOURS_SET_TIMER;
-                return ERROR;
-            }
-
-            // set next state
-            asyncCryoLogHoursState = ASYNC_CRYO_LOG_HOURS_READ_TIMER;
-            break;
-
-        case ASYNC_CRYO_LOG_HOURS_READ_TIMER:
-
-            // check the timer:
-            timedOut = queryAsyncTimer(TIMER_CRYO_LOG_HOURS);
-
-            if (timedOut == ERROR){
-                // Next state: start state
-                asyncCryoLogHoursState = ASYNC_CRYO_LOG_HOURS_SET_TIMER;
-                return ERROR;
-            }
-
-            // Check if timer expired. No need to clear the timer because
-            //  it is done by the queryAsyncTimer function if expired.
-            if(timedOut==TIMER_EXPIRED){
-                // set next state
-                asyncCryoLogHoursState = ASYNC_CRYO_LOG_HOURS_CHECK_TEMPS;
-            } else
-                // not expired but we need to yield to other async tasks
-                return ASYNC_DONE;
-            break;
-
-        case ASYNC_CRYO_LOG_HOURS_CHECK_TEMPS:
-
-            #ifdef DEBUG_CRYOSTAT_ASYNC
-                printf("Async -> Cryostat -> ASYNC_CRYO_LOG_HOURS_CHECK_TEMPS\n");
-            #endif /* DEBUG_CRYOSTAT_ASYNC */
-
-            // Decide whether to log hours based on the cold stage temps
-            temp4K=frontend.
-                    cryostat.
-                     cryostatTemp[CRYOCOOLER_4K].
-                      temp[CURRENT_VALUE];
-            temp12K=frontend.
-                     cryostat.
-                      cryostatTemp[CRYOCOOLER_12K].
-                       temp[CURRENT_VALUE];
-            temp90K=frontend.
-                     cryostat.
-                      cryostatTemp[CRYOCOOLER_90K].
-                       temp[CURRENT_VALUE];
-
-            cnt = 0;
-
-            // Is the 4K cryostat sensor reading valid and below the threshold indicating cryocooling?
-            if (CRYOSTAT_TEMP_BELOW_MAX(temp4K, CRYOSTAT_LOG_HOURS_THRESHOLD)) {
-                cnt++;  // yes.  increase the count of sensors below the threshold.
-            }
-
-            // Is the 12K sensor below the threshold?
-            if (CRYOSTAT_TEMP_BELOW_MAX(temp12K, CRYOSTAT_LOG_HOURS_THRESHOLD)) {
-                cnt++;  // yes.
-            }
-            
-            // Is the 90K sensor below the threshold?
-            if (CRYOSTAT_TEMP_BELOW_MAX(temp90K, CRYOSTAT_LOG_HOURS_THRESHOLD)) {
-                cnt++;  // yes.
-            }
-
-            // Enable logging the hours if at least 2 of 3 are below the threshold:
-            if (cnt >= 2) {
-                asyncCryoLogHoursState = ASYNC_CRYO_LOG_HOURS_READ_FILE;
-                return ASYNC_DONE;
-            } else
-                asyncCryoLogHoursState = ASYNC_CRYO_LOG_HOURS_SET_TIMER;
-            break;
-
-        case ASYNC_CRYO_LOG_HOURS_READ_FILE:
-
-            #ifdef DEBUG_CRYOSTAT_ASYNC
-                printf("Async -> Cryostat -> ASYNC_CRYO_LOG_HOURS_READ_FILE\n");
-            #endif /* DEBUG_CRYOSTAT_ASYNC */
-
-            /* Configure the read array */
-            dataIn.
-             Name = CRYO_HOURS_KEY;
-            dataIn.
-             VarType = Cfg_Ulong;
-            dataIn.
-             DataPtr = &frontend.
-                         cryostat.
-                          coldHeadHours;
-
-            // Read the previous hours from the config file:
-            //  if error, assume 0 hours.
-            if (myReadCfg(frontend.
-                           cryostat.
-                            coldHeadHoursFile,
-                         CRYO_HOURS_FILE_SECTION,
-                         &dataIn,
-                         CRYO_HOURS_FILE_EXPECTED) != NO_ERROR) 
-            {
-                #ifdef DEBUG_CRYOSTAT_ASYNC
-                    printf("Async -> Cryostat -> ASYNC_CRYO_LOG_HOURS_READ_FILE reset to 0\n");
-                #endif /* DEBUG_CRYOSTAT_ASYNC */
-                frontend.
-                 cryostat.
-                  coldHeadHours = 0;
-            }
-
-            // Increment the cold head hours:
-            frontend.
-             cryostat.
-              coldHeadHours++;
-
-            asyncCryoLogHoursState = ASYNC_CRYO_LOG_HOURS_WRITE_FILE;
-            return ASYNC_DONE;
-            break;
-
-        case ASYNC_CRYO_LOG_HOURS_WRITE_FILE:
-
-            sprintf(buf, "%lu", frontend.
-                                 cryostat.
-                                  coldHeadHours);
-
-            #ifdef DEBUG_CRYOSTAT_ASYNC
-                printf("Async -> Cryostat -> ASYNC_CRYO_LOG_HOURS_WRITE_FILE writing %s\n", buf);
-            #endif /* DEBUG_CRYOSTAT_ASYNC */
-
-// DISABLED for now!
-            // // Write the current number of hours back to the cryostat hours log file:
-            // UpdateCfg(frontend.
-            //            cryostat.
-            //             coldHeadHoursFile,
-            //      CRYO_HOURS_FILE_SECTION,
-            //      CRYO_HOURS_KEY,
-            //      buf);
-
-            // Next state: start state
-            asyncCryoLogHoursState = ASYNC_CRYO_LOG_HOURS_SET_TIMER;
-            return ASYNC_DONE;
-            break;
-        
-        default:
-            return ERROR;
-            break;
-    }
     return NO_ERROR;
 }

@@ -20,6 +20,10 @@
 
     REVISION HISTORY
 
+    2016-12-27 2.8.1-beta1
+        Separated ASYNC_CRYO_LOG_HOURS into three async phases
+        Disabled writing the CRYO_HRS file.
+
     2016-12-16 2.8.0-beta5
         Fixed bug in cryostatAsync(): was only repeating temp measurement once per hour?
 
@@ -342,10 +346,10 @@
     /* Defines */
     #define VERSION_MAJOR   2  //!< Major version
     #define VERSION_MINOR   8  //!< Minor version
-    #define VERSION_PATCH   0  //!< Patch level
+    #define VERSION_PATCH   2  //!< Patch level
 
-    #define VERSION_DATE    "2016-12-16" //!< Version Date
-    #define VERSION_NOTES   "Beta 5 for 2.8.x release." //!<Version Notes
+    #define VERSION_DATE    "2016-12-30" //!< Version Date
+    #define VERSION_NOTES   "Implements all 2.8.x features except logging cold head hours."  //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"

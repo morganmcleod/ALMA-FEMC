@@ -30,11 +30,11 @@
         // #define DEBUG_SERIAL                // Turn on Serial interface debug
 
         #define DEBUG_POWERDIS              // Turn on Power Distribution debug
-        #define DEBUG_IFSWITCH              // Turn on IF Switch debug
+        // #define DEBUG_IFSWITCH              // Turn on IF Switch debug
         #define DEBUG_CRYOSTAT              // Turn on Cryostat debug
         #define NO_STOREERROR_CRYOSTAT      // Master switch for cryostat storeError calls.  For debugging with no cryostat
-        #define DEBUG_LPR                   // Turn on LPR debug
-        #define DEBUG_FETIM                 // Turn on FETIM debug
+        // #define DEBUG_LPR                   // Turn on LPR debug
+        // #define DEBUG_FETIM                 // Turn on FETIM debug
         // #define DEBUG_INI                   // Turn on INI file access debug
         // #define DEBUG_STARTUP               // Turn on startup debugging
         // #define DEBUG_OWB                   // Turn on one wire bus debugging
