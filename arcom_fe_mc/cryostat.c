@@ -565,13 +565,13 @@ void coldHeadHoursResetHandler(void) {
                 printf("Cryostat -> coldHeadHoursResetHandler writing %s\n", buf);
             #endif /* DEBUG_CRYOSTAT_ASYNC */
 
-            // Write the current number of hours back to the cryostat hours log file:
-            UpdateCfg(frontend.
-                       cryostat.
-                        coldHeadHoursFile,
-                 CRYO_HOURS_FILE_SECTION,
-                 CRYO_HOURS_KEY,
-                 buf);
+            // // Write the current number of hours back to the cryostat hours log file:
+            // UpdateCfg(frontend.
+            //            cryostat.
+            //             coldHeadHoursFile,
+            //      CRYO_HOURS_FILE_SECTION,
+            //      CRYO_HOURS_KEY,
+            //      buf);
         }
         return;
     }

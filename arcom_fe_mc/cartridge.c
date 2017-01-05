@@ -25,6 +25,7 @@
 #include "async.h"
 #include "pdSerialInterface.h"
 #include "timer.h"
+#include "serialMux.h"
 
 /* Statics */
 static HANDLER cartridgeSubsystemHandler[CARTRIDGE_SUBSYSTEMS_NUMBER]={biasSubsystemHandler,
@@ -790,7 +791,7 @@ int cartridgeInit(unsigned char cartridge){
     #endif // DEBUG_INIT
 
 //TODO: redundant
-    // this is done below in 1,2,3:
+    // this is done below in asyncCartridgeInit:
     // frontend.
     //  cartridge[currentModule].
     //   state = CARTRIDGE_READY;
@@ -921,9 +922,18 @@ int cartridgeAsync(void){
             break;
 
         case ASYNC_CARTRIDGE_GO_STANDBY2:
-            asyncCartridgeGoStandby2();
-            // no errors propagate so just go back to idle state.
-            asyncCartridgeTask = ASYNC_CARTRIDGE_IDLE; 
+            switch(asyncCartridgeGoStandby2()) {
+                case NO_ERROR:
+                    return NO_ERROR;
+                    break;
+                case ASYNC_DONE:
+                    asyncCartridgeTask=ASYNC_CARTRIDGE_IDLE;
+                    break;
+                case ERROR:
+                    asyncCartridgeTask=ASYNC_CARTRIDGE_IDLE;
+                    return ERROR;
+                    break;
+            }
             break;
 
         default:
@@ -977,7 +987,7 @@ int asyncCartridgeInit(void){
              cartridge[currentModule].
               state=CARTRIDGE_INITING;
 
-            /* Setup timer to wait 5ms before initializing the cartridge */
+            /* Setup timer to wait before initializing the cartridge */
             if(startAsyncTimer(TIMER_CARTRIDGE_INIT,
                                TIMER_TO_CARTRIDGE_INIT,
                                FALSE)==ERROR){
@@ -1047,7 +1057,6 @@ int asyncCartridgeInit(void){
 
 // Asynchronously set a cartridge to STANDBY2 mode:
 int asyncCartridgeGoStandby2(void) {
-    int polarization;
 
     // Check if the cartridge was turned off in the meantime
     if(frontend.
@@ -1058,13 +1067,95 @@ int asyncCartridgeGoStandby2(void) {
         return ASYNC_DONE;
     }
 
-    for(polarization=0; polarization < POLARIZATIONS_NUMBER; polarization++)
-        polarizationGoStandby2(currentModule, polarization);
+    // select the bias subsystem for all the following calls:
+    currentCartridgeSubsystem = CARTRIDGE_SUBSYSTEM_BIAS;
+
+    LATCH_DEBUG_SERIAL_WRITE = 1;
+
+    currentBiasModule = POLARIZATION0;
+    currentPolarizationModule = SIDEBAND0;
+    lnaGoStandby2();
+
+    LATCH_DEBUG_SERIAL_WRITE = 1;
+
+    currentBiasModule = POLARIZATION0;
+    currentPolarizationModule = SIDEBAND1;
+    lnaGoStandby2();
+
+    LATCH_DEBUG_SERIAL_WRITE = 1;
+
+    currentBiasModule = POLARIZATION1;
+    currentPolarizationModule = SIDEBAND0;
+    lnaGoStandby2();
+
+    LATCH_DEBUG_SERIAL_WRITE = 1;
+
+    currentBiasModule = POLARIZATION1;
+    currentPolarizationModule = SIDEBAND1;
+    lnaGoStandby2();
+
+    LATCH_DEBUG_SERIAL_WRITE = 1;
+
+    currentBiasModule = POLARIZATION0;
+    currentPolarizationModule = SIDEBAND0;
+    sisGoStandby2();
+
+    LATCH_DEBUG_SERIAL_WRITE = 1;
+
+    currentBiasModule = POLARIZATION0;
+    currentPolarizationModule = SIDEBAND1;
+    sisGoStandby2();
+
+    LATCH_DEBUG_SERIAL_WRITE = 1;
+
+    currentBiasModule = POLARIZATION1;
+    currentPolarizationModule = SIDEBAND0;
+    sisGoStandby2();
+
+    LATCH_DEBUG_SERIAL_WRITE = 1;
+
+    currentBiasModule = POLARIZATION1;
+    currentPolarizationModule = SIDEBAND1;
+    sisGoStandby2();
+
+    LATCH_DEBUG_SERIAL_WRITE = 1;
+
+    currentBiasModule = POLARIZATION0;
+    currentPolarizationModule = SIDEBAND0;
+    sisMagnetGoStandby2();
+
+    LATCH_DEBUG_SERIAL_WRITE = 1;
+
+    currentBiasModule = POLARIZATION0;
+    currentPolarizationModule = SIDEBAND1;
+    sisMagnetGoStandby2();
+
+    LATCH_DEBUG_SERIAL_WRITE = 1;
+
+    currentBiasModule = POLARIZATION1;
+    currentPolarizationModule = SIDEBAND0;
+    sisMagnetGoStandby2();
+
+    LATCH_DEBUG_SERIAL_WRITE = 1;
+
+    currentBiasModule = POLARIZATION1;
+    currentPolarizationModule = SIDEBAND1;
+    sisMagnetGoStandby2();
+
+    LATCH_DEBUG_SERIAL_WRITE = 1;
+
+    currentBiasModule = POLARIZATION0;
+    lnaLedGoStandby2();
+
+    LATCH_DEBUG_SERIAL_WRITE = 1;
+
+    currentBiasModule = POLARIZATION1;
+    lnaLedGoStandby2();
 
     // Set the state of the cartridge to READY:
     frontend.
      cartridge[currentModule].
       state=CARTRIDGE_READY;
-
-    return NO_ERROR;
+            
+    return ASYNC_DONE;
 }

@@ -147,14 +147,3 @@ void polarizationHandler(void){
 void RESERVEDHandler(void) {
 
 }
-
-// Set the specified polarization to STANDBY2 mode
-void polarizationGoStandby2(int cartridge, int polarization) {
-    int sideband;
-    
-    for(sideband=0; sideband < SIDEBANDS_NUMBER; sideband++)
-        sidebandGoStandby2(cartridge, polarization, sideband);
-
-    lnaLedGoStandby2(cartridge, polarization);
-    sisHeaterGoStandby2(cartridge, polarization);
-}

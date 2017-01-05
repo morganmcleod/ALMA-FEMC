@@ -83,9 +83,6 @@
     /* Externs */
     extern unsigned char currentSidebandModule; //!< Current addressed sideband submodule
 
-    extern void sidebandGoStandby2(int cartridge, int polarization, int sideband);
-    //!< Set the specified sideband to STANDBY2 mode
-
     /* Prototypes */
     /* Externs */
     extern void sidebandHandler(void); //!< This function deals with the incoming CAN message

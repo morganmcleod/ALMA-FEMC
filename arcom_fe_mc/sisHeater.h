@@ -91,7 +91,4 @@
     /* Externs */
     extern void sisHeaterHandler(void); //!< This function deals with the incoming CAN message
 
-    extern void sisHeaterGoStandby2(int cartridge, int polarization);
-    //!< set the specified SIS heater to STANDBY2 mode
-
 #endif /* _SISHEATER_H */

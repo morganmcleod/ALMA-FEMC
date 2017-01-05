@@ -278,36 +278,3 @@ static void currentHandler(void){
 
 }
 
-// set the specified SIS heater to STANDBY2 mode
-void sisHeaterGoStandby2(int cartridge, int polarization) {
-    int bakModule, bakBiasModule, ret;
-
-    #ifdef DATABASE_HARDW
-        /* Check if the selected sideband is outfitted with the desired SIS */
-        if(frontend.
-            cartridge[cartridge].
-             polarization[polarization].
-              sisHeater.
-               available==UNAVAILABLE) {
-
-            // nothing to do:
-            return;
-        }
-    #endif /* DATABASE_HARDW */
-
-    // backup state variables used inside the serialInterface functions:
-    bakModule = currentModule;
-    bakBiasModule = currentBiasModule;
-    ret = 0;
-
-    // set the state variables to the selected subsystem:
-    currentModule = cartridge;
-    currentBiasModule = polarization;
-    
-    // disable the SIS heater:
-    ret = setSisHeaterEnable(SIS_HEATER_DISABLE);
-
-    // restore the state variables:
-    currentModule = bakModule;
-    currentBiasModule = bakBiasModule;
-}

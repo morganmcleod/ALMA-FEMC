@@ -113,7 +113,7 @@
     /* Externs */
     extern void sisHandler(void); //!< This function deals with the incoming can message
 
-    extern void sisGoStandby2(int cartridge, int polarization, int sideband);
+    extern void sisGoStandby2();
     //!< set the specified SIS to STANDBY2 mode
 
 #endif /* _SIS_H */

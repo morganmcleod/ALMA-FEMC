@@ -20,6 +20,18 @@
 
     REVISION HISTORY
 
+    2017-01-08 2.8.5
+        Fixed final bug in asyncCartridgeGoStandby2
+
+    2017-01-05 2.8.4
+        asyncCartridgeGoStandby2 returns ASYNC_DONE.   Should be immaterial.
+        added DEBUG_GO_STANDBY2.
+        simplified GoStandby2 methods to use currentModule, currentBiasModule, currentPolarizationModule instead of params.
+
+    2016-12-31 2.8.3
+    2016-12-30 2.8.2
+        Rolled back cryostat cold head hours changes.
+
     2016-12-27 2.8.1-beta1
         Separated ASYNC_CRYO_LOG_HOURS into three async phases
         Disabled writing the CRYO_HRS file.
@@ -346,9 +358,9 @@
     /* Defines */
     #define VERSION_MAJOR   2  //!< Major version
     #define VERSION_MINOR   8  //!< Minor version
-    #define VERSION_PATCH   2  //!< Patch level
+    #define VERSION_PATCH   5  //!< Patch level
 
-    #define VERSION_DATE    "2016-12-30" //!< Version Date
+    #define VERSION_DATE    "2016-01-08" //!< Version Date
     #define VERSION_NOTES   "Implements all 2.8.x features except logging cold head hours."  //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"

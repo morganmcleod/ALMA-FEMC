@@ -130,6 +130,9 @@
     /* Externs */
     extern FRAME frame; //!< A global to create the frame for the mux board
 
+    extern int LATCH_DEBUG_SERIAL_WRITE;
+    //!< DEBUG_SERIAL_WRITE works as a one-shot.  Must set this to 1 before each call.
+
     /* Prototypes */
     /* Statics */
     static int waitOnBusy(void); // Check the current state of the mux board

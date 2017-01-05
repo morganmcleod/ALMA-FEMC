@@ -139,14 +139,14 @@ static void enableHandler(void){
 }
 
 // set the specified LNA LED to STANDBY2 mode
-void lnaLedGoStandby2(int cartridge, int polarization) {
-    int bakModule, bakBiasModule, ret;
+void lnaLedGoStandby2() {
+    int ret;
 
     #ifdef DATABASE_HARDW
         /* Check if the selected sideband is outfitted with the desired SIS */
         if(frontend.
-            cartridge[cartridge].
-             polarization[polarization].
+            cartridge[currentModule].
+             polarization[currentBiasModule].
               lnaLed.
                available==UNAVAILABLE) {
 
@@ -155,19 +155,15 @@ void lnaLedGoStandby2(int cartridge, int polarization) {
         }
     #endif /* DATABASE_HARDW */
 
-    // backup state variables used inside the serialInterface functions:
-    bakModule = currentModule;
-    bakBiasModule = currentBiasModule;
-    ret = 0;
+    #ifdef DEBUG_GO_STANDBY2
+        printf(" - lnaLedGoStandby2 pol=%d\n", currentBiasModule);
+    #endif // DEBUG_GO_STANDBY2
 
-    // set the state variables to the selected subsystem:
-    currentModule = cartridge;
-    currentBiasModule = polarization;
-    
     // disable the LNA LED:
     ret = setLnaLedEnable(LNA_LED_DISABLE);
 
-    // restore the state variables:
-    currentModule = bakModule;
-    currentBiasModule = bakBiasModule;
+    #ifdef DEBUG_GO_STANDBY2
+        if (ret)
+            printf(" -- ret=%d\n", ret);
+    #endif // DEBUG_GO_STANDBY2
 }

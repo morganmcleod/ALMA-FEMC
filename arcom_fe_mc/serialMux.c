@@ -39,6 +39,8 @@
 FRAME frame; /*! This variable is used to create the serial frame to be
                  handled by the multiplexing board. */
 
+int LATCH_DEBUG_SERIAL_WRITE;
+
 /* Write the data through the Mux board */
 /*! This function will trasmit the current courrent \ref frame content to the
     selected device.
@@ -110,32 +112,35 @@ int writeMux(void){
           frame.
            command);
 
-    #ifdef DEBUG_SERIAL
-        printf("            (0x%04X) <- Frame.port: 0x%04X\n",
-               MUX_PORT_ADD,
-               frame.
-                port);
-        printf("            (0x%04X) <- Frame.data[LSW]: 0x%04X\n",
-               MUX_DATA_ADD(FRAME_DATA_LSW),
-                frame.
-                 data[FRAME_DATA_LSW]);
-        printf("            (0x%04X) <- Frame.data[MDL]: 0x%04X\n",
-               MUX_DATA_ADD(FRAME_DATA_MDL),
-               frame.
-                data[FRAME_DATA_MDL]);
-        printf("            (0x%04X) <- Frame.data[MSW]: 0x%04X\n",
-               MUX_DATA_ADD(FRAME_DATA_MSW),
-               frame.
-                data[FRAME_DATA_MSW]);
-        printf("            (0x%04X) <- Frame.dataLength: 0x%04X\n",
-               MUX_WLENGTH_ADD,
-               frame.
-                dataLength);
-        printf("            (0x%04X) <- Frame.command: 0x%04X\n",
-               MUX_COMMAND_ADD,
-               frame.
-                command);
-    #endif /* DEBUG_SERIAL */
+    #ifdef DEBUG_SERIAL_WRITE
+        if (LATCH_DEBUG_SERIAL_WRITE) {
+            LATCH_DEBUG_SERIAL_WRITE = 0;
+            printf("            (0x%04X) <- Frame.port: 0x%04X\n",
+                   MUX_PORT_ADD,
+                   frame.
+                    port);
+            printf("            (0x%04X) <- Frame.data[LSW]: 0x%04X\n",
+                   MUX_DATA_ADD(FRAME_DATA_LSW),
+                    frame.
+                     data[FRAME_DATA_LSW]);
+            printf("            (0x%04X) <- Frame.data[MDL]: 0x%04X\n",
+                   MUX_DATA_ADD(FRAME_DATA_MDL),
+                   frame.
+                    data[FRAME_DATA_MDL]);
+            printf("            (0x%04X) <- Frame.data[MSW]: 0x%04X\n",
+                   MUX_DATA_ADD(FRAME_DATA_MSW),
+                   frame.
+                    data[FRAME_DATA_MSW]);
+            printf("            (0x%04X) <- Frame.dataLength: 0x%04X\n",
+                   MUX_WLENGTH_ADD,
+                   frame.
+                    dataLength);
+            printf("            (0x%04X) <- Frame.command: 0x%04X\n",
+                   MUX_COMMAND_ADD,
+                   frame.
+                    command);
+        }
+    #endif /* DEBUG_SERIAL_WRITE */
 
     return NO_ERROR;
 
@@ -202,7 +207,7 @@ int readMux(void){
           frame.
            command);
 
-    #ifdef DEBUG_SERIAL
+    #ifdef DEBUG_SERIAL_READ
         printf("            (0x%04X) <- Frame.port: 0x%04X\n",
                MUX_PORT_ADD,
                frame.
@@ -215,7 +220,7 @@ int readMux(void){
                MUX_COMMAND_ADD,
                frame.
                 command);
-    #endif /* DEBUG_SERIAL */
+    #endif /* DEBUG_SERIAL_READ */
 
     /* 5 - Wait on busy status */
     if(waitOnBusy()==ERROR){
@@ -230,7 +235,7 @@ int readMux(void){
     frame.
      data[FRAME_DATA_LSW]=inpw(MUX_DATA_ADD(FRAME_DATA_LSW)); // Least significant word
 
-    #ifdef DEBUG_SERIAL
+    #ifdef DEBUG_SERIAL_READ
         printf("            (0x%04X) -> Frame.data[LSW]: 0x%04X\n",
                MUX_DATA_ADD(FRAME_DATA_LSW),
                frame.
@@ -243,7 +248,7 @@ int readMux(void){
                MUX_DATA_ADD(FRAME_DATA_MSW),
                frame.
                 data[FRAME_DATA_MSW]);
-    #endif /* DEBUG_SERIAL */
+    #endif /* DEBUG_SERIAL_READ */
 
     return NO_ERROR;
 }
@@ -266,9 +271,9 @@ static int waitOnBusy(void){
 
     /* Wait for the mux board to be ready or for the timer to expire. */
     do {
-        #ifdef DEBUG_SERIAL
+        #ifdef DEBUG_SERIAL_WAIT
             printf("             Waiting on mux board to get ready...\n");
-        #endif /* DEBUG_SERIAL */
+        #endif /* DEBUG_SERIAL_WAIT */
         timedOut=queryAsyncTimer(TIMER_SERIAL_MUX);
         if(timedOut==ERROR){
             return ERROR;

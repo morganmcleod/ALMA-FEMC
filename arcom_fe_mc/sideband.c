@@ -65,13 +65,3 @@ void sidebandHandler(void){
     /* Call the correct handler */
     (sidebandModulesHandler[currentSidebandModule])();
 }
-
-// Set the specified sideband to STANDBY2 mode
-void sidebandGoStandby2(int cartridge, int polarization, int sideband) {
-    
-    lnaGoStandby2(cartridge, polarization, sideband);
-    
-    sisGoStandby2(cartridge, polarization, sideband);
-
-    sisMagnetGoStandby2(cartridge, polarization, sideband);
-}

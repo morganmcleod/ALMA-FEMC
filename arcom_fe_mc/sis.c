@@ -462,15 +462,15 @@ static void openLoopHandler(void){
 }
 
 // set the specified SIS to STANDBY2 mode
-void sisGoStandby2(int cartridge, int polarization, int sideband) {
-    int bakModule, bakBiasModule, bakPolModule, ret;
+void sisGoStandby2() {
+    int ret;
 
     #ifdef DATABASE_HARDW
         /* Check if the selected sideband is outfitted with the desired SIS */
         if(frontend.
-            cartridge[cartridge].
-             polarization[polarization].
-              sideband[sideband].
+            cartridge[currentModule].
+             polarization[currentBiasModule].
+              sideband[currentPolarizationModule].
                sis.
                 available == UNAVAILABLE) {
 
@@ -479,26 +479,18 @@ void sisGoStandby2(int cartridge, int polarization, int sideband) {
         }
     #endif /* DATABASE_HARDW */
 
-    // backup state variables used inside the serialInterface functions:
-    bakModule = currentModule;
-    bakBiasModule = currentBiasModule;
-    bakPolModule = currentPolarizationModule;
     ret = 0;
 
-    // set the state variables to the selected subsystem:
-    currentModule = cartridge;
-    currentBiasModule = polarization;
-    currentPolarizationModule = sideband;
+    #ifdef DEBUG_GO_STANDBY2
+        printf(" - sisGoStandby2 pol=%d sb=%d\n", currentBiasModule, currentPolarizationModule);
+    #endif // DEBUG_GO_STANDBY2
 
     // set the SIS voltage to 0:
     CONV_FLOAT = 0.0;
     ret = setSisMixerBias();
 
-    // set the SIS to OPEN LOOP mode:
-    ret = setSisMixerLoop(SIS_MIXER_BIAS_MODE_CLOSE);
-
-    // restore the state variables:
-    currentModule = bakModule;
-    currentBiasModule = bakBiasModule;
-    currentPolarizationModule = bakPolModule;    
+    #ifdef DEBUG_GO_STANDBY2
+        if (ret)
+            printf(" -- ret=%d\n", ret);
+    #endif // DEBUG_GO_STANDBY2
 }

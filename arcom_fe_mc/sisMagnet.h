@@ -83,7 +83,7 @@
     /* Externs */
     extern void sisMagnetHandler(void); //!< This function deals with the incoming can message
 
-    extern void sisMagnetGoStandby2(int cartridge, int polarization, int sideband);
+    extern void sisMagnetGoStandby2();
     //!< set the specified SIS magnet to STANDBY2 mode.
 
 #endif /* _SISMAGNET_H */
