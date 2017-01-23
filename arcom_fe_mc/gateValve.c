@@ -56,21 +56,11 @@ static void stateHandler(void){
 
     /* If control (size !=0) */
     if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cryostat.
-                  gateValve.
-                   lastState,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status */
-        frontend.
-         cryostat.
-          gateValve.
-           lastState.
-            status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cryostat.
+                                    gateValve.
+                                     lastState)
 
         /* Check if the backing pump is enabled. If it's not then the electronics to
            control the gate valve is off. In that case, return the HARDW_BLKD_ERR
@@ -78,7 +68,8 @@ static void stateHandler(void){
         if(frontend.
             cryostat.
              backingPump.
-              enable[CURRENT_VALUE]==BACKING_PUMP_DISABLE){
+              enable[CURRENT_VALUE]==BACKING_PUMP_DISABLE)
+        {
             storeError(ERR_GATE_VALVE,
                        0x03); // Error 0x03 -> Backing Pump off -> Gate valve disabled
             frontend.
@@ -140,16 +131,11 @@ static void stateHandler(void){
 
     /* If monitor on a control RCA */
     if(currentClass==CONTROL_CLASS){
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized. */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cryostat.
-                  gateValve.
-                   lastState,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // Return the last control message and status:
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cryostat.
+                                      gateValve.
+                                       lastState)
         return;
     }
 

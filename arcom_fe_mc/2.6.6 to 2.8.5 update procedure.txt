@@ -1,0 +1,70 @@
+You will need:
+- access to the front panel of the FEMC
+- a computer with a terminal software such as (hyperterminal, secureCRT or equivalent that support z-modem transfer) and a serial port
+- a null modem cable
+
+
+Notes:
+
+
+Procedure:
+- download the 2-8-8.exe file from EDM:
+  http://edm.alma.cl/forums/alma/dispatch.cgi/iptfedocs/showFolder/104236
+- turn off any activity on the CAN bus but leave the FEMC powered
+- connect the serial cable to the computer and the FEMC
+- start your terminal software with the following options:
+  - Baud rate: 115200
+  - Data Bits: 8
+  - Stop Bits: 1
+  - Parity: none
+  - No flow control
+- once the communication is established push <enter> a couple of time to verify that you can talk to the FEMC.
+- push "i" <enter>. This should give you the software revision information. 
+- push "q" <enter>. This should bring you to the dos promt C:\ALMA>
+- type "verify on" <enter> to enable the verification of the operations by the operating system
+- create a directory with the command "mkdir v2-6-6" <enter>
+- backup the existing fe_mc.exe:
+  - "copy fe_mc.exe v2-6-6" <enter>
+- delete the fe_mc.exe from the ALMA directory:
+  - "del fe_mc.exe" <enter>
+- use whatever is required by your terminal software to transfer with z-modem the 2-8-5.exe file. If the FEMC doesn't automatically activate the z-modem reception, type the following in the DOS prompt:
+  - "rz" <enter>
+copy the new version to fe_mc.exe:
+  - "copy 2-8-5.exe fe_mc.exe" <enter>
+- type "verify off" <enter> to disable the verification of the operations by the operating system
+- power cycle the unit and verify that the software is going through initialization
+- push <enter> once the initialization is finished and you should see something similar to the following:
+  
+
+Front End Monitor and Control Firmware (FEND-40.04.03.03-011-A-FRM)
+Morgan McLeod - NRAO (mmcleod@nrao.edu)
+Revision: 2.8.5 (2016-01-08)
+Notes: Implements all 2.8.x features except logging cold head hours.
+
+Bug report: jira.alma.cl
+
+Console help
+ ' -> retypes last command
+ " -> repeats last command
+ a<CR> -> enables/disables the async process (DEBUG only)
+ c RCA q data <CR> -> control the specified address
+                   RCA is the Relative CAN Address.
+                       It can be in decimal or exadecimal (0x...) format
+                   q is the qualifier for the payload:
+                     b for a byte or a boolean
+                     i for an unsigned integer
+                     f for a float
+                   data is the payload in the format specified by the qualifier
+ d<CR> -> disable console
+ e<CR> -> reads and display ESNs on the OWB
+ i<CR> -> display version information
+ m RCA<CR> -> monitor the specified address
+           RCA is the Relative CAN Address.
+               It can be in decimal or exadecimal (0x...) format
+ q<CR> -> quit
+ r<CR> -> restart
+For a list of the RCAs check:
+- ALMA-40.00.00.00-75.35.25.00-X-ICD
+- ALMA-40.04.03.03-002-X-DSN
+
+- Disconnect the serial cable and restart your CAN control software.

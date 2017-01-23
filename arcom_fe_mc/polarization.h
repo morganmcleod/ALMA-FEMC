@@ -51,11 +51,6 @@
         #include "sisHeater.h"
     #endif /* _SIS_HEATER_H */
 
-    /* Schottky mixer */
-    #ifndef _SCHOTTKYMIXER_H
-        #include "schottkyMixer.h"
-    #endif /* _SCHOTTKYMIXER_H */
-
     /* Polarization special messages */
     #ifndef _POLSPECIALMSGS_H
         #include "polSpecialMsgs.h"
@@ -73,48 +68,26 @@
                                                          1 -> sideband
                                                          2 -> lnaLed
                                                          3 -> sisHeater
-                                                         4 -> schottkyMixer
+                                                         4 -> none
                                                          5 -> polSpecialMsgs (only control) */
     #define POLARIZATION_MODULES_MASK_SHIFT   7       // Bits right shift for the submodules mask
 
     /* Typedefs */
     //! Current state of the polarization
-    /*! This structure represent the current state of the polatization.
-        \ingroup    cartridge
-        \param      available       This contains the avilability state for the
-                                    addressed polarization.
-        \param      ssi10MHzEnable  This contains the current state of the 10MHz
-                                    speed at the remote SSI interface:
-                                        - \ref ENABLE   -> Speed is set to 10MHz
-                                        - \ref DISABLE  -> Speed is set to 5MHz
-        \param      sideband[Sb]    This contains the information about the
-                                    sidebands available for this polarization.
-                                    There can be up to \ref SIDEBANDS_NUMBER for
-                                    each polarization.
-        \param      lnaLed          This contains the information about the lna
-                                    led available for this polarization. There
-                                    is one lna led module for each
-                                    polarization.
-        \param      sisHeater       This contains the information about the sis
-                                    heater available for this polarization.
-                                    There is one sis heater module for each
-                                    polarization.
-        \param      schottkyMixer   This contains the information about the
-                                    Schottky mixer available for this
-                                    polarization. There is one Schottky mixer
-                                    for each polarization. */
     typedef struct {
         //! Polarization availability
         /*! This variable indicates if the cartridge is outfitted with this
             particular polarization. This value should be part of the device
             dependent informations retrived from the configuration database. */
         unsigned char   available;
+
         //! SSI 10MHz Enable
         /*! This variable indicates the current communication speed for the
             remote device. Allowed speeds are the following:
                 - \ref ENABLE   -> Speed is set to 10 MHz
                 - \ref DISABLE  -> Speed is set to 5 MHz */
         unsigned char   ssi10MHzEnable;
+
         //! Sideband current state
         /*! Sidebands \p Sb are assigned according to the following:
                 - Sb = 0: Sideband 1
@@ -122,15 +95,15 @@
 
             Please see \ref SIDEBAND for more informations. */
         SIDEBAND        sideband[SIDEBANDS_NUMBER];
+
         //!LNAled current state
         /*! Please see \ref LNA_LED for more informations. */
         LNA_LED         lnaLed;
+
         //! SIS heater current state
         /*! Please see \ref SIS_HEATER for more informations. */
         SIS_HEATER      sisHeater;
-        //! Schottky mixer current state
-        /*! Please see \ref SCHOTTKY_MIXER for more informations. */
-        SCHOTTKY_MIXER  schottkyMixer;
+
         //! Polarization special messages current state
         /*! Please see \ref POL_SPECIAL_MSGS for more informations. */
         POL_SPECIAL_MSGS polSpecialMsgs;
@@ -143,6 +116,7 @@
     /* Prototypes */
     /* Externs */
     extern void polarizationHandler(void); //!< This function deals with the incoming can message
+    extern void RESERVEDHandler(void);     //!< Dummy handler for where schottkyMixer used to be.
     extern int polarizationInit(void); //!< This function initializes the selected polarization at runtime
 
 #endif /* _POLARIZATION_H */

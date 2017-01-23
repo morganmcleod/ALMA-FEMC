@@ -114,25 +114,13 @@ static void voltageHandler(void){
 
     /* If control message (size !=0) */
     if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   sideband[currentPolarizationModule].
-                    sis.
-                     lastVoltage,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         cartridge[currentModule].
-          polarization[currentBiasModule].
-           sideband[currentPolarizationModule].
-            sis.
-             lastVoltage.
-              status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cartridge[currentModule].
+                                    polarization[currentBiasModule].
+                                     sideband[currentPolarizationModule].
+                                      sis.
+                                       lastVoltage)
 
         /* Extract the floating data from the CAN message */
         changeEndian(CONV_CHR_ADD,
@@ -169,6 +157,23 @@ static void voltageHandler(void){
             }
         #endif /* DATABASE_RANGE */
 
+        // If we are in STANDBY2 mode, return HARDW_BLKD_ERR
+        if (frontend.
+             cartridge[currentModule].
+              standby2) 
+        {
+            /* Store the ERROR state in the last control message variable */
+            frontend.
+             cartridge[currentModule].
+              polarization[currentBiasModule].
+               sideband[currentPolarizationModule].
+                sis.
+                 lastVoltage.
+                  status=HARDW_BLKD_ERR;
+            
+            return;
+        }
+
         /* Set the SIS mixer bias voltage. If an error occurs, store the state
            and then return. */
         if(setSisMixerBias()==ERROR){
@@ -190,18 +195,13 @@ static void voltageHandler(void){
 
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   sideband[currentPolarizationModule].
-                    sis.
-                     lastVoltage,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cartridge[currentModule].
+                                      polarization[currentBiasModule].
+                                       sideband[currentPolarizationModule].
+                                        sis.
+                                         lastVoltage)
         return;
     }
 
@@ -390,25 +390,30 @@ static void openLoopHandler(void){
 
     /* If control message (size !=0) */
     if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   sideband[currentPolarizationModule].
-                    sis.
-                     lastOpenLoop,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cartridge[currentModule].
+                                    polarization[currentBiasModule].
+                                     sideband[currentPolarizationModule].
+                                      sis.
+                                       lastOpenLoop)
 
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         cartridge[currentModule].
-          polarization[currentBiasModule].
-           sideband[currentPolarizationModule].
-            sis.
-             lastOpenLoop.
-              status=NO_ERROR;
+        // If we are in STANDBY2 mode, return HARDW_BLKD_ERR
+        if (frontend.
+             cartridge[currentModule].
+              standby2) 
+        {
+            /* Store the ERROR state in the last control message variable */
+            frontend.
+             cartridge[currentModule].
+              polarization[currentBiasModule].
+               sideband[currentPolarizationModule].
+                sis.
+                 lastOpenLoop.
+                  status=HARDW_BLKD_ERR;
+            
+            return;
+        }
 
         /* Change the status of the loop according to the content of the CAN
            message. */
@@ -432,18 +437,13 @@ static void openLoopHandler(void){
 
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   sideband[currentPolarizationModule].
-                    sis.
-                     lastOpenLoop,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cartridge[currentModule].
+                                      polarization[currentBiasModule].
+                                       sideband[currentPolarizationModule].
+                                        sis.
+                                         lastOpenLoop)
         return;
     }
 
@@ -459,4 +459,38 @@ static void openLoopHandler(void){
                  sis.
                   openLoop;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
+}
+
+// set the specified SIS to STANDBY2 mode
+void sisGoStandby2() {
+    int ret;
+
+    #ifdef DATABASE_HARDW
+        /* Check if the selected sideband is outfitted with the desired SIS */
+        if(frontend.
+            cartridge[currentModule].
+             polarization[currentBiasModule].
+              sideband[currentPolarizationModule].
+               sis.
+                available == UNAVAILABLE) {
+
+            // nothing to do:
+            return;
+        }
+    #endif /* DATABASE_HARDW */
+
+    ret = 0;
+
+    #ifdef DEBUG_GO_STANDBY2
+        printf(" - sisGoStandby2 pol=%d sb=%d\n", currentBiasModule, currentPolarizationModule);
+    #endif // DEBUG_GO_STANDBY2
+
+    // set the SIS voltage to 0:
+    CONV_FLOAT = 0.0;
+    ret = setSisMixerBias();
+
+    #ifdef DEBUG_GO_STANDBY2
+        if (ret)
+            printf(" -- ret=%d\n", ret);
+    #endif // DEBUG_GO_STANDBY2
 }

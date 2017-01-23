@@ -59,25 +59,13 @@ static void enableHandler(void){
 
     /* If control (size!=0) */
     if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 ifSwitch.
-                  ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
-                           [currentIfChannelSideband[currentIfSwitchModule]].
-                   ifTempServo.
-                    lastEnable,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         ifSwitch.
-          ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
-                   [currentIfChannelSideband[currentIfSwitchModule]].
-           ifTempServo.
-            lastEnable.
-             status=NO_ERROR;
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   ifSwitch.
+                                    ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
+                                             [currentIfChannelSideband[currentIfSwitchModule]].
+                                     ifTempServo.
+                                      lastEnable)
 
         /* Check that the CAN_BYTE is a legal value for enable/disable */
         if(CAN_BYTE!=IF_TEMP_SERVO_ENABLE && CAN_BYTE!=IF_TEMP_SERVO_DISABLE){
@@ -116,18 +104,13 @@ static void enableHandler(void){
 
     /* If monitor on a control RCA */
     if(currentClass==CONTROL_CLASS){
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 ifSwitch.
-                  ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
-                           [currentIfChannelSideband[currentIfSwitchModule]].
-                   ifTempServo.
-                    lastEnable,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     ifSwitch.
+                                      ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
+                                               [currentIfChannelSideband[currentIfSwitchModule]].
+                                       ifTempServo.
+                                        lastEnable)
         return;
     }
 

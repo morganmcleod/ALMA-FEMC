@@ -123,7 +123,7 @@ int myReadCfg(const char *fileName,
         default:
             /* If no errors, check if the number of returned items is the same
                as the requested ones. */
-            if(returnValue!=expectedItems){
+            if (expectedItems && returnValue!=expectedItems) {
                 storeError(ERR_INI,
                            0x03); // Error 0x03 -> Number of returned items different from expected
                 return ITEMS_NO_ERROR;

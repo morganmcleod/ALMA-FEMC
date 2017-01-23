@@ -11,6 +11,7 @@
     events. */
 
 /* Includes */
+
 #include <string.h>     /* memcpy */
 #include <stdio.h>      /* printf */
 
@@ -58,21 +59,11 @@ static void enableHandler(void){
 
     /* If control (size !=0) */
     if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cryostat.
-                  backingPump.
-                   lastEnable,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         cryostat.
-          backingPump.
-           lastEnable.
-            status=NO_ERROR;
+         // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cryostat.
+                                    backingPump.
+                                     lastEnable)
 
         /* If turning the backing pump off, then shut down the hardware that is
            biased by the backing pump: turbo, gate and solenoid valve. */
@@ -113,16 +104,11 @@ static void enableHandler(void){
 
     /* If monitor on a control RCA */
     if(currentClass==CONTROL_CLASS){
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized. */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cryostat.
-                  backingPump.
-                   lastEnable,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // Return the last control message and status:
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cryostat.
+                                      backingPump.
+                                       lastEnable)
         return;
     }
 

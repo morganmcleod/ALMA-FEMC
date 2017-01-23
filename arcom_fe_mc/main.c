@@ -55,9 +55,9 @@ int main(void){
     /* Main loop */
     while(!stop){
 
-        #ifdef DEBUG
+        #ifdef DEBUG_MSG_LOOP
             printf("Waiting for messages...\n\n");
-        #endif /* DEBUG */
+        #endif /* DEBUG_MSG_LOOP */
 
         /* Do whatever is that you do when you don't have anything to do */
         while(!newCANMsg&&!stop){
@@ -93,9 +93,9 @@ int main(void){
             break;
         }
 
-        #ifdef DEBUG
+        #ifdef DEBUG_MSG_LOOP
             printf("Message received!\n\n");
-        #endif /* DEBUG */
+        #endif /* DEBUG_MSG_LOOP */
         CANMessageHandler();
 
     }

@@ -21,8 +21,8 @@ MCommand
 0
 5
 MCommand
-104
-copy fe_mc.exe releases\02-06-11.exe /y
+101
+copy fe_mc.exe releases\2-8-5.exe /y
 copy fe_mc.exe releases\fe_mc.exe /y
 #ftp -n -s:updateFemc.scr
 6
@@ -146,7 +146,7 @@ WVList
 0
 39
 WPickList
-81
+80
 40
 MItem
 3
@@ -1430,8 +1430,8 @@ WVList
 0
 327
 MItem
-15
-schottkyMixer.c
+17
+serialInterface.c
 328
 WString
 4
@@ -1448,8 +1448,8 @@ WVList
 0
 331
 MItem
-17
-serialInterface.c
+11
+serialMux.c
 332
 WString
 4
@@ -1466,8 +1466,8 @@ WVList
 0
 335
 MItem
-11
-serialMux.c
+10
+sideband.c
 336
 WString
 4
@@ -1484,8 +1484,8 @@ WVList
 0
 339
 MItem
-10
-sideband.c
+5
+sis.c
 340
 WString
 4
@@ -1502,8 +1502,8 @@ WVList
 0
 343
 MItem
-5
-sis.c
+11
+sisHeater.c
 344
 WString
 4
@@ -1521,7 +1521,7 @@ WVList
 347
 MItem
 11
-sisHeater.c
+sisMagnet.c
 348
 WString
 4
@@ -1538,8 +1538,8 @@ WVList
 0
 351
 MItem
-11
-sisMagnet.c
+15
+solenoidValve.c
 352
 WString
 4
@@ -1556,8 +1556,8 @@ WVList
 0
 355
 MItem
-15
-solenoidValve.c
+7
+timer.c
 356
 WString
 4
@@ -1574,8 +1574,8 @@ WVList
 0
 359
 MItem
-7
-timer.c
+11
+turboPump.c
 360
 WString
 4
@@ -1592,8 +1592,8 @@ WVList
 0
 363
 MItem
-11
-turboPump.c
+18
+vacuumController.c
 364
 WString
 4
@@ -1610,8 +1610,8 @@ WVList
 0
 367
 MItem
-18
-vacuumController.c
+14
+vacuumSensor.c
 368
 WString
 4
@@ -1628,8 +1628,8 @@ WVList
 0
 371
 MItem
-14
-vacuumSensor.c
+9
+version.c
 372
 WString
 4
@@ -1646,8 +1646,8 @@ WVList
 0
 375
 MItem
-9
-version.c
+5
+yto.c
 376
 WString
 4
@@ -1656,24 +1656,6 @@ COBJ
 WVList
 0
 378
-WVList
-0
-40
-1
-1
-0
-379
-MItem
-5
-yto.c
-380
-WString
-4
-COBJ
-381
-WVList
-0
-382
 WVList
 0
 40

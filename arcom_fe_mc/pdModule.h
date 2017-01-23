@@ -112,10 +112,13 @@
     /* Globals */
     /* Externs */
     extern unsigned char currentPdModuleModule; //!< Currently addressed power distribution module submodule
+    extern void printPoweredModuleCounts(void);
 
     /* Prototypes */
     /* Statics */
     static void enableHandler(void);
+    static int allowPowerOn(int module, int standby2);
+    static int allowStandby2(int module);
     /* Externs */
     extern void pdModuleHandler(void); //!< This function deals wit the incoming CAN message
 

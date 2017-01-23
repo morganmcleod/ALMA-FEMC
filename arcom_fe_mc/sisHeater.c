@@ -75,23 +75,28 @@ static void enableHandler(void){
 
     /* If control (size !=0) */
     if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   sisHeater.
-                    lastEnable,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cartridge[currentModule].
+                                    polarization[currentBiasModule].
+                                     sisHeater.
+                                      lastEnable)
 
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         cartridge[currentModule].
-          polarization[currentBiasModule].
-           sisHeater.
-            lastEnable.
-             status=NO_ERROR;
+        // If we are in STANDBY2 mode, return HARDW_BLKD_ERR
+        if (frontend.
+             cartridge[currentModule].
+              standby2) 
+        {
+            /* Store the ERROR state in the last control message variable */
+            frontend.
+             cartridge[currentModule].
+              polarization[currentBiasModule].
+               sisHeater.
+                lastEnable.
+                 status=HARDW_BLKD_ERR;
+            
+            return;
+        }
 
         /* Check if message is addressed to band 9 and if it is an enable
            message. If it is, check if the timer has expired. If not, return
@@ -137,7 +142,7 @@ static void enableHandler(void){
         }
 
 
-        /* Change the status of the LNA led according to the content of the CAN
+        /* Change the status of the SIS heater according to the content of the CAN
            message. */
         if(setSisHeaterEnable(CAN_BYTE?SIS_HEATER_ENABLE:
                                        SIS_HEATER_DISABLE)==ERROR){
@@ -157,17 +162,12 @@ static void enableHandler(void){
 
     /* If monitor on a control RCA */
     if(currentClass==CONTROL_CLASS){
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   sisHeater.
-                    lastEnable,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cartridge[currentModule].
+                                      polarization[currentBiasModule].
+                                       sisHeater.
+                                        lastEnable)
         return;
     }
 
@@ -277,3 +277,4 @@ static void currentHandler(void){
     CAN_SIZE=CAN_FLOAT_SIZE;
 
 }
+

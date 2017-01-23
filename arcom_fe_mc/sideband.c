@@ -65,5 +65,3 @@ void sidebandHandler(void){
     /* Call the correct handler */
     (sidebandModulesHandler[currentSidebandModule])();
 }
-
-

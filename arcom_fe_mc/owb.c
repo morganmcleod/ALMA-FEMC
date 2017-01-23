@@ -482,7 +482,7 @@ int owbGetEsn(void){
     for(device=0;
         device<esnDevicesFound;
         device++){
-        printf("     - ESN%d: %X %X %X %X %X %X %X %X (%X %X %X %X %X %X %X %X)\n",
+        printf("     - ESN%d: %02X %02X %02X %02X %02X %02X %02X %02X\n",
                device,
                ESNS[device][0],
                ESNS[device][1],
@@ -491,15 +491,7 @@ int owbGetEsn(void){
                ESNS[device][4],
                ESNS[device][5],
                ESNS[device][6],
-               ESNS[device][7],
-               ESNS[device][7],
-               ESNS[device][6],
-               ESNS[device][5],
-               ESNS[device][4],
-               ESNS[device][3],
-               ESNS[device][2],
-               ESNS[device][1],
-               ESNS[device][0]);
+               ESNS[device][7]);
     }
 
 
@@ -552,7 +544,7 @@ int owbGetEsn(void){
         for(device=0;
             device<esnDevicesStored;
             device++){
-            printf("     - ESN%d: %X %X %X %X %X %X %X %X (%X %X %X %X %X %X %X %X)\n",
+            printf("     - ESN%d: %02X %02X %02X %02X %02X %02X %02X %02X\n",
                    device,
                    storedESNS[device][0],
                    storedESNS[device][1],
@@ -561,19 +553,8 @@ int owbGetEsn(void){
                    storedESNS[device][4],
                    storedESNS[device][5],
                    storedESNS[device][6],
-                   storedESNS[device][7],
-                   storedESNS[device][7],
-                   storedESNS[device][6],
-                   storedESNS[device][5],
-                   storedESNS[device][4],
-                   storedESNS[device][3],
-                   storedESNS[device][2],
-                   storedESNS[device][1],
-                   storedESNS[device][0]);
+                   storedESNS[device][7]);
         }
-
-
-
     }
 
     printf("   done!\n"); // Check against stored list

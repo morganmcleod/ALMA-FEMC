@@ -473,11 +473,7 @@ int getPll(unsigned char port){
              cartridge[currentModule].
               lo.
                pll.
-                lockDetectVoltage[CURRENT_VALUE]=(frontend.
-                                                   cartridge[currentModule].
-                                                    lo.
-                                                     pll.
-                                                      lockDetectVoltageScale*loRegisters[currentModule].
+                lockDetectVoltage[CURRENT_VALUE]=(LO_LOCK_DETECT_V_SCALE*loRegisters[currentModule].
                                                                               adcData)/LO_ADC_RANGE;
             break;
         /* The correction voltage coefficient is stored in the configuration
@@ -487,11 +483,7 @@ int getPll(unsigned char port){
              cartridge[currentModule].
               lo.
                pll.
-                correctionVoltage[CURRENT_VALUE]=(frontend.
-                                                   cartridge[currentModule].
-                                                    lo.
-                                                     pll.
-                                                      correctionVoltageScale*loRegisters[currentModule].
+                correctionVoltage[CURRENT_VALUE]=(LO_PLL_CORRECTION_V_SCALE*loRegisters[currentModule].
                                                                               adcData)/LO_ADC_RANGE;
             break;
         /* The assembly temperature is given by 1000*(adcData/65536) */
@@ -509,15 +501,7 @@ int getPll(unsigned char port){
              cartridge[currentModule].
               lo.
                pll.
-                YIGHeaterCurrent[CURRENT_VALUE]=frontend.
-                                                   cartridge[currentModule].
-                                                    lo.
-                                                     pll.
-                                                      YIGHeaterCurrentOffset+(frontend.
-                                                                               cartridge[currentModule].
-                                                                                lo.
-                                                                                 pll.
-                                                                                  YIGHeaterCurrentScale*loRegisters[currentModule].
+                YIGHeaterCurrent[CURRENT_VALUE]=LO_YIG_HEATER_I_OFFSET+(LO_YIG_HEATER_I_SCALE*loRegisters[currentModule].
                                                                                                          adcData)/LO_ADC_RANGE;
             break;
         /* The REF total power is given by 10*(adcData/65536) */
@@ -1000,10 +984,7 @@ int getAmc(unsigned char port){
              cartridge[currentModule].
               lo.
                amc.
-                supplyVoltage5V[CURRENT_VALUE]=(frontend.
-                                                 cartridge[currentModule].
-                                                  lo.
-                                                   supplyVoltagesScale*loRegisters[currentModule].
+                supplyVoltage5V[CURRENT_VALUE]=(LO_SUPPLY_V_SCALE*loRegisters[currentModule].
                                                                         adcData)/LO_ADC_RANGE;
             break;
         /* The D multiplier current is given by 100*(adcData/65536) */
@@ -1012,11 +993,8 @@ int getAmc(unsigned char port){
              cartridge[currentModule].
               lo.
                amc.
-                multiplierDCurrent[CURRENT_VALUE]=(frontend.
-                                                    cartridge[currentModule].
-                                                     lo.
-                                                      multiplierCurrentsScale*loRegisters[currentModule].
-                                                                               adcData)/LO_ADC_RANGE;
+                multiplierDCurrent[CURRENT_VALUE]=(LO_AMC_MULTIPLIER_I_SCALE*loRegisters[currentModule].
+                                                                                 adcData)/LO_ADC_RANGE;
             break;
         /* The E gate voltage is given by  10*(adcData/65536) */
         case AMC_GATE_E_VOLTAGE:
@@ -1224,10 +1202,7 @@ int getPa(unsigned char port){
              cartridge[currentModule].
               lo.
                pa.
-                supplyVoltage3V[CURRENT_VALUE]=(frontend.
-                                                 cartridge[currentModule].
-                                                  lo.
-                                                   supplyVoltagesScale*loRegisters[currentModule].
+                supplyVoltage3V[CURRENT_VALUE]=(LO_SUPPLY_V_SCALE*loRegisters[currentModule].
                                                                         adcData/LO_ADC_RANGE);
             break;
         /* The 5V supply voltage is given by 10*(adcData/65536) */
@@ -1236,10 +1211,7 @@ int getPa(unsigned char port){
              cartridge[currentModule].
               lo.
                pa.
-                supplyVoltage5V[CURRENT_VALUE]=(frontend.
-                                                 cartridge[currentModule].
-                                                  lo.
-                                                   supplyVoltagesScale*loRegisters[currentModule].
+                supplyVoltage5V[CURRENT_VALUE]=(LO_SUPPLY_V_SCALE*loRegisters[currentModule].
                                                                         adcData/LO_ADC_RANGE);
             break;
         default:

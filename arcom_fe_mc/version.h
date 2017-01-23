@@ -3,12 +3,9 @@
 
     <b> File informations: </b><br>
     Created: 2004/10/06 16:47:08 by avaccari
+    Maintenance since 2013 by mmcleod@nrao.edu
 
-    <b> CVS informations: </b><br>
-
-    \$Id: version.h,v 1.56 2013/07/12 20:16:35 mmcleod Exp $
-
-    This files contains all the informations about the current version of the
+    This files contains all the information about the current version of the
     software and its revision history.
 
     The revision numbering system is according to the following rules:
@@ -23,25 +20,55 @@
 
     REVISION HISTORY
 
-    2015-07-29  002.006.010 beta
+    2017-01-08 2.8.5
+        Fixed final bug in asyncCartridgeGoStandby2
+
+    2017-01-05 2.8.4
+        asyncCartridgeGoStandby2 returns ASYNC_DONE.   Should be immaterial.
+        added DEBUG_GO_STANDBY2.
+        simplified GoStandby2 methods to use currentModule, currentBiasModule, currentPolarizationModule instead of params.
+
+    2016-12-31 2.8.3
+    2016-12-30 2.8.2
+        Rolled back cryostat cold head hours changes.
+
+    2016-12-27 2.8.1-beta1
+        Separated ASYNC_CRYO_LOG_HOURS into three async phases
+        Disabled writing the CRYO_HRS file.
+
+    2016-12-16 2.8.0-beta5
+        Fixed bug in cryostatAsync(): was only repeating temp measurement once per hour?
+
+    2016-12-14 2.8.0-beta4
+        CRYOSTAT_LOG_HOURS_THRESHOLD changed to 265.0 K
+        CRYOSTAT_LOG_HOURS triggers if 2 of 3 cryostat stage sensors are below the threshold.
+        For testing on 2 antennas
+
+    2016-12-08 2.8.0-beta3
+        Tested on FE-12 for 2.8.0 release
+
+    2016-10-20  2.6.11-beta1
+        Prototype band 1 & band 2 support
+
+    2015-07-29  2.6.10-beta1
         Prototype band 2 support
 
-    2014-08-22  002.006.006
+    2014-08-22  2.6.6
         Release version for continued testing at OSF
         GET_PPCOMM_TIME now returns 8 bytes of 0xFF, as the ICD says it should.
         SET_IF_SWITCH_CHANNEL[Po][Sb]_TEMP_SERVO_ENABLE now returns error if a value
           than 0 or 1 is sent.
 
-    2014-07-28  002.006.005
+    2014-07-28  2.6.5
         Release version for continued testing at OSF
 
-    2014-07-23  002.006.005 beta2
+    2014-07-23  2.006.005 beta2
         Turned off console debugging.   Commented out printfs.
 
-    2014-07-22  002.006.005 beta1
+    2014-07-22  2.6.5 beta1
         Testing version for FE-15 at OSF.
 
-    2014-04-22  002.006.004 beta
+    2014-04-22  2.6.4 beta
         Beta release for testing at the OSF.
           Prints some debugging messages NOT SUIATABLE FOR RELEASE TO ANTENNA
         Implements LO PA max output power features.
@@ -49,7 +76,7 @@
           setting LO PA drain voltage.
         In TROUBLESHOOTING mode ignore LO PA max output power restrictions.
 
-    2013-12-10  002.006.003 beta
+    2013-12-10  2.6.3 beta
         Beta release for FETIM testing at the OSF.
         Modified and built by Morgan McLeod <mmcleod@nrao.edu>
         - FETIM glitch counter displays as a positive percentage.
@@ -58,7 +85,7 @@
         - Changed turbo pump HARDWARE_BLOCKED lower temperatur 15C -> 10C.
         - Also changed TURBO_PUMP_MIN_WARN_TEMP to 15C.
 
-    2013-07-12  002.006.002 beta
+    2013-07-12  2.6.2 beta
         Beta release for FETIM testing at the OSF.
         Modified and built by Morgan McLeod <mmcleod@nrao.edu>
         - FETIM He2 buffer tank is monitored asynchronously.
@@ -67,6 +94,8 @@
           and external temperature sensors.
         - Disabled DEBUG_STARTUP which was left enabled in previous release.
         - Fixed infinite loop preventing shutdown initiated by FETIM.
+
+    Mantenance taken over by Morgan McLeod
 
     2012-04-13  002.006.001     (fe_mc.exe or 02-06-01.exe or 20120413.exe)
         Official Release
@@ -328,11 +357,11 @@
 
     /* Defines */
     #define VERSION_MAJOR   2  //!< Major version
-    #define VERSION_MINOR   6  //!< Minor version
-    #define VERSION_PATCH   11 //!< Patch level
+    #define VERSION_MINOR   8  //!< Minor version
+    #define VERSION_PATCH   5  //!< Patch level
 
-    #define VERSION_DATE    "2016-10-20" //!< Version Date
-    #define VERSION_NOTES   "Prototype band 1&2 support." //!<Version Notes
+    #define VERSION_DATE    "2016-01-08" //!< Version Date
+    #define VERSION_NOTES   "Implements all 2.8.x features except logging cold head hours."  //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"

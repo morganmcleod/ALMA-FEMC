@@ -41,7 +41,7 @@ void waitMilliseconds(unsigned int milliseconds){
     will wait the ammount specified in the parameter.
     \param timerNo  The timer to activate. The maximum number of timers is
                     defined by \ref MAX_TIMERS_NUMBER
-    \param seconds  The number of milliseconds to wait
+    \param mSeconds The number of milliseconds to wait
     \param reload   If \ref TRUE then reload the timer with the new value
 
     \return

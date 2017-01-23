@@ -29,33 +29,33 @@
     #endif /* _GLOBALDEFINITIONS_H */
 
     /* Submodules definitions */
-    #define PHOTO_DETECTOR_MODULES_NUMBER       2       // See list below
-    #define PHOTO_DETECTOR_MODULES_RCA_MASK     0x00002 /* Mask to extract the submodule number:
+    #define PHOTO_DETECTOR_MODULES_NUMBER       3       // See list below
+    #define PHOTO_DETECTOR_MODULES_RCA_MASK     0x00003 /* Mask to extract the submodule number:
                                                            0 -> current
-                                                           1 -> power */
-    #define PHOTO_DETECTOR_MODULES_MASK_SHIFT   1       // Bits right shift for the submodules mask
+                                                           1 -> conversion coefficient
+                                                           2 -> power */
 
     /* Typedefs */
     //! Current state of the EDFA photodetector
-    /*! This structure represent the current state of the EDFA photodetector
-        \ingroup    edfa
-        \param      current[Op]     This contains the most recent read-back
-                                    value for the photodetector current.
-        \param      power[Op]       This contains the most recent read-back
-                                    for the photodetector power.
-        \param      coeff           Conversion coefficient for the photodetector
-                                    power. */
     typedef struct {
         //! Photodetector current
         /*! This is the current used by the photodetector. */
         float   current[OPERATION_ARRAY_SIZE];
+        
         //! Photodetector power
         /*! This is the power used by the photodetector. */
         float   power[OPERATION_ARRAY_SIZE];
+        
         //! Power conversion coefficient
         /*! This is the coefficient necessary to calculate the power of the
             photodetector. */
         float   coeff;
+
+        //! Last control message: conversion coefficient
+        /*! This is the content of the last control message sent to the LNA led
+            state. */
+        LAST_CONTROL_MESSAGE    lastCoeff;
+
     } PHOTO_DETECTOR;
 
     /* Globals */
@@ -65,6 +65,7 @@
     /* Prototypes */
     /* Statics */
     static void currentHandler(void);
+    static void conversionCoeffHandler(void);
     static void powerHandler(void);
     /* Externs */
     extern void photoDetectorHandler(void); //!< This function deals with the incoming CAN message

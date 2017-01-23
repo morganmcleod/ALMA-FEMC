@@ -439,12 +439,11 @@ void storeError(unsigned char moduleNo,
                 sprintf(module,
                         "LO in cartridge (%d)",
                         currentModule+1);
-                switch(errorNo){
-/*                  case 0x01: // LO module not installed
+                switch(errorNo) {
+                    case 0x01: // Control message out of range
                         sprintf(error,
-                                "%s%d%s",
-                                "Error: The LO in the cartridge is not installed");
-                        break; */
+                                "Error: The control message is out of range");
+                        break;
                     case 0x02: // LO submodule out of range
                         sprintf(error,
                                 "%s%d%s",
@@ -455,6 +454,10 @@ void storeError(unsigned char moduleNo,
                     case 0x03: // Warning: The addressed hardware is not properly defined yet
                         sprintf(error,
                                 "Warning: The addressed hardware is not properly defined yet. Firmware needs updating.");
+                        break;
+                    case 0x04: // Monitor message out of range
+                        sprintf(error,
+                                "Error: The monitor message is out of range");
                         break;
                     default: // Undefined error
                         sprintf(error,
@@ -1724,11 +1727,29 @@ void storeError(unsigned char moduleNo,
                     case 0x03: // Max number of cartrdiges already on
                         sprintf(error,
                                 "%s%d%s",
-                                "Error: The maximum allowed number of powered cartrdiges (",
+                                "Error: The maximum allowed number of cartridges (",
                                 frontend.
                                  powerDistribution.
-                                  poweredModules[MAX_SET_VALUE],
-                                ") is already turned on");
+                                  maxPoweredModules,
+                                ") are already turned on");
+                        break;
+                    case 0x04: // CAN payload was not CARTRIDGE_OFF, CARTRIDGE_ON, or CARTRIDGE_STANDBY2
+                        sprintf(error,
+                                "%s%d%s",
+                                "Error: illegal parameter (",
+                                CAN_BYTE,
+                                ") to SET_POWER_DISTRIBUTION_MODULE[Ca]_ENABLE");
+                        break;
+                    case 0x05: // STANDBY2 not allowed for band
+                        sprintf(error,
+                                "%s%d",
+                                "Error: STANDBY2 mode not allowed for band ",
+                                currentPowerDistributionModule);
+                        break;
+                    case 0x06: // illegal state transition
+                        sprintf(error,
+                                "%s",
+                                "Error: Illegal state transtion in pdModule::enableHandler()");
                         break;
                     default: // Undefined error
                         sprintf(error,
@@ -1959,10 +1980,6 @@ void storeError(unsigned char moduleNo,
                                 "Warning: The monitored 230V supply current (",
                                 CONV_FLOAT,
                                 ") is in the warning range");
-                        break;
-                    case 0x06: // Warning: Backing pump OFF
-                        sprintf(error,
-                                "Warning: The backing pump is OFF. Supply current monitoring disabled.");
                         break;
                     default: // Undefined error
                         sprintf(error,

@@ -66,6 +66,11 @@
     #define CRYO_CONF_FILE_KEY          "FILE"  // Key containing the cryostat configuration file info
     #define CRYO_CONF_FILE_EXPECTED     1       // Expected keys containing the cryostat configuration file info
 
+    #define CRYO_HOURS_FILE_SECTION      "CRYO_HOURS"  // Section containing the cryostat cold head hours info
+    #define CRYO_HOURS_FILE_KEY          "FILE"  // Key containing the cryostat cold head hours info
+    #define CRYO_HOURS_FILE_EXPECTED     1       // Expected keys containing the cryostat cold head hours info
+    #define CRYO_HOURS_KEY               "HOURS"  // Key containing the cryostat cold head hours info
+
     #define TVO_SEC_NAME_SIZE   20  // Number of character needed to describe the section names for the TVO sensors
 
     #define TVO_COEFFS_SECTION(Se)      sensors[Se]     // Section containing the TVO sensor fitting coefficients
@@ -76,12 +81,8 @@
     #define TVO_NO_KEY                  "TVO_NO"    // Key containing the TVO sensor number
     #define TVO_NO_EXPECTED             1           // Expected keys containing the TVO sensor number
 
-    #define CRYO_ESN_SECTION            "INFO"  // Section containing the cryostat serial number
-    #define CRYO_ESN_KEY                "ESN"   // Key containing the cryostat serial number
-    #define CRYO_ESN_EXPECTED           1       // Expected keys containing the cryostat serial number
-
     /* Submodule definitions */
-    #define CRYOSTAT_MODULES_NUMBER     19      // See list below
+    #define CRYOSTAT_MODULES_NUMBER     20      // See list below
     #define CRYOSTAT_MODULES_RCA_MASK   0x0007C /* Mask to extract the submodule number:
                                                    0-12 -> cryostatTemp
                                                    13   -> backingPump
@@ -89,44 +90,38 @@
                                                    15   -> gateValve
                                                    16   -> solenoidValve
                                                    17   -> vacuumController
-                                                   18   -> supllyCurrent230V*/
+                                                   18   -> supplyCurrent230V
+                                                   19   -> coldHeadHours */
     #define CRYOSTAT_MODULES_MASK_SHIFT 2       // Bits right shift for the submodules mask
+
+    #define CRYO_HOURS_MODULES_NUMBER    2       // See list below
+    #define CRYO_HOURS_MODULES_RCA_MASK  0x00001 /* Mask to extract the submodule number:
+                                                           0 -> coldHeadHoursHandler
+                                                           1 -> coldHeadHoursResetHandler */
+    #define CRYOSTAT_TEMP_RANGE_LOW   0.0       // cryostat sensor readings are considered valid if they
+    #define CRYOSTAT_TEMP_RANGE_HIGH  350.0     //   are within this range of real-world temperatures.
+
+    #define CRYOSTAT_TEMP_SANITY_CHECK(T) \
+        ((T != FLOAT_ERROR) && (T != FLOAT_UNINIT) && \
+         (CRYOSTAT_TEMP_RANGE_LOW < T) && (T < CRYOSTAT_TEMP_RANGE_HIGH))
+                                                //!< sanity check macro for testing temperature values
+
+    #define CRYOSTAT_TEMP_BELOW_MAX(T, MAX) \
+        (CRYOSTAT_TEMP_SANITY_CHECK(T) && (T < MAX))
+                                                //!< below threshold and sanity check macro for temps.
+
+    #define CRYOSTAT_LOG_HOURS_THRESHOLD 265.0  // if any cryocooler stage is below this value,
+                                                // we log cryostat cooling hours.
 
     /* Typedefs */
     //! Current state of the cryostat system
-    /*! This structure represent the current state of the cryostat system.
-        \ingroup    frontend
-        \param      cryostatTemp[Se]        This contains the information about
-                                            the cryostat temperature sensors.
-                                            There are
-                                            \ref CRYOSTAT_TEMP_SENSORS_NUMBER
-                                            sensors in each dewar.
-        \param      backingPump             This contains the information about
-                                            the state of the backing pump.
-        \param      turboPump               This contains the information about
-                                            the state of the turbo pump.
-        \param      gateValve               This contains the information about
-                                            the state of the gate valve.
-        \param      solenoidValve           This contains the information about
-                                            the state of the solenoid valve.
-        \param      vacuumController        This contains the information about
-                                            the state of the vacuum controller.
-        \param      supplyCurrent230V[Op]   This contains the last monitored
-                                            value for the 230V supply
-                                            current.
-        \param      serialNumber            This contains the serial number of
-                                            the cryostat in the current front
-                                            end assembly
-        \param      configFile              This contains the configuration file
-                                            name as extracted from the frontend
-                                            configuration file.
-        \param      hardwRevision           This contains the Cryostat M&C board
-                                            hardware revision level. */
+    /*! This structure represent the current state of the cryostat system. */
     typedef struct {
         //! Current state of the Cryostat
         //! Cryostat M&C board hardware revision level
         /*! This contains the Cryostat M&C board hardware revision level */
         unsigned char   hardwRevision;
+
         //! Cryostat temperature current state
         /*! Sensors \p Se are assigned according to the following:
                 - Se = 00: 4K cryocooler
@@ -145,38 +140,51 @@
 
             Please see \ref CRYOSTAT_TEMP for more informations. */
         CRYOSTAT_TEMP       cryostatTemp[CRYOSTAT_TEMP_SENSORS_NUMBER];
+        
         //! Backing pump current state
         /*! Please see \ref BACKING_PUMP for more informations. */
         BACKING_PUMP        backingPump;
+        
         //! Turbo pump current state
         /*! Please see \ref TURBO_PUMP for more informations. */
         TURBO_PUMP          turboPump;
+        
         //! Gate valve current state
         /*! Please see \ref GATE_VALVE for more informations. */
         GATE_VALVE          gateValve;
+        
         //! Solenoid valve current state
         /*! Please see \ref SOLENOID_VALVE for more informations. */
         GATE_VALVE          solenoidValve;
+        
         //! Current state of the vacuum controller
         /*! Please see \ref VACUUM_CONTROLLER for more informations. */
         VACUUM_CONTROLLER   vacuumController;
+        
         //! 230V suplly current
         /*! This contains the last monitored value of the current used by the
             230V supply. */
         float               supplyCurrent230V[OPERATION_ARRAY_SIZE];
-        //! Serial Number
-        /*! This contains the serial number of the cryostat in the current
-            front end assembly. */
-        char                serialNumber[SERIAL_NUMBER_SIZE];
+       
+        //! Cold head operating hours since last reset
+        unsigned long       coldHeadHours;
+
+        //! Last cold head reset message
+        LAST_CONTROL_MESSAGE    lastResetColdHeadHours;
+
         //! Configuration File
         /*! This contains the configuration file name as extracted from the
             frontend configuration file. */
         char                configFile[MAX_FILE_NAME_SIZE];
+
+        //! Cold head hours File
+        char                coldHeadHoursFile[MAX_FILE_NAME_SIZE];
     } CRYOSTAT;
 
     /* Globals */
     /* Externs */
     extern unsigned char currentCryostatModule; //!< Currently addressed cryostat submodule
+    extern unsigned char currentColdHeadModule; //!< Currently addressed Cold Head submodule
     extern unsigned char currentAsyncCryoTempModule; //!< A global to keep track of the cryostat temperature module currently addressed by the async routine
     extern int asyncCryoTempError[CRYOSTAT_TEMP_SENSORS_NUMBER]; //!< A global to keep track of the async error while monitoring cryostat temperatures
     extern unsigned char currentAsyncVacuumControllerModule; //!< A global to keep track of the cryostat pressure module currently addressed by the async routine
@@ -186,9 +194,16 @@
     /* Prototypes */
     /* Statics */
     static void supplyCurrent230VHandler(void);
+    static void coldHeadHandler(void);
+    static void coldHeadHoursHandler(void);
+    static void coldHeadHoursResetHandler(void);
     /* Externs */
-    extern void cryostatHandler(void); //!< This function deals with the incoming CAN messages
-    extern int cryostatStartup(void); //!< This function deals with the initialization of the cryostat
-    extern int cryostatAsync(void); //!< This function deals with the asychronous monitoring of the cryostat
-
+    extern void cryostatHandler(void); 
+    //!< This function deals with the incoming CAN messages
+    extern int cryostatStartup(void); 
+    //!< This function deals with the initialization of the cryostat
+    extern int cryostatAsync(void); 
+    //!< This function deals with the asychronous monitoring of the cryostat
+    extern int cryostatAsyncLogHours(void);
+    //!< Asynchronous recording of cryostat cold head hours.
 #endif /* _CRYTOSTAT_H */

@@ -64,132 +64,66 @@ void lprHandler(void){
     \return
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
-int lprStartup(void){
+int lprStartup(void) {
 
     /* A variable to keep track of the timer */
     int timedOut;
 
-    #ifdef DATABASE_HARDW
-        unsigned char cnt;
+    /* Few variables to help load the coefficient in the frontend table */
+    CFG_STRUCT  dataIn;
 
-        /* Few variables to help load the coefficient in the frontend table */
-        CFG_STRUCT  dataIn;
+    /* Parse the FRONTEND.INI file to extract the name of the configuration
+       file for the LPR. */
+    printf(" LPR configuration file: ");
 
-        /* Parse the FRONTEND.INI file to extract the name of the configuration
-           file for the LPR. */
-        printf(" LPR configuration file: ");
+    /* Configure the read array */
+    dataIn.
+     Name=LPR_CONF_FILE_KEY;
+    dataIn.
+     VarType=Cfg_String;
+    dataIn.
+     DataPtr=frontend.
+              lpr.
+               configFile;
 
-        /* Configure the read array */
-        dataIn.
-         Name=LPR_CONF_FILE_KEY;
-        dataIn.
-         VarType=Cfg_String;
-        dataIn.
-         DataPtr=frontend.
-                  lpr.
-                   configFile;
+    /* Access configuration file, if error, return skip the configuration. */
+    if(myReadCfg(FRONTEND_CONF_FILE,
+                 LPR_CONF_FILE_SECTION,
+                 &dataIn,
+                 LPR_CONF_FILE_EXPECTED)!=NO_ERROR){
+        return NO_ERROR;
+    }
 
-        /* Access configuration file, if error, return skip the configuration. */
-        if(myReadCfg(FRONTEND_CONF_FILE,
-                     LPR_CONF_FILE_SECTION,
-                     &dataIn,
-                     LPR_CONF_FILE_EXPECTED)!=NO_ERROR){
-            return NO_ERROR;
-        }
-
-        /* Print config file */
-        printf("%s\n",
-               frontend.
-                lpr.
-                 configFile);
+    /* Print config file */
+    printf("%s\n",
+           frontend.
+            lpr.
+             configFile);
 
 
-        /* Start the configuration */
-        printf(" Initializing LPR ESN:");
+    /* Start the configuration */
+    printf(" Initializing LPR...\n");
 
-        /* Get the serial number from the configuration file */
-        /* Configure the read array */
-        dataIn.
-         Name=LPR_ESN_KEY;
-        dataIn.
-         VarType=Cfg_HB_Array;
-        dataIn.
-         DataPtr=frontend.
-                  lpr.
-                   serialNumber;
+    /* Load the calibrated coefficient for the EDFA photodetector power
+       redout. */
+    printf("  - Loading EDFA photo detector power coefficient...\n");
+    
+    // No longer loading from INI file:
+    frontend.
+     lpr.
+      edfa.
+       photoDetector.
+        coeff = LPR_ADC_EDFA_PD_POWER_COEFF_DFLT;
 
-        /* Access configuration file, if error, return skip the configuration. */
-        if(myReadCfg(frontend.
-                      lpr.
-                       configFile,
-                     LPR_ESN_SECTION,
-                     &dataIn,
-                     LPR_ESN_EXPECTED)!=NO_ERROR){
-            return NO_ERROR;
-        }
+    /* Print coefficient */
+    printf("     a = %f\n",
+           frontend.
+            lpr.
+             edfa.
+              photoDetector.
+               coeff);
 
-        /* Print serial number */
-        for(cnt=0;
-            cnt<SERIAL_NUMBER_SIZE;
-            cnt++){
-            printf(" %x",
-                   frontend.
-                    lpr.
-                     serialNumber[cnt]);
-        }
-        printf("...\n");
-
-        /* Load the calibrated coefficient for the EDFA photodetector power
-           redout. */
-        printf("  - Loading EDFA photo detector power coefficient...\n");
-        /* Configure the read array */
-        dataIn.
-         Name=POWER_COEFF_KEY;
-        dataIn.
-         VarType=Cfg_Float;
-        dataIn.
-         DataPtr=&frontend.
-                   lpr.
-                    edfa.
-                     photoDetector.
-                      coeff;
-
-        /* Access configuration file, if error, skip the configuration. */
-        if(myReadCfg(frontend.
-                      lpr.
-                       configFile,
-                     POWER_COEFF_SECTION,
-                     &dataIn,
-                     POWER_COEFF_EXPECTED)!=NO_ERROR){
-            return NO_ERROR;
-        }
-
-        /* Print coefficient */
-        printf("     a = %f\n",
-               frontend.
-                lpr.
-                 edfa.
-                  photoDetector.
-                   coeff);
-
-        printf("    done!\n"); // EDFA photo detector coefficient
-    #else // If the hardware configuration database is not available
-        printf(" Initializing LPR...\n");
-        printf("  - Loading EDFA photo detector power default coefficient...\n");
-        frontend.
-         lpr.
-          edfa.
-           photoDetector.
-            coeff=POWER_COEFF_DEFAULT;
-        printf("     a = %f\n",
-               frontend.
-                lpr.
-                 edfa.
-                  photoDetector.
-                   coeff);
-        printf("    done!\n"); // EDFA photo detector coefficient
-
-    #endif /* DATABASE_HARDW */
+    printf("    done!\n"); // EDFA photo detector coefficient
 
     /* Set the currentModule variable to reflect the fact that the LPR is
        selected. This is necessary because currentModule is the global variable

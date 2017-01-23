@@ -86,13 +86,17 @@ static void poweredModulesHandler(void){
         return;
     }
 
-    /* Monitor the number of powered modules. This is a global variable always
+    /* Monitor the number of powered modules plus the number of STANDBY2 modules.
+       This is a global variable always
        available and it doesn't require serial communication so we return it
        immediately. The value is strictly controlled when cartridges power state
        is changed so there is no need to control it here. */
     CAN_BYTE=frontend.
               powerDistribution.
-               poweredModules[CURRENT_VALUE];
+               poweredModules
+            +frontend.
+              powerDistribution.
+               standby2Modules;
     CAN_SIZE=CAN_BYTE_SIZE;
 
 }
@@ -117,13 +121,7 @@ int powerDistributionStartup(void){
        status and hardware status. */
     powerDistributionStop();
 
-    /* Now we can proceed with initialization
-    frontend.
-     powerDistribution.
-      poweredModules[MAX_SET_VALUE]=(frontend.
-                                      mode[CURRENT_VALUE]==TROUBLESHOOTING_MODE)?MAX_POWERED_BANDS_TROUBLESHOOTING:
-                                                                                 MAX_POWERED_BANDS_OPERATIONAL;
-*/
+    /* Now we can proceed with initialization */
     printf(" done!\n\n");
 
     return NO_ERROR;

@@ -79,25 +79,30 @@ static void enableHandler(void){
 
     /* If it's a control message (size !=0) */
     if(CAN_SIZE){
-        /* Store message in "last control message" location */
-        memcpy(&frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   sideband[currentPolarizationModule].
-                    lna.
-                     lastEnable,
-               &CAN_SIZE,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.
+                                   cartridge[currentModule].
+                                    polarization[currentBiasModule].
+                                     sideband[currentPolarizationModule].
+                                      lna.
+                                       lastEnable)
 
-        /* Overwrite the last control message status with the default NO_ERROR
-           status. */
-        frontend.
-         cartridge[currentModule].
-          polarization[currentBiasModule].
-           sideband[currentPolarizationModule].
-            lna.
-             lastEnable.
-              status=NO_ERROR;
+        // If we are in STANDBY2 mode, return HARDW_BLKD_ERR
+        if (frontend.
+             cartridge[currentModule].
+              standby2) 
+        {
+            /* Store the ERROR state in the last control message variable */
+            frontend.
+             cartridge[currentModule].
+              polarization[currentBiasModule].
+               sideband[currentPolarizationModule].
+                lna.
+                 lastEnable.
+                  status=HARDW_BLKD_ERR;
+            
+            return;
+        }
 
         /* Change the status of the LNA according to the content of the CAN
            message. */
@@ -121,18 +126,13 @@ static void enableHandler(void){
 
     /* If it's a monitor message on a control RCA */
     if(currentClass==CONTROL_CLASS){
-        /* Return last issued control command. This automatically copies also
-           the state because of the way CAN_LAST_CONTROL_MESSAGE_SIZE is
-           initialized */
-        memcpy(&CAN_SIZE,
-               &frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   sideband[currentPolarizationModule].
-                    lna.
-                     lastEnable,
-               CAN_LAST_CONTROL_MESSAGE_SIZE);
-
+        // Return the last control message and status:
+        RETURN_LAST_CONTROL_MESSAGE(frontend.
+                                     cartridge[currentModule].
+                                      polarization[currentBiasModule].
+                                       sideband[currentPolarizationModule].
+                                        lna.
+                                         lastEnable)
         return;
     }
 
@@ -147,4 +147,35 @@ static void enableHandler(void){
                  lna.
                   enable[CURRENT_VALUE];
     CAN_SIZE=CAN_BOOLEAN_SIZE;
+}
+
+// set the specified LNA to STANDBY2 mode
+void lnaGoStandby2() {
+    int ret;
+
+    #ifdef DATABASE_HARDW
+        /* Check if the selected sideband is outfitted with the desired SIS */
+        if(frontend.
+            cartridge[currentModule].
+             polarization[currentBiasModule].
+              sideband[currentPolarizationModule].
+               lna.
+                available==UNAVAILABLE) {
+
+            // nothing to do:
+            return;
+        }
+    #endif /* DATABASE_HARDW */
+
+    #ifdef DEBUG_GO_STANDBY2
+        printf(" - lnaGoStandby2 pol=%d sb=%d\n", currentBiasModule, currentPolarizationModule);
+    #endif // DEBUG_GO_STANDBY2
+
+    // disable the LNA:
+    ret = setLnaBiasEnable(LNA_BIAS_DISABLE);
+
+    #ifdef DEBUG_GO_STANDBY2
+        if (ret)
+            printf(" -- ret=%d\n", ret);
+    #endif // DEBUG_GO_STANDBY2
 }
