@@ -8,7 +8,7 @@ Notes:
 
 
 Procedure:
-- download the 2-8-8.exe file from EDM:
+- download the 2-8-5.exe file from EDM:
   http://edm.alma.cl/forums/alma/dispatch.cgi/iptfedocs/showFolder/104236
 - turn off any activity on the CAN bus but leave the FEMC powered
 - connect the serial cable to the computer and the FEMC
