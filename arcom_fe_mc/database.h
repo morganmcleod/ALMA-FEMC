@@ -23,7 +23,7 @@
         #include "debug.h"
     #endif /* _DEBUG_H */
 
-    #define DATABASE_HARDW  // Uncomment this define to enable the HW existance checking
+    #define DATABASE_HARDW         // HW existance checking controlled by INI files.
 
     #ifdef DEBUG
         // #define DATABASE_RANGE  // Uncomment this define to enable the range checking

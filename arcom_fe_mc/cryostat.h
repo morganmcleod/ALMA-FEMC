@@ -63,6 +63,10 @@
     #define CRYO_HRDW_REV1              1
     /* Configuration data info */
     #define CRYO_CONF_FILE_SECTION      "CRYO"  // Section containing the cryostat configuration file info
+
+    #define CRYO_AVAIL_KEY              "AVAILABLE" // Key containing the availability of the cryostat
+    #define CRYO_AVAIL_EXPECTED         1
+
     #define CRYO_CONF_FILE_KEY          "FILE"  // Key containing the cryostat configuration file info
     #define CRYO_CONF_FILE_EXPECTED     1       // Expected keys containing the cryostat configuration file info
 
@@ -117,6 +121,12 @@
     //! Current state of the cryostat system
     /*! This structure represent the current state of the cryostat system. */
     typedef struct {
+        //! Cryostat availability
+        /*! This field indicates if a cryostat is installed in the receiver.
+            Added for 2.8.6 for use in test sets.
+            Previously the cryostat was assumed always present. */
+        unsigned char   available;
+
         //! Current state of the Cryostat
         //! Cryostat M&C board hardware revision level
         /*! This contains the Cryostat M&C board hardware revision level */

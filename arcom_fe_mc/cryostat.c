@@ -88,8 +88,13 @@ void cryostatHandler(void){
         printf(" Cryostat\n");
     #endif /* DEBUG_CRYOSTAT */
 
-    /* Since the receiver is always outfitted with a cryostat, ho hadrware check
-       is performed. */
+    #ifdef DATABASE_HARDW
+        // Check if the receiver is outfitted with the cryostat
+        if(frontend.cryostat.available == UNAVAILABLE) {
+            CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
+            return;
+        }
+    #endif /* DATABASE_HARDW */
 
     /* Check if the submodule is in range */
     currentCryostatModule=(CAN_ADDRESS&CRYOSTAT_MODULES_RCA_MASK)>>CRYOSTAT_MODULES_MASK_SHIFT;
@@ -132,6 +137,22 @@ int cryostatStartup(void){
                                                                "PLATE_12K_LINK",
                                                                "PLATE_12K_FAR",
                                                                "PLATE_12K_SHIELD"};
+
+        // get the [CRYO] available key:
+        dataIn.
+         Name=CRYO_AVAIL_KEY;
+        dataIn.
+         VarType=Cfg_Boolean;
+        dataIn.
+         DataPtr=&frontend.cryostat.available;
+
+        if (ReadCfg(FRONTEND_CONF_FILE,
+                    CRYO_CONF_FILE_SECTION,
+                    &dataIn) != CRYO_AVAIL_EXPECTED) 
+        {
+            // not found.  Assume available for backward compat:
+            frontend.cryostat.available = AVAILABLE;
+        }
 
         /* Set the currentModule variable to reflect the fact that the cryostat
            is selected. This is necessary because currentModule is the global
@@ -608,6 +629,10 @@ int cryostatAsync(void){
         ASYNC_CRYO_GET_230V,
         ASYNC_CRYO_LOG_HOURS
     } asyncCryoGetState = ASYNC_CRYO_GET_TEMP;
+
+    // Don't do async if there is no cryostat:
+    if (frontend.cryostat.available == UNAVAILABLE)
+        return NO_ERROR;
 
     /* Address the cryostat */
     currentModule=CRYO_MODULE;

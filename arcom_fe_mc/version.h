@@ -20,8 +20,11 @@
 
     REVISION HISTORY
 
+    2017-06-27 2.8.6
+        Adds check for [CRYO] AVAILABLE=N to suppress cryostat async and all m&c
+        
     2017-01-08 2.8.5
-        Fixed final bug in asyncCartridgeGoStandby2
+        Official accepted release to the ALMA array.
 
     2017-01-05 2.8.4
         asyncCartridgeGoStandby2 returns ASYNC_DONE.   Should be immaterial.
@@ -358,10 +361,10 @@
     /* Defines */
     #define VERSION_MAJOR   2  //!< Major version
     #define VERSION_MINOR   8  //!< Minor version
-    #define VERSION_PATCH   5  //!< Patch level
+    #define VERSION_PATCH   6  //!< Patch level
 
-    #define VERSION_DATE    "2016-01-08" //!< Version Date
-    #define VERSION_NOTES   "Implements all 2.8.x features except logging cold head hours."  //!<Version Notes
+    #define VERSION_DATE    "2016-06-27" //!< Version Date
+    #define VERSION_NOTES   "Patch to allow diabling all cryostat M&C for test sets."  //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"
