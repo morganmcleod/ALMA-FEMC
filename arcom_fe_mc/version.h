@@ -20,9 +20,9 @@
 
     REVISION HISTORY
 
-    2017-06-27 2.8.6-beta1
+    2017-06-27 2.8.6
         Adds check for [CRYO] AVAILABLE=N to suppress cryostat async and all m&c
-
+        
     2017-01-08 2.8.5
         Official accepted release to the ALMA array.
 
