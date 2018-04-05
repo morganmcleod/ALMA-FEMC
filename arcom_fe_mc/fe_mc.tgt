@@ -22,7 +22,7 @@ MCommand
 5
 MCommand
 103
-copy fe_mc.exe releases\2-8-6b1.exe /y
+copy fe_mc.exe releases\2-8-7b1.exe /y
 copy fe_mc.exe releases\fe_mc.exe /y
 #ftp -n -s:updateFemc.scr
 6
@@ -404,8 +404,8 @@ WVList
 0
 99
 MItem
-10
-compTemp.c
+9
+console.c
 100
 WString
 4
@@ -422,8 +422,8 @@ WVList
 0
 103
 MItem
-9
-console.c
+10
+cryostat.c
 104
 WString
 4
@@ -440,8 +440,8 @@ WVList
 0
 107
 MItem
-10
-cryostat.c
+25
+cryostatSerialInterface.c
 108
 WString
 4
@@ -458,8 +458,8 @@ WVList
 0
 111
 MItem
-25
-cryostatSerialInterface.c
+14
+cryostatTemp.c
 112
 WString
 4
@@ -476,8 +476,8 @@ WVList
 0
 115
 MItem
-14
-cryostatTemp.c
+7
+dewar.c
 116
 WString
 4
@@ -494,8 +494,8 @@ WVList
 0
 119
 MItem
-7
-dewar.c
+6
+edfa.c
 120
 WString
 4
@@ -512,8 +512,8 @@ WVList
 0
 123
 MItem
-6
-edfa.c
+7
+error.c
 124
 WString
 4
@@ -531,7 +531,7 @@ WVList
 127
 MItem
 7
-error.c
+fetim.c
 128
 WString
 4
@@ -548,8 +548,8 @@ WVList
 0
 131
 MItem
-7
-fetim.c
+14
+fetimExtTemp.c
 132
 WString
 4

@@ -29,7 +29,7 @@
 
     /* Temperature sensors */
     #ifndef _COMP_TEMP_H
-        #include "compTemp.h"
+        #include "fetimExtTemp.h"
     #endif /* _COMP_TEMP_H */
 
     /* He2 pressure sensor */
