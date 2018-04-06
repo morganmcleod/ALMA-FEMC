@@ -73,86 +73,26 @@ static void pressHandler(void){
         return;
     }
 
-
-    /* Monitor Interlock temperature */
-    if(getCompHe2Press()==ERROR){
+    /* Fetch the last async monitored pressure */
+    if(asyncFetimHePressError==ERROR) {
         /* If error during monitoring, store the ERROR state in the outgoing
            CAN message state. */
         CAN_STATUS = ERROR;
-        /* Store the last known value in the outgoing message */
-        CONV_FLOAT=frontend.
-                    fetim.
-                     compressor.
-                      he2Press.
-                       pressure[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now this
-           function is only printing out a warning/error message depending on
-           the result but no actions are taken. */
-    } else {
-        /* If no error during monitor process, gather the stored data/ */
-        CONV_FLOAT=frontend.
-                    fetim.
-                     compressor.
-                      he2Press.
-                       pressure[CURRENT_VALUE];
-
-        /* Check the result agains the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           fetim.
-                            compressor.
-                             he2Press.
-                              pressure[LOW_ERROR_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           fetim.
-                            compressor.
-                             he2Press.
-                              pressure[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               fetim.
-                                compressor.
-                                 he2Press.
-                                  pressure[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               fetim.
-                                compressor.
-                                 he2Press.
-                                  pressure[HI_ERROR_RANGE])){
-                    storeError(ERR_COMP_HE2_PRESS,
-                               0x04); // Error 0x04 -> Error: compressor He2 pressure in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_COMP_HE2_PRESS,
-                               0x05); // Error 0x05 -> Warning: compressor He2 pressure in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
+
+    /* Store the last monitor value in the outgoing message */
+    CONV_FLOAT=frontend.
+                fetim.
+                 compressor.
+                  he2Press.
+                   pressure[CURRENT_VALUE];
 
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big enadian
        (CAN). */
-    changeEndian(CAN_DATA_ADD,
-                 CONV_CHR_ADD);
+    changeEndian(CAN_DATA_ADD, CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
-
 }
-
-
-
-
-
-
-
-
-
-
 
 
 /* He2 Pressure out of range handler */

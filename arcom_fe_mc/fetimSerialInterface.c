@@ -168,7 +168,7 @@ int getFetimExtTemp(void){
     fetimRegisters.
      bRegOut.
       bitField.
-       monitorPoint=FETIM_BREG_OUT_TEMPERATURE(currentCompressorModule);
+       monitorPoint=FETIM_BREG_OUT_TEMPERATURE(currentAsyncFetimExtTempModule);
 
     /* Call the serial adc monitor function */
     switch(getFetimSerialMonitor()){
@@ -189,7 +189,7 @@ int getFetimExtTemp(void){
     frontend.
      fetim.
       compressor.
-       temp[currentCompressorModule].
+       temp[currentAsyncFetimExtTempModule].
         temp[CURRENT_VALUE]=FETIM_SER_ADC_TEMP_OFFSET+(FETIM_SER_ADC_TEMP_SCALE*fetimRegisters.
                                                                                  serAdcData)/FETIM_SER_ADC_RANGE;
 
