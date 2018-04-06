@@ -28,9 +28,9 @@
     #endif /* _GLOBALDEFINITIONS_H */
 
     /* Temperature sensors */
-    #ifndef _COMP_TEMP_H
+    #ifndef _FETIM_EXT_TEMP_H
         #include "fetimExtTemp.h"
-    #endif /* _COMP_TEMP_H */
+    #endif /* _FETIM_EXT_TEMP_H */
 
     /* He2 pressure sensor */
     #ifndef _HE2_PRESS_H
@@ -40,8 +40,8 @@
     /* Submodule definitions */
     #define COMPRESSOR_MODULES_NUMBER       6       // See list below
     #define COMPRESSOR_MODULES_RCA_MASK     0x00038 /* Mask to extract the submodule number:
-                                                       0 -> compTemp
-                                                       1 -> compTemp
+                                                       0 -> fetimExtTemp
+                                                       1 -> fetimExtTemp
                                                        2 -> he2Press
                                                        3 -> feStatus
                                                        4 -> interlockStatus
@@ -76,9 +76,9 @@
                                         - \ref OK    -> Cable OK */
     typedef struct {
         //! Compressor temperatures
-        /*! This contains the information about the FETIM compressor temperature
+        /*! This contains the information about the FETIM external temperature
             subsystem. */
-        COMP_TEMP       temp[COMP_TEMP_SENSORS_NUMBER];
+        COMP_TEMP       temp[FETIM_EXT_SENSORS_NUMBER];
         //! Compressor He2 pressure
         /*! This contains the information about the FETIM compressor He2 Pressure
             subsystem. */

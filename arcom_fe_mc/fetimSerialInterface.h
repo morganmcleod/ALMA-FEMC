@@ -231,9 +231,9 @@
     typedef struct {
         //! Selected monitor point (bit 1-0)
         /*! This bitfield defines the currently selected monitor point:
-                - 00        compressor external temperature 1
-                - 01        compressor external temperature 2
-                - 10        compressor He2 thanks pressure */
+                - 00        FETIM external temperature 1
+                - 01        FETIM external temperature 2
+                - 10        compressor He2 buffer tank pressure */
         unsigned int monitorPoint           :2;
         /* 14 extra bit to fill it up */
         unsigned int                        :14;
@@ -527,7 +527,7 @@
     extern int getInterlockFlow(void); //!< This function monitors the interlock airflow sensors.
     extern int getFetimDigital(unsigned char port); //!< This function monitors the digital values of the FETIM.
     extern int getIntrlkGlitchValue(void); //!< This function monitor the interlock glitch analog value
-    extern int getCompressorTemp(void); //!< This function monitors the compressor external temperature sensors.
+    extern int getFetimExtTemp(void); //!< This function monitors the FETIM external temperature sensors.
     extern int getCompHe2Press(void); //!< This function monitors the compressor He2 pressure.
     extern int setN2FillEnable(unsigned char enable); //!< This function enables the automatic N2 fill for the dewar.
     extern int setFeSafeStatus(unsigned char sage); //!< This function sets the bit holding the safe/unsafe status of the FE.

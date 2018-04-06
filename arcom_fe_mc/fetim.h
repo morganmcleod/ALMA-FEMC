@@ -80,8 +80,8 @@
     /* Externs */
     extern unsigned char currentFetimModule; //!< Currently addressed FETIM module
     extern unsigned char currentAsyncFetimExtTempModule; //!< A global to keep track of the FETIM external temperature module currently addressed by the async routine
-    extern int asyncFetimExtTempError[COMP_TEMP_SENSORS_NUMBER]; //!< A global to keep track of the async error while monitoring FETIM external temperatures
-
+    extern int asyncFetimExtTempError[FETIM_EXT_SENSORS_NUMBER]; //!< A global to keep track of the async error while monitoring FETIM external temperatures
+    extern int asyncFetimHePressError; //!< A global to keep track of the async error while monitoring FETIM He2 pressure
     /* Prototypes */
     /* Externs */
     extern void fetimHandler(void); //!< This function deals with the incoming CAN messages

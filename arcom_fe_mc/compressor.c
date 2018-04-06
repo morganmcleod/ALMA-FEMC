@@ -21,8 +21,8 @@
 /* Globals */
 unsigned char   currentCompressorModule=0;
 /* Statics */
-static HANDLER compressorModulesHandler[COMPRESSOR_MODULES_NUMBER]={compTempHandler,
-                                                                    compTempHandler,
+static HANDLER compressorModulesHandler[COMPRESSOR_MODULES_NUMBER]={fetimExtTempHandler,
+                                                                    fetimExtTempHandler,
                                                                     he2PressHandler,
                                                                     feStatusHandler,
                                                                     interlockStatusHandler,
@@ -51,9 +51,6 @@ void compressorHandler(void){
     return;
 
 }
-
-
-
 
 
 /* FE status handler */
@@ -101,11 +98,6 @@ static void feStatusHandler(void){
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }
 
-
-
-
-
-
 /* Interlock status handler */
 /* This function return the current status of the compressor interlock */
 static void interlockStatusHandler(void){
@@ -135,79 +127,28 @@ static void interlockStatusHandler(void){
 
     /* If Monitor on a Monitor RCA */
     /* Monitor Single Fail digital line */
-    if(getFetimDigital(FETIM_DIG_INTRLK_STA)==ERROR){
+    if(getFetimDigital(FETIM_DIG_INTRLK_STA)==ERROR) {
         /* If error during monitoring, store the ERROR state in the outgoing
            CAN message state. */
         CAN_STATUS = ERROR;
-        /* Store the last known value in the outgoing message */
-        CAN_BYTE=frontend.
-                  fetim.
-                   compressor.
-                    intrlkStatus[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now this
-           function is only printing out a warning/error message depending on
-           the result but no actions are taken. */
-    } else {
-        /* If no error during monitor process, gather the stored data/ */
-        CAN_BYTE=frontend.
-                  fetim.
-                   compressor.
-                    intrlkStatus[CURRENT_VALUE];
-
-        /* Check the result agains the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           fetim.
-                            compressor.
-                             intrlkStatus[LOW_ERROR_RANGE],
-                          CAN_BYTE,
-                          frontend.
-                           fetim.
-                            compressor.
-                             intrlkStatus[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               fetim.
-                                compressor.
-                                 intrlkStatus[LOW_ERROR_RANGE],
-                              CAN_BYTE,
-                              frontend.
-                               fetim.
-                                compressor.
-                                 intrlkStatus[HI_ERROR_RANGE])){
-                    storeError(ERR_COMPRESSOR,
-                               0x04); // Error 0x04 -> Error: interlock status digital value in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_COMRPESSOR,
-                               0x05); // Error 0x05 -> Warning: interlock status digital value in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
+
+    /* Store the last monitored value in the outgoing message */
+    CAN_BYTE=frontend.
+              fetim.
+               compressor.
+                intrlkStatus[CURRENT_VALUE];
 
     /* The CAN message payload is already loaded. Set the size */
     CAN_SIZE=CAN_BOOLEAN_SIZE;
-
-
-
 }
-
-
-
-
-
-
 
 /* Compressor cable status handler */
 /* This function return the current status of the compressor cable */
 static void compCableStatusHandler(void){
 
     #ifdef DEBUG_FETIM
-        printf("   Compressor Calbe Status Handler\n");
+        printf("   Compressor Cable Status Handler\n");
     #endif /* DEBUG_FETIM */
 
     /* If control (size !=0) store error and return. No control messages are
@@ -250,44 +191,8 @@ static void compCableStatusHandler(void){
                   fetim.
                    compressor.
                     cableStatus[CURRENT_VALUE];
-
-        /* Check the result agains the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           fetim.
-                            compressor.
-                             cableStatus[LOW_ERROR_RANGE],
-                          CAN_BYTE,
-                          frontend.
-                           fetim.
-                            compressor.
-                             cableStatus[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               fetim.
-                                compressor.
-                                cableStatus[LOW_ERROR_RANGE],
-                              CAN_BYTE,
-                              frontend.
-                               fetim.
-                                compressor.
-                                 cableStatus[HI_ERROR_RANGE])){
-                    storeError(ERR_COMPRESSOR,
-                                0x06); // Error 0x06 -> Error: compressor cable status digital value in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_COMRPESSOR,
-                               0x07); // Error 0x07 -> Warning: compressor cable status digital value in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* The CAN message payload is already loaded. Set the size */
     CAN_SIZE=CAN_BOOLEAN_SIZE;
-
-
 }
-

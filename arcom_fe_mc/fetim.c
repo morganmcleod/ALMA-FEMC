@@ -26,19 +26,19 @@
 /* Externs */
 unsigned char currentFetimModule=0;
 unsigned char currentAsyncFetimExtTempModule=0; /*! < This global keeps track of
-                                                      the FETIM extarnal
+                                                      the FETIM external
                                                       temperature module
                                                       currently addressed by the
                                                       asynchronous routine. */
-int asyncFetimExtTempError[COMP_TEMP_SENSORS_NUMBER]; /*!< A global to keep
+int asyncFetimExtTempError[FETIM_EXT_SENSORS_NUMBER]; /*!< A global to keep
                                                            track of the async
                                                            error while
-                                                           monitoring fetim ext
+                                                           monitoring FETIM ext
                                                            temperatures */
 int asyncFetimHePressError;                          /*!< A global to keep
                                                            track of the async
                                                            error while
-                                                           monitoring fetim He2
+                                                           monitoring FETIM He2
                                                            pressure */                                 
 
 
@@ -135,22 +135,22 @@ int fetimStartup(void){
     frontend.
      fetim.
       compressor.
-       temp[COMP_TEMP_SENSOR_TURBO].
+       temp[FETIM_EXT_SENSOR_TURBO].
         temp[LOW_ERROR_RANGE]=TURBO_PUMP_MIN_TEMPERATURE;
     frontend.
      fetim.
       compressor.
-       temp[COMP_TEMP_SENSOR_TURBO].
+       temp[FETIM_EXT_SENSOR_TURBO].
         temp[LOW_WARNING_RANGE]=TURBO_PUMP_MIN_WARN_TEMP;
     frontend.
      fetim.
       compressor.
-       temp[COMP_TEMP_SENSOR_TURBO].
+       temp[FETIM_EXT_SENSOR_TURBO].
         temp[HI_WARNING_RANGE]=TURBO_PUMP_MAX_WARN_TEMP;
     frontend.
      fetim.
       compressor.
-       temp[COMP_TEMP_SENSOR_TURBO].
+       temp[FETIM_EXT_SENSOR_TURBO].
         temp[HI_ERROR_RANGE]=TURBO_PUMP_MAX_TEMPERATURE;
     printf("    done!\n"); // Warning and error ranges
 
@@ -198,12 +198,19 @@ int fetimAsync(void){
     switch(asyncFetimState){
         /* Monitor the external temperature asynchronously */
         case ASYNC_FETIM_GET_EXT_TEMP:
-            #ifdef DEBUG_FETIM_ASYNC
-                printf("Async -> FETIM -> Ext Temp%d\n",currentAsyncFetimExtTempModule);
-            #endif /* DEBUG_FETIM_ASYNC */
 
             /* Get the external temperatures */
-            asyncFetimExtTempError[currentAsyncFetimExtTempModule]=getCompressorTemp();
+            asyncFetimExtTempError[currentAsyncFetimExtTempModule]=getFetimExtTemp();
+
+            #ifdef DEBUG_FETIM_ASYNC
+                printf("Async -> FETIM -> Ext Temp%d=%f\n",
+                    currentAsyncFetimExtTempModule,
+                    frontend.
+                     fetim.
+                      compressor.
+                       temp[currentAsyncFetimExtTempModule].
+                        temp[CURRENT_VALUE]);
+            #endif /* DEBUG_FETIM_ASYNC */
 
             /* If done or error, go next sensor */
             switch(asyncFetimExtTempError[currentAsyncFetimExtTempModule]){
@@ -220,8 +227,8 @@ int fetimAsync(void){
             }
 
             /* Next sensor, if wrap around, then next monitor next thing */
-            if(++currentAsyncFetimExtTempModule==COMP_TEMP_SENSORS_NUMBER){
-                currentAsyncFetimExtTempModule-=COMP_TEMP_SENSORS_NUMBER;
+            if(++currentAsyncFetimExtTempModule==FETIM_EXT_SENSORS_NUMBER){
+                currentAsyncFetimExtTempModule-=FETIM_EXT_SENSORS_NUMBER;
                 asyncFetimState = ASYNC_FETIM_GET_HE2_PRESS;
             }
 

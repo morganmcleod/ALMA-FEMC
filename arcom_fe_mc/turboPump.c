@@ -105,12 +105,12 @@ static void enableHandler(void){
             if((frontend.
                  fetim.
                   compressor.
-                   temp[COMP_TEMP_SENSOR_TURBO].
+                   temp[FETIM_EXT_SENSOR_TURBO].
                     temp[CURRENT_VALUE] < TURBO_PUMP_MIN_TEMPERATURE) ||
                (frontend.
                 fetim.
                  compressor.
-                  temp[COMP_TEMP_SENSOR_TURBO].
+                  temp[FETIM_EXT_SENSOR_TURBO].
                    temp[CURRENT_VALUE] > TURBO_PUMP_MAX_TEMPERATURE)) 
             {
                 storeError(ERR_TURBO_PUMP,

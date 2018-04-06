@@ -3114,16 +3114,16 @@ void storeError(unsigned char moduleNo,
                 }
                 break;
 
-            /* FETIM Compressor Temperature Module */
-            case ERR_COMP_TEMP: // FETIM Compressor Temeprature
+            /* FETIM External Temperature Module */
+            case ERR_FETIM_EXT_TEMP: // FETIM External Temeprature
                 sprintf(module,
-                        "FETIM Compressor Temperature");
+                        "FETIM External Temperature");
                 switch(errorNo){
                     case 0x01: // Submodule out of range
                         sprintf(error,
                                 "%s%d%s",
-                                "Error: The addressed FETIM compressor temperature (",
-                                currentCompTempModule,
+                                "Error: The addressed FETIM external temperature module (",
+                                currentFetimExtTempModule,
                                 ") is out of range");
                         break;
                     case 0x02: // Control message out of range
@@ -3134,17 +3134,17 @@ void storeError(unsigned char moduleNo,
                         sprintf(error,
                                 "Error: The monitor message is out of range");
                         break;
-                    case 0x04: // Monitored compressor temperature in error range
+                    case 0x04: // Monitored FETIM temperature in error range
                         sprintf(error,
                                 "%s%f%s",
-                                "Error: The monitored compressor external temperature (",
+                                "Error: The monitored FETIM external temperature (",
                                 CONV_FLOAT,
                                 ") is in the error range");
                         break;
-                    case 0x05: // Monitored compressor temperature in warning range
+                    case 0x05: // Monitored FETIM temperature in warning range
                         sprintf(error,
                                 "%s%f%s",
-                                "Warning: The monitored compressor external temperature (",
+                                "Warning: The monitored FETIM external temperature (",
                                 CONV_FLOAT,
                                 ") is in the warning range");
                         break;

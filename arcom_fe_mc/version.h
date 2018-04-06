@@ -20,6 +20,15 @@
 
     REVISION HISTORY
 
+    2018-04-05 2.8.7-beta1
+        Bugfix: fetimSerialInterface::getFetimExtTemp() stores in 
+          frontend.fetim.compressor.temp[currentAsyncFetimExtTempModule] instead of [currentCompressorModule].
+        Bugfix: he2press::pressHandler() returns last async value instead of reading synchronously.
+        Renamed compTemp.* to fetimExtTemp.*
+        Renamed all refs to "FETIM compressor temperature" to "FETIM external temperature"
+        Delete DATABASE_RANGE stuff from (FETIM) compressor.c, fetimExtTemp.c, he2Press.c
+        DEBUG_FETIM_ASYNC
+
     2017-06-27 2.8.6
         Adds check for [CRYO] AVAILABLE=N to suppress cryostat async and all m&c
         
@@ -361,10 +370,10 @@
     /* Defines */
     #define VERSION_MAJOR   2  //!< Major version
     #define VERSION_MINOR   8  //!< Minor version
-    #define VERSION_PATCH   6  //!< Patch level
+    #define VERSION_PATCH   7  //!< Patch level
 
-    #define VERSION_DATE    "2016-06-27" //!< Version Date
-    #define VERSION_NOTES   "Patch to allow diabling all cryostat M&C for test sets."  //!<Version Notes
+    #define VERSION_DATE    "2018-04-03" //!< Version Date
+    #define VERSION_NOTES   "Debug build."  //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"

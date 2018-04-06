@@ -9,7 +9,7 @@
     \$Id: interlockGlitch.h,v 1.1 2011/08/05 19:18:06 avaccari Exp $
 
     This files contains all the informations necessary to define the
-    characteristics and operate the FETIM compressor temperature sensors. */
+    characteristics and operate the FETIM interlock glitch counter. */
 
 /*! \defgroup   interlockGlitch     FETIM interlock glitch counter
     \ingroup    interlockState

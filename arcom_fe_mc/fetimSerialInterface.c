@@ -37,11 +37,6 @@
 FETIM_REGISTERS fetimRegisters;
 
 
-
-
-
-
-
 /* Get internal interlock temperature sensors */
 /*! This function returns the temperature of the addressed internal interlock
     temperature sensor.
@@ -79,10 +74,6 @@ int getInterlockTemp(void){
 
     return NO_ERROR;
 }
-
-
-
-
 
 
 /* Get airflow sensors */
@@ -158,25 +149,15 @@ int getIntrlkGlitchValue(void){
         glitch.
          value[CURRENT_VALUE]=FETIM_PAR_ADC_GLITCH_OFFSET+(FETIM_PAR_ADC_GLITCH_SCALE*fetimRegisters.
                                                                                        parAdcData)/(FETIM_PAR_ADC_RANGE - 1);
-
-
-
     return NO_ERROR;
 }
 
 
-
-
-
-
-/* Get external compressor temperature sensors */
-/*! This function returns the temperature of the addressed external compressor
-    temperature sensor.
-
+/* Get FETIM external temperature sensors
     \return
         - \ref NO_ERROR -> if no error occured
         - \ref ERROR    -> if something wrong happened */
-int getCompressorTemp(void){
+int getFetimExtTemp(void){
 
     /* Clear the FETIM BREG */
     fetimRegisters.

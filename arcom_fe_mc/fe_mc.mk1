@@ -56,12 +56,6 @@ r.c .AUTODEPEND
  cd L:\ALMA-FEMC\arcom_fe_mc
  *wcc compressor.c -i="C:\WATCOM/h" -w4 -zq -od -d1 -5 -bt=dos -fo=.obj -ml
 
-L:\ALMA-FEMC\arcom_fe_mc\compTemp.obj : L:\ALMA-FEMC\arcom_fe_mc\compTemp.c &
-.AUTODEPEND
- @L:
- cd L:\ALMA-FEMC\arcom_fe_mc
- *wcc compTemp.c -i="C:\WATCOM/h" -w4 -zq -od -d1 -5 -bt=dos -fo=.obj -ml
-
 L:\ALMA-FEMC\arcom_fe_mc\console.obj : L:\ALMA-FEMC\arcom_fe_mc\console.c .A&
 UTODEPEND
  @L:
@@ -111,6 +105,13 @@ EPEND
  @L:
  cd L:\ALMA-FEMC\arcom_fe_mc
  *wcc fetim.c -i="C:\WATCOM/h" -w4 -zq -od -d1 -5 -bt=dos -fo=.obj -ml
+
+L:\ALMA-FEMC\arcom_fe_mc\fetimExtTemp.obj : L:\ALMA-FEMC\arcom_fe_mc\fetimEx&
+tTemp.c .AUTODEPEND
+ @L:
+ cd L:\ALMA-FEMC\arcom_fe_mc
+ *wcc fetimExtTemp.c -i="C:\WATCOM/h" -w4 -zq -od -d1 -5 -bt=dos -fo=.obj -m&
+l
 
 L:\ALMA-FEMC\arcom_fe_mc\fetimSerialInterface.obj : L:\ALMA-FEMC\arcom_fe_mc&
 \fetimSerialInterface.c .AUTODEPEND
@@ -506,61 +507,62 @@ A-FEMC\arcom_fe_mc\amc.obj L:\ALMA-FEMC\arcom_fe_mc\async.obj L:\ALMA-FEMC\a&
 rcom_fe_mc\backingPump.obj L:\ALMA-FEMC\arcom_fe_mc\biasSerialInterface.obj &
 L:\ALMA-FEMC\arcom_fe_mc\can.obj L:\ALMA-FEMC\arcom_fe_mc\cartridge.obj L:\A&
 LMA-FEMC\arcom_fe_mc\cartridgeTemp.obj L:\ALMA-FEMC\arcom_fe_mc\compressor.o&
-bj L:\ALMA-FEMC\arcom_fe_mc\compTemp.obj L:\ALMA-FEMC\arcom_fe_mc\console.ob&
-j L:\ALMA-FEMC\arcom_fe_mc\cryostat.obj L:\ALMA-FEMC\arcom_fe_mc\cryostatSer&
-ialInterface.obj L:\ALMA-FEMC\arcom_fe_mc\cryostatTemp.obj L:\ALMA-FEMC\arco&
-m_fe_mc\dewar.obj L:\ALMA-FEMC\arcom_fe_mc\edfa.obj L:\ALMA-FEMC\arcom_fe_mc&
-\error.obj L:\ALMA-FEMC\arcom_fe_mc\fetim.obj L:\ALMA-FEMC\arcom_fe_mc\fetim&
-SerialInterface.obj L:\ALMA-FEMC\arcom_fe_mc\frontend.obj L:\ALMA-FEMC\arcom&
-_fe_mc\gateValve.obj L:\ALMA-FEMC\arcom_fe_mc\globalDefinitions.obj L:\ALMA-&
-FEMC\arcom_fe_mc\globalOperations.obj L:\ALMA-FEMC\arcom_fe_mc\he2Press.obj &
-L:\ALMA-FEMC\arcom_fe_mc\ifChannel.obj L:\ALMA-FEMC\arcom_fe_mc\ifSerialInte&
-rface.obj L:\ALMA-FEMC\arcom_fe_mc\ifSwitch.obj L:\ALMA-FEMC\arcom_fe_mc\ifT&
-empServo.obj L:\ALMA-FEMC\arcom_fe_mc\iniWrapper.obj L:\ALMA-FEMC\arcom_fe_m&
-c\interlock.obj L:\ALMA-FEMC\arcom_fe_mc\interlockFlow.obj L:\ALMA-FEMC\arco&
-m_fe_mc\interlockFlowSens.obj L:\ALMA-FEMC\arcom_fe_mc\interlockGlitch.obj L&
-:\ALMA-FEMC\arcom_fe_mc\interlockSensors.obj L:\ALMA-FEMC\arcom_fe_mc\interl&
-ockState.obj L:\ALMA-FEMC\arcom_fe_mc\interlockTemp.obj L:\ALMA-FEMC\arcom_f&
-e_mc\interlockTempSens.obj L:\ALMA-FEMC\arcom_fe_mc\laser.obj L:\ALMA-FEMC\a&
-rcom_fe_mc\lna.obj L:\ALMA-FEMC\arcom_fe_mc\lnaLed.obj L:\ALMA-FEMC\arcom_fe&
-_mc\lnaStage.obj L:\ALMA-FEMC\arcom_fe_mc\lo.obj L:\ALMA-FEMC\arcom_fe_mc\lo&
-SerialInterface.obj L:\ALMA-FEMC\arcom_fe_mc\lpr.obj L:\ALMA-FEMC\arcom_fe_m&
-c\lprSerialInterface.obj L:\ALMA-FEMC\arcom_fe_mc\lprTemp.obj L:\ALMA-FEMC\a&
-rcom_fe_mc\main.obj L:\ALMA-FEMC\arcom_fe_mc\miDac.obj L:\ALMA-FEMC\arcom_fe&
-_mc\miSpecialMsgs.obj L:\ALMA-FEMC\arcom_fe_mc\modulationInput.obj L:\ALMA-F&
-EMC\arcom_fe_mc\opticalSwitch.obj L:\ALMA-FEMC\arcom_fe_mc\owb.obj L:\ALMA-F&
-EMC\arcom_fe_mc\pa.obj L:\ALMA-FEMC\arcom_fe_mc\paChannel.obj L:\ALMA-FEMC\a&
-rcom_fe_mc\pdChannel.obj L:\ALMA-FEMC\arcom_fe_mc\pdModule.obj L:\ALMA-FEMC\&
-arcom_fe_mc\pdSerialInterface.obj L:\ALMA-FEMC\arcom_fe_mc\pegasus.obj L:\AL&
-MA-FEMC\arcom_fe_mc\photoDetector.obj L:\ALMA-FEMC\arcom_fe_mc\photomixer.ob&
-j L:\ALMA-FEMC\arcom_fe_mc\pll.obj L:\ALMA-FEMC\arcom_fe_mc\polarization.obj&
- L:\ALMA-FEMC\arcom_fe_mc\polDac.obj L:\ALMA-FEMC\arcom_fe_mc\polSpecialMsgs&
-.obj L:\ALMA-FEMC\arcom_fe_mc\powerDistribution.obj L:\ALMA-FEMC\arcom_fe_mc&
-\ppComm.obj L:\ALMA-FEMC\arcom_fe_mc\serialInterface.obj L:\ALMA-FEMC\arcom_&
-fe_mc\serialMux.obj L:\ALMA-FEMC\arcom_fe_mc\sideband.obj L:\ALMA-FEMC\arcom&
-_fe_mc\sis.obj L:\ALMA-FEMC\arcom_fe_mc\sisHeater.obj L:\ALMA-FEMC\arcom_fe_&
-mc\sisMagnet.obj L:\ALMA-FEMC\arcom_fe_mc\solenoidValve.obj L:\ALMA-FEMC\arc&
-om_fe_mc\timer.obj L:\ALMA-FEMC\arcom_fe_mc\turboPump.obj L:\ALMA-FEMC\arcom&
-_fe_mc\vacuumController.obj L:\ALMA-FEMC\arcom_fe_mc\vacuumSensor.obj L:\ALM&
-A-FEMC\arcom_fe_mc\version.obj L:\ALMA-FEMC\arcom_fe_mc\yto.obj .AUTODEPEND
+bj L:\ALMA-FEMC\arcom_fe_mc\console.obj L:\ALMA-FEMC\arcom_fe_mc\cryostat.ob&
+j L:\ALMA-FEMC\arcom_fe_mc\cryostatSerialInterface.obj L:\ALMA-FEMC\arcom_fe&
+_mc\cryostatTemp.obj L:\ALMA-FEMC\arcom_fe_mc\dewar.obj L:\ALMA-FEMC\arcom_f&
+e_mc\edfa.obj L:\ALMA-FEMC\arcom_fe_mc\error.obj L:\ALMA-FEMC\arcom_fe_mc\fe&
+tim.obj L:\ALMA-FEMC\arcom_fe_mc\fetimExtTemp.obj L:\ALMA-FEMC\arcom_fe_mc\f&
+etimSerialInterface.obj L:\ALMA-FEMC\arcom_fe_mc\frontend.obj L:\ALMA-FEMC\a&
+rcom_fe_mc\gateValve.obj L:\ALMA-FEMC\arcom_fe_mc\globalDefinitions.obj L:\A&
+LMA-FEMC\arcom_fe_mc\globalOperations.obj L:\ALMA-FEMC\arcom_fe_mc\he2Press.&
+obj L:\ALMA-FEMC\arcom_fe_mc\ifChannel.obj L:\ALMA-FEMC\arcom_fe_mc\ifSerial&
+Interface.obj L:\ALMA-FEMC\arcom_fe_mc\ifSwitch.obj L:\ALMA-FEMC\arcom_fe_mc&
+\ifTempServo.obj L:\ALMA-FEMC\arcom_fe_mc\iniWrapper.obj L:\ALMA-FEMC\arcom_&
+fe_mc\interlock.obj L:\ALMA-FEMC\arcom_fe_mc\interlockFlow.obj L:\ALMA-FEMC\&
+arcom_fe_mc\interlockFlowSens.obj L:\ALMA-FEMC\arcom_fe_mc\interlockGlitch.o&
+bj L:\ALMA-FEMC\arcom_fe_mc\interlockSensors.obj L:\ALMA-FEMC\arcom_fe_mc\in&
+terlockState.obj L:\ALMA-FEMC\arcom_fe_mc\interlockTemp.obj L:\ALMA-FEMC\arc&
+om_fe_mc\interlockTempSens.obj L:\ALMA-FEMC\arcom_fe_mc\laser.obj L:\ALMA-FE&
+MC\arcom_fe_mc\lna.obj L:\ALMA-FEMC\arcom_fe_mc\lnaLed.obj L:\ALMA-FEMC\arco&
+m_fe_mc\lnaStage.obj L:\ALMA-FEMC\arcom_fe_mc\lo.obj L:\ALMA-FEMC\arcom_fe_m&
+c\loSerialInterface.obj L:\ALMA-FEMC\arcom_fe_mc\lpr.obj L:\ALMA-FEMC\arcom_&
+fe_mc\lprSerialInterface.obj L:\ALMA-FEMC\arcom_fe_mc\lprTemp.obj L:\ALMA-FE&
+MC\arcom_fe_mc\main.obj L:\ALMA-FEMC\arcom_fe_mc\miDac.obj L:\ALMA-FEMC\arco&
+m_fe_mc\miSpecialMsgs.obj L:\ALMA-FEMC\arcom_fe_mc\modulationInput.obj L:\AL&
+MA-FEMC\arcom_fe_mc\opticalSwitch.obj L:\ALMA-FEMC\arcom_fe_mc\owb.obj L:\AL&
+MA-FEMC\arcom_fe_mc\pa.obj L:\ALMA-FEMC\arcom_fe_mc\paChannel.obj L:\ALMA-FE&
+MC\arcom_fe_mc\pdChannel.obj L:\ALMA-FEMC\arcom_fe_mc\pdModule.obj L:\ALMA-F&
+EMC\arcom_fe_mc\pdSerialInterface.obj L:\ALMA-FEMC\arcom_fe_mc\pegasus.obj L&
+:\ALMA-FEMC\arcom_fe_mc\photoDetector.obj L:\ALMA-FEMC\arcom_fe_mc\photomixe&
+r.obj L:\ALMA-FEMC\arcom_fe_mc\pll.obj L:\ALMA-FEMC\arcom_fe_mc\polarization&
+.obj L:\ALMA-FEMC\arcom_fe_mc\polDac.obj L:\ALMA-FEMC\arcom_fe_mc\polSpecial&
+Msgs.obj L:\ALMA-FEMC\arcom_fe_mc\powerDistribution.obj L:\ALMA-FEMC\arcom_f&
+e_mc\ppComm.obj L:\ALMA-FEMC\arcom_fe_mc\serialInterface.obj L:\ALMA-FEMC\ar&
+com_fe_mc\serialMux.obj L:\ALMA-FEMC\arcom_fe_mc\sideband.obj L:\ALMA-FEMC\a&
+rcom_fe_mc\sis.obj L:\ALMA-FEMC\arcom_fe_mc\sisHeater.obj L:\ALMA-FEMC\arcom&
+_fe_mc\sisMagnet.obj L:\ALMA-FEMC\arcom_fe_mc\solenoidValve.obj L:\ALMA-FEMC&
+\arcom_fe_mc\timer.obj L:\ALMA-FEMC\arcom_fe_mc\turboPump.obj L:\ALMA-FEMC\a&
+rcom_fe_mc\vacuumController.obj L:\ALMA-FEMC\arcom_fe_mc\vacuumSensor.obj L:&
+\ALMA-FEMC\arcom_fe_mc\version.obj L:\ALMA-FEMC\arcom_fe_mc\yto.obj .AUTODEP&
+END
  @L:
  cd L:\ALMA-FEMC\arcom_fe_mc
  @%write fe_mc.lk1 FIL ini.obj,amc.obj,async.obj,backingPump.obj,biasSerialI&
-nterface.obj,can.obj,cartridge.obj,cartridgeTemp.obj,compressor.obj,compTemp&
-.obj,console.obj,cryostat.obj,cryostatSerialInterface.obj,cryostatTemp.obj,d&
-ewar.obj,edfa.obj,error.obj,fetim.obj,fetimSerialInterface.obj,frontend.obj,&
-gateValve.obj,globalDefinitions.obj,globalOperations.obj,he2Press.obj,ifChan&
-nel.obj,ifSerialInterface.obj,ifSwitch.obj,ifTempServo.obj,iniWrapper.obj,in&
-terlock.obj,interlockFlow.obj,interlockFlowSens.obj,interlockGlitch.obj,inte&
-rlockSensors.obj,interlockState.obj,interlockTemp.obj,interlockTempSens.obj,&
-laser.obj,lna.obj,lnaLed.obj,lnaStage.obj,lo.obj,loSerialInterface.obj,lpr.o&
-bj,lprSerialInterface.obj,lprTemp.obj,main.obj,miDac.obj,miSpecialMsgs.obj,m&
-odulationInput.obj,opticalSwitch.obj,owb.obj,pa.obj,paChannel.obj,pdChannel.&
-obj,pdModule.obj,pdSerialInterface.obj,pegasus.obj,photoDetector.obj,photomi&
-xer.obj,pll.obj,polarization.obj,polDac.obj,polSpecialMsgs.obj,powerDistribu&
-tion.obj,ppComm.obj,serialInterface.obj,serialMux.obj,sideband.obj,sis.obj,s&
-isHeater.obj,sisMagnet.obj,solenoidValve.obj,timer.obj,turboPump.obj,vacuumC&
-ontroller.obj,vacuumSensor.obj,version.obj,yto.obj
+nterface.obj,can.obj,cartridge.obj,cartridgeTemp.obj,compressor.obj,console.&
+obj,cryostat.obj,cryostatSerialInterface.obj,cryostatTemp.obj,dewar.obj,edfa&
+.obj,error.obj,fetim.obj,fetimExtTemp.obj,fetimSerialInterface.obj,frontend.&
+obj,gateValve.obj,globalDefinitions.obj,globalOperations.obj,he2Press.obj,if&
+Channel.obj,ifSerialInterface.obj,ifSwitch.obj,ifTempServo.obj,iniWrapper.ob&
+j,interlock.obj,interlockFlow.obj,interlockFlowSens.obj,interlockGlitch.obj,&
+interlockSensors.obj,interlockState.obj,interlockTemp.obj,interlockTempSens.&
+obj,laser.obj,lna.obj,lnaLed.obj,lnaStage.obj,lo.obj,loSerialInterface.obj,l&
+pr.obj,lprSerialInterface.obj,lprTemp.obj,main.obj,miDac.obj,miSpecialMsgs.o&
+bj,modulationInput.obj,opticalSwitch.obj,owb.obj,pa.obj,paChannel.obj,pdChan&
+nel.obj,pdModule.obj,pdSerialInterface.obj,pegasus.obj,photoDetector.obj,pho&
+tomixer.obj,pll.obj,polarization.obj,polDac.obj,polSpecialMsgs.obj,powerDist&
+ribution.obj,ppComm.obj,serialInterface.obj,serialMux.obj,sideband.obj,sis.o&
+bj,sisHeater.obj,sisMagnet.obj,solenoidValve.obj,timer.obj,turboPump.obj,vac&
+uumController.obj,vacuumSensor.obj,version.obj,yto.obj
  @%append fe_mc.lk1 
  *wlink name fe_mc d all sys dos op maxe=25 op q op symf op el @fe_mc.lk1
  copy fe_mc.exe releases\2-8-7b1.exe /y

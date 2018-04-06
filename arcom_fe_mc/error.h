@@ -106,7 +106,7 @@
     #define ERR_INTRLK_TEMP         0x3C //!< Error in the FETIM interlock temperature module
     #define ERR_INTRLK_FLOW         0x3D //!< Error in the FETIM interlock flow module
     #define ERR_INTRLK_GLITCH       0x3E //!< Error in the FETIM interlock glitch module
-    #define ERR_COMP_TEMP           0x3F //!< Error in the FETIM compressor temperature module
+    #define ERR_FETIM_EXT_TEMP           0x3F //!< Error in the FETIM external temperature module
     #define ERR_COMP_HE2_PRESS      0x40 //!< Error in the FETIM compressor He2 pressure module
 
 

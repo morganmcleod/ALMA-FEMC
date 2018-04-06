@@ -1,14 +1,11 @@
-/*! \file   compTemp.c
-    \brief  FETIM Compressor temperature sensor
+/*! \file   he2Press.c
+    \brief  FETIM Compressor He2 Pressure Sensor
 
     <b> File informations: </b><br>
     Created: 2011/03/28 17:34:50 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: he2Press.c,v 1.1 2011/08/05 19:19:53 avaccari Exp $
-
-    This file contains all the functions necessary to handle FETIM compressor
-    temperature sensor events. */
+    This file contains all the functions necessary to handle 
+    FETIM Compressor He2 Pressure Sensor events. */
 
 /* Includes */
 #include <stdio.h>      /* printf */
@@ -193,65 +190,16 @@ static void outOfRangeHandler(void){
         /* If error during monitoring, store the ERROR state in the outgoing
            CAN message state. */
         CAN_STATUS = ERROR;
-        /* Store the last known value in the outgoing message */
-        CAN_BYTE=frontend.
-                  fetim.
-                   compressor.
-                    he2Press.
-                     pressOutRng[CURRENT_VALUE];
 
-        /* Check the result against the warning and error range. Right now this
-           function is only printing out a warning/error message depending on
-           the result but no actions are taken. */
-    } else {
-        /* If no error during monitor process, gather the stored data/ */
-        CAN_BYTE=frontend.
-                  fetim.
-                   compressor.
-                    he2Press.
-                     pressOutRng[CURRENT_VALUE];
-
-        /* Check the result agains the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           fetim.
-                            compressor.
-                             he2Press.
-                              pressOutRng[LOW_ERROR_RANGE],
-                          CAN_BYTE,
-                          frontend.
-                           fetim.
-                            compressor.
-                             he2Press.
-                              pressOutRng[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               fetim.
-                                compressor.
-                                 he2Press.
-                                  pressOutRng[LOW_ERROR_RANGE],
-                              CAN_BYTE,
-                              frontend.
-                               fetim.
-                                compressor.
-                                 he2Press.
-                                  pressOutRng[HI_ERROR_RANGE])){
-                    storeError(ERR_COMP_HE2_PRESS,
-                               0x06); // Error 0x06 -> Error: He2 pressure out of range digital value in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_COMP_HE2_PRESS,
-                               0x07); // Error 0x07 -> Warning: He2 pressure out of range digital value in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
+
+    /* Store the last monitored value in the outgoing message */
+    CAN_BYTE=frontend.
+              fetim.
+               compressor.
+                he2Press.
+                 pressOutRng[CURRENT_VALUE];
 
     /* The CAN message payload is already loaded. Set the size */
     CAN_SIZE=CAN_BOOLEAN_SIZE;
-
 }
-
-

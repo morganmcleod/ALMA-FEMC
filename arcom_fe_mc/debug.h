@@ -18,7 +18,7 @@
     #define _DEBUG_H
 
     /* Defines */
-    // #define DEVELOPMENT         // Uncomment this when developping the software
+    #define DEVELOPMENT         // Uncomment this when developping the software
 
     /* If we are developing the software */
     #ifdef DEVELOPMENT
@@ -50,8 +50,8 @@
         #define ERROR_REPORT                // Uncomment this line to enable the console error report
 
         // #define DEBUG_CRYOSTAT_ASYNC        // Turn on cryotat async debugging
-        // #define DEBUG_FETIM_ASYNC           // Turn on the FETIM async debugging
-        #define DEBUG_GO_STANDBY2           // Turn on debugging the STANDBY2 transition
+        #define DEBUG_FETIM_ASYNC           // Turn on the FETIM async debugging
+        // #define DEBUG_GO_STANDBY2           // Turn on debugging the STANDBY2 transition
     
     #else /* If we are NOT developing: for release build */
         #define CONSOLE                     // Turn on the console interface
