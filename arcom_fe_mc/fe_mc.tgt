@@ -21,8 +21,8 @@ MCommand
 0
 5
 MCommand
-103
-copy fe_mc.exe releases\2-8-7b1.exe /y
+101
+copy fe_mc.exe releases\2-8-7.exe /y
 copy fe_mc.exe releases\fe_mc.exe /y
 #ftp -n -s:updateFemc.scr
 6
