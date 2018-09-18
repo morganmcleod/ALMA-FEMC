@@ -1,0 +1,7 @@
+*.obj
+*.exe
+*.sym
+releases/
+CVS/
+arcom_test_sets/
+session.log
