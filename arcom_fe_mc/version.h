@@ -20,6 +20,13 @@
 
     REVISION HISTORY
 
+    2.9.x
+        Delete remaining DATABASE_RANGE code
+        Delete error codes MON_ERROR_RNG, MON_WARN_RNG, MON_WARN_ACT, MON_HARDW_FUT, HARDW_UPD_WARN, HARDW_RETRY
+        Add error codes ERC_... to be used by all subsystems.
+        All subsystems using ERC_... codes.
+        Removed PLL_LOOP_BANDWIDTH_UNDEFINED
+
     2018-04-06 2.8.7
         Bugfix: fetimSerialInterface::getFetimExtTemp() stores in 
           frontend.fetim.compressor.temp[currentAsyncFetimExtTempModule] instead of [currentCompressorModule].
