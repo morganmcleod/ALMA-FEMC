@@ -10,14 +10,8 @@
     This files contains all the functions necessary to handle the PA Channel
     events.
 
-    The information on the mapping between PA channels and polarizations are
-    encoded in this module.
-
-    \todo The mapping information are not complete, there are still few band
-          missing. Once the data is available, this module should be updated
-          accordingly. There are extra check performed on the static variable
-          paMapped to return warning in case an unmapped channel is used. This
-          code could be deleted after all channels are mapped. */
+    The mapping between PA channels and polarizations are encoded in this module.
+*/
 
 /* Includes */
 #include <string.h>     /* memcpy */
@@ -36,7 +30,6 @@ unsigned char   currentPaChannelModule=0;
 /* Statics */
 /* A static to deal with the mapping of the PA cahnnels. This global variable is
    used to indicate if the mapping is defined or not. */
-static unsigned char paMapped = FALSE;
 static HANDLER  paChannelModulesHandler[PA_CHANNEL_MODULES_NUMBER]={gateVoltageHandler,
                                                                     drainVoltageHandler,
                                                                     drainCurrentHandler};
@@ -144,20 +137,6 @@ static void gateVoltageHandler(void){
 
             return;
         }
-
-        /* Check if the used PA channel was mapped, if not, store the error. */
-        if(paMapped==FALSE){
-            storeError(ERR_PA_CHANNEL,
-                       0x0C); // Error 0x0C -> Warning: The addressed hardware is not properly defined yet
-            frontend.
-             cartridge[currentModule].
-              lo.
-               pa.
-                paChannel[currentPaChannel()].
-                 lastGateVoltage.
-                  status=HARDW_UPD_WARN;
-        }
-
         /* If everything went fine, it's a control message, we're done. */
         return;
     }
@@ -240,15 +219,6 @@ static void gateVoltageHandler(void){
             }
         #endif /* DATABASE_RANGE */
     }
-
-    /* Check if the used PA channel was mapped, if not, store the error. */
-    if(paMapped==FALSE){
-        storeError(ERR_PA_CHANNEL,
-                   0x0C); // Error 0x0C -> Warning: The addressed hardware is not properly defined yet
-        /* Store the state in the outgoing CAN message */
-        CAN_STATUS=HARDW_UPD_WARN;
-    }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). It is done directly instead of using a function
@@ -409,28 +379,15 @@ static void drainVoltageHandler(void){
             return;
         }
 
-        /* Check if the used PA channel was mapped, if not, store the error. */
-        if(paMapped==FALSE){
-            storeError(ERR_PA_CHANNEL,
-                       0x0C); // Error 0x0C -> Warning: The addressed hardware is not properly defined yet
-            frontend.
-             cartridge[currentModule].
-              lo.
-               pa.
-                paChannel[currentPaChannel()].
-                 lastDrainVoltage.
-                  status=HARDW_UPD_WARN;
         
         /* if limitSafePaDrainVoltage() above returned a problem, we want to save that error status */
-        } else {
-            frontend.
-             cartridge[currentModule].
-              lo.
-               pa.
-                paChannel[currentPaChannel()].
-                 lastDrainVoltage.
-                  status=ret;
-        }
+        frontend.
+         cartridge[currentModule].
+          lo.
+           pa.
+            paChannel[currentPaChannel()].
+             lastDrainVoltage.
+              status=ret;
 
         /* If everything went fine, it's a control message, we're done. */
         return;
@@ -513,14 +470,6 @@ static void drainVoltageHandler(void){
                 }
             }
         #endif /* DATABASE_RANGE */
-    }
-
-    /* Check if the used PA channel was mapped, if not, store the error. */
-    if(paMapped==FALSE){
-        storeError(ERR_PA_CHANNEL,
-                   0x0C); // Error 0x0C -> Warning: The addressed hardware is not properly defined yet
-        /* Store the state in the outgoing CAN message */
-        CAN_STATUS=HARDW_UPD_WARN;
     }
 
     /* Load the CAN message payload with the returned value and set the
@@ -624,15 +573,6 @@ static void drainCurrentHandler(void){
             }
         #endif /* DATABASE_RANGE */
     }
-
-    /* Check if the used PA channel was mapped, if not, store the error. */
-    if(paMapped==FALSE){
-        storeError(ERR_PA_CHANNEL,
-                   0x0C); // Error 0x0C -> Warning: The addressed hardware is not properly defined yet
-        /* Store the state in the outgoing CAN message */
-        CAN_STATUS=HARDW_UPD_WARN;
-    }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). It is done directly instead of using a function
@@ -651,29 +591,11 @@ static void drainCurrentHandler(void){
 
     This is necessary because the mapping between 'A' and 'B' channel and
     polarizations '0' and '1' is not consistend throught the cartridges.
-    The following is the current mapping:
-    <TABLE>
-     <CAPTION>
-      <SMALL>Polarization to channel mapping for the different bands.</SMALL>
-     </CAPTION>
-     <TR>
-      <TH>Bands<TH>Polarization<TH>Channel
-     <TR>
-      <TD>1,2<TD>0...1<TD>N/D
-     <TR>
-      <TD>3,4,8,9,10<TD>0<TD>B
-     <TR>
-      <TD>3,4,8,9,10<TD>1<TD>A
-     <TR>
-      <TD>5,6,7<TD>0<TD>A
-     <TR>
-      <TD>5,6,7<TD>1<TD>B
-    </TABLE>
 
     \return
         - \ref PA_CHANNEL_A
         - \ref PA_CHANNEL_B */
-int currentPaChannel(void){
+int currentPaChannel(void) {
     /* Switch on cartridge number */
     switch(currentModule){
         case BAND3:
@@ -681,7 +603,6 @@ int currentPaChannel(void){
         case BAND8:
         case BAND9:
         case BAND10:
-            paMapped = TRUE;
             return currentPaModule==0?PA_CHANNEL_B:
                                       PA_CHANNEL_A;
             break;
@@ -693,20 +614,9 @@ int currentPaChannel(void){
         case BAND5:
         case BAND6:
         case BAND7:
-            paMapped = TRUE;
-            return currentPaModule==0?PA_CHANNEL_A:
-                                      PA_CHANNEL_B;
-            break;
-        /* The following are assumption on the bands we don't have information
-           about at this point: 1 and 2. When the information are available,
-           this table should be updated. */
         default:
-            paMapped = FALSE;
             return currentPaModule==0?PA_CHANNEL_A:
                                       PA_CHANNEL_B;
             break;
     }
 }
-
-
-
