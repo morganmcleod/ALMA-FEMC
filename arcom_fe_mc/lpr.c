@@ -46,11 +46,9 @@ void lprHandler(void){
     /* Check if the submodule is in range */
     currentLprModule=(CAN_ADDRESS&LPR_MODULES_RCA_MASK)>>LPR_MODULES_MASK_SHIFT;
     if(currentLprModule>=LPR_MODULES_NUMBER){
-        storeError(ERR_LPR,
-                   0x01); // Error 0x01 -> LPR submodule out of range
+        storeError(ERR_LPR, ERC_MODULE_RANGE); //LPR submodule out of range
 
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
-
         return;
     }
 
@@ -188,8 +186,7 @@ int lprStartup(void) {
 
     /* If the timer has expired, signal the error and force the shutter */
     if(timedOut==TIMER_EXPIRED){
-        storeError(ERR_OPTICAL_SWITCH,
-                   0x09); // Error 0x09 -> Warning: Time out while waiting for ready state during initialization
+        storeError(ERR_OPTICAL_SWITCH, ERC_HARDWARE_TIMEOUT); //Time out while waiting for ready state during initialization
 
         /* Force the shutter mode. If error, return error and abort
            initialization. */
@@ -293,8 +290,7 @@ int lprStop(void){
 
     /* If the timer has expired, signal the error and force the shutter */
     if(timedOut==TIMER_EXPIRED){
-        storeError(ERR_OPTICAL_SWITCH,
-                   0x09); // Error 0x09 -> Warning: Time out while waiting for ready state during initialization
+        storeError(ERR_OPTICAL_SWITCH, ERC_HARDWARE_TIMEOUT); //Time out while waiting for ready state during initialization
 
         /* Force the shutter mode. If error, return error and abort
            initialization. */

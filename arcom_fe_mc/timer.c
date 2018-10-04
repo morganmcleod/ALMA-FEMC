@@ -53,8 +53,7 @@ int startAsyncTimer(unsigned char timerNo,
     /* If there is an attempt to initialize a timer that is not available, don't
        initialize and return an error */
     if(timerNo>MAX_TIMERS_NUMBER){
-        storeError(ERR_TIMER,
-                   0x02); // Error 0x02 -> Required async timer out of range
+        storeError(ERR_TIMER, ERC_MODULE_RANGE); //Required async timer out of range
         return ERROR;
     }
 
@@ -62,8 +61,7 @@ int startAsyncTimer(unsigned char timerNo,
        initialize and return an error */
     if(asyncRunning[timerNo]){
         if(reload==FALSE){
-            storeError(ERR_TIMER,
-                       0x01); // Error 0x01 -> Async timer already running
+            storeError(ERR_TIMER, ERC_HARDWARE_WAIT); //Async timer already running
             return ERROR;
         }
     }
@@ -91,8 +89,7 @@ int queryAsyncTimer(unsigned char timerNo){
     /* If there is an attempt to query a timer that is not available, don't
        query and return an error */
     if(timerNo>MAX_TIMERS_NUMBER){
-        storeError(ERR_TIMER,
-                   0x02); // Error 0x02 -> Required async timer out of range
+        storeError(ERR_TIMER, ERC_MODULE_RANGE); //Required async timer out of range
         return TIMER_NO_OUT_OF_RANGE;
     }
 
@@ -126,12 +123,9 @@ int stopAsyncTimer(unsigned char timerNo){
     /* If there is an attempt to stop a timer that is not available, don't stop
        and return an error */
     if(timerNo>MAX_TIMERS_NUMBER){
-        storeError(ERR_TIMER,
-                   0x02); // Error 0x02 -> Required async timer out of range
+        storeError(ERR_TIMER, ERC_MODULE_RANGE); //Required async timer out of range
         return ERROR;
     }
-
     asyncRunning[timerNo]=TIMER_OFF;
-
     return NO_ERROR;
 }

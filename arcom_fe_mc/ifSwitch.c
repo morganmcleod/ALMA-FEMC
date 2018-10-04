@@ -56,8 +56,7 @@ void ifSwitchHandler(void){
     /* Check if the submodule is in range */
     currentIfSwitchModule=(CAN_ADDRESS&IF_SWITCH_MODULES_RCA_MASK)>>IF_SWITCH_MODULES_MASK_SHIFT;
     if(currentIfSwitchModule>=IF_SWITCH_MODULES_NUMBER){
-        storeError(ERR_IF_SWITCH,
-                   0x01); // Error 0x01 -> IF Switch submodule out of range
+        storeError(ERR_IF_SWITCH, ERC_MODULE_RANGE); //IF Switch submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
         return;
     }
@@ -91,8 +90,7 @@ void bandSelectHandler(void){
                       frontend.
                        ifSwitch.
                        bandSelect[MAX_SET_VALUE])){
-            storeError(ERR_IF_SWITCH,
-                       0x02); // Error 0x02 -> Selected band set value out of range
+            storeError(ERR_IF_SWITCH, ERC_COMMAND_VAL); //Selected band set value out of range
 
             /* Store error in the last control message variable */
             frontend.

@@ -44,11 +44,8 @@ void sisMagnetHandler(void){
               sideband[currentPolarizationModule].
                sisMagnet.
                 available==UNAVAILABLE){
-            storeError(ERR_SIS_MAGNET,
-                       0x01); // Error 0x01 -> SIS magnet not installed
-
+            storeError(ERR_SIS_MAGNET, ERC_MODULE_ABSENT); //SIS magnet not installed
             CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
-
             return;
         }
     #endif /* DATABASE_HARDW */
@@ -56,9 +53,7 @@ void sisMagnetHandler(void){
     /* Check if the submodule is in range */
     currentSisMagnetModule=(CAN_ADDRESS&SIS_MAGNET_MODULES_RCA_MASK)>>SIS_MAGNET_MODULES_MASK_SHIFT;
     if(currentSisMagnetModule>=SIS_MAGNET_MODULES_NUMBER){
-        storeError(ERR_SIS_MAGNET,
-                   0x02); // Error 0x02 -> SIS magnet submodule out of range
-
+        storeError(ERR_SIS_MAGNET, ERC_MODULE_RANGE); //SIS magnet submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
         return;
     }
@@ -80,16 +75,14 @@ static void voltageHandler(void){
     /* If control (size !=0) store error and return. No control messages are
        allowed on this RCA. */
     if(CAN_SIZE){
-        storeError(ERR_SIS_MAGNET,
-                   0x08); // Error 0x08: Control message out of range
+        storeError(ERR_SIS_MAGNET, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control
        messages allowed on the RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        storeError(ERR_SIS_MAGNET,
-                   0x09); // Error 0x09: Monitor message out of range
+        storeError(ERR_SIS_MAGNET, ERC_RCA_RANGE); //Monitor message out of range
        /* Store the state in the outgoing CAN message */
        CAN_STATUS = MON_CAN_RNG;
 

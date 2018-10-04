@@ -82,8 +82,7 @@ int PPOpen(void){
         outp(SIO_DATA_PORT,
              PP_DEFAULT_IRQ_NO);  // If disabled, enable and assign PP_IRQ_NO
         LD3PrimaryInterruptNo=PP_DEFAULT_IRQ_NO;
-        storeError(ERR_PP,
-                   0x01);                // Error 0x01 -> Parallel Port Interrupt Disable (Warning)
+        storeError(ERR_PP, ERC_IRQ_DISABLED);   // Parallel Port Interrupt Disabled (Warning)
     }
 
     printf(" Current PP interrupt number: %d\n",
@@ -91,8 +90,7 @@ int PPOpen(void){
 
     /* Configure pic mask and interrupt vector */
     if(LD3PrimaryInterruptNo<2 || LD3PrimaryInterruptNo>15){
-        criticalError(ERR_PP,
-                      0x02);  // Error 0x02 -> Parallel Port Interrupt out of Range
+        criticalError(ERR_PP, ERC_IRQ_RANGE);   // Parallel Port Interrupt out of Range
         return ERROR;
     }
 
@@ -142,8 +140,7 @@ int PPOpen(void){
 
     /* Wait for AMBSI1 to reply or timer to expire */
     while((inp(SPPStatusPort)&SPP_STATUS_SELECT)&&!timedOut){
-        storeError(ERR_PP,
-                   0x03);                  // Error 0x03 -> Warning! Waiting for AMBSI board.
+        storeError(ERR_PP, ERC_AMBSI_WAIT); // Warning! Waiting for AMBSI board.
         waitMilliseconds(WAIT_ON_AMBSI_NOT_READY);    // Wait before checking again the ready status
         timedOut=queryAsyncTimer(TIMER_PP_AMBSI_RDY);
         if(timedOut==ERROR){
@@ -154,8 +151,7 @@ int PPOpen(void){
     /* If the timer has expired signal the error and continue */
     if(timedOut==TIMER_EXPIRED){
         printf(" ERROR: AMBSI1 not responding. CAN interface disabled.\n");
-        storeError(ERR_PP,
-                   0x04); // Error 0x04 -> Timeout while waiting for the AMBSI1
+        storeError(ERR_PP, ERC_AMBSI_EXPIRED);  // Error: Timeout while waiting for the AMBSI1
     }
 
     /* In case of no error, clear the asynchronous timer. */

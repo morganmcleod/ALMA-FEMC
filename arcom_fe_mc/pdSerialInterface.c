@@ -134,8 +134,7 @@ static int getPdAnalogMonitor(void){
 
     /* If timer has expired signal the error */
     if(timedOut==TIMER_EXPIRED){
-        storeError(ERR_PD_SERIAL,
-                   0x01); // Error 0x01 -> Timeout while waiting for the ADC to become ready
+        storeError(ERR_PD_SERIAL, ERC_HARDWARE_TIMEOUT); //Timeout while waiting for the ADC to become ready
         return ERROR;
     }
 

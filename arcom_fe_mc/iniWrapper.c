@@ -49,8 +49,7 @@ extern int myWriteCfg(const char *fileName,
                  sectionName,
                  varWanted,
                  newData)==ERROR){
-        storeError(ERR_INI,
-                   0x06); // Error 0x06 -> Error updating the configuration file
+        storeError(ERR_INI, ERC_FLASH_ERROR); //Error updating the configuration file
         return ERROR;
     }
 
@@ -101,31 +100,26 @@ int myReadCfg(const char *fileName,
     /* Deal with the return value */
     switch(returnValue){
         case DATA_NOT_FOUND:
-            storeError(ERR_INI,
-                       0x01); // Error 0x01 -> The data wasn't found in the configuration file
+            storeError(ERR_INI, ERC_FLASH_ERROR); //The data wasn't found in the configuration file
             return DATA_NOT_FOUND;
             break;
         case FILE_OPEN_ERROR:
-            storeError(ERR_INI,
-                       0x02); // Error 0x02 -> Error opening the required file
+            storeError(ERR_INI, ERC_FLASH_ERROR); //Error 0x02 -> Error opening the required file
             return FILE_OPEN_ERROR;
             break;
         case FILE_ERROR:
-            storeError(ERR_INI,
-                       0x04); // Error 0x04 -> Error handling the required file
+            storeError(ERR_INI, ERC_FLASH_ERROR); //Error handling the required file
             return FILE_ERROR;
             break;
         case FILE_CLOSE_ERROR:
-            storeError(ERR_INI,
-                       0x05); // Error 0x05 -> Error closing the required file
+            storeError(ERR_INI, ERC_FLASH_ERROR); //Error closing the required file
             return FILE_CLOSE_ERROR;
             break;
         default:
             /* If no errors, check if the number of returned items is the same
                as the requested ones. */
             if (expectedItems && returnValue!=expectedItems) {
-                storeError(ERR_INI,
-                           0x03); // Error 0x03 -> Number of returned items different from expected
+                storeError(ERR_INI, ERC_FLASH_ERROR); //Number of returned items different from expected
                 return ITEMS_NO_ERROR;
             }
             return NO_ERROR;

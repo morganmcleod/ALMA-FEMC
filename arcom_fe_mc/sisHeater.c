@@ -44,9 +44,7 @@ void sisHeaterHandler(void){
              polarization[currentBiasModule].
               sisHeater.
                available==UNAVAILABLE){
-            storeError(ERR_SIS_HEATER,
-                       0x01); // Error 0x01 -> SIS heater not installed
-
+            storeError(ERR_SIS_HEATER, ERC_MODULE_ABSENT); //SIS heater not installed
             CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
             return;
         }
@@ -55,9 +53,7 @@ void sisHeaterHandler(void){
     /* Check if the submodule is in range */
     currentSisHeaterModule=(CAN_ADDRESS&SIS_HEATER_MODULES_RCA_MASK)>>SIS_HEATER_MODULES_MASK_SHIFT;
     if(currentSisHeaterModule>=SIS_HEATER_MODULES_NUMBER){
-        storeError(ERR_SIS_HEATER,
-                   0x02); // Error 0x02 -> SIS heater submodule out of range
-
+        storeError(ERR_SIS_HEATER, ERC_MODULE_RANGE); //SIS heater submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
         return;
     }
@@ -125,8 +121,7 @@ static void enableHandler(void){
                         lastEnable.
                          status=HARDW_BLKD_ERR;
                     /* Signal error and bail out */
-                    storeError(ERR_SIS_HEATER,
-                               0x07); // Error 0x07: Hardware blocked error
+                    storeError(ERR_SIS_HEATER, ERC_HARDWARE_BLOCKED); //Hardware blocked error
                     return;
                     break;
                 default:
@@ -176,11 +171,9 @@ static void enableHandler(void){
        SIS heater after 1 second (starting with Rev.D2 of the BIAS mdoule), this
        monitor point is no longer meaningful since is just the repetition of the
        monitor on the control RCA. */
-    storeError(ERR_SIS_HEATER,
-               0x06); // Error 0x06: Monitor message out of range
+    storeError(ERR_SIS_HEATER, ERC_RCA_RANGE); //Monitor message out of range
     /* Store the state in the outgoing CAN message */
     CAN_STATUS = MON_CAN_RNG;
-
 }
 
 /* Heater current handler */
@@ -195,19 +188,16 @@ static void currentHandler(void){
     /* If control (size !=0) store error and return. No control messages are
        allowed on this RCA. */
     if(CAN_SIZE){
-        storeError(ERR_SIS_HEATER,
-                   0x05); // Error 0x05: Control message out of range
+        storeError(ERR_SIS_HEATER, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control
        messages allowed on the RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        storeError(ERR_SIS_HEATER,
-                   0x06); // Error 0x06: Monitor message out of range
+        storeError(ERR_SIS_HEATER, ERC_RCA_RANGE); //Monitor message out of range
        /* Store the state in the outgoing CAN message */
        CAN_STATUS = MON_CAN_RNG;
-
        return;
     }
 

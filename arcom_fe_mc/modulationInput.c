@@ -41,11 +41,9 @@ void modulationInputHandler(void){
     /* Check if the submodule is in range */
     currentModulationInputModule=(CAN_ADDRESS&MODULATION_INPUT_MODULES_RCA_MASK)>>MODULATION_INPUT_MODULES_MASK_SHIFT;
     if(currentModulationInputModule>=MODULATION_INPUT_MODULES_NUMBER){
-        storeError(ERR_MODULATION_INPUT,
-                   0x02); // Error 0x02 -> Modulation Input submodule out of range
+        storeError(ERR_MODULATION_INPUT, ERC_MODULE_RANGE); //Modulation Input submodule out of range
 
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
-
         return;
     }
 

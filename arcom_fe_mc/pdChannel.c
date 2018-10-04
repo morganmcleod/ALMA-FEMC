@@ -41,10 +41,8 @@ void pdChannelHandler(void){
     /* Check if the specified submodule is in range */
     currentPdChannelModule=(CAN_ADDRESS&PD_CHANNEL_MODULES_RCA_MASK);
     if(currentPdChannelModule>=PD_CHANNEL_MODULES_NUMBER){
-        storeError(ERR_PD_CHANNEL,
-                   0x01); // Error 0x01 -> Power distribution channel submodule out of range
+        storeError(ERR_PD_CHANNEL, ERC_MODULE_RANGE); //Power distribution channel submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
-
         return;
     }
 
@@ -61,19 +59,16 @@ static void voltageHandler(void){
     /* If control (size!=0) sotre error and return. No control message are
        allowed on this RCA. */
     if(CAN_SIZE){
-        storeError(ERR_PD_CHANNEL,
-                   0x02); // Error 0x02: Control message out of range
+        storeError(ERR_PD_CHANNEL, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control
        messages allowd on this RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on control RCA
-        storeError(ERR_PD_CHANNEL,
-                   0x03); // Error 0x03: Monitor message out of range
+        storeError(ERR_PD_CHANNEL, ERC_RCA_RANGE); //Monitor message out of range
         /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
-
         return;
     }
 
@@ -114,19 +109,16 @@ static void currentHandler(void){
     /* If control (size!=0) sotre error and return. No control message are
        allowed on this RCA. */
     if(CAN_SIZE){
-        storeError(ERR_PD_CHANNEL,
-                   0x02); // Error 0x02: Control message out of range
+        storeError(ERR_PD_CHANNEL, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control
        messages allowd on this RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on control RCA
-        storeError(ERR_PD_CHANNEL,
-                   0x03); // Error 0x03: Monitor message out of range
+        storeError(ERR_PD_CHANNEL, ERC_RCA_RANGE); //Monitor message out of range
         /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
-
         return;
     }
 

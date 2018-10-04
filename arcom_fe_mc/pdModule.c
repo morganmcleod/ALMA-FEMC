@@ -45,10 +45,8 @@ void pdModuleHandler(void){
     /* Check if the specified submodule is in range */
     currentPdModuleModule=(CAN_ADDRESS&PD_MODULE_MODULES_RCA_MASK)>>PD_MODULE_MODULES_MASK_SHIFT;
     if(currentPdModuleModule>=PD_MODULE_MODULES_NUMBER){
-        storeError(ERR_PD_MODULE,
-                   0x01); // Error 0x01 -> Power distribution module submodule out of range
+        storeError(ERR_PD_MODULE, ERC_MODULE_RANGE); //Power distribution module submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
-
         return;
     }
 
@@ -58,8 +56,7 @@ void pdModuleHandler(void){
        if(frontend.
             cartridge[currentPowerDistributionModule].
              available==UNAVAILABLE){
-            storeError(ERR_PD_MODULE,
-                       0x02); // Error 0x02 -> corresponding cartridge not installed
+            storeError(ERR_PD_MODULE, ERC_MODULE_ABSENT); //corresponding cartridge not installed
             CAN_STATUS = HARDW_BLKD_ERR; // Notify the incoming CAN message
             return;
         }
@@ -172,7 +169,7 @@ static void enableHandler(void) {
                     // Is STANDBY2 allowed for this band?
                     if (!allowStandby2(currentPowerDistributionModule)) {
                         // STANDBY2 not allowed:
-                        storeError(ERR_PD_MODULE, 0x05);
+                        storeError(ERR_PD_MODULE, ERC_COMMAND_VAL);
 
                         // Store error in the last CAN message variable:
                         frontend.
@@ -186,7 +183,7 @@ static void enableHandler(void) {
 
                 default:
                     // illegal pdModule enable command:
-                    storeError(ERR_PD_MODULE, 0x04);
+                    storeError(ERR_PD_MODULE, ERC_COMMAND_VAL);
 
                     // Store error in the last CAN message variable:
                     // Its not a HARDW_BLKD_ERR just an illegal value so ERROR.
@@ -256,7 +253,7 @@ static void enableHandler(void) {
                 // Check max number powered on:
                 if (!allowPowerOn(currentPowerDistributionModule, cmdStandby2)) {
                     // max number of bands powered on:
-                    storeError(ERR_PD_MODULE, 0x03);
+                    storeError(ERR_PD_MODULE, ERC_HARDWARE_BLOCKED);
 
                     // Store error in the last CAN message variable:
                     frontend.
@@ -338,7 +335,7 @@ static void enableHandler(void) {
 
                     if (!allowPowerOn(currentPowerDistributionModule, FALSE)) {
                         // max number of bands powered on:
-                        storeError(ERR_PD_MODULE, 0x03);
+                        storeError(ERR_PD_MODULE, ERC_HARDWARE_BLOCKED);
 
                         // Store error in the last CAN message variable:
                         frontend.
@@ -381,7 +378,7 @@ static void enableHandler(void) {
                     // Disallow STANDBY2 if we are at the max allowed:
                     if (frontend.powerDistribution.standby2Modules >= MAX_STANDBY2_BANDS_OPERATIONAL) {
                         // max number of bands powered on:
-                        storeError(ERR_PD_MODULE, 0x03);
+                        storeError(ERR_PD_MODULE, ERC_HARDWARE_BLOCKED);
 
                         // Store error in the last CAN message variable:
                         frontend.
@@ -426,7 +423,7 @@ static void enableHandler(void) {
 
                 default:
                     // illegal state transtition.  Should never happen.
-                    storeError(ERR_PD_MODULE, 0x06);
+                    storeError(ERR_PD_MODULE, ERC_DEBUG_ME);
                     return;
             }
         

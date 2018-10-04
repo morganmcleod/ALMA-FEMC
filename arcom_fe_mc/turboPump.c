@@ -44,8 +44,7 @@ void turboPumpHandler(void){
     /* Check if the submodule is in range */
     currentTurboPumpModule=(CAN_ADDRESS&TURBO_PUMP_MODULES_RCA_MASK);
     if(currentTurboPumpModule>=TURBO_PUMP_MODULES_NUMBER){
-        storeError(ERR_TURBO_PUMP,
-                   0x01); // Error 0x01 -> Turbo Pump submodule out of range
+        storeError(ERR_TURBO_PUMP, ERC_MODULE_RANGE); //Turbo Pump submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
         return;
     }
@@ -90,8 +89,7 @@ static void enableHandler(void){
 
             // if the command was to enable, register an error too:
             if (CAN_BYTE) {
-                storeError(ERR_TURBO_PUMP,
-                           0x08); // Error 0x08 -> Backing Pump off -> Turbo pump disabled
+                storeError(ERR_TURBO_PUMP, ERC_MODULE_POWER); //Turbo pump disabled
             }
             return;
         }
@@ -113,8 +111,7 @@ static void enableHandler(void){
                   temp[FETIM_EXT_SENSOR_TURBO].
                    temp[CURRENT_VALUE] > TURBO_PUMP_MAX_TEMPERATURE)) 
             {
-                storeError(ERR_TURBO_PUMP,
-                           0x09); // Error 0x09 -> Temperature below allowed range -> Turbo pump disabled
+                storeError(ERR_TURBO_PUMP, ERC_HARDWARE_BLOCKED); //Temperature below allowed range -> Turbo pump disabled
                 frontend.
                  cryostat.
                   turboPump.
@@ -190,19 +187,16 @@ static void stateHandler(void){
     /* If control (size !=0) store error and return. No control messages are
        allowed on this RCA */
     if(CAN_SIZE){
-        storeError(ERR_TURBO_PUMP,
-                   0x02); // Error 0x02 -> Control message out of range
+        storeError(ERR_TURBO_PUMP, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control
        messages allowed on this RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on control RCA
-        storeError(ERR_TURBO_PUMP,
-                   0x03); // Error 0x03 -> Monitor message out of range
+        storeError(ERR_TURBO_PUMP, ERC_RCA_RANGE); //Monitor message out of range
         /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
-
         return;
     }
 
@@ -244,7 +238,7 @@ static void stateHandler(void){
              turboPump.
               state[CURRENT_VALUE] == 1)
         {
-            storeError(ERR_TURBO_PUMP, 0x0A); // The turbo pump state is ERROR.
+            storeError(ERR_TURBO_PUMP, ERC_HARDWARE_ERROR); // The turbo pump state is ERROR.
         }
     }
 
@@ -279,19 +273,16 @@ static void speedHandler(void){
     /* If control (size !=0) store error and return. No control messages are
        allowed on this RCA. */
     if(CAN_SIZE){
-        storeError(ERR_TURBO_PUMP,
-                   0x02); // Error 0x02 -> Control message out of range
+        storeError(ERR_TURBO_PUMP, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control
        messages allowed on this RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        storeError(ERR_TURBO_PUMP,
-                   0x03); // Error 0x03 -> Monitor message out or range
+        storeError(ERR_TURBO_PUMP, ERC_RCA_RANGE); //Monitor message out or range
         /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
-
         return;
     }
 

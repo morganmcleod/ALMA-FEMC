@@ -69,8 +69,7 @@ static void enableHandler(void){
 
         /* Check that the CAN_BYTE is a legal value for enable/disable */
         if(CAN_BYTE!=IF_TEMP_SERVO_ENABLE && CAN_BYTE!=IF_TEMP_SERVO_DISABLE){
-            storeError(ERR_IF_CHANNEL,
-                       0x08); // Error 0x08 -> Bad command for servo enable/disable
+            storeError(ERR_IF_CHANNEL, ERC_COMMAND_VAL); //Bad command for servo enable/disable
             /* Store the ERROR state in the last control message variable */
             frontend.
              ifSwitch.

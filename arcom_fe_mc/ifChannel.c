@@ -57,8 +57,7 @@ void ifChannelHandler(void){
     /* Check if the submodule is in range */
     currentIfChannelModule=(CAN_ADDRESS&IF_CHANNEL_MODULES_RCA_MASK);
     if(currentIfChannelModule>=IF_CHANNEL_MODULES_NUMBER){
-        storeError(ERR_IF_CHANNEL,
-                   0x01); // Error 0x01 -> IF channel submodule out of range
+        storeError(ERR_IF_CHANNEL, ERC_MODULE_RANGE); //IF channel submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
         return;
     }
@@ -99,8 +98,7 @@ void attenuationHandler(void){
                         ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
                                  [currentIfChannelSideband[currentIfSwitchModule]].
                          attenuation[MAX_SET_VALUE])){
-            storeError(ERR_IF_CHANNEL,
-                       0x06); // Error 0x06 -> Attenuation set value out of range
+            storeError(ERR_IF_CHANNEL, ERC_COMMAND_VAL); //Attenuation set value out of range
 
             /* Store error in the last control message variable */
             frontend.
@@ -179,8 +177,7 @@ void assemblyTempHandler(void){
             enable[CURRENT_VALUE]==IF_TEMP_SERVO_DISABLE)&(frontend.
                                                             ifSwitch.
                                                              hardwRevision==IF_SWITCH_HRDW_REV0)){
-        storeError(ERR_IF_CHANNEL,
-                   0x07); // Error 0x07 -> the temperature servo is not enabled
+        storeError(ERR_IF_CHANNEL, ERC_MODULE_POWER); //the temperature servo is not enabled
         CAN_STATUS = HARDW_BLKD_ERR; // Notify the incoming CAN message
         return;
     }
@@ -188,16 +185,14 @@ void assemblyTempHandler(void){
     /* If control (size!=0) store error and return. No control messages are
        allowed on this RCA. */
     if(CAN_SIZE){
-        storeError(ERR_IF_CHANNEL,
-                   0x02); // Error 0x02 -> Control message out of range.
+        storeError(ERR_IF_CHANNEL, ERC_RCA_RANGE); //Control message out of range.
         return;
     }
 
     /* If monitor on control RCA return error since there are no control
        messages allowed on this RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on control RCA
-        storeError(ERR_IF_CHANNEL,
-                   0x03); // Error 0x03 -> Monitor message out of range
+        storeError(ERR_IF_CHANNEL, ERC_RCA_RANGE); //Monitor message out of range
         /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
 

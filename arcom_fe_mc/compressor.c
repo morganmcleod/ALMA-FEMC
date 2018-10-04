@@ -39,8 +39,7 @@ void compressorHandler(void){
     /* Check if the specified submodule is in range */
     currentCompressorModule=(CAN_ADDRESS&COMPRESSOR_MODULES_RCA_MASK)>>COMPRESSOR_MODULES_MASK_SHIFT;
     if(currentCompressorModule>=COMPRESSOR_MODULES_NUMBER){
-        storeError(ERR_COMPRESSOR,
-                   0x01); // Error 0x01 -> Submodule out of range
+        storeError(ERR_COMPRESSOR, ERC_MODULE_RANGE); //Submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
         return;
     }
@@ -68,16 +67,14 @@ static void feStatusHandler(void){
     /* If control (size !=0) store error and return. No control messages are
        allowed on this RCA. */
     if(CAN_SIZE){
-        storeError(ERR_COMPRESSOR,
-                   0x02); // Error 0x02 -> Control message out of range
+        storeError(ERR_COMPRESSOR, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control messages
        allowed on the RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        storeError(ERR_COMPRESSOR,
-                   0x03); // Error 0x03 -> Monitor message out of range
+        storeError(ERR_COMPRESSOR, ERC_RCA_RANGE); //Monitor message out of range
         /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
 
@@ -109,16 +106,14 @@ static void interlockStatusHandler(void){
     /* If control (size !=0) store error and return. No control messages are
        allowed on this RCA. */
     if(CAN_SIZE){
-        storeError(ERR_COMPRESSOR,
-                   0x02); // Error 0x02 -> Control message out of range
+        storeError(ERR_COMPRESSOR, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control messages
        allowed on the RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        storeError(ERR_COMPRESSOR,
-                   0x03); // Error 0x03 -> Monitor message out of range
+        storeError(ERR_COMPRESSOR, ERC_RCA_RANGE); //Monitor message out of range
         /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
 
@@ -154,19 +149,16 @@ static void compCableStatusHandler(void){
     /* If control (size !=0) store error and return. No control messages are
        allowed on this RCA. */
     if(CAN_SIZE){
-        storeError(ERR_COMPRESSOR,
-                   0x02); // Error 0x02 -> Control message out of range
+        storeError(ERR_COMPRESSOR, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control messages
        allowed on the RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        storeError(ERR_COMPRESSOR,
-                   0x03); // Error 0x03 -> Monitor message out of range
+        storeError(ERR_COMPRESSOR, ERC_RCA_RANGE); //Monitor message out of range
         /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
-
         return;
     }
 

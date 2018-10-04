@@ -369,8 +369,7 @@ int owbGetEsn(void){
 
             /* If the timer has expired signal the error */
             if(timedOut==TIMER_EXPIRED){
-                storeError(ERR_OWB,
-                           0x04); // Error 0x04 -> Timeout while waiting for the bus reset
+                storeError(ERR_OWB, ERC_HARDWARE_TIMEOUT); //Timeout while waiting for the bus reset
                 return ERROR;
             }
 
@@ -467,8 +466,7 @@ int owbGetEsn(void){
             printf("\n\nWARNING - Maximum number of ESN devices reached.\n\n");
         #endif /* DEBUG_STARTUP */
 
-        storeError(ERR_OWB,
-                   0x03); // Error 0x03 -> Maximum number of devices reached
+        storeError(ERR_OWB, ERC_NO_MEMORY); //Maximum number of devices reached
         esnDevicesFound = 0;
     } else {
         /* If not, store the number of devices found. */
@@ -616,8 +614,7 @@ int owbReset(void){
         printf("       - Check the presence pulse...\n");
     #endif /* DEBUG_OWB */
     if((inp(MUX_OWB_IRQ)&PRESENCE_PULSE_MASK)==TRUE){
-        storeError(ERR_OWB,
-                   0x02); // Error 0x02 -> Presence pulse not detected
+        storeError(ERR_OWB, ERC_HARDWARE_TIMEOUT); //Presence pulse not detected
         return ERROR;
     }
     #ifdef DEBUG_OWB
@@ -651,8 +648,7 @@ int waitIrq(unsigned char irq){
 
     /* If the timer has expired signal the error */
     if(timedOut==TIMER_EXPIRED){
-        storeError(ERR_OWB,
-                   0x01); // Error 0x01 -> Timeout while waiting for the IRQ
+        storeError(ERR_OWB, ERC_HARDWARE_TIMEOUT); //Timeout while waiting for the IRQ
         return ERROR;
     }
 

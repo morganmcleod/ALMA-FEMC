@@ -76,11 +76,8 @@ void sisHandler(void){
               sideband[currentPolarizationModule].
                sis.
                 available==UNAVAILABLE){
-            storeError(ERR_SIS,
-                       0x01); // Error 0x01 -> SIS not installed
-
+            storeError(ERR_SIS, ERC_MODULE_ABSENT); //SIS not installed
             CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
-
             return;
         }
     #endif /* DATABASE_HARDW */
@@ -92,9 +89,7 @@ void sisHandler(void){
     currentSisModule=((CAN_ADDRESS&SIS_MODULES_RCA_MASK)>>SIS_MODULES_MASK_SHIFT)-1;
 
     if(currentSisModule>=SIS_MODULES_NUMBER){
-        storeError(ERR_SIS,
-                   0x02); // Error 0x02 -> SIS submodule out of range
-
+        storeError(ERR_SIS, ERC_MODULE_RANGE); //SIS submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
         return;
     }
@@ -216,16 +211,14 @@ static void currentHandler(void){
     /* If control (size !=0) store error and return. No control messages are
        allowed on this RCA. */
     if(CAN_SIZE){
-        storeError(ERR_SIS,
-                   0x08); // Error 0x08: Control message out of range
+        storeError(ERR_SIS, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control
        messages allowed on the RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        storeError(ERR_SIS,
-                   0x09); // Error 0x09: Monitor message out of range
+        storeError(ERR_SIS, ERC_RCA_RANGE); //Monitor message out of range
        /* Store the state in the outgoing CAN message */
        CAN_STATUS = MON_CAN_RNG;
 

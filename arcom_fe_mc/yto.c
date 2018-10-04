@@ -85,8 +85,7 @@ static void ytoCoarseTuneHandler(void){
                         lo.
                          yto.
                           ytoCoarseTune[MAX_SET_VALUE])){
-            storeError(ERR_YTO,
-                       0x01); // Error 0x01: YTO coarse tune set value out of range
+            storeError(ERR_YTO, ERC_COMMAND_VAL); //YTO coarse tune set value out of range
 
             /* Store the error in the last control message variable */
             frontend.
@@ -107,8 +106,7 @@ static void ytoCoarseTuneHandler(void){
 
         if (ret == HARDW_BLKD_ERR) {
             // report that the limit was violated:
-            storeError(ERR_YTO,
-                       0x04); // Error 0x04 -> LO PA drain voltages were limited before YTO tuning
+            storeError(ERR_YTO, ERC_HARDWARE_BLOCKED); //LO PA drain voltages were limited before YTO tuning
         }
 
         if (ret == ERROR) {

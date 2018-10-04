@@ -37,8 +37,7 @@ void interlockTempHandler(void){
     /* Check if the specified submodule is in range */
     currentInterlockTempModule=(CAN_ADDRESS&INTERLOCK_TEMP_MODULES_RCA_MASK)>>INTERLOCK_TEMP_MODULES_MASK_SHIFT;
     if(currentInterlockTempModule>=INTERLOCK_TEMP_MODULES_NUMBER){
-        storeError(ERR_INTRLK_TEMP,
-                   0x01); // Error 0x01 -> Submodule out of range
+        storeError(ERR_INTRLK_TEMP, ERC_MODULE_RANGE); //Submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
         return;
     }

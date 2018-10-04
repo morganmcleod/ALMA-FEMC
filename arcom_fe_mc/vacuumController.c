@@ -45,8 +45,7 @@ void vacuumControllerHandler(void){
     /* Check if the submodule is in range */
     currentVacuumControllerModule=(CAN_ADDRESS&VACUUM_CONTROLLER_MODULES_RCA_MASK);
     if(currentVacuumControllerModule>=VACUUM_CONTROLLER_MODULES_NUMBER){
-        storeError(ERR_VACUUM_CONTROLLER,
-                   0x01); // Error 0x01 -> Vacuum Controller submodule out of range
+        storeError(ERR_VACUUM_CONTROLLER, ERC_MODULE_RANGE); //Vacuum Controller submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
         return;
     }
@@ -125,16 +124,14 @@ static void stateHandler(void){
     /* If control (size !=0) store error and return. No control messages are
        allowed on this RCA */
     if(CAN_SIZE){
-        storeError(ERR_VACUUM_CONTROLLER,
-                   0x02); // Error 0x02 -> Control message out of range
+        storeError(ERR_VACUUM_CONTROLLER, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control
        messages allowed on this RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on control RCA
-        storeError(ERR_VACUUM_CONTROLLER,
-                   0x03); // Error 0x03 -> Monitor message out or range
+        storeError(ERR_VACUUM_CONTROLLER, ERC_RCA_RANGE); //Monitor message out or range
         /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
 

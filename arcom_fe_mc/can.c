@@ -17,9 +17,6 @@
     <b> File informations: </b><br>
     Created: 2004/08/24 16:16:14 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: can.c,v 1.51 2011/11/28 22:10:49 avaccari Exp $
-
     This file contains the functions necessary to deal with the received CAN
     messages. */
 
@@ -108,8 +105,7 @@ void CANMessageHandler(void){
     currentClass=(CAN_ADDRESS&CLASSES_RCA_MASK)>>CLASSES_MASK_SHIFT;
     /* Check if the addressed class exist */
     if(currentClass>=CLASSES_NUMBER){
-        storeError(ERR_CAN,
-                   0x01); // Error 0x01 -> Required class outside allowed range
+        storeError(ERR_CAN, ERC_RCA_CLASS);     // Error: RCA class outside allowed range
         newCANMsg=0; // Clear the new message flag
         PPClear(); // Clear the interrupt
         return;
@@ -149,8 +145,7 @@ static void standardRCAsHandler(void){
            standard messages. */
         if(frontend.
             mode[CURRENT_VALUE]==MAINTENANCE_MODE){
-            storeError(ERR_CAN,
-                       0x08); // Error 0x08 -> Front End in maintenance mode.
+            storeError(ERR_CAN, ERC_MAINT_MODE); // Front End in maintenance mode.
             CAN_STATUS = HARDW_BLKD_ERR;
 
             /* Return the error since it was a monitor message */
@@ -168,8 +163,7 @@ static void standardRCAsHandler(void){
         /* If it doesn't exist, return the error, otherwise call the correct
            handler */
         if(currentModule>=MODULES_NUMBER){
-            storeError(ERR_CAN,
-                       0x02); // Error 0x02 -> Required module outside allowed range
+            storeError(ERR_CAN, ERC_MODULE_RANGE);  // Sub-module out of range
             CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
         } else {
             /* Redirect to the correct module handler depending on the RCA */
@@ -188,8 +182,7 @@ static void standardRCAsHandler(void){
        standard messages. */
     if(frontend.
         mode[CURRENT_VALUE]==MAINTENANCE_MODE){
-        storeError(ERR_CAN,
-                   0x08); // Error 0x08 -> Front End in maintenance mode.
+        storeError(ERR_CAN, ERC_MAINT_MODE);    //Front End in maintenance mode.
         return;
     }
 
@@ -206,16 +199,14 @@ static void standardRCAsHandler(void){
     #endif /* DEBUG_CAN */
 
     if(currentClass == 0){ // If it is on a monitor RCA
-        storeError(ERR_CAN,
-                   0x04); // Error 0x04 -> Control RCA out of range
+        storeError(ERR_CAN, ERC_RCA_RANGE);     //Control RCA out of range
         return;
     }
 
     /* Check if the addressed module exist */
     currentModule=(CAN_ADDRESS&MODULES_RCA_MASK)>>MODULES_MASK_SHIFT;
     if(currentModule>=MODULES_NUMBER){
-        storeError(ERR_CAN,
-                   0x02); // Error 0x02 -> Required module outside allowed range
+        storeError(ERR_CAN, ERC_MODULE_RANGE);  // Module outside allowed range
         /* Since the main module is in error, all the following submodule
            addressing is considered in error as well. Because of this it is not
            possible to write an error in the status byte of the last control
@@ -538,8 +529,7 @@ static void specialRCAsHandler(void){
                     #ifdef DEBUG_CAN
                         printf("  Out of Range!\n\n");
                     #endif /* DEBUG_CAN */
-                    storeError(ERR_CAN,
-                               0x05); // Error 0x05 -> Special Monitor RCA out of range
+                    storeError(ERR_CAN, ERC_RCA_RANGE); // Special Monitor RCA out of range
                     CAN_STATUS = MON_CAN_RNG; // Message out of range
                     break;
             }
@@ -585,8 +575,7 @@ static void specialRCAsHandler(void){
                              mode[CURRENT_VALUE]=CAN_BYTE;
                             break;
                         default:
-                            storeError(ERR_CAN,
-                                       0x07); // Error 0x07 -> Illegal Front End Mode
+                            storeError(ERR_CAN, ERC_COMMAND_VAL); // Illegal Front End Mode
                             break;
                     }
                     break;
@@ -602,8 +591,7 @@ static void specialRCAsHandler(void){
                     #ifdef DEBUG_CAN
                         printf("  Out of Range!\n\n");
                     #endif /* DEBUG_CAN */
-                    storeError(ERR_CAN,
-                               0x06); // Error 0x06 -> Special Control RCA out of range
+                    storeError(ERR_CAN, ERC_RCA_RANGE);  //Special Control RCA out of range
                     break;
             }
             break;

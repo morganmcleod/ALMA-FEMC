@@ -70,8 +70,7 @@ static void stateHandler(void){
              backingPump.
               enable[CURRENT_VALUE]==BACKING_PUMP_DISABLE)
         {
-            storeError(ERR_GATE_VALVE,
-                       0x03); // Error 0x03 -> Backing Pump off -> Gate valve disabled
+            storeError(ERR_GATE_VALVE, ERC_MODULE_POWER); //Backing Pump off -> Gate valve disabled
             frontend.
              cryostat.
               gateValve.
@@ -99,8 +98,7 @@ static void stateHandler(void){
              gateValve.
               state[CURRENT_VALUE]==GATE_VALVE_UNKNOWN){
 
-            storeError(ERR_GATE_VALVE,
-                       0x04); // Error 0x04 -> Valve still moving -> Wait unil stopped
+            storeError(ERR_GATE_VALVE, ERC_HARDWARE_WAIT); //Valve still moving -> Wait unil stopped
 
             frontend.
              cryostat.

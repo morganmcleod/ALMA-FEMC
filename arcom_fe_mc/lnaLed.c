@@ -48,8 +48,7 @@ void lnaLedHandler(void){
              polarization[currentBiasModule].
               lnaLed.
                available==UNAVAILABLE){
-            storeError(ERR_LNA_LED,
-                       0x01); // Error 0x01 -> LNA led not installed
+            storeError(ERR_LNA_LED, ERC_MODULE_ABSENT); //LNA led not installed
 
             CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
             return;

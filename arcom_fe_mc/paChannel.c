@@ -51,8 +51,7 @@ void paChannelHandler(void){
     /* Check if the submodule is in range */
     currentPaChannelModule=(CAN_ADDRESS&PA_CHANNEL_MODULES_RCA_MASK);
     if(currentPaChannelModule>=PA_CHANNEL_MODULES_NUMBER){
-        storeError(ERR_PA_CHANNEL,
-                   0x01); // Error 0x01 -> PA channel submodule out of range
+        storeError(ERR_PA_CHANNEL, ERC_MODULE_RANGE); //PA channel submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
         return;
     }
@@ -206,8 +205,7 @@ static void drainVoltageHandler(void){
             state=ENABLE;
 
         if(state==DISABLE){
-            storeError(ERR_PA_CHANNEL,
-                       0x0D); // Error 0x0D -> PA temperature above the allowed range -> PAs disabled
+            storeError(ERR_PA_CHANNEL, ERC_HARDWARE_BLOCKED); //PA temperature above the allowed range -> PAs disabled
 
             frontend.
              cartridge[currentModule].
@@ -243,8 +241,7 @@ static void drainVoltageHandler(void){
 
         if (ret != NO_ERROR) {
             // report that the limit was violated:
-            storeError(ERR_PA_CHANNEL,
-                       0x0E); // Error 0x0E -> Warning: Attempted to set LO PA above max safe power level.
+            storeError(ERR_PA_CHANNEL, ERC_HARDWARE_BLOCKED); //Attempted to set LO PA above max safe power level.
 
             /* save the modified command setting to the "last control message" location */
             changeEndian(frontend.
@@ -342,19 +339,16 @@ static void drainCurrentHandler(void){
     /* If control (size !=0) store error and return. No control message are
        allowed on this RCA. */
     if(CAN_SIZE){
-        storeError(ERR_PA_CHANNEL,
-                   0x08); // Error 0x08: Control message out of range
+        storeError(ERR_PA_CHANNEL, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control
        messages allowed on this RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on control RCA
-        storeError(ERR_PA_CHANNEL,
-                   0x09); // Error 0x09: Monitor message out of range
+        storeError(ERR_PA_CHANNEL, ERC_RCA_RANGE); //Monitor message out of range
         /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
-
         return;
     }
 

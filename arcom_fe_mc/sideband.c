@@ -42,11 +42,8 @@ void sidebandHandler(void){
              polarization[currentBiasModule].
               sideband[currentPolarizationModule].
                available==UNAVAILABLE){
-            storeError(ERR_SIDEBAND,
-                       0x01); // Error 0x01 -> Sideband not installed
-
+            storeError(ERR_SIDEBAND, ERC_MODULE_ABSENT); //Sideband not installed
             CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
-
             return;
         }
 
@@ -54,11 +51,8 @@ void sidebandHandler(void){
     /* Check if the submodule is in range */
     currentSidebandModule=(CAN_ADDRESS&SIDEBAND_MODULES_RCA_MASK)>>SIDEBAND_MODULES_MASK_SHIFT;
     if(currentSidebandModule>=SIDEBAND_MODULES_NUMBER){
-        storeError(ERR_SIDEBAND,
-                   0x02); // Error 0x02 -> Sideband submodule out of range
-
+        storeError(ERR_SIDEBAND, ERC_MODULE_RANGE); //Sideband submodule out of range
         CAN_STATUS = HARDW_RNG_ERR;
-
         return;
     }
 

@@ -71,8 +71,7 @@ int writeMux(void){
     /* Check if the lenght is within the hardware limit (40 bits) */
     if(frame.
         dataLength>FRAME_DATA_BIT_SIZE){
-        storeError(ERR_SERIAL_MUX,
-                   0x01); // Error 0x01 -> Data length out of range
+        storeError(ERR_SERIAL_MUX, ERC_COMMAND_VAL); //Data length out of range
         return ERROR;
     }
 
@@ -177,8 +176,7 @@ int readMux(void){
     /* Check if the lenght is within the hardware limit (40 bits) */
     if(frame.
         dataLength>FRAME_DATA_BIT_SIZE){
-        storeError(ERR_SERIAL_MUX,
-                   0x01); // Error 0x01 -> Data length out of range
+        storeError(ERR_SERIAL_MUX, ERC_COMMAND_VAL); //Data length out of range
         return ERROR;
     }
 
@@ -283,8 +281,7 @@ static int waitOnBusy(void){
 
     /* If the timer has expired signal the error */
     if(timedOut==TIMER_EXPIRED){
-        storeError(ERR_SERIAL_MUX,
-                   0x02); // Error 0x02 -> Timeout while waiting for the mux board to become ready
+        storeError(ERR_SERIAL_MUX, ERC_HARDWARE_TIMEOUT); //Timeout while waiting for the mux board to become ready
         return ERROR;
     }
     /* In case of no error, clear the asynchronous timer. */

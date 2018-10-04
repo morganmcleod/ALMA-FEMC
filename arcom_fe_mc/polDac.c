@@ -43,11 +43,8 @@ void polDacHandler(void){
     /* Check if the submodule is in range */
     currentPolDacModule=(CAN_ADDRESS&POL_DAC_MODULES_RCA_MASK)>>POL_DAC_MODULES_MASK_SHIFT;
     if(currentPolDacModule>=POL_DAC_MODULES_NUMBER){
-        storeError(ERR_POL_DAC,
-                   0x01); // Error 0x01 -> Polarization DAC submodule out of range
-
+        storeError(ERR_POL_DAC, ERC_MODULE_RANGE); //Polarization DAC submodule out of range
         CAN_STATUS = HARDW_RNG_ERR;
-
         return;
     }
     /* Call the correct handler */
@@ -103,8 +100,7 @@ static void resetStrobeHandler(void){
     /* If monitor on monitor RCA: this should never happen because there are
        no monitor available for this particular device. In case though, return
        a CAN range error to avoid timeouts. */
-    storeError(ERR_POL_DAC,
-               0x03); // Error 0x03 -> Monitor RCA out of range
+    storeError(ERR_POL_DAC, ERC_RCA_RANGE); //Monitor RCA out of range
     /* Store the state in the outgoing CAN message */
     CAN_STATUS = MON_CAN_RNG;
 
@@ -120,11 +116,8 @@ static void clearStrobeHandler(void){
     /* Check if the submodule is in range: Only DAC1 is able to receive a clear
        strobe. */
     if(currentPolSpecialMsgsModule!=POL_DAC_ALLOW_CLEAR_STROBE){
-        storeError(ERR_POL_DAC,
-                   0x02); // Error 0x02 -> Polarization DAC doesn't accept clear strobe
-
+        storeError(ERR_POL_DAC, ERC_RCA_RANGE); //Polarization DAC doesn't accept clear strobe
         CAN_STATUS = HARDW_RNG_ERR;
-
         return;
     }
 
@@ -168,8 +161,7 @@ static void clearStrobeHandler(void){
     /* If monitor on monitor RCA: this should never happen because there are
        no monitor available for this particular device. In case though, return
        a CAN range error to avoid timeouts. */
-    storeError(ERR_POL_DAC,
-               0x03); // Error 0x03 -> Monitor RCA out of range
+    storeError(ERR_POL_DAC, ERC_RCA_RANGE); //Monitor RCA out of range
     /* Store the state in the outgoing CAN message */
     CAN_STATUS = MON_CAN_RNG;
 }

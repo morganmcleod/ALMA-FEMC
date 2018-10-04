@@ -77,8 +77,7 @@ int serialAccess(unsigned int command,
 
     /* Check that the command word size is ok */
     if(command > COMMAND_WORD_SIZE){
-        storeError(ERR_SERIAL_INTERFACE,
-                   0x01);  // Error 0x01 -> Command out of range
+        storeError(ERR_SERIAL_INTERFACE, ERC_MODULE_RANGE); //Command out of range
         return ERROR;
     }
 

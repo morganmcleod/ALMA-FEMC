@@ -41,10 +41,8 @@ void photoDetectorHandler(void){
     /* Check if the specified submodule is in range */
     currentPhotoDetectorModule = (CAN_ADDRESS & PHOTO_DETECTOR_MODULES_RCA_MASK);
     if (currentPhotoDetectorModule >= PHOTO_DETECTOR_MODULES_NUMBER) {
-        storeError(ERR_PHOTO_DETECTOR,
-                   0x01); // Error 0x01 -> EDFA photo detector submodule out of range
+        storeError(ERR_PHOTO_DETECTOR, ERC_MODULE_RANGE); //EDFA photo detector submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
-
         return;
     }
 
@@ -62,19 +60,16 @@ static void currentHandler(void){
     /* If control (size!=0) store error and return. No control messages are
        allowed on this RCA. */
     if(CAN_SIZE){
-        storeError(ERR_PHOTO_DETECTOR,
-                   0x02); // Error 0x02 -> Control message out of range
+        storeError(ERR_PHOTO_DETECTOR, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control
        messages allowed on this RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        storeError(ERR_PHOTO_DETECTOR,
-                   0x03); // Error 0x03 -> Monitor message out of range
+        storeError(ERR_PHOTO_DETECTOR, ERC_RCA_RANGE); //Monitor message out of range
         /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
-
         return;
     }
 
@@ -147,8 +142,7 @@ void conversionCoeffHandler(void) {
     }
     
     /* If monitor on a monitor RCA */
-    storeError(ERR_LPR,
-               0x02); // Error 0x02: Monitor message out of range
+    storeError(ERR_LPR, ERC_RCA_RANGE); //Monitor message out of range
     
     /* Store the state in the outgoing CAN message */
     CAN_STATUS = MON_CAN_RNG;
@@ -163,19 +157,16 @@ static void powerHandler(void){
     /* If control (size!=0) store error and return. No control messages are
        allowed on this RCA. */
     if(CAN_SIZE){
-        storeError(ERR_PHOTO_DETECTOR,
-                   0x02); // Error 0x02 -> Control message out of range
+        storeError(ERR_PHOTO_DETECTOR, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control
        messages allowed on this RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        storeError(ERR_PHOTO_DETECTOR,
-                   0x03); // Error 0x03 -> Monitor message out of range
+        storeError(ERR_PHOTO_DETECTOR, ERC_RCA_RANGE); //Monitor message out of range
         /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
-
         return;
     }
 

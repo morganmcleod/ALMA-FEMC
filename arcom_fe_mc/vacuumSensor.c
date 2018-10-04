@@ -58,19 +58,16 @@ static void pressureHandler(void){
     /* If control (size !=0) store error and return. No control messages are
        allowed on this RCA. */
     if(CAN_SIZE){
-        storeError(ERR_VACUUM_SENSOR,
-                   0x01); // Error 0x01 -> Control message out of range
+        storeError(ERR_VACUUM_SENSOR, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control
        messages allowed on the RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        storeError(ERR_VACUUM_SENSOR,
-                   0x02); // Error 0x02 -> Monitor message out of range
+        storeError(ERR_VACUUM_SENSOR, ERC_RCA_RANGE); //Monitor message out of range
         /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
-
         return;
     }
 

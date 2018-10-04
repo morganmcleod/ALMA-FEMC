@@ -82,21 +82,11 @@ int loInit(void){
     /* Set correct loop bandwidth. If it is not defined return the undefined
        warning. */
     #ifdef DEBUG_INIT
-       printf("   - PLL Loop Bandwidth...\n");
+        printf("   - PLL Loop Bandwidth...\n");
+        printf("     done!\n"); // PLL loop bandwidth
+        printf("   done!\n"); // LO
     #endif // DEBUG_INIT
-    if(frontend.
-        cartridge[currentModule].
-         lo.
-          pll.
-           loopBandwidthSelect[DEFAULT_VALUE]==PLL_LOOP_BANDWIDTH_UNDEFINED){
-       storeError(ERR_LO,
-                  0x03); // Error 0x03 -> Warning: The addressed hardware is not properly defined yet
-       #ifdef DEBUG_INIT
-           printf("     done!\n"); // PLL loop bandwidth
-           printf("   done!\n"); // LO
-       #endif // DEBUG_INIT
-       return NO_ERROR;
-    }
+    return NO_ERROR;
 
     /* If the value is defined then set it to the default value. */
     setLoopBandwidthSelect(frontend.
@@ -551,11 +541,9 @@ void loHandler(void){
     /* Check if the submodule is in range */
     currentLoModule=(CAN_ADDRESS&LO_MODULES_RCA_MASK)>>LO_MODULES_MASK_SHIFT;
     if(currentLoModule>=LO_MODULES_NUMBER){
-        storeError(ERR_LO,
-                   0x02); // Error 0x02 -> LO submodule out of range
+        storeError(ERR_LO, ERC_MODULE_RANGE); //LO submodule out of range
 
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
-
         return;
     }
 

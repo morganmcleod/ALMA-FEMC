@@ -67,8 +67,7 @@ static void stateHandler(void) {
             cryostat.
              backingPump.
               enable[CURRENT_VALUE] == BACKING_PUMP_DISABLE) {
-            storeError(ERR_SOLENOID_VALVE,
-                       0x03); // Error 0x03 -> Backing Pump off -> Solenoid valve disabled
+            storeError(ERR_SOLENOID_VALVE, ERC_MODULE_POWER); //Backing Pump off -> Solenoid valve disabled
             
             frontend.
              cryostat.
@@ -137,8 +136,7 @@ static void stateHandler(void) {
                enable[CURRENT_VALUE] == BACKING_PUMP_ENABLE)
         {
             // Report a wanrning that the interlock is in control:
-            storeError(ERR_SOLENOID_VALVE,
-                       0x04); // Error 0x04 -> Warning: Solenoid valve closed by interlock
+            storeError(ERR_SOLENOID_VALVE, ERC_HARDWARE_BLOCKED); //Warning: Solenoid valve closed by interlock
         }
         // Either way, respond that the hardware is blocked:
         CAN_STATUS = HARDW_BLKD_ERR;

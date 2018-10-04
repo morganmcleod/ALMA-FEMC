@@ -99,8 +99,7 @@ void cryostatHandler(void){
     /* Check if the submodule is in range */
     currentCryostatModule=(CAN_ADDRESS&CRYOSTAT_MODULES_RCA_MASK)>>CRYOSTAT_MODULES_MASK_SHIFT;
     if(currentCryostatModule>=CRYOSTAT_MODULES_NUMBER){
-        storeError(ERR_CRYOSTAT,
-                   0x01); // Error 0x01 -> Cryostat submodule out of range
+        storeError(ERR_CRYOSTAT, ERC_MODULE_RANGE); //Cryostat submodule out of range
 
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
 
@@ -403,16 +402,14 @@ void supplyCurrent230VHandler(void){
     /* If control (size!=0) store error and return. No control messages are
        allowed on this RCA. */
     if(CAN_SIZE){
-        storeError(ERR_CRYOSTAT,
-                   0x02); // Error 0x02 -> Control message out of range
+        storeError(ERR_CRYOSTAT, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control
        messages allowed on this RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on control RCA
-        storeError(ERR_CRYOSTAT,
-                   0x03); // Error 0x03 -> Monitor message out of range
+        storeError(ERR_CRYOSTAT, ERC_RCA_RANGE); //Monitor message out of range
         /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
 
@@ -470,8 +467,7 @@ void coldHeadHandler(void) {
     currentColdHeadModule = (CAN_ADDRESS & CRYO_HOURS_MODULES_RCA_MASK);
 
     if (currentColdHeadModule >= CRYO_HOURS_MODULES_NUMBER){
-        storeError(ERR_CRYOSTAT,
-                   0x01); // Error 0x01 -> Cryostat submodule out of range
+        storeError(ERR_CRYOSTAT, ERC_MODULE_RANGE); //Cryostat submodule out of range
 
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
         return;
@@ -490,19 +486,16 @@ void coldHeadHoursHandler(void) {
     /* If control (size!=0) store error and return. No control messages are
        allowed on this RCA. */
     if(CAN_SIZE){
-        storeError(ERR_CRYOSTAT,
-                   0x02); // Error 0x02 -> Control message out of range
+        storeError(ERR_CRYOSTAT, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control
        messages allowed on this RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on control RCA
-        storeError(ERR_CRYOSTAT,
-                   0x03); // Error 0x03 -> Monitor message out of range
+        storeError(ERR_CRYOSTAT, ERC_RCA_RANGE); //Monitor message out of range
         /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
-
         return;
     }
     
@@ -578,8 +571,7 @@ void coldHeadHoursResetHandler(void) {
     }
 
     /* If monitor on a monitor RCA */
-    storeError(ERR_CRYOSTAT,
-               0x03); // Error 0x06: Monitor message out of range
+    storeError(ERR_CRYOSTAT, ERC_RCA_RANGE); //Monitor message out of range
     /* Store the state in the outgoing CAN message */
     CAN_STATUS = MON_CAN_RNG;
 }

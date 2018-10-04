@@ -45,10 +45,8 @@ void opticalSwitchHandler(void){
     /* Check if the specified submodule is in range */
     currentOpticalSwitchModule=(CAN_ADDRESS&OPTICAL_SWITCH_MODULES_RCA_MASK)>>OPTICAL_SWITCH_MODULES_MASK_SHIFT;
     if(currentOpticalSwitchModule>=OPTICAL_SWITCH_MODULES_NUMBER){
-        storeError(ERR_OPTICAL_SWITCH,
-                   0x01); // Error 0x01 -> Optical switch submodule out of range
+        storeError(ERR_OPTICAL_SWITCH, ERC_MODULE_RANGE); //Optical switch submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
-
         return;
     }
 
@@ -82,8 +80,7 @@ static void portHandler(void){
                        lpr.
                         opticalSwitch.
                          port[MAX_SET_VALUE])){
-            storeError(ERR_OPTICAL_SWITCH,
-                       0x02); // Error 0x02 -> Selected port set value out of range
+            storeError(ERR_OPTICAL_SWITCH, ERC_COMMAND_VAL); //Selected port set value out of range
 
             /* Store error in the last control message variable */
             frontend.
@@ -253,8 +250,7 @@ static void forceShutterHandler(void){
 
     /* If monitor on a monitor RCA */
     /* Return error, no monitor messages are allowed on this RCA. */
-    storeError(ERR_OPTICAL_SWITCH,
-               0x04); // Error 0x04 -> Monitor message out of range
+    storeError(ERR_OPTICAL_SWITCH, ERC_RCA_RANGE); //Monitor message out of range
     CAN_STATUS=MON_CAN_RNG;
 }
 
@@ -267,19 +263,16 @@ static void stateHandler(void){
     /* If control (size!=0) store error and return. No control messages are
        allowed on this RCA */
     if(CAN_SIZE){
-        storeError(ERR_OPTICAL_SWITCH,
-                   0x03); // Error 0x03 -> Control message out of range
+        storeError(ERR_OPTICAL_SWITCH, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control
        messages allowed on this RCA */
     if(currentClass==CONTROL_CLASS){ // If monitor on control RCA
-        storeError(ERR_OPTICAL_SWITCH,
-                   0x04); // Error 0x04 -> Monitor message out of range
+        storeError(ERR_OPTICAL_SWITCH, ERC_RCA_RANGE); //Monitor message out of range
         /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
-
         return;
     }
 
@@ -318,16 +311,14 @@ static void busyHandler(void){
     /* If control (size!=0) store error and return. No control messages are
        allowed on this RCA. */
     if(CAN_SIZE){
-        storeError(ERR_OPTICAL_SWITCH,
-                   0x03); // Error 0x03 -> Control message out of range
+        storeError(ERR_OPTICAL_SWITCH, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error snce there are no control
        messages allowed on this RCA */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        storeError(ERR_OPTICAL_SWITCH,
-                   0x04); // Error 0x04 -> Monitor message out of range
+        storeError(ERR_OPTICAL_SWITCH, ERC_RCA_RANGE); //Monitor message out of range
         /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
 

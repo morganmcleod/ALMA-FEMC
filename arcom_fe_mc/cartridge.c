@@ -72,8 +72,7 @@ void cartridgeHandler(void){
         if(frontend.
             cartridge[currentModule].
              available==UNAVAILABLE){
-           storeError(ERR_CARTRIDGE,
-                       0x01); // Error 0x01 -> Cartridge not installed
+           storeError(ERR_CARTRIDGE, ERC_MODULE_ABSENT);  //Cartridge not installed
 
            CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
            return;
@@ -89,8 +88,7 @@ void cartridgeHandler(void){
         /* Check if the cartrdige is in error state. If this is the case, then
            no action is allowed until the error is cleared. See ICD. */
         case CARTRIDGE_ERROR:
-            storeError(ERR_CARTRIDGE,
-                       0x07); // Error 0x07 -> The cartrdige is in error state
+            storeError(ERR_CARTRIDGE, ERC_HARDWARE_ERROR);  //The cartrdige is in error state
             CAN_STATUS = HARDW_ERROR; // Notify incoming message
             return;
             break;
@@ -101,8 +99,7 @@ void cartridgeHandler(void){
            think that they should operate at 5MHz instead of 10 and the returned
            data will be half of the real data. */
         case CARTRIDGE_OFF:
-            storeError(ERR_CARTRIDGE,
-                       0x06); // Error 0x06 -> The cartrdige is not powered
+            storeError(ERR_CARTRIDGE, ERC_MODULE_POWER); //The cartrdige is not powered
             CAN_STATUS = HARDW_BLKD_ERR; // Notify incoming message
             return;
             break;
@@ -128,8 +125,7 @@ void cartridgeHandler(void){
     /* Check if the specified submodule is in range */
     currentCartridgeSubsystem=(CAN_ADDRESS&CARTRIDGE_SUBSYSTEM_RCA_MASK)>>CARTRIDGE_SUBSYSTEM_MASK_SHIFT;
     if(currentCartridgeSubsystem>=CARTRIDGE_SUBSYSTEMS_NUMBER){
-        storeError(ERR_CARTRIDGE,
-                   0x02); // Error 0x02 -> Cartridge subsystem out of range
+        storeError(ERR_CARTRIDGE, ERC_MODULE_RANGE); //Cartridge subsystem out of range
 
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
         return;
@@ -151,8 +147,7 @@ static void loAndTempSubsystemHandler(void){
     /* Check if the specified submodule is in range */
     currentLoAndTempModule=(CAN_ADDRESS&LO_TEMP_MODULES_RCA_MASK)>>LO_TEMP_MODULES_MASK_SHIFT;
     if(currentLoAndTempModule>=LO_TEMP_MODULES_NUMBER){
-        storeError(ERR_CARTRIDGE,
-                   0x03); // Error 0x03 ->  Lo and cartridge temperature submodule out of range
+        storeError(ERR_CARTRIDGE, ERC_MODULE_RANGE); //Lo and cartridge temperature submodule out of range
         return;
     }
 
@@ -172,8 +167,7 @@ static void cartridgeTempSubsystemHandler(void){
     /* Check if the the specified submodule is in range */
     currentCartridgeTempSubsystemModule=(CAN_ADDRESS&CARTRIDGE_TEMP_SUBSYSTEM_MODULES_RCA_MASK)>>CARTRIDGE_TEMP_SUBSYSTEM_MODULES_MASK_SHIFT;
     if(currentCartridgeTempSubsystemModule>=CARTRIDGE_TEMP_SUBSYSTEM_MODULES_NUMBER){
-        storeError(ERR_CARTRIDGE,
-                   0x04); // Error 0x04 ->  Cartridge temperature submodule out of range
+        storeError(ERR_CARTRIDGE, ERC_MODULE_RANGE); //Cartridge temperature submodule out of range
         return;
     }
 
@@ -199,8 +193,7 @@ static void biasSubsystemHandler(void){
     /* Check if the specified submodule is in range */
     currentBiasModule=(CAN_ADDRESS&BIAS_MODULES_RCA_MASK)>>BIAS_MODULES_MASK_SHIFT;
     if(currentBiasModule>=BIAS_MODULES_NUMBER){
-        storeError(ERR_CARTRIDGE,
-                   0x05); // Error 0x05 ->  BIAS submodule out of range
+        storeError(ERR_CARTRIDGE, ERC_MODULE_RANGE); //BIAS submodule out of range
         return;
     }
 
@@ -741,8 +734,7 @@ int cartridgeInit(unsigned char cartridge){
         if(frontend.
             cartridge[currentModule].
              available==UNAVAILABLE){
-            storeError(ERR_CARTRIDGE,
-                       0x01); // Error 0x01 -> Cartridge not installed
+            storeError(ERR_CARTRIDGE, ERC_MODULE_ABSENT); //Cartridge not installed
 
             CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
             return ERROR;

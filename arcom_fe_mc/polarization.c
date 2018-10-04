@@ -118,11 +118,8 @@ void polarizationHandler(void){
             cartridge[currentModule].
              polarization[currentBiasModule].
               available==UNAVAILABLE){
-            storeError(ERR_POLARIZATION,
-                       0x01); // Error 0x01 -> Polarization not installed
-
+            storeError(ERR_POLARIZATION, ERC_MODULE_ABSENT); //Polarization not installed
             CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
-
             return;
         }
     #endif /* DATABASE_HARDW */
@@ -131,11 +128,8 @@ void polarizationHandler(void){
     /* Check if the submodule is in range */
     currentPolarizationModule=(CAN_ADDRESS&POLARIZATION_MODULES_RCA_MASK)>>POLARIZATION_MODULES_MASK_SHIFT;
     if(currentPolarizationModule>=POLARIZATION_MODULES_NUMBER){
-        storeError(ERR_POLARIZATION,
-                   0x02); // Error 0x02 -> Polrization submodule out of range
-
+        storeError(ERR_POLARIZATION, ERC_MODULE_RANGE); //Polarization submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
-
         return;
     }
 

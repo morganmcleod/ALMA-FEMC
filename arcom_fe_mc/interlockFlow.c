@@ -34,8 +34,7 @@ void interlockFlowHandler(void){
     /* Check if the specified submodule is in range */
     currentInterlockFlowModule=(CAN_ADDRESS&INTERLOCK_FLOW_MODULES_RCA_MASK)>>INTERLOCK_FLOW_MODULES_MASK_SHIFT;
     if(currentInterlockFlowModule>=INTERLOCK_FLOW_MODULES_NUMBER){
-        storeError(ERR_INTRLK_FLOW,
-                   0x01); // Error 0x01 -> Submodule out of range
+        storeError(ERR_INTRLK_FLOW, ERC_MODULE_RANGE); //Submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
         return;
     }

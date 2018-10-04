@@ -137,8 +137,7 @@ static int getLprAnalogMonitor(void){
 
     /* If the timer has expired signal the error */
     if(timedOut==TIMER_EXPIRED){
-        storeError(ERR_LPR_SERIAL,
-                   0x01); // Error 0x01 -> Timeout while waiting for the ADC to become ready
+        storeError(ERR_LPR_SERIAL, ERC_HARDWARE_TIMEOUT); //Timeout while waiting for the ADC to become ready
         return ERROR;
     }
 
@@ -255,8 +254,7 @@ int setOpticalSwitchPort(void){
         lpr.
          opticalSwitch.
           state[CURRENT_VALUE]==OPTICAL_SWITCH_BUSY){
-            storeError(ERR_LPR_SERIAL,
-                       0x02); // Error 0x02 -> Optical switch busy
+            storeError(ERR_LPR_SERIAL, ERC_HARDWARE_WAIT); //Optical switch busy
             return ERROR;
     }
 
@@ -352,8 +350,7 @@ int setOpticalSwitchShutter(unsigned char mode){
             lpr.
              opticalSwitch.
               state[CURRENT_VALUE]==OPTICAL_SWITCH_BUSY){
-                storeError(ERR_LPR_SERIAL,
-                           0x02); // Error 0x02 -> Optical switch busy
+                storeError(ERR_LPR_SERIAL, ERC_HARDWARE_WAIT); //Optical switch busy
                 return ERROR;
         }
     }

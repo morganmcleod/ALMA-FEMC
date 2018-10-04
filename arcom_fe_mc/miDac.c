@@ -98,10 +98,7 @@ static void resetStrobeHandler(void){
     /* If monitor on monitor RCA: this should never happen because there are
        no monitor available for this particular device. In case though, return
        a CAN range error to avoid timeouts. */
-    storeError(ERR_MI_DAC,
-               0x01); // Error 0x01 -> Monitor RCA out of range
+    storeError(ERR_MI_DAC, ERC_RCA_RANGE); //Monitor RCA out of range
     /* Store the state in the outgoing CAN message */
     CAN_STATUS = MON_CAN_RNG;
-
 }
-

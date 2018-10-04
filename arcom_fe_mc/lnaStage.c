@@ -51,8 +51,7 @@ void lnaStageHandler(void){
                 stage[currentLnaModule].
                  available==UNAVAILABLE){
 
-            storeError(ERR_LNA_STAGE,
-                       0x01); // Error 0x01 -> LNA stage not installed
+            storeError(ERR_LNA_STAGE, ERC_MODULE_ABSENT); //LNA stage not installed
 
             CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
             return;
@@ -63,8 +62,7 @@ void lnaStageHandler(void){
     currentLnaStageModule=(CAN_ADDRESS&LNA_STAGE_MODULES_RCA_MASK);
     if(currentLnaStageModule>=LNA_STAGE_MODULES_NUMBER){
 
-        storeError(ERR_LNA_STAGE,
-                   0x02); // Error 0x02 -> LNA stage submodule out of range
+        storeError(ERR_LNA_STAGE, ERC_MODULE_RANGE); //LNA stage submodule out of range
 
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
         return;
@@ -306,16 +304,14 @@ static void gateVoltageHandler(void){
     /* If control (size !=0) store error and return. No control messages are
        allowed on this RCA. */
     if(CAN_SIZE){
-        storeError(ERR_LNA_STAGE,
-                   0x10); // Error 0x10: Control message out of range
+        storeError(ERR_LNA_STAGE, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control
        messages allowed on the RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
-        storeError(ERR_LNA_STAGE,
-                   0x11); // Error 0x11: Monitor message out of range
+        storeError(ERR_LNA_STAGE, ERC_RCA_RANGE); //Monitor message out of range
        /* Store the state in the outgoing CAN message */
        CAN_STATUS = MON_CAN_RNG;
 

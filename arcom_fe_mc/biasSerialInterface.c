@@ -270,8 +270,7 @@ if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,
 
     /* If the timer has expired signal the error */
     if(timedOut==TIMER_EXPIRED){
-        storeError(ERR_BIAS_SERIAL,
-                   0x01); // Error 0x01 -> Timeout while waiting for the ADC to become ready
+        storeError(ERR_BIAS_SERIAL, ERC_HARDWARE_TIMEOUT); //Timeout while waiting for the ADC to become ready
         return ERROR;
     }
 
@@ -901,8 +900,7 @@ int setLnaStage(void){
 
    /* If the timer has expired signal the error */
    if(timedOut==TIMER_EXPIRED){
-       storeError(ERR_BIAS_SERIAL,
-                  0x02); // Error 0x02 -> Timeout while waiting for the DAC1 to become ready
+       storeError(ERR_BIAS_SERIAL, ERC_HARDWARE_TIMEOUT); //Timeout while waiting for the DAC1 to become ready
        return ERROR;
    }
 

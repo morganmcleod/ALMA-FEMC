@@ -40,11 +40,8 @@ void polSpecialMsgsHandler(void){
     /* Check if the submodule is in range */
     currentPolSpecialMsgsModule=(CAN_ADDRESS&POL_SPECIAL_MSGS_MODULES_RCA_MASK)>>POL_SPECIAL_MSGS_MODULES_MASK_SHIFT;
     if(currentPolSpecialMsgsModule>=POL_SPECIAL_MSGS_MODULES_NUMBER){
-        storeError(ERR_POL_SPECIAL_MSGS,
-                   0x01); // Error 0x01 -> Sideband submodule out of range
-
+        storeError(ERR_POL_SPECIAL_MSGS, ERC_MODULE_RANGE); //submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
-
         return;
     }
 

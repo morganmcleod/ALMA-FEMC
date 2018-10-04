@@ -48,8 +48,7 @@ void lnaHandler(void){
               sideband[currentPolarizationModule].
                lna.
                 available==UNAVAILABLE){
-            storeError(ERR_LNA,
-                       0x01); // Error 0x01 -> LNA not installed
+            storeError(ERR_LNA, ERC_MODULE_ABSENT); //LNA not installed
 
             CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
             return;
@@ -59,8 +58,7 @@ void lnaHandler(void){
     /* Check if the submodule is in range */
     currentLnaModule=(CAN_ADDRESS&LNA_MODULES_RCA_MASK)>>LNA_MODULES_MASK_SHIFT;
     if(currentLnaModule>=LNA_MODULES_NUMBER){
-        storeError(ERR_LNA,
-                   0x02); // Error 0x02 -> LNA submodule out of range
+        storeError(ERR_LNA, ERC_MODULE_RANGE); //LNA submodule out of range
 
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
         return;

@@ -42,8 +42,7 @@ void edfaHandler(void){
     /* Check if the specified submodule is in range. */
     currentEdfaModule=(CAN_ADDRESS&EDFA_MODULES_RCA_MASK)>>EDFA_MODULES_MASK_SHIFT;
     if(currentEdfaModule>=EDFA_MODULES_NUMBER){
-        storeError(ERR_EDFA,
-                   0x01); // Error 0x01 -> EDFA submodule out of range
+        storeError(ERR_EDFA, ERC_MODULE_RANGE); //EDFA submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
 
         return;
@@ -64,16 +63,14 @@ static void driverStateHandler(void){
     /* If control (size !=0) store error and return. No control messages are
        allowed on this RCA */
     if(CAN_SIZE){
-        storeError(ERR_EDFA,
-                   0x02); // Error 0x02 -> Control message out of range
+        storeError(ERR_EDFA, ERC_RCA_RANGE); //Control message out of range
         return;
     }
 
     /* If monitor on control RCA return error since there are no control
        messages allowed on this RCA. */
     if(currentClass==CONTROL_CLASS){ // If monitor on control RCA
-        storeError(ERR_EDFA,
-                   0x03); // Error 0x03 -> Monitor message out or range
+        storeError(ERR_EDFA, ERC_RCA_RANGE); //Monitor message out or range
         /* Store the state in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
 
