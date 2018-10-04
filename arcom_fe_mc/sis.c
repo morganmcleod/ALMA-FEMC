@@ -126,37 +126,6 @@ static void voltageHandler(void){
         changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
 
-        /* Check the value against the store limits. The limits are read from
-           the configuration database at configuration time. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              sis.
-                               voltage[MIN_SET_VALUE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              sis.
-                               voltage[MAX_SET_VALUE])){
-                storeError(ERR_SIS,
-                           0x03); // Error 0x03: Voltage set value out of range
-
-                /* Store the error in the last control message variable */
-                frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   sideband[currentPolarizationModule].
-                    sis.
-                     lastVoltage.
-                      status=CON_ERROR_RNG;
-                return;
-            }
-        #endif /* DATABASE_RANGE */
-
         // If we are in STANDBY2 mode, return HARDW_BLKD_ERR
         if (frontend.
              cartridge[currentModule].
@@ -226,51 +195,7 @@ static void voltageHandler(void){
                      sideband[currentPolarizationModule].
                       sis.
                        voltage[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now this
-           function is only printing out an warning/error message depending on
-           the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              sis.
-                               voltage[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              sis.
-                               voltage[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                polarization[currentBiasModule].
-                                 sideband[currentPolarizationModule].
-                                  sis.
-                                   voltage[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                polarization[currentBiasModule].
-                                 sideband[currentPolarizationModule].
-                                  sis.
-                                   voltage[HI_ERROR_RANGE])){
-                    storeError(ERR_SIS,
-                               0x04); // Error 0x04: Error: SIS voltage in error range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_SIS,
-                               0x05); // Error 0x05: Warning: SIS voltage in warning range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big endian
        (CAN). It is done directly instead of using a function to save some time. */
@@ -328,50 +253,7 @@ static void currentHandler(void){
                       sis.
                        current[CURRENT_VALUE];
 
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              sis.
-                               current[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              sis.
-                               current[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                polarization[currentBiasModule].
-                                 sideband[currentPolarizationModule].
-                                  sis.
-                                   current[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                polarization[currentBiasModule].
-                                 sideband[currentPolarizationModule].
-                                  sis.
-                                   current[HI_ERROR_RANGE])){
-                    storeError(ERR_SIS,
-                               0x06); // Error 0x06: Error: SIS current in error range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_SIS,
-                               0x07); // Error 0x07: Warning: SIS current in error range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). It is done directly instead of using a function

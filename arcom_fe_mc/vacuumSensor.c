@@ -99,45 +99,7 @@ static void pressureHandler(void){
                     vacuumController.
                      vacuumSensor[currentVacuumControllerModule].
                       pressure[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now this
-           function is only printing out a warining/error message depending on
-           the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cryostat.
-                            vacuumController.
-                             vacuumSensor[currentVacuumControllerModule].
-                              pressure[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cryostat.
-                            vacuumController.
-                             vacuumSensor[currentVacuumControllerModule].
-                              pressure[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cryostat.
-                                vacuumController.
-                                 vacuumSensor[currentVacuumControllerModule].
-                                  pressure[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cryostat.
-                                vacuumController.
-                                 vacuumSensor[currentVacuumControllerModule].
-                                  pressure[HI_ERROR_RANGE])){
-                    storeError(ERR_VACUUM_SENSOR,
-                               0x03); // Error 0x03 -> Error: vacuum sensor pressure in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_VACUUM_SENSOR,
-                               0x04); // Error 0x04 -> Warning: vacuum sensor pressure in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* If the async monitoring is disabled, notify the monitored message */
     if(asyncState==ASYNC_OFF){
         CAN_STATUS = HARDW_BLKD_ERR;
@@ -149,6 +111,4 @@ static void pressureHandler(void){
     changeEndian(CAN_DATA_ADD,
                  CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
-
-
 }

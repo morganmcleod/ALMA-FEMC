@@ -108,45 +108,7 @@ static void lockDetectVoltageHandler(void){
                       lo.
                        pll.
                         lockDetectVoltage[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pll.
-                              lockDetectVoltage[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pll.
-                              lockDetectVoltage[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pll.
-                                  lockDetectVoltage[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pll.
-                                  lockDetectVoltage[HI_ERROR_RANGE])){
-                    storeError(ERR_PLL,
-                               0x04); // Error 0x04: Error: lock detect voltage in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_PLL,
-                               0x05); // Error 0x05: Warning: lock detect voltage in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). It is done directly instead of using a function
@@ -154,7 +116,6 @@ static void lockDetectVoltageHandler(void){
     changeEndian(CAN_DATA_ADD,
                  CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
-
 }
 
 /* Correction Voltage Handler */
@@ -204,45 +165,7 @@ static void correctionVoltageHandler(void){
                       lo.
                        pll.
                         correctionVoltage[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pll.
-                              correctionVoltage[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pll.
-                              correctionVoltage[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pll.
-                                  correctionVoltage[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pll.
-                                  correctionVoltage[HI_ERROR_RANGE])){
-                    storeError(ERR_PLL,
-                               0x06); // Error 0x06: Error: correction voltage in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_PLL,
-                               0x07); // Error 0x07: Warning: correction voltage in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). It is done directly instead of using a function
@@ -250,8 +173,6 @@ static void correctionVoltageHandler(void){
     changeEndian(CAN_DATA_ADD,
                  CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
-
-
 }
 
 /* Assembly Temperature Handler */
@@ -301,45 +222,7 @@ static void assemblyTempHandler(void){
                       lo.
                        pll.
                         assemblyTemp[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pll.
-                              assemblyTemp[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pll.
-                              assemblyTemp[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pll.
-                                  assemblyTemp[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pll.
-                                  assemblyTemp[HI_ERROR_RANGE])){
-                    storeError(ERR_PLL,
-                               0x08); // Error 0x08: Error: assembly temperature in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_PLL,
-                               0x09); // Error 0x09: Warning: assembly temperature in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). It is done directly instead of using a function
@@ -347,7 +230,6 @@ static void assemblyTempHandler(void){
     changeEndian(CAN_DATA_ADD,
                  CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
-
 }
 
 /* YIG Heater Current Handler */
@@ -397,45 +279,7 @@ static void YIGHeaterCurrentHandler(void){
                       lo.
                        pll.
                         YIGHeaterCurrent[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pll.
-                              YIGHeaterCurrent[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pll.
-                              YIGHeaterCurrent[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pll.
-                                  YIGHeaterCurrent[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pll.
-                                  YIGHeaterCurrent[HI_ERROR_RANGE])){
-                    storeError(ERR_PLL,
-                               0x0A); // Error 0x0A: Error: YIG heater current voltage in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_PLL,
-                               0x0B); // Error 0x0B: Warning: YIG heater current in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). It is done directly instead of using a function
@@ -493,45 +337,7 @@ static void refTotalPowerHandler(void){
                       lo.
                        pll.
                         refTotalPower[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pll.
-                              refTotalPower[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pll.
-                              refTotalPower[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pll.
-                                  refTotalPower[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pll.
-                                  refTotalPower[HI_ERROR_RANGE])){
-                    storeError(ERR_PLL,
-                               0x0C); // Error 0x0C: Error: reference total power in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_PLL,
-                               0x0D); // Error 0x0D: Warning: reference total power in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). It is done directly instead of using a function
@@ -539,7 +345,6 @@ static void refTotalPowerHandler(void){
     changeEndian(CAN_DATA_ADD,
                  CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
-
 }
 
 /* IF Total Power Handler */
@@ -590,45 +395,7 @@ static void ifTotalPowerHandler(void){
                       lo.
                        pll.
                         ifTotalPower[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pll.
-                              ifTotalPower[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pll.
-                              ifTotalPower[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pll.
-                                  ifTotalPower[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pll.
-                                  ifTotalPower[HI_ERROR_RANGE])){
-                    storeError(ERR_PLL,
-                               0x0E); // Error 0x0E: Error: if total power in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_PLL,
-                               0x0F); // Error 0x0F: Warning: if total power in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). It is done directly instead of using a function
@@ -637,10 +404,6 @@ static void ifTotalPowerHandler(void){
                  CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
-
-
-
-
 
 
 /* Unlock Detect Latch Handler */
@@ -691,47 +454,7 @@ static void unlockDetectLatchHandler(void){
                    lo.
                     pll.
                      unlockDetectLatch[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken.
-           This is a little different than ususal since the comparison is made
-           on a boolean value. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pll.
-                              unlockDetectLatch[LOW_WARNING_RANGE],
-                          CAN_BYTE,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pll.
-                              unlockDetectLatch[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pll.
-                                  unlockDetectLatch[LOW_ERROR_RANGE],
-                              CAN_BYTE,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pll.
-                                  unlockDetectLatch[HI_ERROR_RANGE])){
-                    storeError(ERR_PLL,
-                               0x10); // Error 0x10: Error: unlock detect latch bit in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_PLL,
-                               0x11); // Error 0x11: Warning: unlock detect latchbit in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the size. */
     CAN_BYTE=frontend.
               cartridge[currentModule].
@@ -739,8 +462,6 @@ static void unlockDetectLatchHandler(void){
                 pll.
                  unlockDetectLatch[CURRENT_VALUE];
     CAN_SIZE=CAN_BOOLEAN_SIZE;
-
-
 }
 
 /* Clear Unlock Detect Latch Handler */

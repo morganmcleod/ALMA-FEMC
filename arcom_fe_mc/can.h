@@ -169,8 +169,6 @@
                     - \ref HARDW_RNG_ERR    -> the addressed hardware is not installed
                     - \ref HARDW_BLKD_ERR   -> the addressed hardware is locked
                 - if monitor message on a monitor point:
-                    - \ref MON_ERROR_RNG    -> the operation was succesful but the returned data is in the error range
-                    - \ref MON_WARN_RNG     -> the operation was succesful but the returned data is in the warning range
                     - \ref MON_CAN_RNG      -> the monitor message RCA is out of allowed range
                 - if monitor message on a control point:
                     - \ref CON_ERROR_RNG    -> the set value in the last control operation is outside the allowed range */

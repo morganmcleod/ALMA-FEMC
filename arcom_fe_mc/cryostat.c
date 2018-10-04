@@ -434,35 +434,6 @@ void supplyCurrent230VHandler(void){
         CONV_FLOAT=frontend.
                    cryostat.
                     supplyCurrent230V[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now this
-           function is only printing out a warning/error message depending on
-           the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cryostat.
-                            supplyCurrent230V[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cryostat.
-                            supplyCurrent230V[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cryostat.
-                                supplyCurrent230V[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cryostat.
-                                supplyCurrent230V[HI_ERROR_RANGE])){
-                    storeError(ERR_CRYOSTAT,
-                               0x04); // Error 0x04 -> Error: supply current 230V in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_CRYOSTAT,
-                               0x05); // Error 0x05 -> Warning: supply current 230V in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* If monitor on a monitor RCA */

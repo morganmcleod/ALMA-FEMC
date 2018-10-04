@@ -97,41 +97,6 @@ static void drainVoltageHandler(void){
         changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
 
-        /* Check the value against the store limits. The limits are read from
-           the configuration database at configuration time. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              lna.
-                               stage[currentLnaModule].
-                                drainVoltage[MIN_SET_VALUE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              lna.
-                               stage[currentLnaModule].
-                                drainVoltage[MAX_SET_VALUE])){
-
-                storeError(ERR_LNA_STAGE,
-                           0x09); // Error 0x09: Drain voltage set value out of range
-
-                /* Store error in the last control message variable */
-                frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   sideband[currentPolarizationModule].
-                    lna.
-                     stage[currentLnaModule].
-                      lastDrainVoltage.
-                       status=CON_ERROR_RNG;
-                return;
-            }
-        #endif /* DATABASE_RANGE */
-
         // If we are in STANDBY2 mode, return HARDW_BLKD_ERR
         if (frontend.
              cartridge[currentModule].
@@ -206,53 +171,6 @@ static void drainVoltageHandler(void){
                       lna.
                        stage[currentLnaModule].
                         drainVoltage[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              lna.
-                               stage[currentLnaModule].
-                                drainVoltage[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              lna.
-                               stage[currentLnaModule].
-                                drainVoltage[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                polarization[currentBiasModule].
-                                 sideband[currentPolarizationModule].
-                                  lna.
-                                   stage[currentLnaModule].
-                                    drainVoltage[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                polarization[currentBiasModule].
-                                 sideband[currentPolarizationModule].
-                                  lna.
-                                   stage[currentLnaModule].
-                                    drainVoltage[HI_ERROR_RANGE])){
-                    storeError(ERR_LNA_STAGE,
-                               0x05); // Error 0x05: Error: LNA stage drain voltage in error range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_LNA_STAGE,
-                               0x06); // Error 0x06: Warning: LNA stage drain voltage in warning range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* Load the CAN message payload with the returned value and set the
@@ -289,42 +207,6 @@ static void drainCurrentHandler(void){
         /* Extract the float from the can message. */
         changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
-
-        /* Check the value against the store limits. The limits are read from
-           the configuration database at configuration time. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              lna.
-                               stage[currentLnaModule].
-                                drainCurrent[MIN_SET_VALUE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              lna.
-                               stage[currentLnaModule].
-                                drainCurrent[MAX_SET_VALUE])){
-
-                storeError(ERR_LNA_STAGE,
-                           0x0A); // Error 0x0A: Drain current set value out of range
-
-                /* Store error in the last control message variable */
-                frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   sideband[currentPolarizationModule].
-                    lna.
-                     stage[currentLnaModule].
-                      lastDrainCurrent.
-                       status=CON_ERROR_RNG;
-
-                return;
-            }
-        #endif /* DATABASE_RANGE */
 
         // If we are in STANDBY2 mode, return HARDW_BLKD_ERR
         if (frontend.
@@ -401,55 +283,7 @@ static void drainCurrentHandler(void){
                       lna.
                        stage[currentLnaModule].
                         drainCurrent[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              lna.
-                               stage[currentLnaModule].
-                                drainCurrent[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              lna.
-                               stage[currentLnaModule].
-                                drainCurrent[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                polarization[currentBiasModule].
-                                 sideband[currentPolarizationModule].
-                                  lna.
-                                   stage[currentLnaModule].
-                                    drainCurrent[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                polarization[currentBiasModule].
-                                 sideband[currentPolarizationModule].
-                                  lna.
-                                   stage[currentLnaModule].
-                                    drainCurrent[HI_ERROR_RANGE])){
-                    storeError(ERR_LNA_STAGE,
-                               0x07); // Error 0x05: Error: LNA stage drain current in error range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_LNA_STAGE,
-                               0x08); // Error 0x06: Warning: LNA stage drain current in warning range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). It is done directly instead of using a function
@@ -510,55 +344,7 @@ static void gateVoltageHandler(void){
                       lna.
                        stage[currentLnaModule].
                         gateVoltage[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              lna.
-                               stage[currentLnaModule].
-                                gateVoltage[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              lna.
-                               stage[currentLnaModule].
-                                gateVoltage[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                polarization[currentBiasModule].
-                                 sideband[currentPolarizationModule].
-                                  lna.
-                                   stage[currentLnaModule].
-                                    gateVoltage[LOW_ERROR_RANGE],
-                             CONV_FLOAT,
-                             frontend.
-                              cartridge[currentModule].
-                               polarization[currentBiasModule].
-                                sideband[currentPolarizationModule].
-                                 lna.
-                                  stage[currentLnaModule].
-                                   gateVoltage[HI_ERROR_RANGE])){
-                    storeError(ERR_LNA_STAGE,
-                               0x03); // Error 0x03: Error: LNA stage gate voltage in error range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_LNA_STAGE,
-                               0x04); // Error 0x04: Warning: LNA stage gate voltage in warning range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). */
@@ -568,6 +354,3 @@ static void gateVoltageHandler(void){
 
     return;
 }
-
-
-

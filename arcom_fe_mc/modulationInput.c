@@ -73,35 +73,6 @@ static void valueHandler(void){
         changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
 
-        /* Check the value against the store limits. The limits are read from
-           the configuration database at configuration time. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           lpr.
-                            edfa.
-                             modulationInput.
-                              value[MIN_SET_VALUE],
-                          CONV_FLOAT,
-                          frontend.
-                           lpr.
-                            edfa.
-                             modulationInput.
-                              value[MAX_SET_VALUE])){
-
-                storeError(ERR_MODULATION_INPUT,
-                           0x01); // Error 0x01: Modulation input set value out of range
-
-                /* Store error in the last control message variable */
-                frontend.
-                 lpr.
-                  edfa.
-                   modulationInput.
-                    lastValue.
-                     status=CON_ERROR_RNG;
-                return;
-            }
-        #endif /* DATABASE_RANGE */
-
         /* Set the lna stage. If an error occurs then store the state and
            then return. */
         if(setModulationInputValue()==ERROR){

@@ -96,47 +96,7 @@ static void currentHandler(void){
                     edfa.
                      photoDetector.
                       current[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           lpr.
-                            edfa.
-                             photoDetector.
-                              current[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           lpr.
-                            edfa.
-                             photoDetector.
-                              current[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               lpr.
-                                edfa.
-                                 photoDetector.
-                                  current[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               lpr.
-                                edfa.
-                                 photoDetector.
-                                  current[HI_ERROR_RANGE])){
-                    storeError(ERR_PHOTO_DETECTOR,
-                               0x04); // Error 0x04 -> Error: EDFA photodetector current in error range
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_PHOTO_DETECTOR,
-                               0x05); // Error 0x05 -> Warning: EDFA photodetector current in warning range
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big endian
        (CAN). */
@@ -237,47 +197,7 @@ static void powerHandler(void){
                     edfa.
                      photoDetector.
                       power[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           lpr.
-                            edfa.
-                             photoDetector.
-                              power[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           lpr.
-                            edfa.
-                             photoDetector.
-                              power[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               lpr.
-                                edfa.
-                                 photoDetector.
-                                  power[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               lpr.
-                                edfa.
-                                 photoDetector.
-                                  power[HI_ERROR_RANGE])){
-                    storeError(ERR_PHOTO_DETECTOR,
-                               0x06); // Error 0x06 -> Error: EDFA photodetector power in error range
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_PHOTO_DETECTOR,
-                               0x07); // Error 0x07 -> Warning: EDFA photodetector power in warning range
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big endian
        (CAN). */

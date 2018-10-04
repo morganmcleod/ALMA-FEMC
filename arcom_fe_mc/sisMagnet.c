@@ -116,49 +116,7 @@ static void voltageHandler(void){
                      sideband[currentPolarizationModule].
                       sisMagnet.
                        voltage[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              sisMagnet.
-                               voltage[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              sisMagnet.
-                               voltage[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                polarization[currentBiasModule].
-                                 sideband[currentPolarizationModule].
-                                  sisMagnet.
-                                   voltage[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                polarization[currentBiasModule].
-                                 sideband[currentPolarizationModule].
-                                  sisMagnet.
-                                   voltage[HI_ERROR_RANGE])){
-                    storeError(ERR_SIS_MAGNET,
-                               0x03); // Error 0x03: Error: SIS Magnet voltage in error range.
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_SIS_MAGNET,
-                               0x04); // Error 0x04: Warning: SIS Magnet voltage in error range.
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). It is done directly instead of using a function
@@ -191,36 +149,6 @@ static void currentHandler(void){
         /* Extract the floating data from the CAN message */
         changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
-
-        /* Check the value against the store limits. The limits are read from
-           the configuration database at configuration time. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              sisMagnet.
-                               current[MIN_SET_VALUE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              sisMagnet.
-                               current[MAX_SET_VALUE])){
-                storeError(ERR_SIS_MAGNET,
-                           0x07); // Error 0x07: Current set value out of range
-                /* Store the error in the last control message variable */
-                frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   sideband[currentPolarizationModule].
-                    sisMagnet.
-                     lastCurrent.
-                      status=CON_ERROR_RNG;
-                return;
-            }
-        #endif /* DATABASE_RANGE */
 
         // If we are in STANDBY2 mode, return HARDW_BLKD_ERR
         if (frontend.
@@ -292,51 +220,7 @@ static void currentHandler(void){
                      sideband[currentPolarizationModule].
                       sisMagnet.
                        current[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              sisMagnet.
-                               current[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sideband[currentPolarizationModule].
-                              sisMagnet.
-                               current[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                polarization[currentBiasModule].
-                                 sideband[currentPolarizationModule].
-                                  sisMagnet.
-                                   current[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                polarization[currentBiasModule].
-                                 sideband[currentPolarizationModule].
-                                  sisMagnet.
-                                   current[HI_ERROR_RANGE])){
-                    storeError(ERR_SIS_MAGNET,
-                               0x05); // Error 0x05: Error: SIS Magnet current in error range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_SIS_MAGNET,
-                               0x06); // Error 0x06: Warning: SIS Magnet current in warning range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). It is done directly instead of using a function

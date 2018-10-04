@@ -299,40 +299,7 @@ static void stateHandler(void){
                     lpr.
                      opticalSwitch.
                       state[CURRENT_VALUE];
-        /* Check the result against the warning and error range. Right now this
-           function is only printing out a warning/error message depending on
-           the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           lpr.
-                            opticalSwitch.
-                             state[LOW_WARNING_RANGE],
-                          CAN_BYTE,
-                          frontend.
-                           lpr.
-                            opticalSwitch.
-                             state[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               lpr.
-                                opticalSwitch.
-                                 state[LOW_ERROR_RANGE],
-                              CAN_BYTE,
-                              frontend.
-                               lpr.
-                                opticalSwitch.
-                                 state[HI_ERROR_RANGE])){
-                    storeError(ERR_OPTICAL_SWITCH,
-                               0x05); // Error 0x05 -> Error: Optical Switch state in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_OPTICAL_SWITCH,
-                               0x06); // Error 0x06 -> Warning: Optical switch state in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the state */
     CAN_BYTE=frontend.
               lpr.
@@ -383,39 +350,6 @@ static void busyHandler(void){
                   lpr.
                    opticalSwitch.
                     busy[CURRENT_VALUE];
-
-        /* Check the results agains the warning and error range. Right now this
-           function is only printing out a warning/error message depending on
-           the results but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           lpr.
-                            opticalSwitch.
-                             busy[LOW_WARNING_RANGE],
-                          CAN_BYTE,
-                          frontend.
-                           lpr.
-                            opticalSwitch.
-                             busy[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               lpr.
-                                opticalSwitch.
-                                 busy[LOW_ERROR_RANGE],
-                              CAN_BYTE,
-                              frontend.
-                               lpr.
-                                opticalSwitch.
-                                 busy[HI_ERROR_RANGE])){
-                    storeError(ERR_OPTICAL_SWITCH,
-                               0x07); // Error 0x09 -> Error: optical switch busy state in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_OPTICAL_SWITCH,
-                               0x08); // Error 0x0A -> Warning: optical switch busy state in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* Load the CAN message payload with the returned value and set the size */
@@ -425,4 +359,3 @@ static void busyHandler(void){
                 busy[CURRENT_VALUE];
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }
-

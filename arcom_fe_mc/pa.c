@@ -100,45 +100,7 @@ void supplyVoltage3VHandler(void){
                       lo.
                        pa.
                         supplyVoltage3V[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pa.
-                              supplyVoltage3V[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pa.
-                              supplyVoltage3V[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pa.
-                                  supplyVoltage3V[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pa.
-                                  supplyVoltage3V[HI_ERROR_RANGE])){
-                    storeError(ERR_PA,
-                               0x04); // Error 0x04: Error: 3V supply voltage in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_PA,
-                               0x05); // Error 0x05: Warning: 3V supply voltage in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). It is done directly instead of using a function
@@ -195,45 +157,7 @@ void supplyVoltage5VHandler(void){
                       lo.
                        pa.
                         supplyVoltage5V[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pa.
-                              supplyVoltage5V[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pa.
-                              supplyVoltage5V[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pa.
-                                  supplyVoltage5V[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pa.
-                                  supplyVoltage5V[HI_ERROR_RANGE])){
-                    storeError(ERR_PA,
-                               0x06); // Error 0x06: Error: 5V supply voltage in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_PA,
-                               0x06); // Error 0x06: Warning: 5V supply voltage in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). It is done directly instead of using a function

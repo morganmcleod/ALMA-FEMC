@@ -25,12 +25,4 @@
 
     #define DATABASE_HARDW         // HW existance checking controlled by INI files.
 
-    #ifdef DEBUG
-        // #define DATABASE_RANGE  // Uncomment this define to enable the range checking
-    #endif /* DEBUG */
-
-    #ifdef DEVELOPMENT
-        // #define DATABASE_RANGE  // Uncomment this define to enable the range checking
-    #endif /* DEVELOPMENT */
-
 #endif /* _DATABASE_H */

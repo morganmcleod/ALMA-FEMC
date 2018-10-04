@@ -229,45 +229,7 @@ static void currentHandler(void){
                     polarization[currentBiasModule].
                      sisHeater.
                       current[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sisHeater.
-                              current[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            polarization[currentBiasModule].
-                             sisHeater.
-                              current[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                polarization[currentBiasModule].
-                                 sisHeater.
-                                  current[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                polarization[currentBiasModule].
-                                 sisHeater.
-                                  current[HI_ERROR_RANGE])){
-                    storeError(ERR_SIS_HEATER,
-                               0x03); // Error 0x03: Error: SIS heater current in error range.
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_SIS_HEATER,
-                               0x04); // Error 0x04: Warning: SIS heater current in warning range.
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). It is done directly instead of using a function
@@ -275,6 +237,4 @@ static void currentHandler(void){
     changeEndian(CAN_DATA_ADD,
                  CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
-
 }
-

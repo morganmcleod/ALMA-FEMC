@@ -157,41 +157,7 @@ static void stateHandler(void){
                     cryostat.
                      vacuumController.
                       state[CURRENT_VALUE];
-
-        /* Check the result agains the warning and error range. Right now this
-           function is only printing out a warning/error message depending on
-           the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cryostat.
-                            vacuumController.
-                             state[LOW_WARNING_RANGE],
-                          CAN_BYTE,
-                          frontend.
-                           cryostat.
-                            vacuumController.
-                             state[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cryostat.
-                                vacuumController.
-                                 state[LOW_ERROR_RANGE],
-                              CAN_BYTE,
-                              frontend.
-                               cryostat.
-                                vacuumController.
-                                 state[HI_ERROR_RANGE])){
-                    storeError(ERR_VACUUM_CONTROLLER,
-                               0x04); // Error 0x04 -> Error: Vacuum controller state in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_VACUUM_CONTROLLER,
-                               0x05); // Error 0x05 -> Warining: Vacuum controller state in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the size */
     CAN_BYTE=frontend.
               cryostat.
@@ -199,4 +165,3 @@ static void stateHandler(void){
                 state[CURRENT_VALUE];
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }
-

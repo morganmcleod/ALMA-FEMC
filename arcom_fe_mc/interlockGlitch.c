@@ -105,47 +105,6 @@ static void valueHandler(void){
                       state.
                        glitch.
                         value[CURRENT_VALUE];
-
-        /* Check the result agains the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           fetim.
-                            interlock.
-                             state.
-                              glitch.
-                               value[LOW_ERROR_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           fetim.
-                            interlock.
-                             state.
-                              glitch.
-                               value[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               fetim.
-                                interlock.
-                                 state.
-                                  glitch.
-                                   value[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               fetim.
-                                interlock.
-                                 state.
-                                  glitch.
-                                   value[HI_ERROR_RANGE])){
-                    storeError(ERR_INTRLK_GLITCH,
-                               0x04); // Error 0x04 -> Error: interlock glitch value in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_INTRLK_GLITCH,
-                               0x05); // Error 0x05 -> Warning: interlock glitch value in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* Load the CAN message payload with the returned value and set the size.
@@ -156,9 +115,6 @@ static void valueHandler(void){
     CAN_SIZE=CAN_FLOAT_SIZE;
 
 }
-
-
-
 
 
 /* Glitch triggered handler */
@@ -213,53 +169,8 @@ static void countTrigHandler(void){
                     state.
                      glitch.
                       countTrig[CURRENT_VALUE];
-
-        /* Check the result agains the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           fetim.
-                            interlock.
-                             state.
-                              glitch.
-                               countTrig[LOW_ERROR_RANGE],
-                          CAN_BYTE,
-                          frontend.
-                           fetim.
-                            interlock.
-                             state.
-                              glitch.
-                               countTrig[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               fetim.
-                                interlock.
-                                 state.
-                                  glitch.
-                                   countTrig[LOW_ERROR_RANGE],
-                              CAN_BYTE,
-                              frontend.
-                               fetim.
-                                interlock.
-                                 state.
-                                  glitch.
-                                   countTrig[HI_ERROR_RANGE])){
-                    storeError(ERR_INTRLK_GLITCH,
-                               0x06); // Error 0x06 -> Error: interlock glitch counter trigger digital value in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_INTRLK_GLITCH,
-                               0x07); // Error 0x07 -> Warning: interlock glitch counter trigger digital value in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* The CAN message payload is already loaded. Set the size */
     CAN_SIZE=CAN_BOOLEAN_SIZE;
-
-
 }
-
-

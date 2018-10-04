@@ -231,38 +231,6 @@ static void stateHandler(void){
                     cryostat.
                      turboPump.
                       state[CURRENT_VALUE];
-        /* Check the result against the warning and error range. Right now this
-           function is only printing out a warning/error message depending on
-           the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cryostat.
-                            turboPump.
-                             state[LOW_WARNING_RANGE],
-                          CAN_BYTE,
-                          frontend.
-                           cryostat.
-                            turboPump.
-                             state[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cryostat.
-                                turboPump.
-                                 state[LOW_ERROR_RANGE],
-                              CAN_BYTE,
-                              frontend.
-                               cryostat.
-                                turboPump.
-                                 state[HI_ERROR_RANGE])){
-                    storeError(ERR_TURBO_PUMP,
-                               0x04); // Error 0x04 -> Error: Turbo pump state in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_TURBO_PUMP,
-                               0x05); // Error 0x05 -> Warning: Turbo pump state in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* If the monitor state is not the same as previous and is ERROR: return a warning. */
@@ -343,39 +311,6 @@ static void speedHandler(void){
                   cryostat.
                    turboPump.
                     speed[CURRENT_VALUE];
-
-        /* Check the results against the warning and error range. Right now this
-           function is only printing out a warning/error message depending on
-           the results but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cryostat.
-                            turboPump.
-                             speed[LOW_WARNING_RANGE],
-                          CAN_BYTE,
-                          frontend.
-                           cryostat.
-                            turboPump.
-                             speed[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cryostat.
-                                turboPump.
-                                 speed[LOW_ERROR_RANGE],
-                              CAN_BYTE,
-                              frontend.
-                               cryostat.
-                                turboPump.
-                                 speed[HI_ERROR_RANGE])){
-                    storeError(ERR_TURBO_PUMP,
-                               0x06); // Error 0x06 -> Error: Turbo pump speed in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_TURBO_PUMP,
-                               0x07); // Error 0x07 -> Warning: Turbo pump speed in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* If monitor on a monitor RCA */

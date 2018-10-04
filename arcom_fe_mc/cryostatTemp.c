@@ -118,39 +118,6 @@ static void tempHandler(void){
                    cryostat.
                     cryostatTemp[currentCryostatModule].
                      temp[CURRENT_VALUE];
-
-        /* Check the result agains the warning and error range. Right now this
-           function is only printing out a warning/error message depending on
-           the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cryostat.
-                            cryostatTemp[currentCryostatModule].
-                             temp[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cryostat.
-                            cryostatTemp[currentCryostatModule].
-                             temp[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cryostat.
-                                cryostatTemp[currentCryostatModule].
-                                 temp[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cryostat.
-                                cryostatTemp[currentCryostatModule].
-                                 temp[HI_ERROR_RANGE])){
-                    storeError(ERR_CRYOSTAT_TEMP,
-                               0x03); // Error 0x03 -> Error: cryostat temperature in error range
-                    CAN_STATUS  = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_CRYOSTAT_TEMP,
-                               0x04); // Error 0x04 -> Warning: cryostat temperature in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* If the async monitoring is disabled, notify the monitored message */

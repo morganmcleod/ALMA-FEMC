@@ -92,41 +92,7 @@ static void tempHandler(void){
                    lpr.
                     lprTemp[currentLprModule].
                      temp[CURRENT_VALUE];
-
-        /* Check the result agains the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           lpr.
-                            lprTemp[currentLprModule].
-                             temp[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           lpr.
-                            lprTemp[currentLprModule].
-                             temp[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               lpr.
-                                lprTemp[currentLprModule].
-                                 temp[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               lpr.
-                                lprTemp[currentLprModule].
-                                 temp[HI_ERROR_RANGE])){
-                    storeError(ERR_LPR_TEMP,
-                               0x03); // Error 0x03 -> Error: lpr temperature in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_LPR_TEMP,
-                               0x04); // Error 0x04 -> Warning: lpr temperature in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big enadian
        (CAN). */

@@ -95,45 +95,7 @@ static void voltageHandler(void){
                     pdModule[currentPowerDistributionModule].
                      pdChannel[currentPdModuleModule].
                       voltage[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           powerDistribution.
-                            pdModule[currentPowerDistributionModule].
-                             pdChannel[currentPdModuleModule].
-                              voltage[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           powerDistribution.
-                            pdModule[currentPowerDistributionModule].
-                             pdChannel[currentPdModuleModule].
-                              voltage[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               powerDistribution.
-                                pdModule[currentPowerDistributionModule].
-                                 pdChannel[currentPdModuleModule].
-                                  voltage[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               powerDistribution.
-                                pdModule[currentPowerDistributionModule].
-                                 pdChannel[currentPdModuleModule].
-                                  voltage[HI_ERROR_RANGE])){
-                    storeError(ERR_PD_CHANNEL,
-                        0x04); // Error 0x04: Error: monitor voltage in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_PD_CHANNEL,
-                        0x05); // Error 0x05: Warning: monitor voltage in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). It is done directly instead of using a function
@@ -186,45 +148,7 @@ static void currentHandler(void){
                     pdModule[currentPowerDistributionModule].
                      pdChannel[currentPdModuleModule].
                       current[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           powerDistribution.
-                            pdModule[currentPowerDistributionModule].
-                             pdChannel[currentPdModuleModule].
-                              current[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           powerDistribution.
-                            pdModule[currentPowerDistributionModule].
-                             pdChannel[currentPdModuleModule].
-                              current[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               powerDistribution.
-                                pdModule[currentPowerDistributionModule].
-                                 pdChannel[currentPdModuleModule].
-                                  current[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               powerDistribution.
-                                pdModule[currentPowerDistributionModule].
-                                 pdChannel[currentPdModuleModule].
-                                  current[HI_ERROR_RANGE])){
-                    storeError(ERR_PD_CHANNEL,
-                        0x06); // Error 0x04: Error: monitor current in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_PD_CHANNEL,
-                        0x07); // Error 0x07: Warning: monitor current in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). It is done directly instead of using a function
@@ -233,4 +157,3 @@ static void currentHandler(void){
                  CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
-

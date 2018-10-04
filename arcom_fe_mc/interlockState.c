@@ -113,43 +113,6 @@ static void multiFailHandler(void){
                    interlock.
                     state.
                      multiFail[CURRENT_VALUE];
-
-        /* Check the result agains the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           fetim.
-                            interlock.
-                             state.
-                              multiFail[LOW_ERROR_RANGE],
-                          CAN_BYTE,
-                          frontend.
-                           fetim.
-                            interlock.
-                             state.
-                              multiFail[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               fetim.
-                                interlock.
-                                 state.
-                                  multiFail[LOW_ERROR_RANGE],
-                              CAN_BYTE,
-                              frontend.
-                               fetim.
-                                interlock.
-                                 state.
-                                  multiFail[HI_ERROR_RANGE])){
-                    storeError(ERR_INTRLK_STATE,
-                               0x04); // Error 0x04 -> Error: multi sensor fail digital value in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_INTRLK_STATE,
-                               0x05); // Error 0x05 -> Warning: multi sensor fail digital value in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* The CAN message payload is already loaded. Set the size */
@@ -157,15 +120,6 @@ static void multiFailHandler(void){
 
 
 }
-
-
-
-
-
-
-
-
-
 
 
 /* Temperature sensor out of range handler */
@@ -218,59 +172,10 @@ static void tempOutOfRangeHandler(void){
                    interlock.
                     state.
                      tempOutRng[CURRENT_VALUE];
-
-        /* Check the result agains the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           fetim.
-                            interlock.
-                             state.
-                              tempOutRng[LOW_ERROR_RANGE],
-                          CAN_BYTE,
-                          frontend.
-                           fetim.
-                            interlock.
-                             state.
-                              tempOutRng[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               fetim.
-                                interlock.
-                                 state.
-                                  tempOutRng[LOW_ERROR_RANGE],
-                              CAN_BYTE,
-                              frontend.
-                               fetim.
-                                interlock.
-                                 state.
-                                  tempOutRng[HI_ERROR_RANGE])){
-                    storeError(ERR_INTRLK_STATE,
-                               0x06); // Error 0x06 -> Error: temperature out of range digital value in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_INTRLK_STATE,
-                               0x07); // Error 0x07 -> Warning: temperature out of range digital value in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* The CAN message payload is already loaded. Set the size */
     CAN_SIZE=CAN_BOOLEAN_SIZE;
-
 }
-
-
-
-
-
-
-
-
-
-
 
 
 /* Flow sensor out of range handler */
@@ -323,59 +228,10 @@ static void flowOutOfRangeHandler(void){
                    interlock.
                     state.
                      flowOutRng[CURRENT_VALUE];
-
-        /* Check the result agains the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           fetim.
-                            interlock.
-                             state.
-                              flowOutRng[LOW_ERROR_RANGE],
-                          CAN_BYTE,
-                          frontend.
-                           fetim.
-                            interlock.
-                             state.
-                              flowOutRng[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               fetim.
-                                interlock.
-                                 state.
-                                  flowOutRng[LOW_ERROR_RANGE],
-                              CAN_BYTE,
-                              frontend.
-                               fetim.
-                                interlock.
-                                 state.
-                                  flowOutRng[HI_ERROR_RANGE])){
-                    storeError(ERR_INTRLK_STATE,
-                               0x08); // Error 0x08 -> Error: airflow out of range digital value in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_INTRLK_STATE,
-                               0x09); // Error 0x09 -> Warning: airflow out of range digital value in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
-    }
-
+   }
     /* The CAN message payload is already loaded. Set the size */
     CAN_SIZE=CAN_BOOLEAN_SIZE;
-
 }
-
-
-
-
-
-
-
-
-
-
 
 
 /* Delay Shutdown Trigger handler */
@@ -428,58 +284,10 @@ static void delayTrigHandler(void){
                    interlock.
                     state.
                      delayTrig[CURRENT_VALUE];
-
-        /* Check the result agains the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           fetim.
-                            interlock.
-                             state.
-                              delayTrig[LOW_ERROR_RANGE],
-                          CAN_BYTE,
-                          frontend.
-                           fetim.
-                            interlock.
-                             state.
-                              delayTrig[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               fetim.
-                                interlock.
-                                 state.
-                                  delayTrig[LOW_ERROR_RANGE],
-                              CAN_BYTE,
-                              frontend.
-                               fetim.
-                                interlock.
-                                 state.
-                                  delayTrig[HI_ERROR_RANGE])){
-                    storeError(ERR_INTRLK_STATE,
-                               0x0A); // Error 0x0A -> Error: shutdown delay triggered digital value in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_INTRLK_STATE,
-                               0x0B); // Error 0x0B -> Warning: shutdown delay triggered digital value in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* The CAN message payload is already loaded. Set the size */
     CAN_SIZE=CAN_BOOLEAN_SIZE;
-
 }
-
-
-
-
-
-
-
-
-
 
 
 /* Shutdown Trigger handler */
@@ -532,48 +340,7 @@ static void shutdownTrigHandler(void){
                    interlock.
                     state.
                      shutdownTrig[CURRENT_VALUE];
-
-        /* Check the result agains the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           fetim.
-                            interlock.
-                             state.
-                              shutdownTrig[LOW_ERROR_RANGE],
-                          CAN_BYTE,
-                          frontend.
-                           fetim.
-                            interlock.
-                             state.
-                              shutdownTrig[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               fetim.
-                                interlock.
-                                 state.
-                                  shutdownTrig[LOW_ERROR_RANGE],
-                              CAN_BYTE,
-                              frontend.
-                               fetim.
-                                interlock.
-                                 state.
-                                  shutdownTrig[HI_ERROR_RANGE])){
-                    storeError(ERR_INTRLK_STATE,
-                               0x0C); // Error 0x0C -> Error: shutdown triggered digital value in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_INTRLK_STATE,
-                               0x0D); // Error 0x0D -> Warning: shutdown triggered digital value in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* The CAN message payload is already loaded. Set the size */
     CAN_SIZE=CAN_BOOLEAN_SIZE;
-
 }
-
-

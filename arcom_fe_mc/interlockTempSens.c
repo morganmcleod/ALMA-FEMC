@@ -94,53 +94,7 @@ void tempHandler(void){
                        temperature.
                         intrlkTempSens[currentInterlockTempModule].
                          temp[CURRENT_VALUE];
-
-        /* Check the result agains the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           fetim.
-                            interlock.
-                             sensors.
-                              temperature.
-                               intrlkTempSens[currentInterlockTempModule].
-                                temp[LOW_ERROR_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           fetim.
-                            interlock.
-                             sensors.
-                              temperature.
-                               intrlkTempSens[currentInterlockTempModule].
-                                temp[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               fetim.
-                                interlock.
-                                 sensors.
-                                  temperature.
-                                   intrlkTempSens[currentInterlockTempModule].
-                                    temp[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               fetim.
-                                interlock.
-                                 sensors.
-                                  temperature.
-                                   intrlkTempSens[currentInterlockTempModule].
-                                 temp[HI_ERROR_RANGE])){
-                    storeError(ERR_INTRLK_TEMP,
-                               0x04); // Error 0x04 -> Error: internal temperature in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_INTRLK_TEMP,
-                               0x05); // Error 0x05 -> Warning: internal temperature in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big enadian
        (CAN). */
@@ -148,4 +102,3 @@ void tempHandler(void){
                  CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
-

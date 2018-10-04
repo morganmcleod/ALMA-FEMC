@@ -161,47 +161,7 @@ static void voltageHandler(void){
                     lo.
                      photomixer.
                       voltage[CURRENT_VALUE];
-
-        /* Check the results against the warning and error range. Right now
-           this function is only printing out a warning/error message depending
-           on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             photomixer.
-                              voltage[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             photomixer.
-                              voltage[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 photomixer.
-                                  voltage[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 photomixer.
-                                  voltage[HI_ERROR_RANGE])){
-                    storeError(ERR_PHOTOMIXER,
-                               0x04); // Error 0x04: Error: photomixer voltage in error range
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_PHOTOMIXER,
-                               0x05); // Error 0x05: Warning: photomixer voltage in warning range
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). This affect the first 4 char of the message, the status
@@ -209,7 +169,6 @@ static void voltageHandler(void){
     changeEndian(CAN_DATA_ADD,
                  CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
-
 }
 
 /* Current Handler */
@@ -266,47 +225,7 @@ static void currentHandler(void){
                     lo.
                      photomixer.
                       current[CURRENT_VALUE];
-
-        /* Check the results against the warning and error range. Right now
-           this function is only printing out a warning/error message depending
-           on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             photomixer.
-                              current[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             photomixer.
-                              current[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 photomixer.
-                                  current[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 photomixer.
-                                  current[HI_ERROR_RANGE])){
-                    storeError(ERR_PHOTOMIXER,
-                               0x06); // Error 0x06: Error: photomixer current in error range
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_PHOTOMIXER,
-                               0x07); // Error 0x07: Warning: photomixer current in warning range
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). This affect the first 4 char of the message, the status
@@ -315,4 +234,3 @@ static void currentHandler(void){
                  CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
-

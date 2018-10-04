@@ -122,38 +122,6 @@ static void stateHandler(void) {
                     cryostat.
                      solenoidValve.
                       state[CURRENT_VALUE];
-        /* Check the result against the warning and error range. Right now this
-           function is only printing out a warning/error message depending on
-           the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cryostat.
-                            solenoidValve.
-                             state[LOW_WARNING_RANGE],
-                          CAN_BYTE,
-                          frontend.
-                           cryostat.
-                            solenoidValve.
-                             state[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cryostat.
-                                solenoidValve.
-                                 state[LOW_ERROR_RANGE],
-                              CAN_BYTE,
-                              frontend.
-                               cryostat.
-                                solenoidValve.
-                                 state[HI_ERROR_RANGE])){
-                    storeError(ERR_SOLENOID_VALVE,
-                               0x01); // Error 0x01 -> Error: Solenoid valve state in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_SOLENOID_VALVE,
-                               0x02); // Error 0x02 -> Warning: Solenoid valve state in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     // If the solenoid valve monitor state differs from the control register status..

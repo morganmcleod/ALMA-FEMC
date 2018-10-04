@@ -98,56 +98,16 @@ static void pumpTempHandler(void){
                     edfa.
                      laser.
                       pumpTemp[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depening on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           lpr.
-                            edfa.
-                             laser.
-                              pumpTemp[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           lpr.
-                            edfa.
-                             laser.
-                              pumpTemp[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               lpr.
-                                edfa.
-                                 laser.
-                                  pumpTemp[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               lpr.
-                                edfa.
-                                 laser.
-                                  pumpTemp[HI_ERROR_RANGE])){
-                    storeError(ERR_LASER,
-                               0x04); // Error 0x04 -> Error: Laser pump temperature in error range
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_LASER,
-                               0x05); // Error 0x05 -> Warning: Laser pump temperature in warning range
-                    /* Store th state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big endian
        (CAN). */
     changeEndian(CAN_DATA_ADD,
                  CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
-
     return;
 }
+
 
 /* EDFA laser drive current */
 static void driveCurrentHandler(void){
@@ -194,45 +154,6 @@ static void driveCurrentHandler(void){
                     edfa.
                      laser.
                       driveCurrent[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           lpr.
-                            edfa.
-                             laser.
-                              driveCurrent[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           lpr.
-                            edfa.
-                             laser.
-                              driveCurrent[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               lpr.
-                                edfa.
-                                 laser.
-                                  driveCurrent[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               lpr.
-                                edfa.
-                                 laser.
-                                  driveCurrent[HI_ERROR_RANGE])){
-                    storeError(ERR_LASER,
-                               0x07); // Error 0x07 -> Error: laser drive current in error range
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_LASER,
-                               0x08); // Error 0x08 -> Warning: laser drive current in warning range
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* Load the CAN message payload with the returned value and set the
@@ -288,45 +209,6 @@ static void photoDetectCurrentHandler(void){
                     edfa.
                      laser.
                       photoDetectCurrent[CURRENT_VALUE];
-
-        /* Check the result agains the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           lpr.
-                            edfa.
-                             laser.
-                              photoDetectCurrent[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           lpr.
-                            edfa.
-                             laser.
-                              photoDetectCurrent[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               lpr.
-                                edfa.
-                                 laser.
-                                  photoDetectCurrent[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               lpr.
-                                edfa.
-                                 laser.
-                                  photoDetectCurrent[HI_ERROR_RANGE])){
-                    storeError(ERR_LASER,
-                               0x09); // Error 0x09 -> Error: Laser photo detector current in error range
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_LASER,
-                               0x0A); // Error 0x0A -> Warning: Laser photo detector current in warning range
-                    /* Store th state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* Load the CAN message payload with th returned value and set the size.
@@ -337,6 +219,4 @@ static void photoDetectCurrentHandler(void){
     CAN_SIZE=CAN_FLOAT_SIZE;
 
     return;
-
 }
-

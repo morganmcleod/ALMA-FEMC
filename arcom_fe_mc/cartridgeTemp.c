@@ -133,39 +133,6 @@ static void tempHandler(void){
                    cartridge[currentModule].
                     cartridgeTemp[currentCartridgeTempSubsystemModule].
                      temp[CURRENT_VALUE];
-
-        /* Check the results against the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            cartridgeTemp[currentCartridgeTempSubsystemModule].
-                             temp[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            cartridgeTemp[currentCartridgeTempSubsystemModule].
-                             temp[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                cartridgeTemp[currentCartridgeTempSubsystemModule].
-                                 temp[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                cartridgeTemp[currentCartridgeTempSubsystemModule].
-                                 temp[HI_ERROR_RANGE])){
-                    storeError(ERR_CARTRIDGE_TEMP,
-                               0x04); // Error 0x04 -> Error: Cartrdige temperature in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_CARTRIDGE_TEMP,
-                               0x05); // Error 0x05 -> Warning: Cartrdige temperature in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* Load the CAN message payload with the returned value and set the

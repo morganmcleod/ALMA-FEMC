@@ -91,38 +91,6 @@ static void gateVoltageHandler(void){
         changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
 
-        /* Check the value against the store limits. The limits are read from
-           the configuration database at configuration time. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pa.
-                              paChannel[currentPaChannel()].
-                               gateVoltage[MIN_SET_VALUE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pa.
-                              paChannel[currentPaChannel()].
-                               gateVoltage[MAX_SET_VALUE])){
-                storeError(ERR_PA_CHANNEL,
-                           0x02); // Error 0x02: Gate voltage set value out of range
-
-                /* Store error in the last control message variable */
-                frontend.
-                 cartridge[currentModule].
-                  lo.
-                   pa.
-                    paChannel[currentPaChannel()].
-                     lastGateVoltage.
-                      status=CON_ERROR_RNG;
-
-                return;
-            }
-        #endif /* DATABASE_RANGE */
-
         /* Set the PA channel gate voltage. If an error occurs then store the
            state and return the error state then return. */
         if(setPaChannel()==ERROR){
@@ -175,49 +143,6 @@ static void gateVoltageHandler(void){
                      pa.
                       paChannel[currentPaChannel()].
                        gateVoltage[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATBASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pa.
-                              paChannel[currentPaChannel()].
-                               gateVoltage[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pa.
-                              paChannel[currentPaChannel()].
-                               gateVoltage[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pa.
-                                  paChannel[currentPaChannel()].
-                                   gateVoltage[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pa.
-                                  paChannel[currentPaChannel()].
-                                   gateVoltage[HI_ERROR_RANGE])){
-                    storeError(ERR_PA_CHANNEL,
-                               0x03); // Error 0x03: Error: PA channel gate voltage in error range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_PA_CHANNEL,
-                               0x04); // Error 0x04: Warning: PA channel gate voltage in warning range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -226,7 +151,6 @@ static void gateVoltageHandler(void){
     changeEndian(CAN_DATA_ADD,
                  CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
-
 }
 
 /* Drain Voltage Handler */
@@ -307,38 +231,6 @@ static void drainVoltageHandler(void){
         /* Extract the float from the can message */
         changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
-
-        /* Check the value against the store limits. The limits are read from
-           the configuration database at configuration time. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pa.
-                              paChannel[currentPaChannel()].
-                               drainVoltage[MIN_SET_VALUE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pa.
-                              paChannel[currentPaChannel()].
-                               drainVoltage[MAX_SET_VALUE])){
-                storeError(ERR_PA_CHANNEL,
-                           0x05); // Error 0x05: Gate voltage set value out of range
-
-                /* Store error in the last control message variable */
-                frontend.
-                 cartridge[currentModule].
-                  lo.
-                   pa.
-                    paChannel[currentPaChannel()].
-                     lastDrainVoltage.
-                      status=CON_ERROR_RNG;
-
-                return;
-            }
-        #endif /* DATABASE_RANGE */
 
         /* if not in TROUBLESHOOTING mode, 
             Limit the CONV_FLOAT value about to be sent to the PA channel for drain voltage
@@ -427,51 +319,7 @@ static void drainVoltageHandler(void){
                      pa.
                       paChannel[currentPaChannel()].
                        drainVoltage[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATBASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pa.
-                              paChannel[currentPaChannel()].
-                               drainVoltage[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pa.
-                              paChannel[currentPaChannel()].
-                               drainVoltage[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pa.
-                                  paChannel[currentPaChannel()].
-                                   drainVoltage[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pa.
-                                  paChannel[currentPaChannel()].
-                                   drainVoltage[HI_ERROR_RANGE])){
-                    storeError(ERR_PA_CHANNEL,
-                               0x06); // Error 0x06: Error: PA channel drain voltage in error range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_PA_CHANNEL,
-                               0x07); // Error 0x07: Warning: PA channel drain voltage in warning range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
-
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
        big endian (CAN). It is done directly instead of using a function
@@ -479,7 +327,6 @@ static void drainVoltageHandler(void){
     changeEndian(CAN_DATA_ADD,
                  CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
-
 }
 
 /* Drain Current Handler */
@@ -531,47 +378,6 @@ static void drainCurrentHandler(void){
                        pa.
                         paChannel[currentPaChannel()].
                          drainCurrent[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pa.
-                              paChannel[currentPaChannel()].
-                               drainCurrent[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             pa.
-                              paChannel[currentPaChannel()].
-                               drainCurrent[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pa.
-                                  paChannel[currentPaChannel()].
-                                   drainCurrent[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 pa.
-                                  paChannel[currentPaChannel()].
-                                   drainCurrent[HI_ERROR_RANGE])){
-                    storeError(ERR_PA_CHANNEL,
-                               0x0A); // Error 0x0A: Error: PA channel drain currrent in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_PA_CHANNEL,
-                               0x0B); // Error 0x0B: Warning: PA channel drain currrent in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -580,7 +386,6 @@ static void drainCurrentHandler(void){
     changeEndian(CAN_DATA_ADD,
                  CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
-
 }
 
 

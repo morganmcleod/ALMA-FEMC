@@ -109,43 +109,6 @@ static void gateAVoltageHandler(void){
                       lo.
                        amc.
                         gateAVoltage[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              gateAVoltage[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              gateAVoltage[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  gateAVoltage[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  gateAVoltage[HI_ERROR_RANGE])){
-                    storeError(ERR_AMC,
-                               0x04); // Error 0x04: Error: gate A voltage in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_AMC,
-                               0x05); // Error 0x05: Warning: gate A voltage in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* Load the CAN message payload with the returned value and set the
@@ -204,43 +167,6 @@ static void drainAVoltageHandler(void){
                       lo.
                        amc.
                         drainAVoltage[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              drainAVoltage[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              drainAVoltage[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  drainAVoltage[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  drainAVoltage[HI_ERROR_RANGE])){
-                    storeError(ERR_AMC,
-                               0x06); // Error 0x06: Error: drain A voltage in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_AMC,
-                               0x07); // Error 0x07: Warning: drain A voltage in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* Load the CAN message payload with the returned value and set the
@@ -298,43 +224,6 @@ static void drainACurrentHandler(void){
                       lo.
                        amc.
                         drainACurrent[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              drainACurrent[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              drainACurrent[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  drainACurrent[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  drainACurrent[HI_ERROR_RANGE])){
-                    storeError(ERR_AMC,
-                               0x08); // Error 0x08: Error: drain A current in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_AMC,
-                               0x09); // Error 0x09: Warning: drain A current in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* Load the CAN message payload with the returned value and set the
@@ -392,43 +281,6 @@ static void gateBVoltageHandler(void){
                       lo.
                        amc.
                         gateBVoltage[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              gateBVoltage[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              gateBVoltage[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  gateBVoltage[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  gateBVoltage[HI_ERROR_RANGE])){
-                    storeError(ERR_AMC,
-                               0x0A); // Error 0x0A: Error: gate B voltage in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_AMC,
-                               0x0B); // Error 0x0B: Warning: gate B voltage in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* Load the CAN message payload with the returned value and set the
@@ -462,35 +314,6 @@ static void drainBVoltageHandler(void){
         /* Extract the float from the can message */
         changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
-
-        /* Check the value against the store limits. The limits are read from
-           the configuration database at configuration time. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              drainBVoltage[MIN_SET_VALUE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              drainBVoltage[MAX_SET_VALUE])){
-                storeError(ERR_AMC,
-                           0x0C); // Error 0x0C: Drain B voltage set value out of range
-
-                /* Store error in the last control message variable */
-                frontend.
-                 cartridge[currentModule].
-                  lo.
-                   amc.
-                    lastDrainBVoltage.
-                     status=CON_ERROR_RNG;
-
-                return;
-            }
-        #endif /* DATABASE_RANGE */
 
         /* Set the AMC drain B voltage. If an error occurs then store the state
            and return the error state then return. */
@@ -542,46 +365,6 @@ static void drainBVoltageHandler(void){
                     lo.
                      amc.
                       drainBVoltage[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-
-        #ifdef DATBASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              drainBVoltage[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              drainBVoltage[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  drainBVoltage[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  drainBVoltage[HI_ERROR_RANGE])){
-                    storeError(ERR_AMC,
-                               0x0D); // Error 0x0D: Error: AMC drain B voltage in error range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_AMC,
-                               0x0E); // Error 0x0E: Warning: AMC drain B voltage in warning range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -639,43 +422,6 @@ static void drainBCurrentHandler(void){
                       lo.
                        amc.
                         drainBCurrent[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              drainBCurrent[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              drainBCurrent[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  drainBCurrent[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  drainBCurrent[HI_ERROR_RANGE])){
-                    storeError(ERR_AMC,
-                               0x0F); // Error 0x0F: Error: drain B current in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_AMC,
-                               0x10); // Error 0x10: Warning: drain B current in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* Load the CAN message payload with the returned value and set the
@@ -704,36 +450,6 @@ static void multiplierDVoltageHandler(void){
                                     lo.
                                      amc.
                                       lastMultiplierDVoltage);
-
-        /* Check the value against the store limits. The limits are read from
-           the configuration database at configuration time. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              multiplierDVoltage[MIN_SET_VALUE],
-                          CAN_BYTE,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              multiplierDVoltage[MAX_SET_VALUE])){
-                storeError(ERR_AMC,
-                           0x11); // Error 0x11: Multiplier D voltage set value out of range
-
-                /* Store error in the last control message variable */
-                frontend.
-                 cartridge[currentModule].
-                  lo.
-                   amc.
-                    lastMultiplierDVoltage.
-                     status=CON_ERROR_RNG;
-
-                return;
-            }
-        #endif /* DATABASE_RANGE */
-
         /* Set the AMC multiplier D voltage. If an error occurs then store the state
            and return the error state then return. */
         if(setAmc(AMC_MULTIPLIER_D_VOLTAGE)==ERROR){
@@ -824,45 +540,6 @@ static void multiplierDCurrentHandler(void){
                     lo.
                      amc.
                       multiplierDCurrent[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATBASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              multiplierDCurrent[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              multiplierDCurrent[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  multiplierDCurrent[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  multiplierDCurrent[HI_ERROR_RANGE])){
-                    storeError(ERR_AMC,
-                               0x20); // Error 0x20: Error: AMC multiplier D current in error range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_AMC,
-                               0x21); // Error 0x23: Warning: AMC multiplier D current in warning range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -894,35 +571,6 @@ static void gateEVoltageHandler(void){
         /* Extract the float from the can message */
         changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
-
-        /* Check the value against the store limits. The limits are read from
-           the configuration database at configuration time. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              gateEVoltage[MIN_SET_VALUE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              gateEVoltage[MAX_SET_VALUE])){
-                storeError(ERR_AMC,
-                           0x14); // Error 0x14: Gate E voltage set value out of range
-
-                /* Store error in the last control message variable */
-                frontend.
-                 cartridge[currentModule].
-                  lo.
-                   amc.
-                    lastGateEVoltage.
-                     status=CON_ERROR_RNG;
-
-                return;
-            }
-        #endif /* DATABASE_RANGE */
 
         /* Set the AMC gate E voltage. If an error occurs then store the state
            and return the error state then return. */
@@ -973,45 +621,6 @@ static void gateEVoltageHandler(void){
                     lo.
                      amc.
                       gateEVoltage[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATBASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              gateEVoltage[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              gateEVoltage[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  gateEVoltage[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  gateEVoltage[HI_ERROR_RANGE])){
-                    storeError(ERR_AMC,
-                               0x15); // Error 0x15: Error: AMC gate E voltage in error range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_AMC,
-                               0x16); // Error 0x16: Warning: AMC gate E voltage in warning range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -1043,35 +652,6 @@ static void drainEVoltageHandler(void){
         /* Extract the float from the can message */
         changeEndian(CONV_CHR_ADD,
                      CAN_DATA_ADD);
-
-        /* Check the value against the store limits. The limits are read from
-           the configuration database at configuration time. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              drainEVoltage[MIN_SET_VALUE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              drainEVoltage[MAX_SET_VALUE])){
-                storeError(ERR_AMC,
-                           0x17); // Error 0x17: Drain E voltage set value out of range
-
-                /* Store error in the last control message variable */
-                frontend.
-                 cartridge[currentModule].
-                  lo.
-                   amc.
-                    lastDrainEVoltage.
-                     status=CON_ERROR_RNG;
-
-                return;
-            }
-        #endif /* DATABASE_RANGE */
 
         /* Set the AMC drain E voltage. If an error occurs then store the state
            and return the error state then return. */
@@ -1122,45 +702,6 @@ static void drainEVoltageHandler(void){
                     lo.
                      amc.
                       drainEVoltage[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out a warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATBASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              drainEVoltage[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              drainEVoltage[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  drainEVoltage[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  drainEVoltage[HI_ERROR_RANGE])){
-                    storeError(ERR_AMC,
-                               0x18); // Error 0x18: Error: AMC drain E voltage in error range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_AMC,
-                               0x19); // Error 0x18: Warning: AMC drain E voltage in warning range.
-                    /* Store the state in the outgoing CAN message */
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -1217,43 +758,6 @@ static void drainECurrentHandler(void){
                       lo.
                        amc.
                         drainECurrent[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              drainECurrent[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              drainECurrent[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  drainECurrent[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  drainECurrent[HI_ERROR_RANGE])){
-                    storeError(ERR_AMC,
-                               0x1A); // Error 0x1A: Error: drain E current in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_AMC,
-                               0x1B); // Error 0x1B: Warning: drain E current in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* Load the CAN message payload with the returned value and set the
@@ -1312,43 +816,6 @@ static void supplyVoltage5VHandler(void){
                       lo.
                        amc.
                         supplyVoltage5V[CURRENT_VALUE];
-
-        /* Check the result against the warning and error range. Right now
-           this function is only printing out an warning/error message
-           depending on the result but no actions are taken. */
-        #ifdef DATABASE_RANGE
-            if(checkRange(frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              supplyVoltage5V[LOW_WARNING_RANGE],
-                          CONV_FLOAT,
-                          frontend.
-                           cartridge[currentModule].
-                            lo.
-                             amc.
-                              supplyVoltage5V[HI_WARNING_RANGE])){
-                if(checkRange(frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  supplyVoltage5V[LOW_ERROR_RANGE],
-                              CONV_FLOAT,
-                              frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 amc.
-                                  supplyVoltage5V[HI_ERROR_RANGE])){
-                    storeError(ERR_AMC,
-                               0x1E); // Error 0x1E: Error: 5V supply voltage in error range
-                    CAN_STATUS = MON_ERROR_RNG;
-                } else {
-                    storeError(ERR_AMC,
-                               0x1F); // Error 0x1F: Warning: 5V supply voltage in warning range
-                    CAN_STATUS = MON_WARN_RNG;
-                }
-            }
-        #endif /* DATABASE_RANGE */
     }
 
     /* Load the CAN message payload with the returned value and set the
