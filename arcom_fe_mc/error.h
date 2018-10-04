@@ -38,7 +38,7 @@
     #define CON_ERROR_RNG   (-10)   //!< Value of last control message received is outside the allowed range
     /* Modules */
     #define ERR_ERROR               0x00 //!< Error in the Error Module
-    #define ERR_unassigned          0x01 //!< Unassigned
+    #define ERR_unassigned01        0x01 //!< Unassigned
     #define ERR_PP                  0x02 //!< Error in the Parallel Port Module
     #define ERR_CAN                 0x03 //!< Error in the CAN Module
     #define ERR_CARTRIDGE           0x04 //!< Error in the Cartridge Module
@@ -54,7 +54,7 @@
     #define ERR_SIDEBAND            0x0E //!< Error in the Sideband Module
     #define ERR_LNA_LED             0x0F //!< Error in the LNA led Module
     #define ERR_SIS_HEATER          0x10 //!< Error in the SIS heater Module
-    #define ERR_SCHOTTKY_MIXER      0x11 //!< Error in the Schottky mixer Module
+    #define ERR_unassigned11        0x11 //!< Unassigned
     #define ERR_SIS                 0x12 //!< Error in the SIS Module
     #define ERR_SIS_MAGNET          0x13 //!< Error in the SIS Magnet Module
     #define ERR_LNA                 0x14 //!< Error in the LNA Module
@@ -109,19 +109,21 @@
     #define ERC_IRQ_RANGE           0x04 //!< Parallel port: IRQ out of range
     #define ERC_AMBSI_WAIT          0x05 //!< Parallel port: Waiting for AMBSI ready
     #define ERC_AMBSI_EXPIRED       0x06 //!< Parallel port: Timed out waiting for AMBSI ready.  CAN disabled
-    #define ERC_FE_MODE             0x07 //!< CAN: Illegal FE_MODE
-    #define ERC_MAINT_MODE          0x08 //!< CAN: message blocked because FE is in MAINTENANCE mode
-    #define ERC_09                  0x09 //!< 
-    #define ERC_0A                  0x0A //!< 
-    #define ERC_0B                  0x0B //!< 
-    #define ERC_0C                  0x0C //!< 
-    #define ERC_0D                  0x0D //!< 
+    #define ERC_MAINT_MODE          0x07 //!< CAN: message blocked because FE is in MAINTENANCE mode
+    #define ERC_HARDWARE_TIMEOUT    0x08 //!< Timeout waiting for hardware to become ready
+    #define ERC_HARDWARE_ERROR      0x09 //!< Hardware is in an error state
+    #define ERC_HARDWARE_WAIT       0x0A //!< Waiting for previous command to finish
+    #define ERC_FLASH_ERROR         0x0B //!< Error reading/writing flash disk
+    #define ERC_HARDWARE_BLOCKED    0x0C //!< Command blocked by safety check
+    #define ERC_DEBUG_ME            0x0D //!< Software entered an invalid or impossible state
     #define ERC_0E                  0x0E //!< 
     #define ERC_0F                  0x0F //!< 
     #define ERC_MODULE_RANGE        0x10 //!< Submodule is out of range
     #define ERC_MODULE_ABSENT       0x11 //!< Submodule is not installed
     #define ERC_MODULE_POWER        0x12 //!< Submodule is not powered
-    #define ERC_RCA_RANGE           0x13 //!< RCA out of range
+    #define ERC_RCA_CLASS           0x13 //!< RCA class out of range
+    #define ERC_RCA_RANGE           0x14 //!< RCA out of range
+    #define ERC_COMMAND_VAL         0x15 //!< Command value out of range
 
     /* Globals */
     /* Externs */
