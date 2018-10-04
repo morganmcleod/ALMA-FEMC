@@ -29,22 +29,16 @@
     /* General */
     #define HARDW_RNG_ERR   (-2)    //!< The addressed or connected hardware it is not installed or activated
     #define HARDW_BLKD_ERR  (-3)    //!< The addressed hardware is locked
-    #define HARDW_UPD_WARN  (-4)    //!< The addressed hardware is not properly defined yet (firmware needs updating)
-    #define HARDW_CON_ERR   (-5)    //!< There was an error while appling the required conversion
-    #define HARDW_RETRY     (-6)    //!< The seleected monitor message should be read again
+    #define HARDW_CON_ERR   (-5)    //!< There was an error while applying a conversion calculation
     #define HARDW_ERROR     (-7)    //!< The selected hardware is in error state. Follow ICD instruction to proceed.
     /* Monitor */
-    #define MON_ERROR_RNG   (-10)   //!< Monitor message returned value in error range
-    #define MON_WARN_RNG    (-11)   //!< Monitor message returned value in warning range
     #define MON_CAN_RNG     (-12)   //!< Monitor message on non existing RCA
-    #define MON_ERROR_ACT   (-13)   //!< Monitor message returned value in error range and an action was taken by FEMC
-    #define MON_WARN_ACT    (-14)   //!< Monitor message returned value in warning range and an action was taken by FEMC
-    #define MON_HARDW_FUT   (-15)   //!< Monitor message on not yet existing hardware
+    #define MON_ERROR_ACT   (-13)   //!< Monitor message detected a problem and an action was taken
     /* Control */
     #define CON_ERROR_RNG   (-10)   //!< Value of last control message received is outside the allowed range
     /* Modules */
     #define ERR_ERROR               0x00 //!< Error in the Error Module
-//    #define ERR_CPU                 0x01 //!< Error in the Pegasus Module
+    #define ERR_unassigned          0x01 //!< Unassigned
     #define ERR_PP                  0x02 //!< Error in the Parallel Port Module
     #define ERR_CAN                 0x03 //!< Error in the CAN Module
     #define ERR_CARTRIDGE           0x04 //!< Error in the Cartridge Module
@@ -106,10 +100,28 @@
     #define ERR_INTRLK_TEMP         0x3C //!< Error in the FETIM interlock temperature module
     #define ERR_INTRLK_FLOW         0x3D //!< Error in the FETIM interlock flow module
     #define ERR_INTRLK_GLITCH       0x3E //!< Error in the FETIM interlock glitch module
-    #define ERR_FETIM_EXT_TEMP           0x3F //!< Error in the FETIM external temperature module
+    #define ERR_FETIM_EXT_TEMP      0x3F //!< Error in the FETIM external temperature module
     #define ERR_COMP_HE2_PRESS      0x40 //!< Error in the FETIM compressor He2 pressure module
-
-
+    /* Error codes - shared by all modules */
+    #define ERC_NO_MEMORY           0x01 //!< Not enough memory
+    #define ERC_REDIRECT_STDERR     0x02 //!< Error library: redirecting stderr
+    #define ERC_IRQ_DISABLED        0x03 //!< Parallel port: IRQ was disabled
+    #define ERC_IRQ_RANGE           0x04 //!< Parallel port: IRQ out of range
+    #define ERC_AMBSI_WAIT          0x05 //!< Parallel port: Waiting for AMBSI ready
+    #define ERC_AMBSI_EXPIRED       0x06 //!< Parallel port: Timed out waiting for AMBSI ready.  CAN disabled
+    #define ERC_FE_MODE             0x07 //!< CAN: Illegal FE_MODE
+    #define ERC_MAINT_MODE          0x08 //!< CAN: message blocked because FE is in MAINTENANCE mode
+    #define ERC_09                  0x09 //!< 
+    #define ERC_0A                  0x0A //!< 
+    #define ERC_0B                  0x0B //!< 
+    #define ERC_0C                  0x0C //!< 
+    #define ERC_0D                  0x0D //!< 
+    #define ERC_0E                  0x0E //!< 
+    #define ERC_0F                  0x0F //!< 
+    #define ERC_MODULE_RANGE        0x10 //!< Submodule is out of range
+    #define ERC_MODULE_ABSENT       0x11 //!< Submodule is not installed
+    #define ERC_MODULE_POWER        0x12 //!< Submodule is not powered
+    #define ERC_RCA_RANGE           0x13 //!< RCA out of range
 
     /* Globals */
     /* Externs */

@@ -143,7 +143,7 @@ void bogoFunction(void) {
 
     /* If monitor */
     CAN_SIZE=0;
-    CAN_STATUS=HARDW_UPD_WARN;
+    CAN_STATUS=HARDW_RNG_ERR;
 
     return;
 }
