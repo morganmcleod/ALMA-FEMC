@@ -2,13 +2,10 @@
     \ingroup    fetim
     \brief      FETIM interlock header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/03/25 17:51:00 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: interlock.h,v 1.1 2011/08/05 19:18:06 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the FETIM interlock. */
 
 /*! \defgroup   interlock       FETIM interlock

@@ -1,13 +1,10 @@
 /*! \file   iniWrapper.c
     \brief  INI file wrapper functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2006/06/29 16:43:33 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: iniWrapper.c,v 1.4 2009/03/25 14:45:06 avaccari Exp $
-
-    This files contains all the functions necessary to handle the wrapper to
+    This file contains all the functions necessary to handle the wrapper to
     the 3rd party INI file reader library. */
 
 /* Includes */
@@ -19,7 +16,7 @@
 #include "debug.h"
 
 /* Write info to the configuration file */
-/*! This function will write informations to the selected configuration file.
+/*! This function will write information to the selected configuration file.
         - If the section doesn't yet exist in the file, it will be added
         - If the variable doesn't yet exist in the file, it will be added
         - New variables are created at the end of existing sections, or on the
@@ -60,7 +57,7 @@ extern int myWriteCfg(const char *fileName,
 
 
 /* Read info from the configuration file */
-/*! This function will read informations from the selected configuration file.
+/*! This function will read information from the selected configuration file.
     \param  *fileName       This is the name of the configuration file to access
     \param  *sectionName    This is the name of the section to look for without
                             the bracket "[" or "]"

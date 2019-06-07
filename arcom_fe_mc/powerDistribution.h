@@ -2,14 +2,10 @@
     \ingroup    frontend
     \brief      Power distribution system header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 13:24:53 by avaccari
 
-    <b> CVS informations: </b><br>
-
-    \$Id: powerDistribution.h,v 1.16 2009/03/23 20:43:04 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the power distribution system. The part of the
     system that is under the control of this software is only the <em>power
     distribution system</em>. The main power supply unit will have its own CAN
@@ -77,7 +73,7 @@
                 - Ca = 8: Band 09
                 - Ca = 9: Band 10
 
-            Please see \ref PD_MODULE for more informations. */
+            Please see \ref PD_MODULE for more information. */
         PD_MODULE       pdModule[PD_MODULES_NUMBER];
 
         //! Current number of cartridges powered

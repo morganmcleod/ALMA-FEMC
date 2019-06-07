@@ -1,13 +1,10 @@
 /*! \file   timer.h
     \brief  Timers header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 13:24:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: timer.h,v 1.32 2011/03/24 13:34:11 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the timers used by the software. */
 
 #ifndef _TIMER_H

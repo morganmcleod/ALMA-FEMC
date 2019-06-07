@@ -2,13 +2,10 @@
     \ingroup    serialInterface
     \brief      IF switch serial interface header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2006/11/30 16:40:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: ifSerialInterface.h,v 1.9 2010/08/11 22:05:20 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the IF switch serial interface. */
 
 /*! \defgroup   ifSerialInterface  IF Switch serial interface

@@ -2,13 +2,10 @@
     \ingroup    serialInterface
     \brief      LO serial interface header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 13:24:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: loSerialInterface.h,v 1.33 2010/03/03 15:43:18 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the LO serial interface. */
 
 /*! \defgroup   loSerialInterface  Local Oscillator serial interface

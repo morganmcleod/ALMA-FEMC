@@ -1,13 +1,10 @@
 /*! \file   turboPump.c
     \brief  Turbo pump functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/03/14 17:11:40 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: turboPump.c,v 1.6 2011/11/09 00:40:30 avaccari Exp $
-
-    This files contains all the functions necessary to handle turbo pump
+    This file contains all the functions necessary to handle turbo pump
     events. */
 
 /* Includes */
@@ -18,7 +15,6 @@
 #include "frontend.h"
 #include "globalDefinitions.h"
 #include "error.h"
-#include "database.h"
 #include "cryostatSerialInterface.h"
 
 /* Globals */
@@ -79,7 +75,7 @@ static void enableHandler(void){
         if (frontend.
              cryostat.
               backingPump.
-               enable[CURRENT_VALUE] == BACKING_PUMP_DISABLE) 
+               enable == BACKING_PUMP_DISABLE) 
         {
             frontend.
              cryostat.
@@ -104,12 +100,12 @@ static void enableHandler(void){
                  fetim.
                   compressor.
                    temp[FETIM_EXT_SENSOR_TURBO].
-                    temp[CURRENT_VALUE] < TURBO_PUMP_MIN_TEMPERATURE) ||
+                    temp < TURBO_PUMP_MIN_TEMPERATURE) ||
                (frontend.
                 fetim.
                  compressor.
                   temp[FETIM_EXT_SENSOR_TURBO].
-                   temp[CURRENT_VALUE] > TURBO_PUMP_MAX_TEMPERATURE)) 
+                   temp > TURBO_PUMP_MAX_TEMPERATURE)) 
             {
                 storeError(ERR_TURBO_PUMP, ERC_HARDWARE_BLOCKED); //Temperature below allowed range -> Turbo pump disabled
                 frontend.
@@ -121,7 +117,7 @@ static void enableHandler(void){
                 frontend.
                  cryostat.
                   turboPump.
-                   enable[CURRENT_VALUE] = TURBO_PUMP_DISABLE;
+                   enable = TURBO_PUMP_DISABLE;
                 return;
             }
         }
@@ -158,7 +154,7 @@ static void enableHandler(void){
     if (frontend.
          cryostat.
           backingPump.
-           enable[CURRENT_VALUE] == BACKING_PUMP_DISABLE) 
+           enable == BACKING_PUMP_DISABLE) 
     {
         // always return HARDW_BLKD when the backing pump is off
         CAN_STATUS = HARDW_BLKD_ERR;
@@ -168,7 +164,7 @@ static void enableHandler(void){
     CAN_BYTE = frontend.
                 cryostat.
                  turboPump.
-                  enable[CURRENT_VALUE];
+                  enable;
     CAN_SIZE = CAN_BOOLEAN_SIZE;
 }
 
@@ -204,7 +200,7 @@ static void stateHandler(void){
     prevErrorState = frontend.
                       cryostat.
                        turboPump.
-                        state[CURRENT_VALUE]=cryoRegisters.
+                        state=cryoRegisters.
                                               statusReg.
                                                bitField.
                                                 turboPumpError;
@@ -218,25 +214,25 @@ static void stateHandler(void){
         CAN_BYTE=frontend.
                   cryostat.
                    turboPump.
-                    state[CURRENT_VALUE];
+                    state;
     } else {
         /* If no error during monitor process, gather the stored data */
         CAN_BYTE = frontend.
                     cryostat.
                      turboPump.
-                      state[CURRENT_VALUE];
+                      state;
     }
 
     /* If the monitor state is not the same as previous and is ERROR: return a warning. */
     if(prevErrorState != frontend.
                           cryostat.
                            turboPump.
-                            state[CURRENT_VALUE])
+                            state)
     {   
         if(frontend.
             cryostat.
              turboPump.
-              state[CURRENT_VALUE] == 1)
+              state == 1)
         {
             storeError(ERR_TURBO_PUMP, ERC_HARDWARE_ERROR); // The turbo pump state is ERROR.
         }
@@ -246,7 +242,7 @@ static void stateHandler(void){
     if (frontend.
          cryostat.
           backingPump.
-           enable[CURRENT_VALUE] == BACKING_PUMP_DISABLE) 
+           enable == BACKING_PUMP_DISABLE) 
     {
         // always return HARDW_BLKD when the backing pump is off
         CAN_STATUS = HARDW_BLKD_ERR;
@@ -256,7 +252,7 @@ static void stateHandler(void){
     CAN_BYTE=frontend.
               cryostat.
                turboPump.
-                state[CURRENT_VALUE];
+                state;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }
 
@@ -295,20 +291,20 @@ static void speedHandler(void){
         CAN_BYTE=frontend.
                   cryostat.
                    turboPump.
-                    speed[CURRENT_VALUE];
+                    speed;
     } else {
         /* If no error during monitor process, gather the stored data */
         CAN_BYTE=frontend.
                   cryostat.
                    turboPump.
-                    speed[CURRENT_VALUE];
+                    speed;
     }
 
     /* If monitor on a monitor RCA */
     if (frontend.
          cryostat.
           backingPump.
-           enable[CURRENT_VALUE] == BACKING_PUMP_DISABLE) 
+           enable == BACKING_PUMP_DISABLE) 
     {
         // always return HARDW_BLKD when the backing pump is off
         CAN_STATUS = HARDW_BLKD_ERR;
@@ -318,6 +314,6 @@ static void speedHandler(void){
     CAN_BYTE=frontend.
               cryostat.
                turboPump.
-                speed[CURRENT_VALUE];
+                speed;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }

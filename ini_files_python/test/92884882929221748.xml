@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ConfigData>
+    <ASSEMBLY value="WCA7"/>
+    <ColdMultiplier value="3"/>
+    <PLLLoopBwMultiplier value="6"/>
+    <WCAConfig value="6633" TS="2019-11-19 08:27:25"/>
+    <ESN hex="0149FE4F14000074" dec="92884882929221748"/>
+    <SN value="WCA7-9"/>
+    <FLOYIG value="15.62E9"/>
+    <FHIYIG value="20.38E9"/>
+    <PowerAmp FreqLO="283.000E9" VD0="0.00" VD1="0.00" VG0="-0.05" VG1="-0.05"/>
+    <PowerAmpLimit count="88" VD0="2.500" VD1="2.275"/>
+    <PowerAmpLimit count="279" VD0="2.450" VD1="2.200"/>
+    <PowerAmpLimit count="470" VD0="2.400" VD1="2.150"/>
+    <PowerAmpLimit count="661" VD0="2.450" VD1="2.200"/>
+    <PowerAmpLimit count="853" VD0="2.400" VD1="2.200"/>
+    <PowerAmpLimit count="1044" VD0="2.450" VD1="2.250"/>
+    <PowerAmpLimit count="1426" VD0="2.450" VD1="2.300"/>
+    <PowerAmpLimit count="1617" VD0="2.500" VD1="2.350"/>
+    <PowerAmpLimit count="2000" VD0="2.500" VD1="2.441"/>
+    <PowerAmpLimit count="2191" VD0="2.500" VD1="2.500"/>
+    <OptimizationTargets FreqLO="283.000E9" PhotoMixerCurrent="0"/>
+</ConfigData>

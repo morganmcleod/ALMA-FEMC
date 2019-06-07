@@ -2,7 +2,7 @@
     \ingroup    compressor
     \brief      FETIM external temperature header file
 
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the FETIM external temperature sensors. */
 
 /*! \defgroup   fetimExtTemp    FETIM external temperature sensors
@@ -37,14 +37,14 @@
         //! FETIM external temperature
         /*! This contains tha latest read-back value for the temperature
             sensor */
-        float           temp[OPERATION_ARRAY_SIZE];
+        float           temp;
         
         //! FETIM external temperature out of range
         /*! This contains the latest read-back value for the compressor
             temperature out of range register:
                 - \ref OK    -> Temperature ok
                 - \ref ERROR -> Temperature out of range */
-        unsigned char   tempOutRng[OPERATION_ARRAY_SIZE];
+        unsigned char   tempOutRng;
     } COMP_TEMP;
 
     /* Globals */

@@ -1,13 +1,8 @@
 /*! \file   ppComm.c
     \brief  Parallel Port communication interface functions
-    \todo   If possible improve the error handling for the link between AMBSI1
-            and ARCOM
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:33:14 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: ppComm.c,v 1.38 2012/04/13 15:36:39 avaccari Exp $
 
     This file contains the functions necessary to cummunicate via the
     parallel port of the ARCOM Pegasus board.
@@ -61,7 +56,9 @@ int PPOpen(void){
 
     int timedOut=0; // A local to keep track of time out errors
 
-    printf("Initializing parallel port communication...\n");
+    #ifdef DEBUG_STARTUP
+        printf("Initializing parallel port communication...\n");
+    #endif
 
     /* Modify the configuration in the Super I/O Controller (FDC37B72x) to
        change the parallel port mode to EPP 1.7 */
@@ -78,15 +75,15 @@ int PPOpen(void){
     outp(SIO_INDEX_PORT,
          LD3_PRIMARY_INT);       // Select the primary interrupt register
     LD3PrimaryInterruptNo = inp(SIO_DATA_PORT); // Load the primary interrupt number
-    if(LD3PrimaryInterruptNo==0){
-        outp(SIO_DATA_PORT,
-             PP_DEFAULT_IRQ_NO);  // If disabled, enable and assign PP_IRQ_NO
-        LD3PrimaryInterruptNo=PP_DEFAULT_IRQ_NO;
-        storeError(ERR_PP, ERC_IRQ_DISABLED);   // Parallel Port Interrupt Disabled (Warning)
+    if(LD3PrimaryInterruptNo==0) {
+        outp(SIO_DATA_PORT, PP_DEFAULT_IRQ_NO);  // If disabled, enable and assign PP_IRQ_NO
+        LD3PrimaryInterruptNo = PP_DEFAULT_IRQ_NO;
+        // storeError(ERR_PP, ERC_IRQ_DISABLED);   // Parallel Port Interrupt Disabled (Warning)
     }
 
-    printf(" Current PP interrupt number: %d\n",
-           LD3PrimaryInterruptNo);
+    #ifdef DEBUG_STARTUP
+        printf(" Current PP interrupt number: %d\n", LD3PrimaryInterruptNo); 
+    #endif
 
     /* Configure pic mask and interrupt vector */
     if(LD3PrimaryInterruptNo<2 || LD3PrimaryInterruptNo>15){
@@ -173,11 +170,11 @@ int PPOpen(void){
     /* Clear any curren interrupt on the parallel port */
     PPClear();
 
-
-
 // If you manage to disable all the interrupts, they should be re-enabled here!
 
-    printf("done!\n\n"); // Initialization
+    #ifdef DEBUG_STARTUP
+        printf("done!\n\n"); // Initialization
+    #endif
 
     return NO_ERROR;
 }
@@ -232,7 +229,9 @@ void PicPPIrqCtrl(unsigned char enable){
         - \ref ERROR    -> if something wrong happened */
 int PPClose(void){
 
-    printf("Shutting down parallel port communication...\n");
+    #ifdef DEBUG_STARTUP
+        printf("Shutting down parallel port communication...\n");
+    #endif
 
     PPIrqCtrl(DISABLE); // Disable interrupt on the parallel port. This should really disable all the interrupts but I still have to find a way to do it
 
@@ -258,7 +257,9 @@ int PPClose(void){
 
 // If you manage to disable all the interrupts, they should be re-enabled here!
 
-    printf("done!\n\n");
+    #ifdef DEBUG_STARTUP
+        printf("done!\n\n");
+    #endif
 
     return NO_ERROR;
 }
@@ -266,12 +267,7 @@ int PPClose(void){
 /*! This function will transmit \p length bytes of data on the parallel port.
     The function has been written in assembly to increase the speed of
     execution.
-    \param  length  an unsigned char
-    \todo   Fix the problem with the assembly code. It always sends out 8 bytes
-            doesn't matter what the variable length is loaded with when it doesn't
-            freeze the all firmware!!!
-            Maybe I've to wait or check to make sure the transmission of the
-            data is finished before I switch the parallel port direction to input. */
+    \param  length  an unsigned char */
 void PPWrite(unsigned char length){
     unsigned char cnt;
 
@@ -378,7 +374,6 @@ static void interrupt far PPIntHandler(void){
     #ifdef DEBUG_PPCOM
         printf("Interrupt Serviced!\n");
     #endif /* DEBUG_PPCOM */
-
 }
 
 /*! This function clears the IRQ of the parallel port. This will allow the port
@@ -387,6 +382,5 @@ static void interrupt far PPIntHandler(void){
     An alternative would be create a queue to store incoming messages. This
     could create problem with the 150us timing requirement on monitor messages. */
 void PPClear(void){
-    outp(PPPICAddr,
-         PIC_INT_CLR);
+    outp(PPPICAddr, PIC_INT_CLR);
 }

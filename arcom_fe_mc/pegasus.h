@@ -1,13 +1,10 @@
 /*! \file   pegasus.h
     \brief  ARCOM Pegasus header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 13:24:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: pegasus.h,v 1.9 2009/03/23 20:43:04 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the ARCOM Pegasus board. */
 
 #ifndef _PEGASUS_H

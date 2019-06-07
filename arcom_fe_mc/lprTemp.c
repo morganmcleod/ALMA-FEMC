@@ -1,13 +1,10 @@
 /*! \file   lprTemp.c
     \brief  LPR temperature sensors functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/06/02 16:29:22 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: lprTemp.c,v 1.5 2009/08/25 21:39:39 avaccari Exp $
-
-    This files contains all the functions necessary to handle the lpr
+    This file contains all the functions necessary to handle the lpr
     temperature sensors events. */
 
 /* Includes */
@@ -16,7 +13,6 @@
 #include "debug.h"
 #include "frontend.h"
 #include "error.h"
-#include "database.h"
 #include "lprSerialInterface.h"
 #include "globalDefinitions.h"
 
@@ -79,7 +75,7 @@ static void tempHandler(void){
         CONV_FLOAT=frontend.
                    lpr.
                     lprTemp[currentLprModule].
-                     temp[CURRENT_VALUE];
+                     temp;
 
         /* Check the result against the warning and error range. Right now this
            function is only printing out a warning/error message depending on
@@ -89,7 +85,7 @@ static void tempHandler(void){
         CONV_FLOAT=frontend.
                    lpr.
                     lprTemp[currentLprModule].
-                     temp[CURRENT_VALUE];
+                     temp;
     }
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big enadian

@@ -2,13 +2,10 @@
     \ingroup    compressor
     \brief      FETIM compressor He2 pressure header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/03/28 17:51:00 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: he2Press.h,v 1.1 2011/08/05 19:19:53 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the FETIM compressor He2 pressure sensor. */
 
 /*! \defgroup   he2Press       FETIM compressor He2 pressure sensor
@@ -33,9 +30,9 @@
     /*! This structure represent the current state of the FETIM compressor
         He2 pressure system:
         \ingroup    compressor
-        \param      pressure[Op]    This contains the the current value of the
+        \param      pressure    This contains the the current value of the
                                     He2 pressure.
-        \param      pressOutRng[Op] This contains the current state of the
+        \param      pressOutRng This contains the current state of the
                                     He2 pressure out of range register:
                                         - \ref OK    -> He2 Pressure ok
                                         - \ref ERROR -> He2 pressure out of range */
@@ -43,13 +40,13 @@
         //! FETIM compressor He2 pressure
         /*! This contains tha latest read-back value for the He2 pressure
             sensor */
-        float           pressure[OPERATION_ARRAY_SIZE];
+        float           pressure;
         //! FETIM compressor He2 pressure out of range
         /*! This contains the latest read-back value for the compressor He2
             pressure out of range register:
                 - \ref OK    -> Pressure ok
                 - \ref ERROR -> Pressure out of range */
-        unsigned char   pressOutRng[OPERATION_ARRAY_SIZE];
+        unsigned char   pressOutRng;
     } HE2_PRESS;
 
     /* Globals */

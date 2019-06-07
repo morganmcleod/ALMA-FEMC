@@ -2,13 +2,10 @@
     \ingroup    interlock
     \brief      FETIM interlock sensors header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/03/29 17:51:00 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: interlockSensors.h,v 1.1 2011/08/05 19:18:06 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the FETIM interlock sensors. */
 
 /*! \defgroup   interlockSensors        FETIM interlock sensors
@@ -54,7 +51,7 @@
                                     temeprature sensors
         \param      flow            This contains the state of the interlock
                                     flow sensors
-        \param      singleFail[Op]  This contains the current state for the
+        \param      singleFail  This contains the current state for the
                                     single fail register which record if any one
                                     of the sensors has failed:
                                         - \ref OK    -> Everything is OK
@@ -71,7 +68,7 @@
             has failed:
                 - \ref OK    -> Everything is OK
                 - \ref ERROR -> At least one sensor failed */
-        unsigned char   singleFail[OPERATION_ARRAY_SIZE];
+        unsigned char   singleFail;
     } INTRLK_SENSORS;
 
     /* Globals */

@@ -1,7 +1,7 @@
 /*! \file   he2Press.c
     \brief  FETIM Compressor He2 Pressure Sensor
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/03/28 17:34:50 by avaccari
 
     This file contains all the functions necessary to handle 
@@ -81,7 +81,7 @@ static void pressHandler(void){
                 fetim.
                  compressor.
                   he2Press.
-                   pressure[CURRENT_VALUE];
+                   pressure;
 
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big enadian
@@ -131,7 +131,7 @@ static void outOfRangeHandler(void){
               fetim.
                compressor.
                 he2Press.
-                 pressOutRng[CURRENT_VALUE];
+                 pressOutRng;
 
     /* The CAN message payload is already loaded. Set the size */
     CAN_SIZE=CAN_BOOLEAN_SIZE;

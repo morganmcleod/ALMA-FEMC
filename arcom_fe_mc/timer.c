@@ -1,13 +1,10 @@
 /*! \file   timer.c
     \brief  Timers functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: timer.c,v 1.18 2009/08/25 21:39:39 avaccari Exp $
-
-    This files contains all the functions necessary to handle time events.
+    This file contains all the functions necessary to handle time events.
     There are two different timers available:
         - \ref waitSeconds  This is a synchronous timer meaning that once it is
           called, the execution of the program stops until the timer expires.

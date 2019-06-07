@@ -1,13 +1,10 @@
 /*! \file   polDac.c
     \brief  Polarization DAC functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: polDac.c,v 1.12 2007/06/22 22:03:00 avaccari Exp $
-
-    This files contains all the functions necessary to handle the polarization
+    This file contains all the functions necessary to handle the polarization
     DAC events. */
 
 /* Includes */

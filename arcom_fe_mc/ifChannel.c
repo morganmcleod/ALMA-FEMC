@@ -1,13 +1,10 @@
 /*! \file   ifChannel.c
     \brief  IF Channel functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2006/12/01 13:24:46 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: ifChannel.c,v 1.9 2010/11/02 14:36:29 avaccari Exp $
-
-    This files contains all the functions necessary to handle IF Channel
+    This file contains all the functions necessary to handle IF Channel
     events. */
 
 /* Includes */
@@ -19,7 +16,6 @@
 #include "ifSerialInterface.h"
 #include "ifSwitch.h"
 #include "debug.h"
-#include "database.h"
 #include "globalDefinitions.h"
 
 /* Globals */
@@ -87,17 +83,7 @@ void attenuationHandler(void){
         /* Since the payload is just a byte, there is no need to conver the
            received data from the can message to any particular format, the
            data is already available in CAN_BYTE. */
-        if(checkRange(frontend.
-                       ifSwitch.
-                        ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
-                                 [currentIfChannelSideband[currentIfSwitchModule]].
-                         attenuation[MIN_SET_VALUE],
-                      CAN_BYTE,
-                      frontend.
-                       ifSwitch.
-                        ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
-                                 [currentIfChannelSideband[currentIfSwitchModule]].
-                         attenuation[MAX_SET_VALUE])){
+        if(checkRange(IF_CHANNEL_SET_ATTENUATION_MIN, CAN_BYTE, IF_CHANNEL_SET_ATTENUATION_MAX)) {
             storeError(ERR_IF_CHANNEL, ERC_COMMAND_VAL); //Attenuation set value out of range
 
             /* Store error in the last control message variable */
@@ -149,7 +135,7 @@ void attenuationHandler(void){
               ifSwitch.
                ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
                         [currentIfChannelSideband[currentIfSwitchModule]].
-                attenuation[CURRENT_VALUE];
+                attenuation;
 
     CAN_SIZE=CAN_BYTE_SIZE;
 }
@@ -174,7 +160,7 @@ void assemblyTempHandler(void){
           ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
                    [currentIfChannelSideband[currentIfSwitchModule]].
            ifTempServo.
-            enable[CURRENT_VALUE]==IF_TEMP_SERVO_DISABLE)&(frontend.
+            enable==IF_TEMP_SERVO_DISABLE)&(frontend.
                                                             ifSwitch.
                                                              hardwRevision==IF_SWITCH_HRDW_REV0)){
         storeError(ERR_IF_CHANNEL, ERC_MODULE_POWER); //the temperature servo is not enabled
@@ -210,14 +196,14 @@ void assemblyTempHandler(void){
                    ifSwitch.
                     ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
                              [currentIfChannelSideband[currentIfSwitchModule]].
-                     assemblyTemp[CURRENT_VALUE];
+                     assemblyTemp;
     } else {
         /* If no error during the monitor process, gather the stored data */
         CONV_FLOAT=frontend.
                    ifSwitch.
                     ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
                              [currentIfChannelSideband[currentIfSwitchModule]].
-                     assemblyTemp[CURRENT_VALUE];
+                     assemblyTemp;
     }
 
     /* Load the CAN message payload with the returned value and set the

@@ -2,13 +2,10 @@
     \ingroup    lo
     \brief      LO photomixer header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:05:40 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: photomixer.h,v 1.16 2006/11/30 23:01:42 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the photomixer included in the LO. */
 
 /*! \defgroup   photomixer  LO Photomixer
@@ -44,7 +41,7 @@
     //! Current state of the LO photomixer
     /*! This structure represent the current state of the LO photomixer.
         \ingroup    lo
-        \param      enable[Op]  This contains the current state of the
+        \param      enable  This contains the current state of the
                                 photomixer. It has to be stored since this is
                                 \em not a read-back from the hardware but just
                                 a register holding the last succesfully issued
@@ -65,13 +62,13 @@
             \warning    It is not a read back of the actual value. The returned
                         value is the one stored by the software after a control
                         command has been issued.*/
-        unsigned char   enable[OPERATION_ARRAY_SIZE];
+        unsigned char   enable;
         //! LO photomixer voltage
         /*! This is the voltage (in V) across the LO photomixer. */
-        float           voltage[OPERATION_ARRAY_SIZE];
+        float           voltage;
         //! LO photomixer current
         /*! This is the current (in mA) across the LO photomixer. */
-        float           current[OPERATION_ARRAY_SIZE];
+        float           current;
         //! Last control message: LO photomixer state
         /*! This is the content of the last control message sent to the LO
             photomixer state. */

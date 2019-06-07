@@ -4,10 +4,7 @@
     <b> File Informations: </b><br>
     Created: 2006/10/16 16:18:50 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: pdModule.c,v 1.15 2012/01/17 16:30:58 avaccari Exp $
-
-    This files contains all the funcions necessary to handle the submodules of
+    This file contains all the funcions necessary to handle the submodules of
     cartridge power distribution system. */
 
 /* Includes */
@@ -18,7 +15,6 @@
 #include "frontend.h"
 #include "error.h"
 #include "pdSerialInterface.h"
-#include "database.h"
 #include "timer.h"
 #include "async.h"
 
@@ -52,15 +48,13 @@ void pdModuleHandler(void){
 
     /* Check if the cartridge corresponding to the selected power distribution
        module is available. If it isn't then notify the incoming CAN message. */
-    #ifdef DATABASE_HARDW
-       if(frontend.
-            cartridge[currentPowerDistributionModule].
-             available==UNAVAILABLE){
-            storeError(ERR_PD_MODULE, ERC_MODULE_ABSENT); //corresponding cartridge not installed
-            CAN_STATUS = HARDW_BLKD_ERR; // Notify the incoming CAN message
-            return;
-        }
-    #endif /* DATABASE_HARDW */
+    if(frontend.cartridge[currentPowerDistributionModule].available==UNAVAILABLE)
+    {
+        storeError(ERR_PD_MODULE, ERC_MODULE_ABSENT); //corresponding cartridge not installed
+        CAN_STATUS = HARDW_BLKD_ERR; // Notify the incoming CAN message
+        return;
+    }
+
     /* Call the correct handler */
     (pdModuleModulesHandler[currentPdModuleModule])();
 }
@@ -233,7 +227,7 @@ static void enableHandler(void) {
             #endif /* DEBUG_POWERDIS */
             
             // Update maxPoweredModules depending on the FE mode:
-            switch(frontend.mode[CURRENT_VALUE]) {
+            switch(frontend.mode) {
                 case TROUBLESHOOTING_MODE:
                     frontend.
                      powerDistribution.
@@ -419,7 +413,6 @@ static void enableHandler(void) {
                     // This will also re-eable the async procedure if it has been
                     // disabled via CAN message or console
                     asyncState = ASYNC_CARTRIDGE;
-                    return;
 
                 default:
                     // illegal state transtition.  Should never happen.
@@ -493,7 +486,6 @@ static void enableHandler(void) {
             #ifdef DEBUG_POWERDIS
                 printPoweredModuleCounts();
             #endif /* DEBUG_POWERDIS */
-
             return;
         }
     }
@@ -526,7 +518,7 @@ static void enableHandler(void) {
     CAN_BYTE=frontend.
               powerDistribution.
                pdModule[currentPowerDistributionModule].
-                enable[CURRENT_VALUE]
+                enable
             +frontend.
               cartridge[currentPowerDistributionModule].
                standby2;

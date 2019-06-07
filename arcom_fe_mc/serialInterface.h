@@ -1,14 +1,10 @@
 /*! \file       serialInterface.h
     \brief      Serial Interface header file
-    \todo       Remove the comment from the include headers once they are written.
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 13:24:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: serialInterface.h,v 1.12 2006/11/30 23:01:43 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the entire serial interface system.
     See \ref serialInterface for more information. */
 

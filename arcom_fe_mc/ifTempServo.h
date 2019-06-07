@@ -2,13 +2,10 @@
     \ingroup    ifChannel
     \brief      IF switch temperature servo header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2006/11/30 11:30:33 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: ifTempServo.h,v 1.3 2011/08/05 19:18:06 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the IF switch temperatue servo. */
 
 /*! \defgroup   ifTempServo     IF temperature servo
@@ -40,7 +37,7 @@
     /*! This structure represent the current state of the IF switch temperature
         servo.
         \ingroup    ifSwitch
-        \param      enable[Op]  This contains the current state of the
+        \param      enable  This contains the current state of the
                                 temperature servo. It has to be remembered that
                                 this is \em not a read-back from the hardware
                                 but just a register holding the last issued
@@ -57,7 +54,7 @@
             \warning    It is not a read back of the actual value. The returned
                         value is the one stored by the software after a control
                         command has ben issued. */
-        unsigned char   enable[OPERATION_ARRAY_SIZE];
+        unsigned char   enable;
         //! Last control message: IF temperature servo enable
         /*! This is the content of the last control message sent to the LNA led
             state. */

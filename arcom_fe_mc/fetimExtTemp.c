@@ -1,7 +1,7 @@
 /*! \file   fetimExtTemp.c
     \brief  FETIM external temperature sensor
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/03/28 17:34:50 by avaccari
 
     This file contains all the functions necessary to handle FETIM compressor
@@ -84,7 +84,7 @@ static void tempHandler(void){
                 fetim.
                  compressor.
                   temp[currentCompressorModule].
-                   temp[CURRENT_VALUE];
+                   temp;
 
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big enadian
@@ -130,7 +130,7 @@ static void outOfRangeHandler(void){
                   fetim.
                    compressor.
                     temp[currentCompressorModule].
-                     tempOutRng[CURRENT_VALUE];
+                     tempOutRng;
 
         /* Check the result against the warning and error range. Right now this
            function is only printing out a warning/error message depending on
@@ -141,7 +141,7 @@ static void outOfRangeHandler(void){
                   fetim.
                    compressor.
                     temp[currentCompressorModule].
-                     tempOutRng[CURRENT_VALUE];
+                     tempOutRng;
 
     }
     /* The CAN message payload is already loaded. Set the size */

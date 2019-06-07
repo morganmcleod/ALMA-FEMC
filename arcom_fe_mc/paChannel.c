@@ -1,13 +1,10 @@
 /*! \file   paChannel.c
     \brief  PA Channel functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: paChannel.c,v 1.26 2012/04/13 15:36:39 avaccari Exp $
-
-    This files contains all the functions necessary to handle the PA Channel
+    This file contains all the functions necessary to handle the PA Channel
     events.
 
     The mapping between PA channels and polarizations are encoded in this module.
@@ -21,7 +18,6 @@
 #include "frontend.h"
 #include "loSerialInterface.h"
 #include "debug.h"
-#include "database.h"
 #include "globalDefinitions.h"
 
 /* Globals */
@@ -55,13 +51,6 @@ void paChannelHandler(void){
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
         return;
     }
-
-
-/****** If it is a control message, we should check that the temperature of the
-4k mixers is < 30k before allowing any control. If it not, notify, store the
-hardware blocked error and return. */
-
-
 
     /* Call the correct handler */
     (paChannelModulesHandler[currentPaChannelModule])();
@@ -132,7 +121,7 @@ static void gateVoltageHandler(void){
                     lo.
                      pa.
                       paChannel[currentPaChannel()].
-                       gateVoltage[CURRENT_VALUE];
+                       gateVoltage;
     } else {
 
         /* If no error during the monitor process gather the stored data */
@@ -141,7 +130,7 @@ static void gateVoltageHandler(void){
                     lo.
                      pa.
                       paChannel[currentPaChannel()].
-                       gateVoltage[CURRENT_VALUE];
+                       gateVoltage;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -171,14 +160,8 @@ static void drainVoltageHandler(void){
            PAs as too much power at this temperature could damage the
            multipliers. In the LO async loop, the PAs will be turned off if the
            dewar temepratures grows to above 30K. */
-        temp4K=frontend.
-                cryostat.
-                 cryostatTemp[CRYOCOOLER_4K].
-                  temp[CURRENT_VALUE];
-        temp12K=frontend.
-                 cryostat.
-                  cryostatTemp[CRYOCOOLER_12K].
-                   temp[CURRENT_VALUE];
+        temp4K=frontend.cryostat.cryostatTemp[CRYOCOOLER_4K].temp;
+        temp12K=frontend.cryostat.cryostatTemp[CRYOCOOLER_12K].temp;
 
         /* We check the 4K sensor first and if that doesn't allow the command,
            we check the 12K sensor next.   Previous algorithm in 2.6.1 checked
@@ -200,8 +183,12 @@ static void drainVoltageHandler(void){
             }
         }
 
+        // if band 1 or band 2, enable:
+        if (currentModule == BAND1 || currentModule == BAND2)
+            state=ENABLE;
+
         // If we are in TROUBLESHOOTING mode, ignore all the above safety checks and allow the voltage to be set:
-        if (frontend.mode[CURRENT_VALUE] == TROUBLESHOOTING_MODE)
+        if (frontend.mode == TROUBLESHOOTING_MODE)
             state=ENABLE;
 
         if(state==DISABLE){
@@ -234,7 +221,7 @@ static void drainVoltageHandler(void){
             Limit the CONV_FLOAT value about to be sent to the PA channel for drain voltage
             to the safe maximum for the current YTO tuning.
            Returns HARDW_BLKD_ERR if the value was reduced. */
-        if (frontend.mode[CURRENT_VALUE] == TROUBLESHOOTING_MODE)
+        if (frontend.mode == TROUBLESHOOTING_MODE)
             ret = NO_ERROR;
         else
             ret = limitSafePaDrainVoltage(currentPaModule);
@@ -306,7 +293,7 @@ static void drainVoltageHandler(void){
                     lo.
                      pa.
                       paChannel[currentPaChannel()].
-                       drainVoltage[CURRENT_VALUE];
+                       drainVoltage;
     } else {
 
         /* If no error during the monitor process gather the stored data */
@@ -315,7 +302,7 @@ static void drainVoltageHandler(void){
                     lo.
                      pa.
                       paChannel[currentPaChannel()].
-                       drainVoltage[CURRENT_VALUE];
+                       drainVoltage;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -363,7 +350,7 @@ static void drainCurrentHandler(void){
                     lo.
                      pa.
                       paChannel[currentPaChannel()].
-                       drainCurrent[CURRENT_VALUE];
+                       drainCurrent;
     } else {
         /* If no error during monitor process, gather the stored data */
         CONV_FLOAT = frontend.
@@ -371,7 +358,7 @@ static void drainCurrentHandler(void){
                       lo.
                        pa.
                         paChannel[currentPaChannel()].
-                         drainCurrent[CURRENT_VALUE];
+                         drainCurrent;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to

@@ -2,13 +2,10 @@
     \ingroup    miSpecialMsgs
     \brief      Modulation input DAC header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/06/22 16:55:14 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: miDac.h,v 1.1 2007/06/22 22:03:00 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the modulation input DACspecial messages. In
     normal operation these message shouldn't be needed. */
 

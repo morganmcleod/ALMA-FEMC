@@ -2,26 +2,16 @@
     \ingroup    cartridge
     \brief      polarization header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:33:14 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: polarization.h,v 1.18 2007/08/27 21:08:41 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate one of the two polarization available for each
     cartridge. */
 
 /*! \defgroup   polarization    Polarization
     \ingroup    cartridge
     \brief      Polarization group
-    \todo       Go back in all the submodules and modify the software that deals
-                with single bytes contol/monitor. The higher level shouldn't
-                know about the particularity of the message. Only the serial
-                interface document relative to each hardware should know about
-                that. The higher level should only call function of the type
-                get/set without knowing how many bytes are in the message.
-                Use the YTO as an example.
 
     This group includes all the different \ref polarization submodules. For more
     information on the \ref polarization module see \ref polarization.h*/
@@ -75,12 +65,6 @@
     /* Typedefs */
     //! Current state of the polarization
     typedef struct {
-        //! Polarization availability
-        /*! This variable indicates if the cartridge is outfitted with this
-            particular polarization. This value should be part of the device
-            dependent informations retrived from the configuration database. */
-        unsigned char   available;
-
         //! SSI 10MHz Enable
         /*! This variable indicates the current communication speed for the
             remote device. Allowed speeds are the following:
@@ -93,19 +77,19 @@
                 - Sb = 0: Sideband 1
                 - Sb = 1: Sideband 2
 
-            Please see \ref SIDEBAND for more informations. */
+            Please see \ref SIDEBAND for more information. */
         SIDEBAND        sideband[SIDEBANDS_NUMBER];
 
         //!LNAled current state
-        /*! Please see \ref LNA_LED for more informations. */
+        /*! Please see \ref LNA_LED for more information. */
         LNA_LED         lnaLed;
 
         //! SIS heater current state
-        /*! Please see \ref SIS_HEATER for more informations. */
+        /*! Please see \ref SIS_HEATER for more information. */
         SIS_HEATER      sisHeater;
 
         //! Polarization special messages current state
-        /*! Please see \ref POL_SPECIAL_MSGS for more informations. */
+        /*! Please see \ref POL_SPECIAL_MSGS for more information. */
         POL_SPECIAL_MSGS polSpecialMsgs;
     } POLARIZATION;
 

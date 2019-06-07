@@ -1,0 +1,208 @@
+//  $Id: FTPAPI.H 1.17 2008/02/20 03:31:44Z gerritvn Exp $
+//
+//  *** DO NOT REMOVE THE FOLLOWING NOTICE ***
+//
+//  Copyright (c) 1999-2005 Datalight, Inc.
+//  All Rights Reserved
+//
+//  Datalight, Inc. is a Washington corporation located at:
+//
+//  21520 30th Dr SE, Suite 110,          Tel: +1.425.951.8086
+//  Bothell, WA  98021                    Fax: +1.425.951.8094
+//  USA                                   Http://www.datalight.com
+//
+//  This software, including without limitation all source code and
+//  documentation, is the confidential, trade secret property of
+//  Datalight, Inc., and is protected under the copyright laws of
+//  the United States and other jurisdictions.  Portions of the
+//  software may also be subject to one or more the following US
+//  patents: US#5860082, US#6260156.
+//
+//  In addition to civil penalties for infringement of copyright
+//  under applicable U.S. law, 17 U.S.C. 1204 provides criminal
+//  penalties for violation of (a) the restrictions on circumvention
+//  of copyright protection systems found in 17 U.S.C. 1201 and
+//  (b) the protections for the integrity of copyright management
+//  information found in 17 U.S.C. 1202.
+//
+//  U.S. Government Restricted Rights.  Use, duplication,
+//  reproduction, or transfer of this commercial product and
+//  accompanying documentation is restricted in accordance with
+//  FAR 12.212 and DFARS 227.7202 and by a License Agreement.
+//
+//  IN ADDITION TO COPYRIGHT AND PATENT LAW, THIS SOFTWARE IS
+//  PROTECTED UNDER A SOURCE CODE AGREEMENT, NON-DISCLOSURE
+//  AGREEMENT (NDA), OR SIMILAR BINDING CONTRACT BETWEEN DATALIGHT,
+//  INC. AND THE LICENSEE ("BINDING AGREEMENT").  YOUR RIGHT, IF ANY,
+//  TO COPY, PUBLISH, MODIFY OR OTHERWISE USE THE SOFTWARE,IS SUBJECT
+//  TO THE TERMS AND CONDITIONS OF THE BINDING AGREEMENT, AND BY
+//  USING THE SOFTWARE IN ANY MANNER, IN WHOLE OR IN PART, YOU AGREE
+//  TO BE BOUND BY THE TERMS OF THE BINDING AGREEMENT.  CONTACT
+//  DATALIGHT, INC. AT THE ADDRESS SET FORTH ABOVE IF YOU OBTAINED
+//  THIS SOFTWARE IN ERROR.
+//
+/*
+   FTPAPI.H
+
+   Portions copyright (c) GPvNO 1999-2001
+
+   Resident FTP API definitions
+
+   Revision History:
+   06/23/2007 gvn Send log
+   11/05/2005 gvn added GetFTPXferStatus, FSTAT_RX_STARTED and FSTAT_TX_STARTED
+                  changed FSTAT_SENDING and FSTAT_RECEIVING definitions
+   05/03/2004 jmb added Custom function capability
+   04/23/2003 gvn added sending/receiving status
+   06/27/2001 gvn added function number to change the FTP connect port.
+*/
+
+#ifndef __FTPAPI_H
+#define __FTPAPI_H
+#ifndef D_FAR
+#define D_FAR far
+#endif
+#define FTP_INT      0x62
+
+#define OpenFTPSession     0  // par1=server, par2=user, par3=password
+                              // session id returned in par5,par6
+#define CloseFTPSession    1  // par5,par6 = session id
+#define SendFTPCommmand    2  // par1=command; par5,par6 = session id
+#define GetFTPFile         3  // par1=remote name, par2=local name
+                              // par5,par6 = session id
+#define GetFTPDirectory    4  // par1=file spec, par2=name of file to receive listing
+                              // par4=1 for long listing, par5,par6 = session id
+#define SendFTPFile        5  // par1=local name, par2=remote name,par4=1 for append
+                              // par5,par6 = session id
+#define CheckFTPStatus     6  // par1=buffer for returned string
+                              // session id returned in par5,par6
+#define CallResident       7  // command in AL:
+
+#define XSF_STOP_LISTEN    1
+#define XSF_STATUS         2
+#define XSF_UNLOAD         4
+#define XSF_NOCONFIRM      8  // Unload with no confirm if session active
+
+#define SetFTPType         8  // par4=1 for Binary (Image), par4=0 for ASCII
+                              // par5,par6 = session id
+#define SetFTPPort         9  // par4=port to use for next OpenFTPSession
+
+#define SetPassiveMode     10 // Par4=0 for non-passive, Par4=1 passive,
+                              // par5,par6 = session id
+#define InstallCustomFunc  11 // par1=far function pointer to handle SITE CUSTOM
+// command.  CUSTOM function prototype:
+// par4=Maximum size of fpszBuffer; must be less than 8192 (0x1000)
+//      May be ORed with FTPCUSTOM_FORMAT2 for second format
+// par5 Reserved parameter, must be set to zero
+// On error, Par4 will contain available free memory.
+// to uninstall the custom handler, set both par1 and par4 to 0.
+// CUSTOM function prototype:
+//    unsigned Custom(char far *fpszCommand char far *fpszBuffer)
+//
+//    The text following the SITE CUSTOM command is passed in fpszCommand.
+//    The FTP response generated when the SITE CUSTOM command is
+//    executed, depends on the return code from the Custom function,
+//    the data passed back in fpszBuffer.
+//    With FTPCUSTOM_FORMAT2 not set:
+//    "200 Custom Command OK. Code: %u - %s\r\n",return_code,fpszBuffer
+//    With FTPCUSTOM_FORMAT2 set:
+//    "%03u%s\r\n",return_code,fpszBuffer
+//    A good response could be generated by returning 200 and putting
+//    " Custom command ok" in fpszBuffer.
+//    A good multiline response could be generated by returning 200 and fpszBuffer
+//    containing "-result line 1\r\n result line2\r\n200 result line3"
+//    A failed response could be generated by returning 500 and fpszBuffer
+//    containing " Custom command failed"
+
+#define FTPCUSTOM_FORMAT2  0x1000
+#define GetFTPXferStatus   12  // par5,par6 = session id,
+                               // Count returned in (DWORD)par1,
+                               // error in (DWORD)par2 and state in par4
+#define MDelete            13  // par1=filespec
+#define SetFTPTimeout      14  // par4=timeout in seconds
+#define SetFTPFlags        15  // par4=flags
+#define LOG_SEND           1   // flag to log sending commands
+
+// value of state returned in par4
+#define	COMMAND_STATE			0	// Awaiting user command
+#define	SENDING_STATE			1	// Sending data to user
+#define	SENDING_STATE_WPOK	2	// Wait for PORT OK before Sending
+#define	SEND_RDY_STATE			3	// Sending, server ready
+#define	SENT_STATE				4	// Finished sending, waiting for 226
+#define	LIST_STATE_WTOK		5	// Wait for TYPE OK before Listing MGET files
+#define	LIST_STATE_WPOK		6	// Wait for PORT OK before Listing
+#define	LIST_STATE				7	// Listing remote files to get
+#define	LIST_RDY_STATE			8	// Listing, server ready
+#define	LISTED_STATE_WTOK		9	// Listing done, waiting for TYPE OK
+#define	LISTED_STATE			10	// Listing done, waiting for 226
+#define	RECEIVING_STATE_WPOK 11	// Wait for PORT OK before RETR
+#define	RECEIVING_STATE		12	// Storing data from other side
+#define	RECV_RDY_STATE			13	// Receiving, server ready
+#define	RECEIVED_STATE			14	// Finished receiving data from user
+#define	REPLY_STATE				15	// Waiting for reply from raw line (unused)
+#define	COMMAND_STATE_WTOK	16	// waiting for TYPE OK
+#define	RCVLIST_STATE_WPOK	17	// wait for PORT OK before LIST
+#define	RCVNLST_STATE_WPOK	18	// wait for PORT OK before NLST
+// NB: The order of the DEL_LIST* states must be the same as the LIST* states
+#define	DEL_LIST_STATE_WTOK	19	// Wait for TYPE OK before Listing MDELET files
+#define	DEL_LIST_STATE_WPOK	20	// Wait for PORT OK before Listing
+#define	DEL_LIST_STATE			21	// Listing remote files to get
+#define	DEL_LIST_RDY_STATE	22 // Listing, server ready
+#define	DEL_LISTED_STATE_WOK 23 // Listing done, waiting for TYPE OK
+#define	DEL_LISTED_STATE		24 // Listing done, waiting for 226
+#define  DELETE_WTOK          25 // waiting for OK during mdelete
+#define  HOST_LOOKUP          26 // waiting for non-blocking host lookup
+#define  LAST_STATE           26
+
+// FTP parameter block. A pointer to this block is passed in BX,CX
+
+typedef struct ftppar {
+   char D_FAR *par1;
+   char D_FAR *par2;
+   char D_FAR *par3;
+   int par4;
+   int par5;
+   int par6;
+} FTPPar;
+
+// status return codes returned by CheckFTPStatus
+
+#define  FSTAT_TX_ERR         1     // Server session: error sending file
+#define  FSTAT_RX_ERR         2     // Server session: error receiving file
+#define  FSTAT_TX_OK          3     // Server session: file sent OK
+#define  FSTAT_RX_OK          4     // Server session: file received OK
+#define  FSTAT_LINE_RECEIVED  5     // Client session: FTP command line received
+#define  FSTAT_TX_STARTED     6     // Server session: file send started
+#define  FSTAT_RX_STARTED     7     // Server session: file receive started
+#define  FSTAT_COMMAND_SENT   8     // Sent command available
+#define  FSTAT_SENDING        0x100 // Sending data on any session
+#define  FSTAT_RECEIVING      0x200 // Receiving data on any session
+#define  FSTAT_SENDINGRECVING (FSTAT_SENDING | FSTAT_RECEIVING)
+
+// error codes returned by all calls including CheckFTPStatus
+
+#define  FERR_UNKNOWN_CALL    20 // Unknown API call
+#define  FERR_SESSION_OPEN    21
+#define  FERR_SESSION_CLOSED  22
+#define  FERR_UNKNOWN_HOST    23
+#define  FERR_NO_MEMORY       24
+#define  FERR_TRANSFERRING    25
+#define  FERR_PARAMETER_ERROR 26
+#define  FERR_FILE_OPEN       27
+#define  FERR_DIR_LIST        28
+#define  FERR_CANT_CREATE     29
+#define  FERR_CANT_CONNECT    30
+#define  FERR_RE_ENTERED      31    // FTPAPI re-entered
+#define  FERR_SUSPENDED       32    // code used by FTP interactive client
+#define  FERR_ABORTED         33    // code used by FTP interactive client
+#define  FERR_TIMEOUT         34
+#define  FERR_CONN_LOST       35    // connection lost
+#define  FERR_NO_API          36
+#define  FERR_DIRECTORY       37
+#define  FERR_LAST            37
+
+// Procedure type for InstallCustomFunc
+typedef unsigned (D_FAR *CustomHdlr)(char D_FAR *, char D_FAR *);
+#endif //#ifndef __FTPAPI_H
+
+

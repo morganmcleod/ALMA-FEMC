@@ -2,13 +2,10 @@
     \ingroup    cryostat
     \brief      Solenoid valve header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/03/13 11:16:23 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: solenoidValve.h,v 1.6 2007/06/01 20:55:10 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the solenoid valve. */
 
 /*! \defgroup   solenoidValve  Solenoid valve
@@ -39,7 +36,7 @@
     //! Current state of the gate valve
     /*! This structure represent the current state of the solenoid valve system.
         \ingroup    cryostat
-        \param      state[Op]   This contains the current state of the solenoid
+        \param      state   This contains the current state of the solenoid
                                 valve:
                                     - \ref SOLENOID_VALVE_OPEN -> Valve is open
                                     - \ref SOLENOID_VALVE_CLOSE -> Valve is
@@ -57,7 +54,7 @@
                 - \ref SOLENOID_VALVE_CLOSE -> Valve is close
                 - \ref SOLENOID_VALVE_UNKNOWN -> Valve is in an unknown
                   state. */
-        unsigned char   state[OPERATION_ARRAY_SIZE];
+        unsigned char   state;
         //! Last control message: solenoid valve state
         /*! This is the content of the last control message sent to the solenoid
             valve state. */

@@ -1,13 +1,10 @@
 /*! \file   gateValve.c
     \brief  Gate valve functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/03/14 17:13:45 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: gateValve.c,v 1.6 2011/08/05 19:18:06 avaccari Exp $
-
-    This files contains all the functions necessary to handle gate valve
+    This file contains all the functions necessary to handle gate valve
     events. */
 
 /* Includes */
@@ -18,7 +15,6 @@
 #include "frontend.h"
 #include "globalDefinitions.h"
 #include "error.h"
-#include "database.h"
 #include "cryostatSerialInterface.h"
 
 /* Globals */
@@ -68,7 +64,7 @@ static void stateHandler(void){
         if(frontend.
             cryostat.
              backingPump.
-              enable[CURRENT_VALUE]==BACKING_PUMP_DISABLE)
+              enable==BACKING_PUMP_DISABLE)
         {
             storeError(ERR_GATE_VALVE, ERC_MODULE_POWER); //Backing Pump off -> Gate valve disabled
             frontend.
@@ -96,7 +92,7 @@ static void stateHandler(void){
         if(frontend.
             cryostat.
              gateValve.
-              state[CURRENT_VALUE]==GATE_VALVE_UNKNOWN){
+              state==GATE_VALVE_UNKNOWN){
 
             storeError(ERR_GATE_VALVE, ERC_HARDWARE_WAIT); //Valve still moving -> Wait unil stopped
 
@@ -147,20 +143,20 @@ static void stateHandler(void){
         CAN_BYTE=frontend.
                   cryostat.
                    gateValve.
-                    state[CURRENT_VALUE];
+                    state;
     } else {
         /* If no error during monitor process, gather the stored data */
         CAN_BYTE = frontend.
                     cryostat.
                      gateValve.
-                      state[CURRENT_VALUE];
+                      state;
     }
 
     /* Load the CAN message payload with the returned value and set the size */
     CAN_BYTE=frontend.
               cryostat.
                gateValve.
-                state[CURRENT_VALUE];
+                state;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 
 }

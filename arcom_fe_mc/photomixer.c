@@ -4,10 +4,7 @@
     <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: photomixer.c,v 1.17 2009/10/13 15:01:49 avaccari Exp $
-
-    This files contains all the functions necessary to handle the 1st LO
+    This file contains all the functions necessary to handle the 1st LO
     photomixer events. */
 
 /* Includes */
@@ -18,7 +15,6 @@
 #include "frontend.h"
 #include "loSerialInterface.h"
 #include "debug.h"
-#include "database.h"
 
 /* Globals */
 /* Externs */
@@ -108,7 +104,7 @@ static void enableHandler(void){
               cartridge[currentModule].
                lo.
                 photomixer.
-                 enable[CURRENT_VALUE];
+                 enable;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }
 
@@ -148,14 +144,14 @@ static void voltageHandler(void){
                    cartridge[currentModule].
                     lo.
                      photomixer.
-                      voltage[CURRENT_VALUE];
+                      voltage;
     } else {
         /* If no error during the monitor process, gather the stored data. */
         CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      photomixer.
-                      voltage[CURRENT_VALUE];
+                      voltage;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -208,14 +204,14 @@ static void currentHandler(void){
                    cartridge[currentModule].
                     lo.
                      photomixer.
-                      current[CURRENT_VALUE];
+                      current;
     } else {
         /* If no error during the monitor process, gather the stored data. */
         CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     lo.
                      photomixer.
-                      current[CURRENT_VALUE];
+                      current;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to

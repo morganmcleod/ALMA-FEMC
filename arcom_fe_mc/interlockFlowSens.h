@@ -2,13 +2,10 @@
     \ingroup    interlockFlow
     \brief      LPR flow sensor header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/03/29 14:49:29 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: interlockFlowSens.h,v 1.1 2011/08/05 19:18:06 avaccari Exp $
-
-    This files contains all the information necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the interlock flow sensor. */
 
 /*! \defgroup   interlockFlowSens     FETIM interlock flow sensor
@@ -35,12 +32,12 @@
     /*! This structure represent the current state of the FETIM interlock
         flow sensor.
         \ingroup    interlockFlow
-        \param      flow[Op]    This contains the most recent read-back value
+        \param      flow    This contains the most recent read-back value
                                 for the flow */
     typedef struct {
         //! FETIM interlock flow sensors temeprature
         /*! This is the flow as registered by the sensor. */
-        float   flow[OPERATION_ARRAY_SIZE];
+        float   flow;
     } INTRLK_FLOW_SENS;
 
 

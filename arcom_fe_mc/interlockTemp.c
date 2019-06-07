@@ -1,11 +1,8 @@
 /*! \file   interlockTemp.c
     \brief  FETIM Interlock Temperature
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/03/29 17:34:50 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: interlockTemp.c,v 1.1 2011/08/05 19:18:06 avaccari Exp $
 
     This file contains all the functions necessary to handle FETIM interlock
     temperature events. */

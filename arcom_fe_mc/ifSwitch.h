@@ -2,13 +2,10 @@
     \ingroup    frontend
     \brief      IF switch header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 13:24:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: ifSwitch.h,v 1.18 2010/08/11 22:05:20 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the IF switch system. This system allows to
     route the 4 output IF channels from a particular cartridge to the backend.
     Every single IF channel has a settable attenuation in order to equalize for
@@ -63,23 +60,16 @@
     #define WAY9                            12
 
     /* Submodule definitions */
-    #define IF_SWITCH_MODULES_NUMBER        (IF_CHANNELS_NUMBER+1)  // See list below
+    #define IF_SWITCH_MODULES_NUMBER        (IF_CHANNELS_NUMBER+2)  // See list below
     #define IF_SWITCH_MODULES_RCA_MASK      0x0001C                 /* Mask to extract the submodule number:
                                                                        0-3  -> ifChannelHandler
-                                                                       4    -> bandSelectHandler */
+                                                                       4    -> bandSelectHandler
+                                                                       5    -> allChannelHandler */
     #define IF_SWITCH_MODULES_MASK_SHIFT    2                       // Bits right shift for the submodules mask
 
     /* Typedefs */
     //! Current state of the IF switch system
-    /*! This structure represent the current state of the IF switch system.
-        \ingroup    frontend
-        \param      hardwRevision       This contains the IF switch M&C board
-                                        hardware revision level
-        \param      ifChannel[Po][Sb]   a IF_CHANNEL
-        \param      bandSelect          an unsigned char
-        \param      lastBandSelect      This contains a copy of the last issued
-                                        control message for the band select. */
-     typedef struct {
+    typedef struct {
         //! Current state of the the IF switch
         //! IF Switch M&C board hardware revision level
         /*! This contains the IF switch M&C board hardware revision level */
@@ -94,18 +84,16 @@
                 - Sb = 0: Sideband 1
                 - Sb = 1: Sideband 2
 
-            \todo Find out what the backend is expecting from the different
-                  channels and assign upper and lower sideband accordingly
-
-            Please see \ref IF_CHANNEL for more informations. */
+            Please see \ref IF_CHANNEL for more information. */
         IF_CHANNEL      ifChannel[POLARIZATIONS_NUMBER][SIDEBANDS_NUMBER];
         //! Selected cartridge
         /*! This is the currently cartridge selected by the IF switch. */
-        unsigned char   bandSelect[OPERATION_ARRAY_SIZE];
+        unsigned char   bandSelect;
         //! Last control message: band select
         /*! This is the content of the last control message sent to the band
             select. */
         LAST_CONTROL_MESSAGE    lastBandSelect;
+        LAST_CONTROL_MESSAGE    lastAllChannelsAtten;
     } IF_SWITCH;
 
     /* Globals */
@@ -116,6 +104,7 @@
     /* Prototypes */
     /* Statics */
     static void bandSelectHandler(void);
+    static void allChannelsHandler(void);
     /* Externs */
     extern void ifSwitchHandler(void); //!< This function deals with the incoming CAN message
     extern int ifSwitchStartup(void); //!< This function deals with the initialization of the IF switch system

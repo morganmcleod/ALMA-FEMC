@@ -1,11 +1,8 @@
 /*! \file   fetim.c
     \brief  FETIM functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/03/25 17:01:27 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: fetim.c,v 1.5 2013/07/12 20:16:35 mmcleod Exp $
 
     This file contains all the functions necessary to handle FETIM events. */
 
@@ -58,9 +55,7 @@ void fetimHandler(void){
     #endif /* DEBUG_FETIM */
 
     /* Check if the receiver is outfitted with the FETIM system */
-    if(frontend.
-        fetim.
-         available==UNAVAILABLE){
+    if(frontend.fetim.available==UNAVAILABLE) {
         storeError(ERR_FETIM, ERC_MODULE_ABSENT); //FETIM not installed
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
         return;
@@ -80,11 +75,6 @@ void fetimHandler(void){
     return;
 }
 
-
-
-
-
-
 /* FETIM initialization */
 /*! This function performs all the necessary initialization for the FETIM
     subsystem. These are executed only once at startup.
@@ -99,9 +89,11 @@ int fetimStartup(void){
        serial communication have to be implemented. */
     currentModule=FETIM_MODULE;
 
-    printf(" Initializing FETIM Module...\n");
-    printf("  - Reading FETIM module hardware revision level...\n");
-    /* Call the getIfSwitchHadrwRevision() function to read the hardware
+    #ifdef DEBUG_STARTUP
+        printf(" Initializing FETIM Module...\n");
+        printf("  - Reading FETIM module hardware revision level...\n");
+    #endif
+    /* Call the getFetimHardwRevision() function to read the hardware
        revision level and depening on the returned value evaluates the presence
        of the FETIM hardware. If error, return error and abort
        initialization. */
@@ -110,50 +102,19 @@ int fetimStartup(void){
         return ERROR;
     }
 
-    /* If the FETIM is not installed notify the user */
-    if(frontend.
-        fetim.
-         available==UNAVAILABLE){
-        printf("     Revision level: %d\n -> FETIM module not installed!\n",
-               frontend.
-                fetim.
-                 hardwRevision);
-    } else {
-        printf("     Revision level: %d\n",
-               frontend.
-                fetim.
-                 hardwRevision);
-    }
+    #ifdef DEBUG_STARTUP
+        /* If the FETIM is not installed notify the user */
+        if(frontend.fetim.available==UNAVAILABLE) {
+            printf("     Revision level: %d\n -> FETIM module not installed!\n",
+                   frontend.fetim.hardwRevision);
+        } else {
+            printf("     Revision level: %d\n",
+                   frontend.fetim.hardwRevision);
+        }
 
-    printf("    done!\n"); // Hardware Revision Level
-
-    /* Set warning and error ranges for known sensors. */
-    printf("  - Setting warning and error ranges of known sensors...\n");
-    /* External sensor 2 connected monitors turbo pump temperature */
-    frontend.
-     fetim.
-      compressor.
-       temp[FETIM_EXT_SENSOR_TURBO].
-        temp[LOW_ERROR_RANGE]=TURBO_PUMP_MIN_TEMPERATURE;
-    frontend.
-     fetim.
-      compressor.
-       temp[FETIM_EXT_SENSOR_TURBO].
-        temp[LOW_WARNING_RANGE]=TURBO_PUMP_MIN_WARN_TEMP;
-    frontend.
-     fetim.
-      compressor.
-       temp[FETIM_EXT_SENSOR_TURBO].
-        temp[HI_WARNING_RANGE]=TURBO_PUMP_MAX_WARN_TEMP;
-    frontend.
-     fetim.
-      compressor.
-       temp[FETIM_EXT_SENSOR_TURBO].
-        temp[HI_ERROR_RANGE]=TURBO_PUMP_MAX_TEMPERATURE;
-    printf("    done!\n"); // Warning and error ranges
-
-    printf(" done!\n\n"); // Initialization
-
+        printf("    done!\n"); // Hardware Revision Level
+        printf(" done!\n\n"); // Initialization
+    #endif // DEBUG_STARTUP
     return NO_ERROR;
 }
 
@@ -183,9 +144,7 @@ int fetimAsync(void){
     } asyncFetimState = ASYNC_FETIM_GET_EXT_TEMP;
 
     /* If the FETIM is not installed, return */
-    if(frontend.
-        fetim.
-         available==UNAVAILABLE){
+    if(frontend.fetim.available==UNAVAILABLE) {
         return ASYNC_DONE;
     }
 
@@ -202,12 +161,8 @@ int fetimAsync(void){
 
             #ifdef DEBUG_FETIM_ASYNC
                 printf("Async -> FETIM -> Ext Temp%d=%f\n",
-                    currentAsyncFetimExtTempModule,
-                    frontend.
-                     fetim.
-                      compressor.
-                       temp[currentAsyncFetimExtTempModule].
-                        temp[CURRENT_VALUE]);
+                       currentAsyncFetimExtTempModule,
+                       frontend.fetim.compressor.temp[currentAsyncFetimExtTempModule].temp);
             #endif /* DEBUG_FETIM_ASYNC */
 
             /* If done or error, go next sensor */
@@ -272,11 +227,7 @@ int fetimAsync(void){
                 #endif /* DEBUG_FETIM_ASYNC */
 
                 /* Check current conditions */
-                tempFloat=frontend.
-                           cryostat.
-                            vacuumController.
-                             vacuumSensor[CRYOSTAT_PRESSURE].
-                              pressure[CURRENT_VALUE];
+                tempFloat=frontend.cryostat.vacuumController.vacuumSensor[CRYOSTAT_PRESSURE].pressure;
 
                 /* Set state accoding to current condition */
                 if((tempFloat==FLOAT_ERROR)||(tempFloat==FLOAT_UNINIT)||(tempFloat>MAX_CRYO_COOLING_PRESSURE)){
@@ -316,11 +267,7 @@ int fetimAsync(void){
                 printf("Async -> FETIM -> FE Shutdown\n");
             #endif /* DEBUG_FETIM_ASYNC */
 
-            if(frontend.
-                fetim.
-                 interlock.
-                  state.
-                   shutdownTrig[CURRENT_VALUE]==TRUE){
+            if(frontend.fetim.interlock.state.shutdownTrig == TRUE) {
 
                 /* Shut down the frontend */
                 shutDown();
@@ -341,8 +288,5 @@ int fetimAsync(void){
             return ERROR;
             break;
     }
-
     return NO_ERROR;
-
 }
-

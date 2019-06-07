@@ -2,13 +2,10 @@
     \ingroup    lo
     \brief      MC header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/10/20 15:39:19 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: amc.h,v 1.19 2008/02/07 16:21:23 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the AMC. */
 
 /*! \defgroup   amc Active Multiplier Chain (AMC)
@@ -104,40 +101,40 @@
     typedef struct {
         //! MC A Gate Voltage
         /*! This is the MC A gate voltage (in V). */
-        float   gateAVoltage[OPERATION_ARRAY_SIZE];
+        float   gateAVoltage;
         //! MC A Drain  Voltage
         /*! This is the MC A drain voltage (in V). */
-        float   drainAVoltage[OPERATION_ARRAY_SIZE];
+        float   drainAVoltage;
         //! MC A Drain  Current
         /*! This is the MC A drain current (in mA). */
-        float   drainACurrent[OPERATION_ARRAY_SIZE];
+        float   drainACurrent;
         //! MC B Gate Voltage
         /*! This is the MC B gate voltage (in V). */
-        float   gateBVoltage[OPERATION_ARRAY_SIZE];
+        float   gateBVoltage;
         //! MC B Drain  Voltage
         /*! This is the MC B drain voltage (in V). */
-        float   drainBVoltage[OPERATION_ARRAY_SIZE];
+        float   drainBVoltage;
         //! MC B Drain  Current
         /*! This is the MC A drain current (in mA). */
-        float   drainBCurrent[OPERATION_ARRAY_SIZE];
+        float   drainBCurrent;
         //! MC supply voltage 5V
         /*! This is the MC supply voltage 5V (in V). */
-        float   supplyVoltage5V[OPERATION_ARRAY_SIZE];
+        float   supplyVoltage5V;
         //! MC multiplier D Voltage
         /*! This is the MC multiplier D voltage (in counts). */
-        unsigned char   multiplierDVoltage[OPERATION_ARRAY_SIZE];
+        unsigned char   multiplierDVoltage;
         //! MC multiplier D Current
         /*! This is the MC multiplier D current (in mA). */
-        float   multiplierDCurrent[OPERATION_ARRAY_SIZE];
+        float   multiplierDCurrent;
         //! MC E Gate Voltage
         /*! This is the MC E gate voltage (in V). */
-        float   gateEVoltage[OPERATION_ARRAY_SIZE];
+        float   gateEVoltage;
         //! MC E Drain  Voltage
         /*! This is the MC E drain voltage (in V). */
-        float   drainEVoltage[OPERATION_ARRAY_SIZE];
+        float   drainEVoltage;
         //! MC E Drain  Current
         /*! This is the MC E drain current (in mA). */
-        float   drainECurrent[OPERATION_ARRAY_SIZE];
+        float   drainECurrent;
         //! Last control message: MC B drain voltage
         /*! This is the content of the last control message sent to the MC B
             drain voltage. */

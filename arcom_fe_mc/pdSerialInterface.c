@@ -4,10 +4,7 @@
     <b> File Informations: </b><br>
     Created: 2006/10/18 10:11:13 by avaccari
 
-    <b> CVS Informations: </b><br>
-    \$Id: pdSerialInterface.c,v 1.12 2010/03/03 15:43:18 avaccari Exp $
-
-    This files contains all the functions necessary to control and operate the
+    This file contains all the functions necessary to control and operate the
     power distribution serial interface.
 
     This module is a software implementation of the hardware description
@@ -222,7 +219,7 @@ int setPdModuleEnable(unsigned char enable){
     frontend.
      powerDistribution.
       pdModule[currentPowerDistributionModule].
-       enable[CURRENT_VALUE]=(enable==PD_MODULE_ENABLE)?PD_MODULE_ENABLE:
+       enable=(enable==PD_MODULE_ENABLE)?PD_MODULE_ENABLE:
                                                         PD_MODULE_DISABLE;
 
     return NO_ERROR;
@@ -299,7 +296,7 @@ int getPdChannel(void){
              powerDistribution.
               pdModule[currentPowerDistributionModule].
                pdChannel[currentPdModuleModule].
-                current[CURRENT_VALUE]=(scale*pdRegisters.
+                current=(scale*pdRegisters.
                                                adcData)/PD_ADC_RANGE;
             break;
         case PD_CHANNEL_VOLTAGE:
@@ -329,7 +326,7 @@ int getPdChannel(void){
              powerDistribution.
               pdModule[currentPowerDistributionModule].
                pdChannel[currentPdModuleModule].
-                voltage[CURRENT_VALUE]=(scale*pdRegisters.
+                voltage=(scale*pdRegisters.
                                                adcData)/PD_ADC_RANGE;
             break;
         default:

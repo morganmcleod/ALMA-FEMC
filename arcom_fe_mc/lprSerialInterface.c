@@ -1,13 +1,10 @@
 /*! \file   lprSerialInterface.c
     \brief  LPR serial interface functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/06/05 14:59:17 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: lprSerialInterface.c,v 1.12 2010/10/01 22:13:46 avaccari Exp $
-
-    This files contains all the functions necessary to control and operate the
+    This file contains all the functions necessary to control and operate the
     LPR serial interface.
 
     This module is a software implementation of the hardware description
@@ -171,7 +168,7 @@ static int getLprAnalogMonitor(void){
 
 
 /* Get LPR temperatures */
-/*! This function return the operating informations about the addressed
+/*! This function return the operating information about the addressed
     temperature sensor. The resulting scaled value is stored in the
     \ref frontend status structure.
 
@@ -210,7 +207,7 @@ int getLprTemp(void){
     frontend.
      lpr.
       lprTemp[currentLprModule].
-       temp[CURRENT_VALUE]=(LPR_ADC_TEMP_SCALE*lprRegisters.
+       temp=(LPR_ADC_TEMP_SCALE*lprRegisters.
                                                 adcData)/LPR_ADC_RANGE;
 
     return NO_ERROR;
@@ -253,7 +250,7 @@ int setOpticalSwitchPort(void){
     if(frontend.
         lpr.
          opticalSwitch.
-          state[CURRENT_VALUE]==OPTICAL_SWITCH_BUSY){
+          state==OPTICAL_SWITCH_BUSY){
             storeError(ERR_LPR_SERIAL, ERC_HARDWARE_WAIT); //Optical switch busy
             return ERROR;
     }
@@ -298,7 +295,7 @@ int setOpticalSwitchPort(void){
     frontend.
      lpr.
       opticalSwitch.
-       port[CURRENT_VALUE]=CAN_BYTE;
+       port=CAN_BYTE;
 
     return NO_ERROR;
 }
@@ -349,7 +346,7 @@ int setOpticalSwitchShutter(unsigned char mode){
         if(frontend.
             lpr.
              opticalSwitch.
-              state[CURRENT_VALUE]==OPTICAL_SWITCH_BUSY){
+              state==OPTICAL_SWITCH_BUSY){
                 storeError(ERR_LPR_SERIAL, ERC_HARDWARE_WAIT); //Optical switch busy
                 return ERROR;
         }
@@ -395,7 +392,7 @@ int setOpticalSwitchShutter(unsigned char mode){
     frontend.
      lpr.
       opticalSwitch.
-       shutter[CURRENT_VALUE]=SHUTTER_ENABLE;
+       shutter=SHUTTER_ENABLE;
 
     return NO_ERROR;
 }
@@ -443,7 +440,7 @@ int getLaserDriveCurrent(void){
      lpr.
       edfa.
        laser.
-        driveCurrent[CURRENT_VALUE]=(LPR_ADC_DRIVE_CURRENT_SCALE*lprRegisters.
+        driveCurrent=(LPR_ADC_DRIVE_CURRENT_SCALE*lprRegisters.
                                                                   adcData/LPR_ADC_RANGE);
 
     return NO_ERROR;
@@ -491,7 +488,7 @@ int getLaserPhotoDetectCurrent(void){
      lpr.
       edfa.
        laser.
-        photoDetectCurrent[CURRENT_VALUE]=LPR_ADC_LASER_PD_CURRRENT_OFFSET-(LPR_ADC_LASER_PD_CURRENT_SCALE*lprRegisters.
+        photoDetectCurrent=LPR_ADC_LASER_PD_CURRRENT_OFFSET-(LPR_ADC_LASER_PD_CURRENT_SCALE*lprRegisters.
                                                                                                             adcData)/LPR_ADC_RANGE;
 
     return NO_ERROR;
@@ -540,7 +537,7 @@ int getPhotoDetectorCurrent(void){
      lpr.
       edfa.
        photoDetector.
-        current[CURRENT_VALUE]=(LPR_ADC_EDFA_PD_CURRENT_SCALE*lprRegisters.
+        current=(LPR_ADC_EDFA_PD_CURRENT_SCALE*lprRegisters.
                                                                adcData)/LPR_ADC_RANGE;
 
     return NO_ERROR;
@@ -603,7 +600,7 @@ int setModulationInputValue(void){
        data=LPR_DAC_MOD_INPUT_SCALE(CONV_FLOAT);
 
     /* 2 - Write the data to the serial access function */
-    #ifdef DEBUG
+    #ifdef DEBUG_LPR_SERIAL
         printf("         - Writing DAC\n");
     #endif /* DEBUG */
     if(serialAccess(LPR_DAC_DATA_WRITE,
@@ -663,23 +660,11 @@ int getPhotoDetectorPower(void){
     /* The laser drive current is given by: coeff*(adcData/65536)
        The coefficient is stored in the configuration database and loaded at
        initialization time. */
-    frontend.
-     lpr.
-      edfa.
-       photoDetector.
-        power[CURRENT_VALUE]=(frontend.
-                               lpr.
-                                edfa.
-                                 photoDetector.
-                                  coeff*lprRegisters.
-                                         adcData/LPR_ADC_RANGE);
+    frontend.lpr.edfa.photoDetector.power = 
+        (frontend.lpr.edfa.photoDetector.coeff*lprRegisters.adcData/LPR_ADC_RANGE);
 
     return NO_ERROR;
 }
-
-
-
-
 
 
 /* Get laser pump temperature */
@@ -747,7 +732,7 @@ int getLaserPumpTemperature(void){
      lpr.
       edfa.
        laser.
-        pumpTemp[CURRENT_VALUE]=temperature;
+        pumpTemp=temperature;
 
     return NO_ERROR;
 }
@@ -783,7 +768,7 @@ int getLprStates(void){
     frontend.
      lpr.
       opticalSwitch.
-       state[CURRENT_VALUE]=lprRegisters.
+       state=lprRegisters.
                              statusReg.
                               bitField.
                                opticalSwitchError;
@@ -792,7 +777,7 @@ int getLprStates(void){
     frontend.
      lpr.
       opticalSwitch.
-       busy[CURRENT_VALUE]=lprRegisters.
+       busy=lprRegisters.
                             statusReg.
                              bitField.
                               opticalSwitchState;
@@ -801,7 +786,7 @@ int getLprStates(void){
     frontend.
      lpr.
       edfa.
-       driverTempAlarm[CURRENT_VALUE]=lprRegisters.
+       driverTempAlarm=lprRegisters.
                                        statusReg.
                                         bitField.
                                          edfaDriverState;

@@ -1,18 +1,11 @@
 /*! \file       pa.h
     \ingroup    lo
     \brief      PA header file
-    \todo       Since each power amplifier could be assigned to either
-                to either polarizations, there should be a way to figure out the
-                current assignment for every band (this could be an information
-                to be stored in the configuration database).
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:13:43 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: pa.h,v 1.20 2006/11/30 23:01:42 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the PA. */
 
 /*! \defgroup   pa  Power Amplifier (PA)
@@ -67,10 +60,10 @@
         PA_CHANNEL  paChannel[PA_CHANNELS_NUMBER];
         //! PA 3V supply voltage
         /*! This is the PA 3V supply voltage (in V). */
-        float   supplyVoltage3V[OPERATION_ARRAY_SIZE];
+        float   supplyVoltage3V;
         //! PA 5V supply voltage
         /*! This is the PA 5V supply voltage (in V). */
-        float   supplyVoltage5V[OPERATION_ARRAY_SIZE];
+        float   supplyVoltage5V;
     } PA;
 
     /* Globals */

@@ -1,11 +1,8 @@
 /*! \file   pegasus.c
     \brief  ARCOM Pegasus board functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:46:19 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: pegasus.c,v 1.13 2009/03/25 14:45:26 avaccari Exp $
 
     This file contains the functions necessary to initialize, and operate the
     ARCOM Pegasus board.*/
@@ -25,15 +22,7 @@ int error;
 /*! Reboot the ARCOM Pegasus board. This function should be used for debug
     purposes only.
     This function is written in assembly to be able to address a specific
-    memory location.
-    \warning    With the current code implementation, the AMBSI1 board has no
-                way of knowing if the ARCOM Pegasus board has been rebooted.
-                It doesn't really matter because once the AMBSI1 register the
-                RCAs, even if the ARCOM reboots, after a few timeouts the
-                communication should be established again.
-    \todo       Check the previous statement! ;-) Also check stability of this
-                function... it doesn't always work... Actually it only works
-                twice then everything hangs up... Need fixing. */
+    memory location. */
 
 void reboot(void){
     _asm{

@@ -1,13 +1,10 @@
 /*! \file   polarization.c
     \brief  Polarization functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: polarization.c,v 1.16 2009/03/23 19:22:04 avaccari Exp $
-
-    This files contains all the functions necessary to handle polarization
+    This file contains all the functions necessary to handle polarization
     events. */
 
 /* Includes */
@@ -19,7 +16,6 @@
 #include "biasSerialInterface.h"
 #include "error.h"
 #include "debug.h"
-#include "database.h"
 
 /* Globals */
 /* Externs */
@@ -39,66 +35,26 @@ static HANDLER  polarizationModulesHandler[POLARIZATION_MODULES_NUMBER]={sideban
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
 int polarizationInit(void){
-        #ifdef DEBUG_INIT
-            printf(" - Initializing polarization %d...\n",
-                   currentBiasModule);
-        #endif // DEBUG_INIT
+    #ifdef DEBUG_INIT
+        printf(" - Initializing polarization %d...\n", currentBiasModule);
+        printf("   - 10MHz...\n");
+    #endif // DEBUG_INIT
 
-        #ifdef DATABASE_HARDW
-            if(frontend.
-                cartridge[currentModule].
-                 polarization[currentBiasModule].
-                  available==AVAILABLE){
+    if(serialAccess(BIAS_10MHZ_MODE(currentBiasModule),
+                NULL,
+                BIAS_10MHZ_MODE_SIZE,
+                BIAS_10MHZ_MODE_SHIFT_SIZE,
+                BIAS_10MHZ_MODE_SHIFT_DIR,
+                SERIAL_WRITE)==ERROR){
+        return ERROR;
+    }
+    frontend.cartridge[currentModule].polarization[currentBiasModule].
+        ssi10MHzEnable = ENABLE;
 
-                #ifdef DEBUG_INIT
-                    printf("   - 10MHz...\n");
-                #endif // DEBUG_INIT
-
-                if(serialAccess(BIAS_10MHZ_MODE(currentBiasModule),
-                            NULL,
-                            BIAS_10MHZ_MODE_SIZE,
-                            BIAS_10MHZ_MODE_SHIFT_SIZE,
-                            BIAS_10MHZ_MODE_SHIFT_DIR,
-                            SERIAL_WRITE)==ERROR){
-                    return ERROR;
-                }
-                frontend.
-                 cartridge[currentModule].
-                  polarization[currentBiasModule].
-                   ssi10MHzEnable=ENABLE;
-
-                #ifdef DEBUG_INIT
-                    printf("     done!\n"); // 10MHz
-                #endif // DEBUG_INIT
-            }
-        #else
-
-            #ifdef DEBUG_INIT
-                printf("   - 10MHz...\n");
-            #endif // DEBUG_INIT
-
-            if(serialAccess(BIAS_10MHZ_MODE(currentBiasModule),
-                        NULL,
-                        BIAS_10MHZ_MODE_SIZE,
-                        BIAS_10MHZ_MODE_SHIFT_SIZE,
-                        BIAS_10MHZ_MODE_SHIFT_DIR,
-                        SERIAL_WRITE)==ERROR){
-                return ERROR;
-            }
-            frontend.
-             cartridge[currentModule].
-              polarization[currentBiasModule].
-               ssi10MHzEnable=ENABLE;
-
-            #ifdef DEBUG_INIT
-                printf("     done!\n"); // 10MHz
-            #endif // DEBUG_INIT
-
-        #endif /* DATABASE_HARDW */
-
-        #ifdef DEBUG_INIT
-            printf("   done!\n"); // Polarization
-        #endif // DEBUG_INIT
+    #ifdef DEBUG_INIT
+        printf("     done!\n"); // 10MHz
+        printf("   done!\n"); // Polarization
+    #endif // DEBUG_INIT
 
     return NO_ERROR;
 }
@@ -108,22 +64,8 @@ int polarizationInit(void){
     received message is pertinent to the polarization. */
 void polarizationHandler(void){
     #ifdef DEBUG
-        printf("   Polarization: %d (currentBiasModule)\n",
-               currentBiasModule);
+        printf("   Polarization: %d (currentBiasModule)\n", currentBiasModule);
     #endif /* DEBUG */
-
-    #ifdef DATABASE_HARDW
-        /* Check if the selected receiver is outfitted with the desired polarization */
-        if(frontend.
-            cartridge[currentModule].
-             polarization[currentBiasModule].
-              available==UNAVAILABLE){
-            storeError(ERR_POLARIZATION, ERC_MODULE_ABSENT); //Polarization not installed
-            CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
-            return;
-        }
-    #endif /* DATABASE_HARDW */
-
 
     /* Check if the submodule is in range */
     currentPolarizationModule=(CAN_ADDRESS&POLARIZATION_MODULES_RCA_MASK)>>POLARIZATION_MODULES_MASK_SHIFT;

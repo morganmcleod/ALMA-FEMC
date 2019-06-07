@@ -3,13 +3,10 @@
     \ingroup    modulationInput
     \brief      Modulation Input special messages header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/06/22 16:40:01 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: miSpecialMsgs.h,v 1.1 2007/06/22 22:03:00 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and handle the modulation input special messages. */
 
 /*! \defgroup   miSpecialMsgs  Polarization special messages
@@ -43,7 +40,7 @@
     typedef struct {
         //! Polarization dac current state
         /*! Please see the definition of the \ref MI_DAC structure for more
-            informations.*/
+            information.*/
         MI_DAC           miDac;
     } MI_SPECIAL_MSGS;
 

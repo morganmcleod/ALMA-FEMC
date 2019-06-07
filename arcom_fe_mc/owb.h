@@ -1,11 +1,8 @@
 /*! \file       owb.h
     \brief      Header for One Wire Bus functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/09/05 14:33:15 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: owb.h,v 1.7 2011/03/24 13:34:10 avaccari Exp $
 
     This file contains the header for the one wire bus access functions. */
 
@@ -37,27 +34,6 @@
     #define PRESENCE_PULSE_MASK 0x02    // Presence pulse mask
 
     #define SEARCH_BYTES_LENGTH 16      // Lenght in bytes of the search
-
-    #define ESNS_DATA_FILE  "esns.ini"  // File containing the ESNs data
-
-    #define ESNS_SIM_SECTION        "SIMULATOR" // Section containing the setting for the ESN simulator
-    #define ESNS_SIM_USE_KEY        "USE"       // Key defining if the simulator should be used or not
-    #define ESNS_SIM_USE_EXPECTED   1           // Expected keys in section containing the use setup
-
-    #define ESNS_SIM_DEV_NO_KEY         "SIMDEV"    // Key defining how many devices to simulate
-    #define ESNS_SIM_DEV_NO_EXPECTED    1           // Expected keys in section containing the number of devices to simulate
-
-    #define ESNS_SIM_BASE_KEY       "SIMBASE"   // Key defining the base for the simulated ESNs
-    #define ESNS_SIM_BASE_EXPECTED  1           // Expected keys in section containing the base for the simulated ESNs
-
-    #define ESNS_NO_SECTION     "ESNS"      // Section containing the stored ESNs number
-    #define ESNS_NO_KEY         "DEVICES"   // Key containing the stored ESNs number
-    #define ESNS_NO_EXPECTED    1           // Expected keys in section containing the stored ESNs number
-
-    #define ESNS_DEVICE_SECTION     "ESNS"      // Section Containing the stored ESNs device SN
-    #define ESNS_DEVICE_BASE        "ESN"       // Base for ESNs device key name
-    #define ESNS_DEVICE_KEY(Dv)     buildString(ESNS_DEVICE_BASE,Dv,NULL) // Key containing the stored ESNs device SN
-    #define ESNS_DEVICE_EXPECTED    1           // Expected keys in section containing the stored ESNs device SN
 
     /* Dallas Maxim Chips Defines */
 
@@ -103,9 +79,5 @@
     /* Externs */
     extern int owbInit(void); //!< Performs the initialization of the one wire bus
     extern int owbGetEsn(void); //!< Gather the available ESN from the OWB
-
-
-
-
 
 #endif /* _OWB_H */

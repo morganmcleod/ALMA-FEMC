@@ -2,13 +2,10 @@
     \ingroup    lpr
     \brief      LO Photonic Receiver header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/05/29 14:49:12 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: lpr.h,v 1.9 2011/11/09 00:40:30 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the LO photonic receiver. */
 
 /*! \defgroup   lpr         LO Photonic Receiver system

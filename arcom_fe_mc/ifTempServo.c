@@ -1,13 +1,10 @@
 /*! \file   ifTempServo.c
     \brief  IF switch temperature servo functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2006/11/30 14:49:50 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: ifTempServo.c,v 1.4 2007/05/21 15:49:26 avaccari Exp $
-
-    This files contains all the functions necessary to handle IF switch
+    This file contains all the functions necessary to handle IF switch
     temperature servo events. */
 
 /* Includes */
@@ -18,7 +15,6 @@
 #include "frontend.h"
 #include "ifSerialInterface.h"
 #include "debug.h"
-#include "database.h"
 
 /* Globals */
 /* Externs */
@@ -122,7 +118,7 @@ static void enableHandler(void){
                ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
                         [currentIfChannelSideband[currentIfSwitchModule]].
                 ifTempServo.
-                 enable[CURRENT_VALUE];
+                 enable;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }
 

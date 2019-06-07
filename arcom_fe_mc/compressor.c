@@ -1,11 +1,8 @@
 /*! \file   compressor.c
     \brief  FETIM Compressor
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/03/28 17:34:50 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: compressor.c,v 1.1 2011/08/05 19:18:06 avaccari Exp $
 
     This file contains all the functions necessary to handle FETIM compressor
     events. */
@@ -87,7 +84,7 @@ static void feStatusHandler(void){
     CAN_BYTE=frontend.
               fetim.
                compressor.
-                feStatus[CURRENT_VALUE];
+                feStatus;
 
     /* No check against limit is necessary (see above). */
 
@@ -132,7 +129,7 @@ static void interlockStatusHandler(void){
     CAN_BYTE=frontend.
               fetim.
                compressor.
-                intrlkStatus[CURRENT_VALUE];
+                intrlkStatus;
 
     /* The CAN message payload is already loaded. Set the size */
     CAN_SIZE=CAN_BOOLEAN_SIZE;
@@ -172,7 +169,7 @@ static void compCableStatusHandler(void){
         CAN_BYTE=frontend.
                   fetim.
                    compressor.
-                    cableStatus[CURRENT_VALUE];
+                    cableStatus;
 
         /* Check the result against the warning and error range. Right now this
            function is only printing out a warning/error message depending on
@@ -182,7 +179,7 @@ static void compCableStatusHandler(void){
         CAN_BYTE=frontend.
                   fetim.
                    compressor.
-                    cableStatus[CURRENT_VALUE];
+                    cableStatus;
     }
 
     /* The CAN message payload is already loaded. Set the size */

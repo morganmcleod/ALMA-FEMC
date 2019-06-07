@@ -1,12 +1,8 @@
 /*! \file   error.c
     \brief  Error handling functions
-    \todo   Here or in the can.c a function to extract error information by a CAN message
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:16:14 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: error.c,v 1.87 2012/01/17 16:30:58 avaccari Exp $
 
     This file contains the functions necessary to handle the errors that might
     occour during the operation of the ARCOM Pegasus board.*/
@@ -145,17 +141,8 @@ int errorInit(void) {
     errorOn=1;
 
     /* Redirect stderr to avoid message on the screen. */
-    if(NULL==freopen(NULL,
-                     "r",
-                     stderr)){
-        #ifdef DEBUG_STARTUP
-            printf("\n\nWARNING - Fail to redirect stderr\n\n");
-        #endif /* DEBUG_STARTUP */
+    freopen(NULL, "w", stderr);
 
-        #ifdef ERROR_REPORT
-            storeError(ERR_ERROR, ERC_REDIRECT_STDERR);
-        #endif /* ERROR_REPORT */
-    }
     #ifdef DEBUG_STARTUP
         printf("done!\n\n");
     #endif /* DEBUG_STARTUP */ 
@@ -198,9 +185,9 @@ void criticalError(unsigned char moduleNo,
     exit(1);
 }
 
-/*! Stores error informations in the error buffer.
+/*! Stores error information in the error buffer.
 
-    The stored informations are:
+    The stored information are:
         - Module number (Identifies the module causing the error)
         - Error number (Identifies the particular error)
 
@@ -235,7 +222,7 @@ void storeError(unsigned char moduleNo, unsigned char errorNo) {
 
 #ifdef ERROR_REPORT
 
-    /* Print error informations on the ARCOM Pegasus console. */
+    /* Print error information on the ARCOM Pegasus console. */
     void reportErrorConsole(unsigned char moduleNo, unsigned char errorNo){
 
         unsigned char *module;
@@ -250,12 +237,6 @@ void storeError(unsigned char moduleNo, unsigned char errorNo) {
                 sprintf(error,
                         "%s",
                         "Warning: not enough memory for error reporting. Error reporting disabled");
-                break;
-
-            case ERC_REDIRECT_STDERR:   // Error redirecting stderr
-                sprintf(error,
-                        "%s",
-                        "Warning: error redirecting stderr.");
                 break;
 
             case ERC_IRQ_DISABLED:      // IRQ not enabled
@@ -360,7 +341,11 @@ void storeError(unsigned char moduleNo, unsigned char errorNo) {
                         "Error: The command vaue is out of range");
                 break;
 
-            case ERC_0E:
+            case ERC_FPGA_NOT_READY:
+                sprintf(error,
+                        "Critical Error: Serial Mux - FPGA not ready");
+                break;
+
             case ERC_0F:
             default:                    // Undefined error
                 sprintf(error,

@@ -1,11 +1,8 @@
 /*! \file       opticalSwitch.c
     \brief      Optical switch
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/06/02 15:50:13 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: opticalSwitch.c,v 1.5 2010/11/02 14:36:29 avaccari Exp $
 
     This file contains all the function necessary to handle the optical switch
     events. */
@@ -19,7 +16,6 @@
 #include "frontend.h"
 #include "lprSerialInterface.h"
 #include "debug.h"
-#include "database.h"
 
 /* Globals */
 /* Externs */
@@ -71,15 +67,7 @@ static void portHandler(void){
         /* Since the payload is just a byte, there is no need to convert the
            received data from the CAN message to any particular format, the
            data is already available in CAN_BYTE. */
-        if(checkRange(frontend.
-                       lpr.
-                        opticalSwitch.
-                         port[MIN_SET_VALUE],
-                      CAN_BYTE,
-                      frontend.
-                       lpr.
-                        opticalSwitch.
-                         port[MAX_SET_VALUE])){
+        if(checkRange(BAND1, CAN_BYTE, BAND10)) {
             storeError(ERR_OPTICAL_SWITCH, ERC_COMMAND_VAL); //Selected port set value out of range
 
             /* Store error in the last control message variable */
@@ -112,7 +100,7 @@ static void portHandler(void){
         frontend.
          lpr.
           opticalSwitch.
-           shutter[CURRENT_VALUE]=SHUTTER_DISABLE;
+           shutter=SHUTTER_DISABLE;
 
         /* Now we can return */
 
@@ -137,7 +125,7 @@ static void portHandler(void){
     CAN_BYTE=frontend.
               lpr.
                opticalSwitch.
-                port[CURRENT_VALUE];
+                port;
     CAN_SIZE=CAN_BYTE_SIZE;
 }
 
@@ -174,7 +162,7 @@ static void shutterHandler(void){
         frontend.
          lpr.
           opticalSwitch.
-           port[CURRENT_VALUE]=PORT_SHUTTERED;
+           port=PORT_SHUTTERED;
 
         return;
     }
@@ -196,7 +184,7 @@ static void shutterHandler(void){
     CAN_BYTE=frontend.
               lpr.
                opticalSwitch.
-                shutter[CURRENT_VALUE];
+                shutter;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }
 
@@ -233,7 +221,7 @@ static void forceShutterHandler(void){
         frontend.
          lpr.
           opticalSwitch.
-           port[CURRENT_VALUE]=PORT_SHUTTERED;
+           port=PORT_SHUTTERED;
 
         return;
     }
@@ -285,19 +273,19 @@ static void stateHandler(void){
         CAN_BYTE=frontend.
                   lpr.
                    opticalSwitch.
-                    state[CURRENT_VALUE];
+                    state;
     } else {
         /* If no error during monitor process, gather the stored data */
         CAN_BYTE = frontend.
                     lpr.
                      opticalSwitch.
-                      state[CURRENT_VALUE];
+                      state;
     }
     /* Load the CAN message payload with the returned value and set the state */
     CAN_BYTE=frontend.
               lpr.
                opticalSwitch.
-                state[CURRENT_VALUE];
+                state;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }
 
@@ -334,19 +322,19 @@ static void busyHandler(void){
         CAN_BYTE = frontend.
                     lpr.
                      opticalSwitch.
-                      busy[CURRENT_VALUE];
+                      busy;
     } else {
         /* If no error during monitor process, gather the stored data */
         CAN_BYTE=frontend.
                   lpr.
                    opticalSwitch.
-                    busy[CURRENT_VALUE];
+                    busy;
     }
 
     /* Load the CAN message payload with the returned value and set the size */
     CAN_BYTE=frontend.
               lpr.
                opticalSwitch.
-                busy[CURRENT_VALUE];
+                busy;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }

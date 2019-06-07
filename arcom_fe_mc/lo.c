@@ -1,13 +1,10 @@
 /*! \file   lo.c
     \brief  LO functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: lo.c,v 1.21 2010/11/02 14:36:29 avaccari Exp $
-
-    This files contains all the functions necessary to handle LO events. */
+    This file contains all the functions necessary to handle LO events. */
 
 /* Includes */
 #include <stdlib.h>     /* malloc */
@@ -17,7 +14,6 @@
 #include "error.h"
 #include "frontend.h"
 #include "debug.h"
-#include "database.h"
 #include "serialInterface.h"
 #include "loSerialInterface.h"
 #include "iniWrapper.h"
@@ -31,6 +27,22 @@ static HANDLER  loModulesHandler[LO_MODULES_NUMBER]={ytoHandler,
                                                      pllHandler,
                                                      amcHandler,
                                                      paHandler};
+/* Forward declarations */
+void loLoadPaLimitsTable(unsigned char band);
+
+// Loop BW defaults - No longer loading from INI file:
+static char loopBandwidthDefaults[10] = {
+    99,     // band 1: don't care. fixed 2.5 MHz/V
+    1,      // band 2: 1 -> 15MHz/V (Band 2,3,5,6,7,10)
+    1,      // band 3
+    0,      // band 4: 0 -> 7.5MHz/V (Band 4,8,9)
+    1,      // band 5
+    1,      // band 6
+    1,      // band 7
+    0,      // band 8
+    0,      // band 9
+    1       // band 10
+};
 
 /* LO init */
 /*! This function performs the operations necessary to initialize a LO at
@@ -58,10 +70,7 @@ int loInit(void){
                     SERIAL_WRITE)==ERROR){
         return ERROR;
     }
-    frontend.
-     cartridge[currentModule].
-      lo.
-       ssi10MHzEnable=ENABLE;
+    frontend.cartridge[currentModule].lo.ssi10MHzEnable=ENABLE;
 
     #ifdef DEBUG_INIT
         printf("     done!\n"); // 10MHz
@@ -79,21 +88,12 @@ int loInit(void){
     if (ret!=NO_ERROR)
         return ret;
 
-    /* Set correct loop bandwidth. If it is not defined return the undefined
-       warning. */
     #ifdef DEBUG_INIT
-        printf("   - PLL Loop Bandwidth...\n");
-        printf("     done!\n"); // PLL loop bandwidth
-        printf("   done!\n"); // LO
+       printf("   - PLL Loop Bandwidth...\n");
     #endif // DEBUG_INIT
-    return NO_ERROR;
-
-    /* If the value is defined then set it to the default value. */
-    setLoopBandwidthSelect(frontend.
-                            cartridge[currentModule].
-                             lo.
-                              pll.
-                               loopBandwidthSelect[DEFAULT_VALUE]);
+    
+    /* Set loop BW to the default value. */
+    setLoopBandwidthSelect(loopBandwidthDefaults[currentModule]);
 
     #ifdef DEBUG_INIT
         printf("     done!\n"); // PLL loop bandwidth
@@ -130,13 +130,8 @@ int loZeroPaDrainVoltage(void) {
     }
 
     // make a pointer to the data word in the last commanded PA drain voltage:
-    lastCommandData = &(frontend.
-                         cartridge[currentModule].
-                          lo.
-                           pa.
-                            paChannel[currentPaModule].
-                             lastDrainVoltage.
-                              data);
+    lastCommandData = &(frontend.cartridge[currentModule].lo.pa.paChannel[currentPaModule].
+                            lastDrainVoltage.data);
 
     // save the zero we just sent as the last commanded value:
     changeEndian(lastCommandData, CONV_CHR_ADD);
@@ -156,13 +151,8 @@ int loZeroPaDrainVoltage(void) {
     }
 
     // make a pointer to the data word in the last commanded PA drain voltage:
-    lastCommandData = &(frontend.
-                         cartridge[currentModule].
-                          lo.
-                           pa.
-                            paChannel[currentPaModule].
-                             lastDrainVoltage.
-                              data);
+    lastCommandData = &(frontend.cartridge[currentModule].lo.pa.paChannel[currentPaModule].
+                            lastDrainVoltage.data);
 
     // save the zero we just sent as the last commanded value:
     changeEndian(lastCommandData, CONV_CHR_ADD);
@@ -248,281 +238,66 @@ int loZeroYtoCoarseTuning(void) {
         - \ref ERROR    -> if something wrong happened */
 int loStartup(void){
 
-    /* Few variables to help load the data from the configuration file */
-    CFG_STRUCT dataIn;
-    unsigned char cnt;
-    char *str;
-    char entryName[15];
-    char entryText[50];
-    static char loopBandwidthDefaults[10] = {
-        99,     // band 1: don't care. fixed 2.5 MHz/V
-        1,      // band 2: 1 -> 15MHz/V (Band 2,3,5,6,7,10)
-        1,      // band 3
-        0,      // band 4: 0 -> 7.5MHz/V (Band 4,8,9)
-        1,      // band 5
-        1,      // band 6
-        1,      // band 7
-        0,      // band 8
-        0,      // band 9
-        1       // band 10
-    };
+    #ifdef DEBUG_STARTUP
+        printf(" LO %d configuration file: %s\n",
+               currentModule + 1,
+               frontend.cartridge[currentModule].lo.configFile);
 
-    printf(" LO %d configuration file: %s\n",
-           currentModule+1,
-           frontend.
-            cartridge[currentModule].
-             lo.
-              configFile);
+        printf(" Initializing LO %d...\n", currentModule+1);
 
-    printf(" Initializing LO %d...\n", currentModule+1);
+        /* Load the PLL Loop Bandwidth value in the frontend variable
+           value. */
+        printf("  - PLL Loop Bandwidth...\n");
+    #endif
 
-    /* Load the PLL Loop Bandwidth value in the frontend variable default
-       value. */
-    printf("  - PLL Loop Bandwidth...\n");
-
-    // No longer loading from INI file:
-    frontend.
-     cartridge[currentModule].
-      lo.
-       pll.
-        loopBandwidthSelect[DEFAULT_VALUE] = loopBandwidthDefaults[currentModule];
+    frontend.cartridge[currentModule].lo.pll.
+        loopBandwidthSelect = loopBandwidthDefaults[currentModule];
 
     #ifdef DEBUG_STARTUP
-        printf("    - PLL loop bandwidth default value %d...done!\n",
-               frontend.
-                cartridge[currentModule].
-                 lo.
-                  pll.
-                   loopBandwidthSelect[DEFAULT_VALUE]);
+        printf("    - PLL loop bandwidth default value=%d\n", loopBandwidthDefaults[currentModule]);
+        printf("    done!\n"); // PLL loop bandwidth
     #endif /* DEBUG_STARTUP */
-
-    printf("    done!\n"); // PLL loop bandwidth
     
     /* Set the limits for control messages */
-    printf("  - Setting limits for control messages\n");
-    printf("    - YTO coarse tuning\n");
-    frontend.
-     cartridge[currentModule].
-      lo.
-      yto.
-       ytoCoarseTune[MIN_SET_VALUE]=YTO_COARSE_SET_MIN;
 
-    frontend.
-     cartridge[currentModule].
-      lo.
-       yto.
-        ytoCoarseTune[MAX_SET_VALUE]=YTO_COARSE_SET_MAX;
+    #ifdef DEBUG_STARTUP
+        printf("  - Setting limits for control messages\n");
+        printf("    - Loading max safe power limits\n");
+    #endif
 
-    printf("      done!\n"); // YTO course tuning
-    printf("    - Loading max safe power limits\n");
+    frontend.cartridge[currentModule].lo.maxSafeLoPaTable = NULL;
+    frontend.cartridge[currentModule].lo.maxSafeLoPaTableSize = 0;
+    frontend.cartridge[currentModule].lo.allocatedLoPaTableSize = 0;
+    #ifdef DEBUG_PA_LIMITS
+        printf("maxSafeLoPaTable reset for band %d\n", currentModule + 1);
+    #endif
 
-    // maxSafeLoPaESN gets filled:
-    //  A valid 8-byte ESN -> The ESN data item from the PA_LIMITS table.
-    //  8 bytes 00 -> No PA_LIMITS table was found.
-    //  8 bytes FF -> PA_LIMITS table was found but no ESN entry found.
+    loLoadPaLimitsTable(currentModule);
 
-    frontend.
-      cartridge[currentModule].
-        lo.
-          maxSafeLoPaTableSize=0;
-    
-    frontend.
-      cartridge[currentModule].
-        lo.
-          maxSafeLoPaTable=NULL;
-
-    memset(frontend.
-            cartridge[currentModule].
-             lo.
-              maxSafeLoPaESN, 0, SERIAL_NUMBER_SIZE);
-
-    /* Configure read array */
-    dataIn.
-     Name=LO_PA_LIMITS_ENTRIES_KEY;
-    dataIn.
-     VarType=Cfg_Byte;
-    dataIn.
-     DataPtr=&cnt;
-
-    /* Access configuration file. */
-    if (ReadCfg(frontend.
-                 cartridge[currentModule].
-                  lo.
-                   configFile,
-                LO_PA_LIMITS_SECTION,
-                &dataIn) != LO_PA_LIMITS_EXPECTED) {
-        /* not found: */
-        cnt = 0;
-    }
-
-    /* Allocate the max safe LO PA entries table. */
-    if (cnt > 0) {
-        frontend.
-         cartridge[currentModule].
-          lo.
-           maxSafeLoPaTable = (MAX_SAFE_LO_PA_ENTRY *) malloc(cnt * sizeof(MAX_SAFE_LO_PA_ENTRY));
-        
-        /* if allocation succeeeded... */
-        if (frontend.
-             cartridge[currentModule].
-              lo.
-               maxSafeLoPaTable != NULL) {
-
-            /* store the table size. */
-            frontend.
-             cartridge[currentModule].
-              lo.
-               maxSafeLoPaTableSize = cnt;
-
-            printf("    - ENTRIES=%d\n", (int) cnt);
-        }
-    }
-
-    if (cnt > 0) {
-        /* start loading the entries */
-        
-        unsigned char actualCnt=0;
-
-        MAX_SAFE_LO_PA_ENTRY *nextEntry = frontend.
-                                           cartridge[currentModule].
-                                            lo.
-                                             maxSafeLoPaTable;
-
-        for(cnt=0;
-            cnt<frontend.
-                 cartridge[currentModule].
-                  lo.
-                   maxSafeLoPaTableSize;
-            cnt++)
-        {
-            /* format entry name */
-            sprintf(entryName, LO_PA_LIMITS_ENTRY_KEY, (int) (cnt + 1));
-            printf(entryName);
-            printf("=");
-
-            /* Configure read array */
-            dataIn.
-             Name=entryName;
-            dataIn.
-             VarType=Cfg_String;
-            dataIn.
-             DataPtr=entryText;
-
-            /* Access configuration file.  If error, ignore this entry */
-            if(myReadCfg(frontend.
-                          cartridge[currentModule].
-                           lo.
-                            configFile,
-                         LO_PA_LIMITS_SECTION,
-                         &dataIn,
-                         LO_PA_LIMITS_EXPECTED)==NO_ERROR){
-
-                //printf(entryText);
-
-                memset(nextEntry, 0, sizeof(MAX_SAFE_LO_PA_ENTRY));
-
-                str = strtok(entryText, " ,\t");
-                if (str) {
-                    (*nextEntry).ytoEndpoint = (unsigned int) atoi(str);
-                    str = strtok(NULL, " ,\t");
-                }
-                if (str) {
-                    (*nextEntry).maxVD0 = atof(str);
-                    str = strtok(NULL, " ,\t");
-                }
-                if (str) {
-                    (*nextEntry).maxVD1 = atof(str);
-                }
-
-                printf("yto=%u, vd0=%.2f, vd1=%.2f", 
-                       (*nextEntry).ytoEndpoint, (*nextEntry).maxVD0, (*nextEntry).maxVD1);
-
-                nextEntry++;
-                actualCnt++;
-            }                        
-            printf("\n");
-        }
-
-        /* save the number of entries actually loaded */
-        frontend.
-         cartridge[currentModule].
-          lo.
-           maxSafeLoPaTableSize = actualCnt;
-
-        if (actualCnt) {
-            // Get the ESN from LO PA entries table
-            dataIn.
-             Name=LO_PA_LIMITS_ESN_KEY;
-            dataIn.
-             VarType=Cfg_String;
-            dataIn.
-             DataPtr=entryText;
-
-            if (ReadCfg(frontend.
-                         cartridge[currentModule].
-                          lo.
-                           configFile,
-                        LO_PA_LIMITS_SECTION,
-                        &dataIn) != LO_PA_LIMITS_ESN_EXPECTED) 
-            {
-                // not found.  Save 8-bytes FF to the table:
-                memset(frontend.
-                        cartridge[currentModule].
-                         lo.
-                          maxSafeLoPaESN, 0xFF, SERIAL_NUMBER_SIZE);
-            
-            } else {
-                // found.  Parse it into byte array:
-                str = entryText;
-                for (cnt = 0; cnt < 8; cnt++) {
-                    sscanf(str, "%2hhx", &frontend.
-                                           cartridge[currentModule].
-                                            lo.
-                                             maxSafeLoPaESN[cnt]);
-                    str += 2;
-                }   
-            }
-
-            str = frontend.
-                   cartridge[currentModule].
-                    lo.
-                     maxSafeLoPaESN;
-
-            printf("    - ESN: %02X %02X %02X %02X %02X %02X %02X %02X\n",
-                   str[0],
-                   str[1],
-                   str[2],
-                   str[3],
-                   str[4],
-                   str[5],
-                   str[6],
-                   str[7]);
-        }
-    }
-    printf("      done!\n"); // max safe power
-    printf("    done!\n"); // Control message limits
-    printf(" done!\n\n"); // LO
+    #ifdef DEBUG_STARTUP
+        printf("      done!\n"); // max safe power
+        printf("    done!\n"); // Control message limits
+        printf(" done!\n\n"); // LO
+    #endif
     return NO_ERROR;
 }
 
 /* LO subsystem shutdown */
 /*! Free resources that were used by all LOs at shutdown time. */
-int loShutdown(void){
+int loShutdown(void) {
 
-    unsigned char module;
-    printf(" Shutting Down LO Subsystem...\n");
+    unsigned char band;
+    #ifdef DEBUG_STARTUP
+        printf(" Shutting Down LO Subsystem...\n");
+    #endif
 
-    for(module=0;
-        module<CARTRIDGES_NUMBER;
-        module++){
-    
-        free(frontend.
-         cartridge[module].
-          lo.
-           maxSafeLoPaTable);
+    for (band = 0; band < CARTRIDGES_NUMBER; band++) {
+        loResetPaLimitsTable(band);
     }
 
-    printf(" done!\n\n"); // Control message limits
+    #ifdef DEBUG_STARTUP
+        printf(" done!\n\n");
+    #endif
 
     return NO_ERROR;
 }
@@ -530,7 +305,7 @@ int loShutdown(void){
 /* LO handler */
 /*! This function will be called by the CAN message handling subrutine when the
     received message is pertinent to the LO. */
-void loHandler(void){
+void loHandler(void) {
     #ifdef DEBUG
         printf("   LO\n");
     #endif /* DEBUG */
@@ -551,6 +326,318 @@ void loHandler(void){
     (loModulesHandler[currentLoModule])();
 }
 
+/// Delete the LO PA limits table in preparation to load a new one
+int loResetPaLimitsTable(unsigned char band) {
+    #ifdef DEBUG_PA_LIMITS
+        printf("loResetPaLimitsTable: band=%d ptr=%p size=%d alloc=%d\n", band,
+                frontend.cartridge[band].lo.maxSafeLoPaTable,
+                frontend.cartridge[band].lo.maxSafeLoPaTableSize,
+                frontend.cartridge[band].lo.allocatedLoPaTableSize);
+    #endif
+    free (frontend.cartridge[band].lo.maxSafeLoPaTable);
+    frontend.cartridge[band].lo.maxSafeLoPaTable = NULL;
+    frontend.cartridge[band].lo.maxSafeLoPaTableSize = 0;
+    frontend.cartridge[band].lo.allocatedLoPaTableSize = 0;
+    return NO_ERROR;
+}
+
+//! Helper to load the LO PA limits table from the INI file
+void loLoadPaLimitsTable(unsigned char band) {
+    /* variables to help load the data from the configuration file */
+    CFG_STRUCT dataIn;
+    unsigned char tableSize, actualCnt, i;
+    char *str;
+    char entryName[15];
+    char entryText[50];
+    
+    // maxSafeLoPaESN gets filled:
+    //  A valid 8-byte ESN -> The ESN data item from the PA_LIMITS table.
+    //  8 bytes 00 -> No PA_LIMITS table was found.
+    //  8 bytes FF -> PA_LIMITS table was found but no ESN entry found.
+
+    frontend.cartridge[band].lo.maxSafeLoPaTableSize=0;
+    frontend.cartridge[band].lo.allocatedLoPaTableSize=0;
+    frontend.cartridge[band].lo.maxSafeLoPaTable=NULL;
+    memset(frontend.cartridge[band].lo.maxSafeLoPaESN, 0, SERIAL_NUMBER_SIZE);
+
+    /* Configure read array */
+    dataIn.Name=LO_PA_LIMITS_ENTRIES_KEY;
+    dataIn.VarType=Cfg_Byte;
+    dataIn.DataPtr=&tableSize;
+
+    /* Access configuration file. */
+    if (ReadCfg(frontend.cartridge[band].lo.configFile,
+                LO_PA_LIMITS_SECTION,
+                &dataIn) != LO_PA_LIMITS_EXPECTED) 
+    {
+        /* not found: */
+        tableSize = 0;
+    }
+
+    /* Allocate the max safe LO PA entries table. */
+    if (tableSize > 0) {
+        frontend.cartridge[band].lo.maxSafeLoPaTable = 
+            (MAX_SAFE_LO_PA_ENTRY *) malloc(tableSize * sizeof(MAX_SAFE_LO_PA_ENTRY));
+        
+        /* if allocation succeeeded... */
+        if (!frontend.cartridge[band].lo.maxSafeLoPaTable) {
+            printf("    - Allocation Error!\n\n");
+            storeError(ERR_LO, ERC_NO_MEMORY);
+            tableSize = 0;
+
+        } else {
+
+            /* store the table size. */
+            frontend.cartridge[band].lo.maxSafeLoPaTableSize = tableSize;
+            frontend.cartridge[band].lo.allocatedLoPaTableSize = tableSize;
+
+            #ifdef DEBUG_PA_LIMITS
+                printf("    - ENTRIES=%d\n", (int) tableSize);
+            #endif
+        }
+    }
+
+    if (tableSize > 0) {
+        /* start loading the entries */
+        MAX_SAFE_LO_PA_ENTRY *nextEntry = frontend.cartridge[band].lo.maxSafeLoPaTable;
+        actualCnt = 0;
+
+        for(i = 0;
+            i < tableSize;
+            i++)
+        {
+            /* format entry name */
+            sprintf(entryName, LO_PA_LIMITS_ENTRY_KEY, (i + 1));
+            #ifdef DEBUG_STARTUP
+                printf(entryName);
+                printf("=");
+            #endif
+
+            /* Configure read array */
+            dataIn.Name=entryName;
+            dataIn.VarType=Cfg_String;
+            dataIn.DataPtr=entryText;
+
+            /* Access configuration file.  If error, ignore this entry */
+            if(myReadCfg(frontend.cartridge[band].lo.configFile,
+                         LO_PA_LIMITS_SECTION,
+                         &dataIn,
+                         LO_PA_LIMITS_EXPECTED)==NO_ERROR)
+            {
+                memset(nextEntry, 0, sizeof(MAX_SAFE_LO_PA_ENTRY));
+
+                str = strtok(entryText, " ,\t");
+                if (str) {
+                    (*nextEntry).ytoEndpoint = (unsigned int) atoi(str);
+                    str = strtok(NULL, " ,\t");
+                }
+                if (str) {
+                    (*nextEntry).maxVD0 = atof(str);
+                    str = strtok(NULL, " ,\t");
+                }
+                if (str) {
+                    (*nextEntry).maxVD1 = atof(str);
+                }
+
+                #ifdef DEBUG_PA_LIMITS
+                    printf("yto=%u, vd0=%.2f, vd1=%.2f", 
+                           (*nextEntry).ytoEndpoint, (*nextEntry).maxVD0, (*nextEntry).maxVD1);
+                #endif
+
+                nextEntry++;
+                actualCnt++;
+            }
+            #ifdef DEBUG_PA_LIMITS
+                printf("\n");
+            #endif
+        }
+
+        /* save the number of entries actually loaded */
+        frontend.cartridge[band].lo.maxSafeLoPaTableSize = tableSize = actualCnt;
+
+        if (tableSize > 0) {
+            // Get the ESN from LO PA entries table
+            dataIn.Name=LO_PA_LIMITS_ESN_KEY;
+            dataIn.VarType=Cfg_String;
+            dataIn.DataPtr=entryText;
+
+            if (ReadCfg(frontend.cartridge[band].lo.configFile,
+                        LO_PA_LIMITS_SECTION,
+                        &dataIn) != LO_PA_LIMITS_ESN_EXPECTED) 
+            {
+                // not found.  Save 8-bytes FF to the table:
+                memset(frontend.cartridge[band].lo.maxSafeLoPaESN, 0xFF, SERIAL_NUMBER_SIZE);
+            
+            } else {
+                // found.  Parse it into byte array:
+                str = entryText;
+                for (i = 0; i < 8; i++) {
+                    sscanf(str, "%2hhx", &frontend.cartridge[band].lo.maxSafeLoPaESN[i]);
+                    str += 2;
+                }   
+            }
+
+            str = frontend.cartridge[band].lo.maxSafeLoPaESN;
+
+            #ifdef DEBUG_PA_LIMITS
+                printf("    - ESN: %02X %02X %02X %02X %02X %02X %02X %02X\n",
+                       str[0],
+                       str[1],
+                       str[2],
+                       str[3],
+                       str[4],
+                       str[5],
+                       str[6],
+                       str[7]);
+            #endif
+        }        
+    }
+    #ifdef DEBUG_PA_LIMITS
+        printf("loLoadPaLimitsTable: band=%d ptr=%p size=%d alloc=%d\n", band,
+                frontend.cartridge[band].lo.maxSafeLoPaTable,
+                frontend.cartridge[band].lo.maxSafeLoPaTableSize,
+                frontend.cartridge[band].lo.allocatedLoPaTableSize);
+    #endif
+}
+
+/// Helper to assign values to an entry
+void assignPaLimitsEntry(MAX_SAFE_LO_PA_ENTRY *entry, unsigned char pol, unsigned int ytoTuning, float maxVD) {
+    if (!entry)
+        return;
+    entry -> ytoEndpoint = ytoTuning;
+    if (pol == 0 || pol == 2)
+        entry -> maxVD0 = maxVD;
+    if (pol == 1 || pol == 2)
+        entry -> maxVD1 = maxVD;
+}
+
+/*! Add an entry to the LO PA limits table
+    \param band           for which band
+    \param pol            for which polarization 0, 1, or 2 meaning both
+    \param ytoTuning      for YTO tuning word
+    \param maxVD          maximum drain voltage allowed at tuning word
+    \return               ERROR or NO_ERROR */
+int loAddPaLimitsEntry(unsigned char band, unsigned char pol, unsigned int ytoTuning, float maxVD) {
+    MAX_SAFE_LO_PA_ENTRY *entry = NULL;
+    MAX_SAFE_LO_PA_ENTRY *table = frontend.cartridge[band].lo.maxSafeLoPaTable;
+    size_t allocSize = 8;    //< Number of entries to allocate at a time.
+    size_t allocatedSize;
+    unsigned char tableSize;
+
+    #ifdef DEBUG_PA_LIMITS
+        printf("loAddPaLimitsEntry 1: band=%d ptr=%p size=%d alloc=%d\n", band,
+                frontend.cartridge[band].lo.maxSafeLoPaTable,
+                frontend.cartridge[band].lo.maxSafeLoPaTableSize,
+                frontend.cartridge[band].lo.allocatedLoPaTableSize);
+    #endif
+
+    // Check for empty table:
+    if (!table) {
+        table = (MAX_SAFE_LO_PA_ENTRY *) malloc(allocSize * sizeof(MAX_SAFE_LO_PA_ENTRY));
+        if (!table) {
+            storeError(ERR_LO, ERC_NO_MEMORY);
+            loResetPaLimitsTable(band);
+            return ERROR;
+        }
+        memset(table, 0, allocSize * sizeof(MAX_SAFE_LO_PA_ENTRY));
+        frontend.cartridge[band].lo.maxSafeLoPaTable = table;
+        frontend.cartridge[band].lo.maxSafeLoPaTableSize = 0;
+        frontend.cartridge[band].lo.allocatedLoPaTableSize = allocSize;
+    }
+    tableSize = frontend.cartridge[band].lo.maxSafeLoPaTableSize;
+    allocatedSize = frontend.cartridge[band].lo.allocatedLoPaTableSize;
+
+    #ifdef DEBUG_PA_LIMITS
+        printf("loAddPaLimitsEntry 2: band=%d ptr=%p size=%d alloc=%d\n", band,
+                frontend.cartridge[band].lo.maxSafeLoPaTable,
+                frontend.cartridge[band].lo.maxSafeLoPaTableSize,
+                frontend.cartridge[band].lo.allocatedLoPaTableSize);
+    #endif
+
+    // If empty table, simple assign and done:
+    if (tableSize == 0) {
+        entry = table;
+        assignPaLimitsEntry(entry, pol, ytoTuning, maxVD);
+        frontend.cartridge[band].lo.maxSafeLoPaTableSize = tableSize = 1;
+    
+    // Else find the last entry:
+    } else {
+        entry = table + tableSize - 1;
+        // Check whether the new entry is in nondecreasing YTO order:
+        if (ytoTuning < entry -> ytoEndpoint) {
+            storeError(ERR_LO, ERC_COMMAND_VAL);
+            return ERROR;
+
+        // Check if same YTO tuning as the last entry:    
+        } else if (ytoTuning == entry -> ytoEndpoint) {
+            assignPaLimitsEntry(entry, pol, ytoTuning, maxVD);
+
+        // Else we are adding a new entry:
+        } else {
+            // Check whether we need to allocate more space:
+            if (tableSize == allocatedSize) {
+                // yes.  Alocate a table larger by allocSize:
+                allocatedSize += allocSize;
+                table = (MAX_SAFE_LO_PA_ENTRY *) malloc(allocatedSize * sizeof(MAX_SAFE_LO_PA_ENTRY));
+                if (!table) {
+                    storeError(ERR_LO, ERC_NO_MEMORY);
+                    loResetPaLimitsTable(band);
+                    return ERROR;
+                }
+                // Zero out the new table:
+                memset(table, 0, allocatedSize * sizeof(MAX_SAFE_LO_PA_ENTRY));
+                // Copy the old table to the front of the new:
+                memcpy(table, frontend.cartridge[band].lo.maxSafeLoPaTable, tableSize * sizeof(MAX_SAFE_LO_PA_ENTRY));
+                // Free the old table and store the new:
+                free(frontend.cartridge[band].lo.maxSafeLoPaTable);
+                frontend.cartridge[band].lo.maxSafeLoPaTable = table;
+                // Update the allocated size:
+                frontend.cartridge[band].lo.allocatedLoPaTableSize = allocatedSize;
+            }
+            // Update the next entry:
+            entry = table + tableSize;
+            assignPaLimitsEntry(entry, pol, ytoTuning, maxVD);
+            // Increment the table size:
+            frontend.cartridge[band].lo.maxSafeLoPaTableSize += 1;
+        }
+    }
+    #ifdef DEBUG_PA_LIMITS
+        printf("loAddPaLimitsEntry 3: band=%d ptr=%p size=%d alloc=%d\n", band,
+                frontend.cartridge[band].lo.maxSafeLoPaTable,
+                frontend.cartridge[band].lo.maxSafeLoPaTableSize,
+                frontend.cartridge[band].lo.allocatedLoPaTableSize);
+    #endif
+    return NO_ERROR;
+}
+
+
+int printPaLimitsTable(unsigned char band) {
+    int i;
+    char *str;
+    
+    printf("Band %d: ENTRIES=%d alloc=%d ESN=", band,
+            frontend.cartridge[band].lo.maxSafeLoPaTableSize,
+            frontend.cartridge[band].lo.allocatedLoPaTableSize);
+    
+    str = frontend.cartridge[band].lo.maxSafeLoPaESN;
+    printf("%02X %02X %02X %02X %02X %02X %02X %02X\n",
+            str[0],
+            str[1],
+            str[2],
+            str[3],
+            str[4],
+            str[5],
+            str[6],
+            str[7]);
+
+    for (i = 0; i < frontend.cartridge[band].lo.maxSafeLoPaTableSize; i++) {
+        MAX_SAFE_LO_PA_ENTRY *nextEntry = frontend.cartridge[band].lo.maxSafeLoPaTable + i;
+        printf("yto=%u, vd0=%.2f, vd1=%.2f\n", 
+                (*nextEntry).ytoEndpoint, (*nextEntry).maxVD0, (*nextEntry).maxVD1);
+    }
+    printf("\n");
+    return 0;
+}
 
 /* find entry in the max safe LO PA table */
 /*! Find entry in the max safe LO PA table corresponding to the given YTO tuning word
@@ -564,15 +651,8 @@ MAX_SAFE_LO_PA_ENTRY *findMaxSafeLoPaEntry(unsigned int yto) {
 
     MAX_SAFE_LO_PA_ENTRY *entry = NULL;
     MAX_SAFE_LO_PA_ENTRY *lastEntry = NULL;
-    MAX_SAFE_LO_PA_ENTRY *table = frontend.
-                                   cartridge[currentModule].
-                                    lo.
-                                     maxSafeLoPaTable;
-
-    unsigned char tableSize = frontend.
-                               cartridge[currentModule].
-                                lo.
-                                 maxSafeLoPaTableSize;
+    MAX_SAFE_LO_PA_ENTRY *table = frontend.cartridge[currentModule].lo.maxSafeLoPaTable;
+    unsigned char tableSize = frontend.cartridge[currentModule].lo.maxSafeLoPaTableSize;
 
     static MAX_SAFE_LO_PA_ENTRY interpEntry;
     //< if we need to interpolate, we'll return a pointer to this entry.
@@ -661,25 +741,28 @@ MAX_SAFE_LO_PA_ENTRY *findMaxSafeLoPaEntry(unsigned int yto) {
 int limitSafePaDrainVoltage(unsigned char paModule) {
 
     MAX_SAFE_LO_PA_ENTRY *entry;
-    unsigned int yto = frontend.
-                        cartridge[currentModule].
-                         lo.
-                          yto.
-                           ytoCoarseTune[CURRENT_VALUE];
-
-//    printf("limitSafePaDrainVoltage yto=%u ", yto);
+    unsigned int yto = frontend.cartridge[currentModule].lo.yto.ytoCoarseTune;
+    #ifdef DEBUG_PA_LIMITS
+        printf("limitSafePaDrainVoltage yto=%u ", yto);
+    #endif
 
     entry = findMaxSafeLoPaEntry(yto);
 
-    if (!entry) {   
-//        printf("\n");
+    if (!entry) {
+        #ifdef DEBUG_PA_LIMITS   
+            printf("\n");
+        #endif
         return NO_ERROR;
     }
 
-//    printf("maxVD0=%.2f maxVD1=%.2f ", (*entry).maxVD0, (*entry).maxVD1);
+    #ifdef DEBUG_PA_LIMITS
+        printf("maxVD0=%.2f maxVD1=%.2f ", (*entry).maxVD0, (*entry).maxVD1);
+    #endif
 
     if (paModule == 0) {
-//        printf("vd0=%.2f\n", CONV_FLOAT);
+        #ifdef DEBUG_PA_LIMITS
+            printf("vd0=%.2f\n", CONV_FLOAT);
+        #endif
         if (CONV_FLOAT > (*entry).maxVD0) {
             CONV_FLOAT = (*entry).maxVD0;
             return HARDW_BLKD_ERR;
@@ -687,7 +770,9 @@ int limitSafePaDrainVoltage(unsigned char paModule) {
     }
 
     if (paModule == 1) {
-//        printf("vd1=%.2f\n", CONV_FLOAT);
+        #ifdef DEBUG_PA_LIMITS
+            printf("vd1=%.2f\n", CONV_FLOAT);
+        #endif
         if (CONV_FLOAT > (*entry).maxVD1) {
             CONV_FLOAT = (*entry).maxVD1;
             return HARDW_BLKD_ERR;
@@ -714,13 +799,17 @@ int limitSafeYtoTuning(){
     unsigned char *lastCommandData;
     int ret0 = NO_ERROR;
     int ret1 = NO_ERROR;
-
-//    printf("limitSafeYtoTuning yto=%u ", yto);
+    
+    #ifdef DEBUG_PA_LIMITS
+        printf("limitSafeYtoTuning yto=%u ", yto);
+    #endif
 
     entry = findMaxSafeLoPaEntry(yto);
     
     if (!entry) {
-//        printf("\n");
+        #ifdef DEBUG_PA_LIMITS
+            printf("\n");
+        #endif
         return NO_ERROR;
     }
 
@@ -784,7 +873,9 @@ int limitSafeYtoTuning(){
             ret1 = HARDW_BLKD_ERR;
     }
 
-//    printf("maxVD0=%.2f maxVD1=%.2f vd0=%.2f vd1=%.2f\n", (*entry).maxVD0, (*entry).maxVD1, vd0, vd1);
+    #ifdef DEBUG_PA_LIMITS
+        printf("maxVD0=%.2f maxVD1=%.2f vd0=%.2f vd1=%.2f\n", (*entry).maxVD0, (*entry).maxVD1, vd0, vd1);
+    #endif
 
     // restore the conversion buffer to its prior state:
     CONV_LONGINT = backup;

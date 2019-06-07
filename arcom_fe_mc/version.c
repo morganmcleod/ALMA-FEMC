@@ -1,13 +1,10 @@
 /*! \file   version.c
     \brief  Version functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/08/14 14:36:58 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: version.c,v 1.3 2009/03/23 19:22:04 avaccari Exp $
-
-    This files contains all the functions necessary to handle version
+    This file contains all the functions necessary to handle version
     information. */
 
 /* Includes */

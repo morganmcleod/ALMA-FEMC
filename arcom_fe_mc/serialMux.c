@@ -1,13 +1,10 @@
 /*! \file   serialMux.c
     \brief  Serial multiplexing board functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: serialMux.c,v 1.21 2012/01/17 16:30:58 avaccari Exp $
-
-    This files contains all the functions necessary to control the serial
+    This file contains all the functions necessary to control the serial
     multiplexing board.
 
     The functions in this module provide the lowest level communication with
@@ -17,12 +14,7 @@
     serial mux board through ISA commands.
     The only way to do this would be to actually perform a read right after the
     write to insure that the written data is correct. This check is available
-    only for few of the addresses due to the FPGA configuration.
-
-    \todo
-        - Convert the basic access function to assembly to increase speed.
-        - Remove the check at ADD-2 for the FPGA readiness after all the version
-          on the field are consistent. */
+    only for few of the addresses due to the FPGA configuration. */
 
 /* Includes */
 #include <conio.h>      /* inpw, outpw */
@@ -60,13 +52,7 @@ int LATCH_DEBUG_SERIAL_WRITE;
 
     \return
         - \ref NO_ERROR -> if no error occurred
-        - \ref ERROR    -> if something wrong happened
-
-    \todo
-        - Consider the possibility to write this code in assembly to speed up
-          the interfacing with the hardware
-        - Find the fastest way to write data to the data register. Is it worth
-          to write all 3 words when we need only one? */
+        - \ref ERROR    -> if something wrong happened */
 int writeMux(void){
     /* Check if the lenght is within the hardware limit (40 bits) */
     if(frame.
@@ -165,13 +151,7 @@ int writeMux(void){
 
     \return
         - \ref NO_ERROR -> if no error occurred
-        - \ref ERROR    -> if something wrong happened
-
-    \todo
-        - Consider the possibility to write this code in assembly to speed up
-          the interfacing with the hardware
-        - Find the fastest way to read data from the data register. Is it
-          worhted to read all 3 words when we need only one? */
+        - \ref ERROR    -> if something wrong happened */
 int readMux(void){
     /* Check if the lenght is within the hardware limit (40 bits) */
     if(frame.
@@ -304,22 +284,22 @@ static int waitOnBusy(void){
         - \ref ERROR    -> if something wrong happened */
 int serialMuxInit(void){
 
-    printf("Initializing Serial Multiplexer board...\n");
+    #ifdef DEBUG_STARTUP
+        printf("Initializing Serial Multiplexer board...\n");
+    #endif
 
     /* Check if the FPGA is ready. The check for ADD-2 can be removed once the
        FPGA has been fixed and all the versions are consistent. */
     if((inpw(MUX_FPGA_RDY_ADD)!=FPGA_READY)&&(inpw(MUX_FPGA_RDY_ADD-2)!=FPGA_READY)){
 
-        #ifdef DEBUG_STARTUP
-            printf("\n\nCRITICAL ERROR - The FPGA is not ready\n\n");
-        #endif /* DEBUG_STARTUP */
-
-        criticalError(ERR_SERIAL_MUX,
-                      0x03); // Error 0x03 -> FPGA not ready
+        printf("\n\nserialMux: CRITICAL ERROR - The FPGA is not ready\n\n");
+        criticalError(ERR_SERIAL_MUX, ERC_FPGA_NOT_READY);
         return ERROR;
     }
 
-    printf("done!\n\n");
+    #ifdef DEBUG_STARTUP
+        printf("done!\n\n");
+    #endif
 
     return NO_ERROR;
 }

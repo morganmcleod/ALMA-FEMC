@@ -2,13 +2,10 @@
     \ingroup    pdModule
     \brief      Power distribution channel header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/10/25 11:20:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: pdChannel.h,v 1.12 2007/03/13 21:02:05 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the power distribution channel subsystem. There
     is one channel for each voltage provided to each cartridge. */
 
@@ -49,17 +46,17 @@
     /*! This structure represent the current state of the power distribution
         channel system.
         \ingroup    pdModule
-        \param      voltage[Op]     This contains the most recent read-back
+        \param      voltage     This contains the most recent read-back
                                     value for this channel voltage.
-        \param      current[Op]     This contains the most recent read-back
+        \param      current     This contains the most recent read-back
                                     value for this channel current. */
     typedef struct {
         //! Channel voltage
         /*! This is the voltage provided by this channel. */
-        float   voltage[OPERATION_ARRAY_SIZE];
+        float   voltage;
         //! Channel current
         /*! This is the current drawn by this channel. */
-        float   current[OPERATION_ARRAY_SIZE];
+        float   current;
     } PD_CHANNEL;
 
     /* Globals */

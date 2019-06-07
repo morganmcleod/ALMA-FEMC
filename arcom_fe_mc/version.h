@@ -1,11 +1,11 @@
 /*! \file   version.h
     \brief  Version information file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/10/06 16:47:08 by avaccari
     Maintenance since 2013 by mmcleod@nrao.edu
 
-    This files contains all the information about the current version of the
+    This file contains all the information about the current version of the
     software and its revision history.
 
     The revision numbering system is according to the following rules:
@@ -22,10 +22,19 @@
 
     2.9.x
         Delete remaining DATABASE_RANGE code
+        Undefine CHECK_HW_AVAIL: No longer reading availability and other things which don't change from INI files.
+        Delete all DATABASE_HW code; delete database.h; Delete 'available' for pol, sb, cartridgeTemp, lna, lnaStage, lnaLed
+        Only 3 LNA stages.
         Delete error codes MON_ERROR_RNG, MON_WARN_RNG, MON_WARN_ACT, MON_HARDW_FUT, HARDW_UPD_WARN, HARDW_RETRY
         Add error codes ERC_... to be used by all subsystems.
-        All subsystems using ERC_... codes.
-        Removed PLL_LOOP_BANDWIDTH_UNDEFINED
+        Delete PLL_LOOP_BANDWIDTH_UNDEFINED
+        Much less printing on startup and shutdown: only print loaded config and errors.
+        Suppress errors about redirect stderr on startup; reassigned IRQ.  
+        Delete OWB simulator and stored list.     
+        Added console system report.
+        Added ifSwitch: allChannelsHandler, cryostatTemp: coeffHandler, monitor readback LPR EDFA coeff.
+        Always allow LO PA drain voltage setting for BAND1 and BAND2.
+        Create CRYO_HRS.INI file if it doesn't exist.
 
     2018-04-06 2.8.7
         Bugfix: fetimSerialInterface::getFetimExtTemp() stores in 
@@ -64,6 +73,8 @@
 
     2016-12-08 2.8.0-beta3
         Tested on FE-12 for 2.8.0 release
+        deleted schottkyMixer
+        Added command to set LPR photodetector conversion coeff.  No longer loading from file.
 
     2016-10-20  2.6.11-beta1
         Prototype band 1 & band 2 support
@@ -375,11 +386,11 @@
 
     /* Defines */
     #define VERSION_MAJOR   2  //!< Major version
-    #define VERSION_MINOR   8  //!< Minor version
-    #define VERSION_PATCH   7  //!< Patch level
+    #define VERSION_MINOR   9  //!< Minor version
+    #define VERSION_PATCH   0  //!< Patch level
 
-    #define VERSION_DATE    "2018-04-06" //!< Version Date
-    #define VERSION_NOTES   "Release version 2.8.7: fixes turbo pump power-on bugs."  //!<Version Notes
+    #define VERSION_DATE    "2019-11-22" //!< Version Date
+    #define VERSION_NOTES   "Development version 2.9.x"  //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"

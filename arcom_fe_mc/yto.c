@@ -1,13 +1,10 @@
 /*! \file   yto.c
     \brief  YTO functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: yto.c,v 1.18 2010/11/02 14:36:29 avaccari Exp $
-
-    This files contains all the functions necessary to handle YIG tuned
+    This file contains all the functions necessary to handle YIG tuned
     oscillator events. */
 
 /* Includes */
@@ -18,7 +15,6 @@
 #include "frontend.h"
 #include "loSerialInterface.h"
 #include "debug.h"
-#include "database.h"
 
 /* Globals */
 /* Externs */
@@ -72,34 +68,19 @@ static void ytoCoarseTuneHandler(void){
         changeEndianInt(CONV_CHR_ADD,
                         CAN_DATA_ADD);
 
-        /* Check the value against the store limits. The limits are read from
-           the configuration database at configuration time. */
-        if(checkRange(frontend.
-                       cartridge[currentModule].
-                        lo.
-                         yto.
-                          ytoCoarseTune[MIN_SET_VALUE],
-                      CONV_UINT(0),
-                      frontend.
-                       cartridge[currentModule].
-                        lo.
-                         yto.
-                          ytoCoarseTune[MAX_SET_VALUE])){
+        /* Check the value against the YTO limits. */
+        if(checkRange(YTO_COARSE_SET_MIN, CONV_UINT(0), YTO_COARSE_SET_MAX)) {
             storeError(ERR_YTO, ERC_COMMAND_VAL); //YTO coarse tune set value out of range
 
             /* Store the error in the last control message variable */
-            frontend.
-             cartridge[currentModule].
-              lo.
-               yto.
-                lastYtoCoarseTune.
-                 status=CON_ERROR_RNG;
+            frontend.cartridge[currentModule].lo.yto.lastYtoCoarseTune.
+                status=CON_ERROR_RNG;
 
             return;
         }
 
         // if not in TROUBLESHOOTING mode, check that the LO PA setting is safe for the new YTO tuning:
-        if (frontend.mode[CURRENT_VALUE] == TROUBLESHOOTING_MODE)
+        if (frontend.mode == TROUBLESHOOTING_MODE)
             ret = NO_ERROR;
         else
             ret = limitSafeYtoTuning();
@@ -164,7 +145,7 @@ static void ytoCoarseTuneHandler(void){
               cartridge[currentModule].
                lo.
                 yto.
-                 ytoCoarseTune[CURRENT_VALUE];
+                 ytoCoarseTune;
 
     /* Turn the bytes around! la-la-la-la-la-la */
     changeEndianInt(CAN_DATA_ADD,

@@ -3,13 +3,10 @@
     \ingroup    polarization
     \brief      Polarization special messages header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 14:46:33 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: polSpecialMsgs.h,v 1.10 2007/06/22 22:03:00 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and handle the polarization special messages. */
 
 /*! \defgroup   polSpecialMsgs  Polarization special messages
@@ -47,7 +44,7 @@
     typedef struct {
         //! Polarization dac current state
         /*! Please see the definition of the \ref POL_DAC structure for more
-            informations.*/
+            information.*/
         POL_DAC           polDac[POL_DACS_NUMBER];
     } POL_SPECIAL_MSGS;
 

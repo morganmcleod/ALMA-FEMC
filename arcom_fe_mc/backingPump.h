@@ -2,13 +2,10 @@
     \ingroup    cryostat
     \brief      Backing pump header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/10/27 14:27:40 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: backingPump.h,v 1.7 2007/05/29 14:56:11 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the backing pump included in the %cryostat. */
 
 /*! \defgroup   backingPump Backing pump
@@ -39,7 +36,7 @@
     //! Current state of the backing pump
     /*! This structure represent the current state of the backing pump.
         \ingroup    cryostat
-        \param      enable[Op]  This contains the current state of the backing
+        \param      enable  This contains the current state of the backing
                                 pump. It has to be remembered that this is
                                 \em not a read back from the hardware but just a
                                 register holding the last issued control:
@@ -55,7 +52,7 @@
             \warning    It is not a read back of the actual value. The returned
                         value is the one stored by the software after a control
                         command has been issued. */
-        unsigned char   enable[OPERATION_ARRAY_SIZE];
+        unsigned char   enable;
         //! Last control message: backing pump state
         /*! This is the content of the last control message sent to the backing
             pump state. */

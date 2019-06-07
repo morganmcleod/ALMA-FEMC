@@ -2,13 +2,10 @@
     \ingroup    serialInterface
     \brief      LPR serial interface header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/06/02 10:38:01 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: lprSerialInterface.h,v 1.10 2011/08/05 19:18:06 avaccari Exp $
-
-    This file contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the LPR serial interface. */
 
 /*! \defgroup   lprSerialInterface  LPR serial interface
@@ -16,7 +13,7 @@
     \brief      LPR serial interface
     \note       The \ref lprSerialInterface module doesn't include any submodule.
 
-    For more informations on this module see \ref lprSerialInterface.h */
+    For more information on this module see \ref lprSerialInterface.h */
 
 #ifndef _LPRSERIALINTERFACE_H
     #define _LPRSERIALINTERFACE_H

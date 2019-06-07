@@ -1,20 +1,7 @@
 /*! \file   can.c
     \brief  CAN functions
-    \todo
-                - Find a more clever way to handle the monitor messages on
-                  control addresses. The static array is too big.
-                - Should the firmware send back a well define message in case
-                  of error while in the monitor rountines?
-                - Make sure that the message is either cleared or set to a known
-                  value (since is a global) otherwise you'll end up sending back
-                  the previous payload with the wrong size if anything doesn't
-                  work out as it should!
-                - Find a clever way to store the last control request. The
-                  current way needs a huge variable.
-                - Drop the ADD-2 part of the FPGA revision numbering once all
-                  the FPGA versions in the field are consisten
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:16:14 by avaccari
 
     This file contains the functions necessary to deal with the received CAN
@@ -86,7 +73,7 @@ static HANDLER      modulesHandler[MODULES_NUMBER]={cartridgeHandler,   // Cartr
 /*! This function handles the incoming CAN messages.
 
     The message is recomposed in the \ref CANMessage variable using the data
-    in the \ref PPRxBuffer which contains all the relevant informations about
+    in the \ref PPRxBuffer which contains all the relevant information about
     the newly received message.
 
     After this is done, the function will select the appropriate action to
@@ -130,7 +117,7 @@ void CANMessageHandler(void){
 
 /* Standard message handler. */
 static void standardRCAsHandler(void){
-    if(CAN_SIZE == CAN_MONITOR){ // If it is a monitor message
+    if (CAN_SIZE == CAN_MONITOR) { // If it is a monitor message
         #ifdef DEBUG_CAN
             if(currentClass){
                 printf("Monitor message on control message RCA (currentClass: %d)\n",
@@ -144,7 +131,7 @@ static void standardRCAsHandler(void){
         /* Check if maintenance mode. If we are, then block all standard
            standard messages. */
         if(frontend.
-            mode[CURRENT_VALUE]==MAINTENANCE_MODE){
+            mode==MAINTENANCE_MODE){
             storeError(ERR_CAN, ERC_MAINT_MODE); // Front End in maintenance mode.
             CAN_STATUS = HARDW_BLKD_ERR;
 
@@ -181,7 +168,7 @@ static void standardRCAsHandler(void){
     /* Check if maintenance mode. If we are, then block all standard
        standard messages. */
     if(frontend.
-        mode[CURRENT_VALUE]==MAINTENANCE_MODE){
+        mode==MAINTENANCE_MODE){
         storeError(ERR_CAN, ERC_MAINT_MODE);    //Front End in maintenance mode.
         return;
     }
@@ -242,101 +229,173 @@ static void specialRCAsHandler(void){
     /* Set the status to the default */
     CAN_STATUS=NO_ERROR;
 
-    switch(CAN_SIZE){ // If size = 0 -> message = monitor, everyting else -> message = control
-        case CAN_MONITOR: // If special message is monitor
-            #ifdef DEBUG_CAN
-                printf(" Monitor\n");
-            #endif /* DEBUG_CAN */
-            switch(CAN_ADDRESS){
-                case GET_ARCOM_VERSION_INFO:  // 0x20002 -> Return info about the version of the firmware
-                    #ifdef DEBUG_CAN
-                        printf("  0x%lX->GET_ARCOM_VERSION_INFO\n\n",
-                               GET_ARCOM_VERSION_INFO);
-                    #endif /* DEBUG_CAN */
-                    CAN_DATA(0)=VERSION_MAJOR;
-                    CAN_DATA(1)=VERSION_MINOR;
-                    CAN_DATA(2)=VERSION_PATCH;
-                    CAN_SIZE=3;
-                    break;
-                case GET_SPECIAL_MONITOR_RCAS: // 0x20003 -> Return the special monitor RCAs informations
-                    /* Since this is a special case, the base address returned
-                       to the AMBSI1 is not the actual base address but is the
-                       first addressable CAN monitor message that will return
-                       informations about the ARCOM board.
+    if (CAN_SIZE == CAN_MONITOR) { // If size = 0 -> message = monitor, everyting else -> message = control
+        #ifdef DEBUG_CAN
+            printf(" Monitor\n");
+        #endif /* DEBUG_CAN */
+        switch(CAN_ADDRESS){
+            case GET_ARCOM_VERSION_INFO:  // 0x20002 -> Return info about the version of the firmware
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->GET_ARCOM_VERSION_INFO\n\n",
+                           GET_ARCOM_VERSION_INFO);
+                #endif /* DEBUG_CAN */
+                CAN_DATA(0)=VERSION_MAJOR;
+                CAN_DATA(1)=VERSION_MINOR;
+                CAN_DATA(2)=VERSION_PATCH;
+                CAN_SIZE=3;
+                break;
+            case GET_SPECIAL_MONITOR_RCAS: // 0x20003 -> Return the special monitor RCAs information
+                /* Since this is a special case, the base address returned
+                   to the AMBSI1 is not the actual base address but is the
+                   first addressable CAN monitor message that will return
+                   information about the ARCOM board.
 
-                       Addresses 0x20000 and 0x20001 are already registered as
-                       functions callbacks in the AMBSI1 firmware.
-                       If we allow them to be registered again this would cause
-                       problems at run time. */
+                   Addresses 0x20000 and 0x20001 are already registered as
+                   functions callbacks in the AMBSI1 firmware.
+                   If we allow them to be registered again this would cause
+                   problems at run time. */
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->GET_SPECIAL_MONITOR_RCAS\n\n",
+                           GET_SPECIAL_MONITOR_RCAS);
+                #endif /* DEBUG_CAN */
+                CAN_DATA(7)=(unsigned char)(LAST_SPECIAL_MONITOR_RCA>>24);
+                CAN_DATA(6)=(unsigned char)(LAST_SPECIAL_MONITOR_RCA>>16);
+                CAN_DATA(5)=(unsigned char)(LAST_SPECIAL_MONITOR_RCA>>8);
+                CAN_DATA(4)=(unsigned char)(LAST_SPECIAL_MONITOR_RCA);
+                CAN_DATA(3)=(unsigned char)(GET_ARCOM_VERSION_INFO>>24);
+                CAN_DATA(2)=(unsigned char)(GET_ARCOM_VERSION_INFO>>16);
+                CAN_DATA(1)=(unsigned char)(GET_ARCOM_VERSION_INFO>>8);
+                CAN_DATA(0)=(unsigned char)(GET_ARCOM_VERSION_INFO);
+                CAN_SIZE=CAN_FULL_SIZE;
+                break;
+            case GET_SPECIAL_CONTROL_RCAS: // 0x20004 -> Return the special control RCAs information
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->GET_SPECIAL_CONTROL_RCAS\n\n",
+                           GET_SPECIAL_CONTROL_RCAS);
+                #endif /* DEBUG_CAN */
+                CAN_DATA(7)=(unsigned char)(LAST_SPECIAL_CONTROL_RCA>>24);
+                CAN_DATA(6)=(unsigned char)(LAST_SPECIAL_CONTROL_RCA>>16);
+                CAN_DATA(5)=(unsigned char)(LAST_SPECIAL_CONTROL_RCA>>8);
+                CAN_DATA(4)=(unsigned char)(LAST_SPECIAL_CONTROL_RCA);
+                CAN_DATA(3)=(unsigned char)((BASE_SPECIAL_CONTROL_RCA)>>24);
+                CAN_DATA(2)=(unsigned char)((BASE_SPECIAL_CONTROL_RCA)>>16);
+                CAN_DATA(1)=(unsigned char)((BASE_SPECIAL_CONTROL_RCA)>>8);
+                CAN_DATA(0)=(unsigned char)(BASE_SPECIAL_CONTROL_RCA);
+                CAN_SIZE=CAN_FULL_SIZE;
+                break;
+            case GET_MONITOR_RCAS: // 0x20005 -> Return the monitor RCAs information
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->GET_MONITOR_RCAS\n\n",
+                           GET_MONITOR_RCAS);
+                #endif /* DEBUG_CAN */
+                CAN_DATA(7)=(unsigned char)(LAST_MONITOR_RCA>>24);
+                CAN_DATA(6)=(unsigned char)(LAST_MONITOR_RCA>>16);
+                CAN_DATA(5)=(unsigned char)(LAST_MONITOR_RCA>>8);
+                CAN_DATA(4)=(unsigned char)(LAST_MONITOR_RCA);
+                CAN_DATA(3)=(unsigned char)((BASE_MONITOR_RCA)>>24);
+                CAN_DATA(2)=(unsigned char)((BASE_MONITOR_RCA)>>16);
+                CAN_DATA(1)=(unsigned char)((BASE_MONITOR_RCA)>>8);
+                CAN_DATA(0)=(unsigned char)(BASE_MONITOR_RCA);
+                CAN_SIZE=CAN_FULL_SIZE;
+                break;
+            case GET_CONTROL_RCAS: // 0x20006 -> Return the control RCAs information
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->GET_CONTROL_RCAS\n\n",
+                           GET_CONTROL_RCAS);
+                #endif /* DEBUG_CAN */
+                CAN_DATA(7)=(unsigned char)(LAST_CONTROL_RCA>>24);
+                CAN_DATA(6)=(unsigned char)(LAST_CONTROL_RCA>>16);
+                CAN_DATA(5)=(unsigned char)(LAST_CONTROL_RCA>>8);
+                CAN_DATA(4)=(unsigned char)(LAST_CONTROL_RCA);
+                CAN_DATA(3)=(unsigned char)((BASE_CONTROL_RCA)>>24);
+                CAN_DATA(2)=(unsigned char)((BASE_CONTROL_RCA)>>16);
+                CAN_DATA(1)=(unsigned char)((BASE_CONTROL_RCA)>>8);
+                CAN_DATA(0)=(unsigned char)(BASE_CONTROL_RCA);
+                CAN_SIZE=CAN_FULL_SIZE;
+                break;
+            case GET_PPCOMM_TIME: // 0x20007 -> Get parallel port communication time
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->GET_PPCOMM_TIME\n\n",
+                           GET_PPCOMM_TIME);
+                #endif /* DEBUG_CAN */
+                /* This message doesn't perform any operation. It is intended for debug purposes only.
+                   When called it will fill up a message payload with 8 0xFF and return. This will give
+                   an estimate on the longest time necessary to acknowledge and respond to the largest
+                   monitor request without performing any operation: it is a measure of the longest
+                   communication time between the ARCOM and the AMBSI1 board */
+                CAN_DATA(7)=0xFF;
+                CAN_DATA(6)=0xFF;
+                CAN_DATA(5)=0xFF;
+                CAN_DATA(4)=0xFF;
+                CAN_DATA(3)=0xFF;
+                CAN_DATA(2)=0xFF;
+                CAN_DATA(1)=0xFF;
+                CAN_DATA(0)=0xFF;
+                CAN_SIZE=CAN_FULL_SIZE;
+                break;
+            case GET_FPGA_VERSION_INFO: // 0x20008 -> Get FPGA firmware info
+                {
+                    /* A union to deal with the FPGA version */
+                    union {
+                        unsigned int        integer;
+                        struct {
+                            unsigned int patch  :8;
+                            unsigned int minor  :4;
+                            unsigned int major  :4;
+                        }                   bitField;
+                    } fpgaVersion;
+
                     #ifdef DEBUG_CAN
-                        printf("  0x%lX->GET_SPECIAL_MONITOR_RCAS\n\n",
-                               GET_SPECIAL_MONITOR_RCAS);
+                        printf("  0x%lX->GET_FPGA_VERSION_INFO\n\n",
+                               GET_FPGA_VERSION_INFO);
                     #endif /* DEBUG_CAN */
-                    CAN_DATA(7)=(unsigned char)(LAST_SPECIAL_MONITOR_RCA>>24);
-                    CAN_DATA(6)=(unsigned char)(LAST_SPECIAL_MONITOR_RCA>>16);
-                    CAN_DATA(5)=(unsigned char)(LAST_SPECIAL_MONITOR_RCA>>8);
-                    CAN_DATA(4)=(unsigned char)(LAST_SPECIAL_MONITOR_RCA);
-                    CAN_DATA(3)=(unsigned char)(GET_ARCOM_VERSION_INFO>>24);
-                    CAN_DATA(2)=(unsigned char)(GET_ARCOM_VERSION_INFO>>16);
-                    CAN_DATA(1)=(unsigned char)(GET_ARCOM_VERSION_INFO>>8);
-                    CAN_DATA(0)=(unsigned char)(GET_ARCOM_VERSION_INFO);
-                    CAN_SIZE=CAN_FULL_SIZE;
-                    break;
-                case GET_SPECIAL_CONTROL_RCAS: // 0x20004 -> Return the special control RCAs informations
-                    #ifdef DEBUG_CAN
-                        printf("  0x%lX->GET_SPECIAL_CONTROL_RCAS\n\n",
-                               GET_SPECIAL_CONTROL_RCAS);
-                    #endif /* DEBUG_CAN */
-                    CAN_DATA(7)=(unsigned char)(LAST_SPECIAL_CONTROL_RCA>>24);
-                    CAN_DATA(6)=(unsigned char)(LAST_SPECIAL_CONTROL_RCA>>16);
-                    CAN_DATA(5)=(unsigned char)(LAST_SPECIAL_CONTROL_RCA>>8);
-                    CAN_DATA(4)=(unsigned char)(LAST_SPECIAL_CONTROL_RCA);
-                    CAN_DATA(3)=(unsigned char)((BASE_SPECIAL_CONTROL_RCA)>>24);
-                    CAN_DATA(2)=(unsigned char)((BASE_SPECIAL_CONTROL_RCA)>>16);
-                    CAN_DATA(1)=(unsigned char)((BASE_SPECIAL_CONTROL_RCA)>>8);
-                    CAN_DATA(0)=(unsigned char)(BASE_SPECIAL_CONTROL_RCA);
-                    CAN_SIZE=CAN_FULL_SIZE;
-                    break;
-                case GET_MONITOR_RCAS: // 0x20005 -> Return the monitor RCAs informations
-                    #ifdef DEBUG_CAN
-                        printf("  0x%lX->GET_MONITOR_RCAS\n\n",
-                               GET_MONITOR_RCAS);
-                    #endif /* DEBUG_CAN */
-                    CAN_DATA(7)=(unsigned char)(LAST_MONITOR_RCA>>24);
-                    CAN_DATA(6)=(unsigned char)(LAST_MONITOR_RCA>>16);
-                    CAN_DATA(5)=(unsigned char)(LAST_MONITOR_RCA>>8);
-                    CAN_DATA(4)=(unsigned char)(LAST_MONITOR_RCA);
-                    CAN_DATA(3)=(unsigned char)((BASE_MONITOR_RCA)>>24);
-                    CAN_DATA(2)=(unsigned char)((BASE_MONITOR_RCA)>>16);
-                    CAN_DATA(1)=(unsigned char)((BASE_MONITOR_RCA)>>8);
-                    CAN_DATA(0)=(unsigned char)(BASE_MONITOR_RCA);
-                    CAN_SIZE=CAN_FULL_SIZE;
-                    break;
-                case GET_CONTROL_RCAS: // 0x20006 -> Return the control RCAs informations
-                    #ifdef DEBUG_CAN
-                        printf("  0x%lX->GET_CONTROL_RCAS\n\n",
-                               GET_CONTROL_RCAS);
-                    #endif /* DEBUG_CAN */
-                    CAN_DATA(7)=(unsigned char)(LAST_CONTROL_RCA>>24);
-                    CAN_DATA(6)=(unsigned char)(LAST_CONTROL_RCA>>16);
-                    CAN_DATA(5)=(unsigned char)(LAST_CONTROL_RCA>>8);
-                    CAN_DATA(4)=(unsigned char)(LAST_CONTROL_RCA);
-                    CAN_DATA(3)=(unsigned char)((BASE_CONTROL_RCA)>>24);
-                    CAN_DATA(2)=(unsigned char)((BASE_CONTROL_RCA)>>16);
-                    CAN_DATA(1)=(unsigned char)((BASE_CONTROL_RCA)>>8);
-                    CAN_DATA(0)=(unsigned char)(BASE_CONTROL_RCA);
-                    CAN_SIZE=CAN_FULL_SIZE;
-                    break;
-                case GET_PPCOMM_TIME: // 0x20007 -> Get parallel port communication time
-                    #ifdef DEBUG_CAN
-                        printf("  0x%lX->GET_PPCOMM_TIME\n\n",
-                               GET_PPCOMM_TIME);
-                    #endif /* DEBUG_CAN */
-                    /* This message doesn't perform any operation. It is intended for debug purposes only.
-                       When called it will fill up a message payload with 8 0xFF and return. This will give
-                       an estimate on the longest time necessary to acknowledge and respond to the largest
-                       monitor request without performing any operation: it is a measure of the longest
-                       communication time between the ARCOM and the AMBSI1 board */
+
+                    /* The ADD-4 part can be dropped once all the FPGA versions
+                       are consistent. */
+                    if(inpw(MUX_FPGA_RDY_ADD)==FPGA_READY){
+                        fpgaVersion.
+                         integer=inpw(MUX_FPGA_VERSION);
+                    } else {
+                        fpgaVersion.
+                         integer=inpw(MUX_FPGA_VERSION-2);
+                    }
+
+                    CAN_DATA(0)=fpgaVersion.
+                                 bitField.
+                                  major;
+                    CAN_DATA(1)=fpgaVersion.
+                                 bitField.
+                                  minor;
+                    CAN_DATA(2)=fpgaVersion.
+                                 bitField.
+                                  patch;
+                    CAN_SIZE=CAN_REV_SIZE;
+                }
+                break;
+            case GET_CONSOLE_ENABLE: // 0x20009 -> Enables/Disables the console
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->GET_CONSOLE_ENABLE\n\n",
+                           GET_CONSOLE_ENABLE);
+                #endif /* DEBUG_CAN */
+                CAN_BYTE=consoleEnable;
+                CAN_SIZE=CAN_BOOLEAN_SIZE;
+                break;
+            case GET_ESNS_FOUND: // 0x2000A -> Returns the number of ESNs found
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->GET_ESNS_FOUND\n\n",
+                           GET_ESNS_FOUND);
+                #endif /* DEBUG_CAN */
+                device=0; // Reset the device index to the beginning of the list
+                CAN_BYTE=esnDevicesFound;
+                CAN_SIZE=CAN_BOOLEAN_SIZE;
+                break;
+            case GET_ESNS: // 0x2000B -> Return the list of ESNs found
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->GET_ESNS\n\n",
+                           GET_ESNS);
+                #endif /* DEBUG_CAN */
+                /* If no devices were found return error */
+                if(esnDevicesFound==0){
                     CAN_DATA(7)=0xFF;
                     CAN_DATA(6)=0xFF;
                     CAN_DATA(5)=0xFF;
@@ -347,258 +406,303 @@ static void specialRCAsHandler(void){
                     CAN_DATA(0)=0xFF;
                     CAN_SIZE=CAN_FULL_SIZE;
                     break;
-                case GET_FPGA_VERSION_INFO: // 0x20008 -> Get FPGA firmware info
-                    {
-                        /* A union to deal with the FPGA version */
-                        union {
-                            unsigned int        integer;
-                            struct {
-                                unsigned int patch  :8;
-                                unsigned int minor  :4;
-                                unsigned int major  :4;
-                            }                   bitField;
-                        } fpgaVersion;
+                }
 
-                        #ifdef DEBUG_CAN
-                            printf("  0x%lX->GET_FPGA_VERSION_INFO\n\n",
-                                   GET_FPGA_VERSION_INFO);
-                        #endif /* DEBUG_CAN */
-
-                        /* The ADD-4 part can be dropped once all the FPGA versions
-                           are consistent. */
-                        if(inpw(MUX_FPGA_RDY_ADD)==FPGA_READY){
-                            fpgaVersion.
-                             integer=inpw(MUX_FPGA_VERSION);
-                        } else {
-                            fpgaVersion.
-                             integer=inpw(MUX_FPGA_VERSION-2);
-                        }
-
-                        CAN_DATA(0)=fpgaVersion.
-                                     bitField.
-                                      major;
-                        CAN_DATA(1)=fpgaVersion.
-                                     bitField.
-                                      minor;
-                        CAN_DATA(2)=fpgaVersion.
-                                     bitField.
-                                      patch;
-                        CAN_SIZE=CAN_REV_SIZE;
-                    }
-                    break;
-                case GET_CONSOLE_ENABLE: // 0x20009 -> Enables/Disables the console
-                    #ifdef DEBUG_CAN
-                        printf("  0x%lX->GET_CONSOLE_ENABLE\n\n",
-                               GET_CONSOLE_ENABLE);
-                    #endif /* DEBUG_CAN */
-                    CAN_BYTE=consoleEnable;
-                    CAN_SIZE=CAN_BOOLEAN_SIZE;
-                    break;
-                case GET_ESNS_FOUND: // 0x2000A -> Returns the number of ESNs found
-                    #ifdef DEBUG_CAN
-                        printf("  0x%lX->GET_ESNS_FOUND\n\n",
-                               GET_ESNS_FOUND);
-                    #endif /* DEBUG_CAN */
-                    device=0; // Reset the device index to the beginning of the list
-                    CAN_BYTE=esnDevicesFound;
-                    CAN_SIZE=CAN_BOOLEAN_SIZE;
-                    break;
-                case GET_ESNS: // 0x2000B -> Return the list of ESNs found
-                    #ifdef DEBUG_CAN
-                        printf("  0x%lX->GET_ESNS\n\n",
-                               GET_ESNS);
-                    #endif /* DEBUG_CAN */
-                    /* If no devices were found return error */
-                    if(esnDevicesFound==0){
-                        CAN_DATA(7)=0xFF;
-                        CAN_DATA(6)=0xFF;
-                        CAN_DATA(5)=0xFF;
-                        CAN_DATA(4)=0xFF;
-                        CAN_DATA(3)=0xFF;
-                        CAN_DATA(2)=0xFF;
-                        CAN_DATA(1)=0xFF;
-                        CAN_DATA(0)=0xFF;
-                        CAN_SIZE=CAN_FULL_SIZE;
-                        break;
-                    }
-
-                    /* If last found device was already reported, return zero
-                       and reset the count. */
-                    if(device==esnDevicesFound){
-                        CAN_DATA(7)=0;
-                        CAN_DATA(6)=0;
-                        CAN_DATA(5)=0;
-                        CAN_DATA(4)=0;
-                        CAN_DATA(3)=0;
-                        CAN_DATA(2)=0;
-                        CAN_DATA(1)=0;
-                        CAN_DATA(0)=0;
-                        CAN_SIZE=CAN_FULL_SIZE;
-                        device=0;
-                        break;
-                    }
-
-                    /* Return the next available ESN */
-                    CAN_DATA(7)=ESNS[device][7];
-                    CAN_DATA(6)=ESNS[device][6];
-                    CAN_DATA(5)=ESNS[device][5];
-                    CAN_DATA(4)=ESNS[device][4];
-                    CAN_DATA(3)=ESNS[device][3];
-                    CAN_DATA(2)=ESNS[device][2];
-                    CAN_DATA(1)=ESNS[device][1];
-                    CAN_DATA(0)=ESNS[device][0];
+                /* If last found device was already reported, return zero
+                   and reset the count. */
+                if(device==esnDevicesFound){
+                    CAN_DATA(7)=0;
+                    CAN_DATA(6)=0;
+                    CAN_DATA(5)=0;
+                    CAN_DATA(4)=0;
+                    CAN_DATA(3)=0;
+                    CAN_DATA(2)=0;
+                    CAN_DATA(1)=0;
+                    CAN_DATA(0)=0;
                     CAN_SIZE=CAN_FULL_SIZE;
-                    device++;
+                    device=0;
                     break;
-                case GET_ERRORS_NUMBER: // 0x2000C -> Returns the number of unread errors
+                }
+
+                /* Return the next available ESN */
+                CAN_DATA(7)=ESNS[device][7];
+                CAN_DATA(6)=ESNS[device][6];
+                CAN_DATA(5)=ESNS[device][5];
+                CAN_DATA(4)=ESNS[device][4];
+                CAN_DATA(3)=ESNS[device][3];
+                CAN_DATA(2)=ESNS[device][2];
+                CAN_DATA(1)=ESNS[device][1];
+                CAN_DATA(0)=ESNS[device][0];
+                CAN_SIZE=CAN_FULL_SIZE;
+                device++;
+                break;
+            case GET_ERRORS_NUMBER: // 0x2000C -> Returns the number of unread errors
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->GET_ERROR_NUMBER\n\n",
+                           GET_ERRORS_NUMBER);
+                #endif // DEBUG_CAN
+                CONV_UINT(0) = (errorNewest >= errorOldest) ? errorNewest - errorOldest :
+                                ERROR_HISTORY_LENGTH - (errorOldest - errorNewest) + 1;
+                CAN_DATA(0)=CONV_CHR(1);
+                CAN_DATA(1)=CONV_CHR(0);
+                CAN_SIZE = CAN_INT_SIZE;
+                break;
+            case GET_NEXT_ERROR: // 0x2000D -> Returns the next unread error
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->GET_NEXT_ERROR\n\n",
+                           GET_NEXT_ERROR);
+                #endif // DEBUG_CAN
+                CAN_SIZE=CAN_INT_SIZE;
+                if(errorNewest==errorOldest){
+                    CONV_UINT(0)=0xFFFF;
+                } else {
+                    CONV_UINT(0)=errorHistory[errorOldest];
+                    errorOldest++;
+                }
+                CAN_DATA(0)=CONV_CHR(1);
+                CAN_DATA(1)=CONV_CHR(0);
+                break;
+            case GET_FE_MODE: // 0x2000E -> Returns the FE operating mode
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->GET_FE_MODE\n\n",
+                           GET_FE_MODE);
+                #endif /* DEBUG_CAN */
+                CAN_BYTE=frontend.
+                          mode;
+                CAN_SIZE=CAN_BYTE_SIZE;
+                break;
+
+            case GET_TCPIP_ADDRESS: // 0x2000F -> Get the Ethernet IP address
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->GET_TCPIP_ADDRESS\n\n",
+                           GET_TCPIP_ADDRESS);
+                #endif /* DEBUG_CAN */
+                CAN_DATA(0) = frontend.ipaddress[0];
+                CAN_DATA(1) = frontend.ipaddress[1];
+                CAN_DATA(2) = frontend.ipaddress[2];
+                CAN_DATA(3) = frontend.ipaddress[3];
+                CAN_SIZE=4;                   
+                break;
+
+            case GET_LO_PA_LIMITS_TABLE_ESN + 0:
+            case GET_LO_PA_LIMITS_TABLE_ESN + 1:
+            case GET_LO_PA_LIMITS_TABLE_ESN + 2:
+            case GET_LO_PA_LIMITS_TABLE_ESN + 3:
+            case GET_LO_PA_LIMITS_TABLE_ESN + 4:
+            case GET_LO_PA_LIMITS_TABLE_ESN + 5:
+            case GET_LO_PA_LIMITS_TABLE_ESN + 6:
+            case GET_LO_PA_LIMITS_TABLE_ESN + 7:
+            case GET_LO_PA_LIMITS_TABLE_ESN + 8:
+            case GET_LO_PA_LIMITS_TABLE_ESN + 9: 
+                // handler to retrieve maxSafeLoPaESN is here so it can be called
+                //  even if the cartridge is powered off.
+                {
+                    char *str = frontend.cartridge[(CAN_ADDRESS - GET_LO_PA_LIMITS_TABLE_ESN)].lo.
+                                    maxSafeLoPaESN;
+
                     #ifdef DEBUG_CAN
-                        printf("  0x%lX->GET_ERROR_NUMBER\n\n",
-                               GET_ERRORS_NUMBER);
-                    #endif // DEBUG_CAN
-                    CONV_UINT(0) = (errorNewest >= errorOldest) ? errorNewest - errorOldest :
-                                    ERROR_HISTORY_LENGTH - (errorOldest - errorNewest) + 1;
-                    CAN_DATA(0)=CONV_CHR(1);
-                    CAN_DATA(1)=CONV_CHR(0);
-                    CAN_SIZE = CAN_INT_SIZE;
-                    break;
-                case GET_NEXT_ERROR: // 0x2000D -> Returns the next unread error
-                    #ifdef DEBUG_CAN
-                        printf("  0x%lX->GET_NEXT_ERROR\n\n",
-                               GET_NEXT_ERROR);
-                    #endif // DEBUG_CAN
-                    CAN_SIZE=CAN_INT_SIZE;
-                    if(errorNewest==errorOldest){
-                        CONV_UINT(0)=0xFFFF;
+                        printf("  0x%lX->GET_CARTRIDGE[%d]LO_PA_LIMITS_TABLE_ESN\n\n",
+                               CAN_ADDRESS,
+                               (CAN_ADDRESS - GET_LO_PA_LIMITS_TABLE_ESN + 1));
+                    #endif /* DEBUG_CAN */
+
+                    CAN_DATA(7)=str[7];
+                    CAN_DATA(6)=str[6];
+                    CAN_DATA(5)=str[5];
+                    CAN_DATA(4)=str[4];
+                    CAN_DATA(3)=str[3];
+                    CAN_DATA(2)=str[2];
+                    CAN_DATA(1)=str[1];
+                    CAN_DATA(0)=str[0];
+                    CAN_SIZE=CAN_FULL_SIZE;
+                }
+                break;
+
+            /* This will take care also of all the monitor request on
+               special CAN control RCAs. It should be replaced by a proper
+               structure as the one used for standard RCAs */
+            default:
+                #ifdef DEBUG_CAN
+                    printf("  Out of Range!\n\n");
+                #endif /* DEBUG_CAN */
+                storeError(ERR_CAN, ERC_RCA_RANGE); // Special Monitor RCA out of range
+                CAN_STATUS = MON_CAN_RNG; // Message out of range
+                break;
+        }
+        sendCANMessage(FALSE);
+
+    } else {
+        #ifdef DEBUG_CAN
+            printf(" Control\n");
+        #endif /* DEBUG_CAN */
+        switch(CAN_ADDRESS) {
+            case SET_EXIT_PROGRAM: // 0x21000 -> Cause the entire program to come to a "graceful" end
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->SET_EXIT_PROGRAM\n\n",
+                           SET_EXIT_PROGRAM);
+                #endif /* DEBUG_CAN */
+                stop = 1;
+                break;
+            case SET_REBOOT: // 0x21001 -> Reboots the ARCOM board
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->SET_REBOOT\n\n",
+                           SET_REBOOT);
+                #endif /* DEBUG_CAN */
+                reboot();
+                break;
+            case SET_CONSOLE_ENABLE: // 0x21009 -> Enables/Disables the console
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->SET_CONSOLE\n\n",
+                           SET_CONSOLE_ENABLE);
+                #endif /* DEBUG_CAN */
+                consoleEnable=(CAN_BYTE==DISABLE)?DISABLE:
+                                                  ENABLE;
+                break;
+            case SET_WRITE_NV_MEMORY: // 0x2100D -> Write the flash disk
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->SET_WRITE_NV_MEMORY\n\n",
+                           SET_WRITE_NV_MEMORY);
+                #endif /* DEBUG_CAN */
+                frontendWriteNVMemory();
+                break;
+
+            case SET_FE_MODE: // 0x2100E -> Set the FE operating mode
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->SET_FE_MODE\n\n",
+                           SET_FE_MODE);
+                #endif // DEBUG_CAN
+                switch(CAN_BYTE){
+                    case OPERATIONAL_MODE:
+                    case TROUBLESHOOTING_MODE:
+                    case MAINTENANCE_MODE:
+                        frontend.
+                         mode=CAN_BYTE;
+                        break;
+                    default:
+                        storeError(ERR_CAN, ERC_COMMAND_VAL); // Illegal Front End Mode
+                        break;
+                }
+                break;
+            case SET_READ_ESN: // 0x2100F -> Read the ESN available on the OWB
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->SET_READ_ESN\n\n",
+                           SET_READ_ESN);
+                #endif /* DEBUG_CAN */
+                owbGetEsn();
+                device=0; // Clears device index
+                break;
+
+            case SET_LO_CLEAR_PA_LIMITS + 0:
+            case SET_LO_CLEAR_PA_LIMITS + 1:
+            case SET_LO_CLEAR_PA_LIMITS + 2:
+            case SET_LO_CLEAR_PA_LIMITS + 3:
+            case SET_LO_CLEAR_PA_LIMITS + 4:
+            case SET_LO_CLEAR_PA_LIMITS + 5:
+            case SET_LO_CLEAR_PA_LIMITS + 6:
+            case SET_LO_CLEAR_PA_LIMITS + 7:
+            case SET_LO_CLEAR_PA_LIMITS + 8:
+            case SET_LO_CLEAR_PA_LIMITS + 9: 
+                // handlers for PA limits table is here so they can be called
+                //  even if the cartridge is powered off.
+                {
+                    unsigned char band = (unsigned char) (CAN_ADDRESS - SET_LO_CLEAR_PA_LIMITS);
+                    #ifdef DEBUG_PA_LIMITS
+                        printf("  SET_LO_CLEAR_PA_LIMITS band=%d\n", band + 1);
+                    #endif /* DEBUG_PA_LIMITS */
+                    loResetPaLimitsTable(band);
+                    #ifdef DEBUG_PA_LIMITS
+                        printf("  Done\n\n");
+                    #endif /* DEBUG_PA_LIMITS */
+                }
+                break;
+
+            case SET_LO_SET_PA_LIMITS_ENTRY + 0:
+            case SET_LO_SET_PA_LIMITS_ENTRY + 1:
+            case SET_LO_SET_PA_LIMITS_ENTRY + 2:
+            case SET_LO_SET_PA_LIMITS_ENTRY + 3:
+            case SET_LO_SET_PA_LIMITS_ENTRY + 4:
+            case SET_LO_SET_PA_LIMITS_ENTRY + 5:
+            case SET_LO_SET_PA_LIMITS_ENTRY + 6:
+            case SET_LO_SET_PA_LIMITS_ENTRY + 7:
+            case SET_LO_SET_PA_LIMITS_ENTRY + 8:
+            case SET_LO_SET_PA_LIMITS_ENTRY + 9: 
+                // handlers for PA limits table is here so they can be called
+                //  even if the cartridge is powered off.
+                {
+                    unsigned char band, pol;
+                    unsigned int ytoTuning;
+                    float maxVD;
+
+                    band = (unsigned char) (CAN_ADDRESS - SET_LO_SET_PA_LIMITS_ENTRY);
+                    #ifdef DEBUG_PA_LIMITS
+                        printf("  SET_LO_SET_PA_LIMITS_ENTRY band=%d\n", band + 1);
+                    #endif /* DEBUG_PA_LIMITS */
+
+                    // extract the polarization.  It can be 0, 1, or 2 meaning 'both'
+                    pol = CAN_DATA(0);
+                    if (pol > 2) {
+                        #ifdef DEBUG_PA_LIMITS
+                            printf(" pol out of range!\n\n");
+                        #endif /* DEBUG_PA_LIMITS */
+                        storeError(ERR_CAN, ERC_COMMAND_VAL);
+                    
                     } else {
-                        CONV_UINT(0)=errorHistory[errorOldest];
-                        errorOldest++;
-                    }
-                    CAN_DATA(0)=CONV_CHR(1);
-                    CAN_DATA(1)=CONV_CHR(0);
-                    break;
-                case GET_FE_MODE: // 0x2000E -> Returns the FE operating mode
-                    #ifdef DEBUG_CAN
-                        printf("  0x%lX->GET_FE_MODE\n\n",
-                               GET_FE_MODE);
-                    #endif /* DEBUG_CAN */
-                    CAN_BYTE=frontend.
-                              mode[CURRENT_VALUE];
-                    CAN_SIZE=CAN_BYTE_SIZE;
-                    break;
+                        #ifdef DEBUG_PA_LIMITS
+                            printf(" pol=%d", pol);
+                        #endif /* DEBUG_PA_LIMITS */    
 
-                case GET_LO_PA_LIMITS_TABLE_ESN + 0:
-                case GET_LO_PA_LIMITS_TABLE_ESN + 1:
-                case GET_LO_PA_LIMITS_TABLE_ESN + 2:
-                case GET_LO_PA_LIMITS_TABLE_ESN + 3:
-                case GET_LO_PA_LIMITS_TABLE_ESN + 4:
-                case GET_LO_PA_LIMITS_TABLE_ESN + 5:
-                case GET_LO_PA_LIMITS_TABLE_ESN + 6:
-                case GET_LO_PA_LIMITS_TABLE_ESN + 7:
-                case GET_LO_PA_LIMITS_TABLE_ESN + 8:
-                case GET_LO_PA_LIMITS_TABLE_ESN + 9: 
-                    // handler to retrieve maxSafeLoPaESN is here so it can be called
-                    //  even if the cartridge is powered off.
-                    {
-                        char *str = frontend.
-                                     cartridge[(CAN_ADDRESS - GET_LO_PA_LIMITS_TABLE_ESN)].
-                                      lo.
-                                       maxSafeLoPaESN;
+                        // shift and extract the YTO tuning word:
+                        CAN_DATA(0) = CAN_DATA(1);
+                        CAN_DATA(1) = CAN_DATA(2);
+                        changeEndianInt(CONV_CHR_ADD, CAN_DATA_ADD);
+                        ytoTuning = CONV_UINT(0);
+                        if (ytoTuning > 4095) {
+                            #ifdef DEBUG_PA_LIMITS
+                                printf(" ytoTuning out of range!\n\n");
+                            #endif /* DEBUG_PA_LIMITS */
+                            storeError(ERR_CAN, ERC_COMMAND_VAL);
+                        
+                        } else {
+                            #ifdef DEBUG_PA_LIMITS
+                                printf(" ytoTuning=%d", ytoTuning);
+                            #endif /* DEBUG_PA_LIMITS */
 
-                        #ifdef DEBUG_CAN
-                            printf("  0x%lX->GET_CARTRIDGE[%d]LO_PA_LIMITS_TABLE_ESN\n\n",
-                                   CAN_ADDRESS,
-                                   (CAN_ADDRESS - GET_LO_PA_LIMITS_TABLE_ESN + 1));
-                        #endif /* DEBUG_CAN */
+                            // shift and extract the maxVD:
+                            CAN_DATA(0) = CAN_DATA(3);
+                            CAN_DATA(1) = CAN_DATA(4);
+                            CAN_DATA(2) = CAN_DATA(5);
+                            CAN_DATA(3) = CAN_DATA(6);
+                            changeEndian(CONV_CHR_ADD, CAN_DATA_ADD);                            
+                            maxVD = CONV_FLOAT;
+                            if (maxVD < 0 || maxVD > 2.5) {
+                                #ifdef DEBUG_PA_LIMITS
+                                    printf(" maxVD out of range!\n\n");
+                                #endif /* DEBUG_PA_LIMITS */
+                                storeError(ERR_CAN, ERC_COMMAND_VAL);
+                            
+                            } else {
+                                #ifdef DEBUG_PA_LIMITS
+                                    printf(" maxVD=%f\n\n", maxVD);
+                                #endif /* DEBUG_PA_LIMITS */
+                                loAddPaLimitsEntry(band, pol, ytoTuning, maxVD);
+                            }
+                        }
+                    }
+                    #ifdef DEBUG_PA_LIMITS
+                        printf("  Done\n\n");
+                    #endif /* DEBUG_PA_LIMITS */
+                }
+                break;
 
-                        CAN_DATA(7)=str[7];
-                        CAN_DATA(6)=str[6];
-                        CAN_DATA(5)=str[5];
-                        CAN_DATA(4)=str[4];
-                        CAN_DATA(3)=str[3];
-                        CAN_DATA(2)=str[2];
-                        CAN_DATA(1)=str[1];
-                        CAN_DATA(0)=str[0];
-                        CAN_SIZE=CAN_FULL_SIZE;
-                    }
-                    break;
-                
-                /* This will take care also of all the monitor request on
-                   special CAN control RCAs. It should be replaced by a proper
-                   structure as the one used for standard RCAs */
-                default:
-                    #ifdef DEBUG_CAN
-                        printf("  Out of Range!\n\n");
-                    #endif /* DEBUG_CAN */
-                    storeError(ERR_CAN, ERC_RCA_RANGE); // Special Monitor RCA out of range
-                    CAN_STATUS = MON_CAN_RNG; // Message out of range
-                    break;
-            }
-            sendCANMessage(FALSE);
-            break;
-        default: // If special message is control
-            #ifdef DEBUG_CAN
-                printf(" Control\n");
-            #endif /* DEBUG_CAN */
-            switch(CAN_ADDRESS){
-                case SET_EXIT_PROGRAM: // 0x21000 -> Cause the entire program to come to a "graceful" end
-                    #ifdef DEBUG_CAN
-                        printf("  0x%lX->SET_EXIT_PROGRAM\n\n",
-                               SET_EXIT_PROGRAM);
-                    #endif /* DEBUG_CAN */
-                    stop = 1;
-                    break;
-                case SET_REBOOT: // 0x21001 -> Reboots the ARCOM board
-                    #ifdef DEBUG_CAN
-                        printf("  0x%lX->SET_REBOOT\n\n",
-                               SET_REBOOT);
-                    #endif /* DEBUG_CAN */
-                    reboot();
-                    break;
-                case SET_CONSOLE_ENABLE: // 0x21009 -> Enables/Disables the console
-                    #ifdef DEBUG_CAN
-                        printf("  0x%lX->SET_CONSOLE\n\n",
-                               SET_CONSOLE_ENABLE);
-                    #endif /* DEBUG_CAN */
-                    consoleEnable=(CAN_BYTE==DISABLE)?DISABLE:
-                                                      ENABLE;
-                    break;
-                case SET_FE_MODE: // 0x2100E -> Set the FE operating mode
-                    #ifdef DEBUG_CAN
-                        printf("  0x%lX->SET_FE_MODE\n\n",
-                               SET_FE_MODE);
-                    #endif // DEBUG_CAN
-                    switch(CAN_BYTE){
-                        case OPERATIONAL_MODE:
-                        case TROUBLESHOOTING_MODE:
-                        case MAINTENANCE_MODE:
-                            frontend.
-                             mode[CURRENT_VALUE]=CAN_BYTE;
-                            break;
-                        default:
-                            storeError(ERR_CAN, ERC_COMMAND_VAL); // Illegal Front End Mode
-                            break;
-                    }
-                    break;
-                case SET_READ_ESN: // 0x2100F -> Read the ESN available on the OWB
-                    #ifdef DEBUG_CAN
-                        printf("  0x%lX->SET_READ_ESN\n\n",
-                               SET_READ_ESN);
-                    #endif /* DEBUG_CAN */
-                    owbGetEsn();
-                    device=0; // Clears device index
-                    break;
-                default:
-                    #ifdef DEBUG_CAN
-                        printf("  Out of Range!\n\n");
-                    #endif /* DEBUG_CAN */
-                    storeError(ERR_CAN, ERC_RCA_RANGE);  //Special Control RCA out of range
-                    break;
-            }
-            break;
-        return;
+            default:
+                #ifdef DEBUG_CAN
+                    printf("  Out of Range!\n\n");
+                #endif /* DEBUG_CAN */
+                storeError(ERR_CAN, ERC_RCA_RANGE);  //Special Control RCA out of range
+                break;
+        }
     }
 }
-
 
 
 /* A function to build CANMessage with the incoming data */
@@ -706,6 +810,14 @@ static void sendCANMessage(int appendStatusByte){
             printf("%f",
                    CONV_FLOAT);
             break;
+        case CAN_FLOAT_SIZE+2:
+            if(currentClass==CONTROL_CLASS){ // If it was a monitor on a control RCA
+                changeEndian(CONV_CHR_ADD,
+                             CAN_DATA_ADD);
+            }
+            printf("%f %u",
+                   CONV_FLOAT, CAN_DATA(4));
+            break;
         case CAN_INT_SIZE+1:
             if(currentClass==CONTROL_CLASS){ // If it was a monitor on a control RCA
                 changeEndianInt(CONV_CHR_ADD,
@@ -730,12 +842,4 @@ static void sendCANMessage(int appendStatusByte){
 
     printf(" (status: 0x%02X)\n\n",
            CAN_STATUS);
-
-
-
 }
-
-
-
-
-

@@ -1,13 +1,10 @@
 /*! \file   polSpecialMsgs.c
     \brief  Polarization special messages functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: polSpecialMsgs.c,v 1.7 2006/10/05 20:18:22 avaccari Exp $
-
-    This files contains all the functions necessary to handle polarization
+    This file contains all the functions necessary to handle polarization
     special messages events. */
 
 /* Includes */

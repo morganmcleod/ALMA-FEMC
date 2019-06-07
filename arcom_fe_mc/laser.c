@@ -1,13 +1,10 @@
 /*! \file   laser.c
     \brief  EDFA laser
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/06/02 12:15:18 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: laser.c,v 1.8 2010/10/01 22:13:46 avaccari Exp $
-
-    This files contains all the function necessary to handler the EDFA laser
+    This file contains all the function necessary to handler the EDFA laser
     events. */
 
 /* Includes */
@@ -19,7 +16,6 @@
 #include "frontend.h"
 #include "lprSerialInterface.h"
 #include "debug.h"
-#include "database.h"
 
 /* Globals */
 /* Externs */
@@ -86,14 +82,14 @@ static void pumpTempHandler(void){
                    lpr.
                     edfa.
                      laser.
-                      pumpTemp[CURRENT_VALUE];
+                      pumpTemp;
     } else {
         /* If no error during the monitor process gather the stored data */
         CONV_FLOAT=frontend.
                    lpr.
                     edfa.
                      laser.
-                      pumpTemp[CURRENT_VALUE];
+                      pumpTemp;
     }
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big endian
@@ -140,14 +136,14 @@ static void driveCurrentHandler(void){
                      lpr.
                       edfa.
                        laser.
-                        driveCurrent[CURRENT_VALUE];
+                        driveCurrent;
     } else {
         /* If no error during the monitor process gather the stored data */
         CONV_FLOAT=frontend.
                    lpr.
                     edfa.
                      laser.
-                      driveCurrent[CURRENT_VALUE];
+                      driveCurrent;
     }
 
     /* Load the CAN message payload with the returned value and set the
@@ -193,14 +189,14 @@ static void photoDetectCurrentHandler(void){
                    lpr.
                     edfa.
                      laser.
-                      photoDetectCurrent[CURRENT_VALUE];
+                      photoDetectCurrent;
     } else {
         /* If no error during monitor process gather the staored data */
         CONV_FLOAT=frontend.
                    lpr.
                     edfa.
                      laser.
-                      photoDetectCurrent[CURRENT_VALUE];
+                      photoDetectCurrent;
     }
 
     /* Load the CAN message payload with th returned value and set the size.

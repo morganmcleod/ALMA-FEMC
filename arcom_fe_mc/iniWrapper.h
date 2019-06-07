@@ -1,11 +1,8 @@
 /*! \file       iniWrapper.h
     \brief      Header for wrapper of 3rd party INI file reader
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/06/29 16:47:04 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: iniWrapper.h,v 1.3 2009/03/25 14:45:06 avaccari Exp $
 
     This file is a wrapper to interface with a 3rd party library to access
     configuration files written in INI format. */

@@ -1,13 +1,10 @@
 /*! \file   globalOperations.c
     \brief  Global operations
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2006/10/24 11:52:13 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: globalOperations.c,v 1.23 2011/11/28 22:10:49 avaccari Exp $
-
-    This files contains all the functions necessary to handle global frontend
+    This file contains all the functions necessary to handle global frontend
     operations. */
 
 
@@ -33,7 +30,9 @@
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
 int initialization(void){
-    printf("Initializing...\n\n");
+    #ifdef DEBUG_STARTUP
+        printf("Initializing...\n\n");
+    #endif
 
     /* Initialize the error library */
     if(errorInit()==ERROR){
@@ -67,8 +66,7 @@ int initialization(void){
        the switch is automatic. But the framework is put in place to allow this
        control of states during startup). */
     /* Switch to operational mode */
-    frontend.
-     mode[CURRENT_VALUE] = MAINTENANCE_MODE;
+    frontend.mode = MAINTENANCE_MODE;
 
     /* Initialize the parallel port communication. This is done after the OWB
        initialization because there is no need for communication between ABMSI1
@@ -92,7 +90,9 @@ int initialization(void){
         return ERROR;
     }
 
-    printf("End initialization!\n\n");
+    #ifdef DEBUG_STARTUP
+        printf("End initialization!\n\n");
+    #endif
 
     return NO_ERROR;
 }
@@ -102,10 +102,9 @@ int initialization(void){
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
 int shutDown(void){
-    printf("Shutting down...\n\n");
-
-    /* Stop the timer for the RSS page update */
-//    stopAsyncTimer(TIMER_RSS);
+    #ifdef DEBUG_STARTUP
+        printf("Shutting down...\n\n");
+    #endif
 
     /* Shut down the frontend */
     if(frontendStop()==ERROR){
@@ -122,7 +121,9 @@ int shutDown(void){
 /**************************************************** Do something? ******/
     }
 
-    printf("Shut down complete! Exiting...\n\n");
+    #ifdef DEBUG_STARTUP
+        printf("Shut down complete! Exiting...\n\n");
+    #endif
 
     return NO_ERROR;
 }

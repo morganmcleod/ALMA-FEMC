@@ -1,11 +1,8 @@
 /*! \file   interlockFlowSens.c
     \brief  FETIM Interlock Flow Sensors
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/03/29 17:34:50 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: interlockFlowSens.c,v 1.1 2011/08/05 19:18:06 avaccari Exp $
 
     This file contains all the functions necessary to handle FETIM interlock
     flow sensor events. */
@@ -81,7 +78,7 @@ void flowHandler(void){
                       sensors.
                        flow.
                         intrlkFlowSens[currentInterlockFlowModule].
-                         flow[CURRENT_VALUE];
+                         flow;
 
         /* Check the result against the warning and error range. Right now this
            function is only printing out a warning/error message depending on
@@ -94,7 +91,7 @@ void flowHandler(void){
                       sensors.
                        flow.
                         intrlkFlowSens[currentInterlockFlowModule].
-                         flow[CURRENT_VALUE];
+                         flow;
     }
 
     /* Load the CAN message payload with the returned value and set the size.

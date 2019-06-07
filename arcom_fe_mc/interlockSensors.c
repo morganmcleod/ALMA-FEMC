@@ -1,11 +1,8 @@
 /*! \file   interlockSensors.c
     \brief  FETIM Interlock Sensors
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/03/29 17:34:50 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: interlockSensors.c,v 1.1 2011/08/05 19:18:06 avaccari Exp $
 
     This file contains all the functions necessary to handle FETIM interlock
     sensors events. */
@@ -84,7 +81,7 @@ static void singleFailHandler(void){
                   fetim.
                    interlock.
                     sensors.
-                     singleFail[CURRENT_VALUE];
+                     singleFail;
 
         /* Check the result against the warning and error range. Right now this
            function is only printing out a warning/error message depending on
@@ -95,7 +92,7 @@ static void singleFailHandler(void){
                   fetim.
                    interlock.
                     sensors.
-                     singleFail[CURRENT_VALUE];
+                     singleFail;
     }
 
     /* The CAN message payload is already loaded. Set the size */

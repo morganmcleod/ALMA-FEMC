@@ -1,13 +1,10 @@
 /*! \file   dewar.c
     \brief  FETIM dewar functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/03/28 17:13:45 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: dewar.c,v 1.1 2011/08/05 19:18:06 avaccari Exp $
-
-    This files contains all the functions necessary to handle FETIM dewar
+    This file contains all the functions necessary to handle FETIM dewar
     events. */
 
 /* Includes */
@@ -109,7 +106,7 @@ static void n2FillHandler(void){
     CAN_BYTE=frontend.
               fetim.
                dewar.
-                n2Fill[CURRENT_VALUE];
+                n2Fill;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 
 

@@ -1,0 +1,37 @@
+RELEASED VERSIONS HISTORY
+
+Only versions released to ALMA ARRAY and test sets are shown here.
+
+for testing/development version history see:
+https://github.com/morganmcleod/ALMA-FEMC/blob/master/arcom_fe_mc/version.h
+
+
+2018-04-06 2.8.7
+    Bugfix: fetimSerialInterface::getFetimExtTemp() stores in 
+      frontend.fetim.compressor.temp[currentAsyncFetimExtTempModule] instead of [currentCompressorModule].
+    Bugfix: he2press::pressHandler() returns last async value instead of reading synchronously.
+    Renamed compTemp.* to fetimExtTemp.*
+    Renamed all refs to "FETIM compressor temperature" to "FETIM external temperature"
+    Delete DATABASE_RANGE stuff from (FETIM) compressor.c, fetimExtTemp.c, he2Press.c
+    
+2017-01-08 2.8.5
+    Official accepted release to the ALMA array.
+
+2016-10-20 2.6.11
+    Prototype band 1 & band 2 support
+
+2014-08-22 2.6.6
+    Release version for FETIM testing at OSF
+    GET_PPCOMM_TIME now returns 8 bytes of 0xFF, as the ICD says it should.
+    SET_IF_SWITCH_CHANNEL[Po][Sb]_TEMP_SERVO_ENABLE now returns error if a value
+      than 0 or 1 is sent.
+
+2012-04-13  002.006.001     (fe_mc.exe or 02-06-01.exe or 20120413.exe)
+    Official Release
+    This version is tagged Ver_02_06_01(ALMA-40_00_00_00-75_35_25_00_C_ICD).
+    - Allowed number to power up cartridges now depend on FE operation mode:
+      troubleshooting: all, all the other modes: 3.
+    - Cartrdige temperature sensors: added check to verify that the measured
+      voltage is within the temperature calibration curve (for the lowest
+      voltage -> highest temperature).
+    - Assigned PA channel mapping for bands 5 and 10.

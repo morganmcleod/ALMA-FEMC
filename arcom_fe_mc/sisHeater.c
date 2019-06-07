@@ -1,13 +1,10 @@
 /*! \file   sisHeater.c
     \brief  SIS heater functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: sisHeater.c,v 1.20 2010/03/03 15:43:18 avaccari Exp $
-
-    This files contains all the functions necessary to handle SIS heater
+    This file contains all the functions necessary to handle SIS heater
     events. */
 
 /* Includes */
@@ -18,7 +15,6 @@
 #include "frontend.h"
 #include "biasSerialInterface.h"
 #include "debug.h"
-#include "database.h"
 #include "timer.h"
 
 /* Globals */
@@ -37,18 +33,14 @@ void sisHeaterHandler(void){
         printf("     SIS Heater\n");
     #endif /* DEBUG */
 
-    #ifdef DATABASE_HARDW
-        /* Check if the selected polarization is outfitted with the desired SIS heater */
-        if(frontend.
-            cartridge[currentModule].
-             polarization[currentBiasModule].
-              sisHeater.
-               available==UNAVAILABLE){
-            storeError(ERR_SIS_HEATER, ERC_MODULE_ABSENT); //SIS heater not installed
-            CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
-            return;
-        }
-    #endif /* DATABASE_HARDW */
+    /* Check if the selected polarization is outfitted with the desired SIS heater */
+    if(frontend.cartridge[currentModule].polarization[currentBiasModule].
+           sisHeater.available == UNAVAILABLE) 
+    {
+        storeError(ERR_SIS_HEATER, ERC_MODULE_ABSENT); //SIS heater not installed
+        CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
+        return;
+    }
 
     /* Check if the submodule is in range */
     currentSisHeaterModule=(CAN_ADDRESS&SIS_HEATER_MODULES_RCA_MASK)>>SIS_HEATER_MODULES_MASK_SHIFT;
@@ -211,14 +203,14 @@ static void currentHandler(void){
                    cartridge[currentModule].
                     polarization[currentBiasModule].
                      sisHeater.
-                      current[CURRENT_VALUE];
+                      current;
     } else {
         /* If no error during monitor process, gather the stored data */
         CONV_FLOAT=frontend.
                    cartridge[currentModule].
                     polarization[currentBiasModule].
                      sisHeater.
-                      current[CURRENT_VALUE];
+                      current;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to

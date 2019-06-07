@@ -1,11 +1,8 @@
 /*! \file   interlockTempSens.c
     \brief  FETIM Interlock Temperature Sensors
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/03/29 17:34:50 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: interlockTempSens.c,v 1.1 2011/08/05 19:18:06 avaccari Exp $
 
     This file contains all the functions necessary to handle FETIM interlock
     temperature sensor events. */
@@ -77,7 +74,7 @@ void tempHandler(void){
                       sensors.
                        temperature.
                         intrlkTempSens[currentInterlockTempModule].
-                         temp[CURRENT_VALUE];
+                         temp;
 
         /* Check the result against the warning and error range. Right now this
            function is only printing out a warning/error message depending on
@@ -90,7 +87,7 @@ void tempHandler(void){
                       sensors.
                        temperature.
                         intrlkTempSens[currentInterlockTempModule].
-                         temp[CURRENT_VALUE];
+                         temp;
     }
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big enadian

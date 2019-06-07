@@ -1,13 +1,10 @@
 /*! \file   cryostatSerialInterface.c
     \brief  Cryostat serial interface functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/04/10 11:26:37 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: cryostatSerialInterface.c,v 1.21 2011/11/09 00:40:30 avaccari Exp $
-
-    This files contains all the functions necessary to control and operate the
+    This file contains all the functions necessary to control and operate the
     cryostat serial interface.
 
     This module is a software implementation of the hardware description
@@ -30,7 +27,6 @@
 #include "cryostat.h"
 #include "error.h"
 #include "debug.h"
-#include "database.h"
 #include "frontend.h"
 #include "serialInterface.h"
 #include "timer.h"
@@ -341,7 +337,7 @@ int setBackingPumpEnable(unsigned char enable){
     frontend.
      cryostat.
       backingPump.
-       enable[CURRENT_VALUE]=(enable==BACKING_PUMP_ENABLE)?BACKING_PUMP_ENABLE:
+       enable=(enable==BACKING_PUMP_ENABLE)?BACKING_PUMP_ENABLE:
                                                            BACKING_PUMP_DISABLE;
 
     return NO_ERROR;
@@ -403,7 +399,7 @@ int getSupplyCurrent230V(void){
     /* The current is given by 1.488645855*vin */
     frontend.
      cryostat.
-      supplyCurrent230V[CURRENT_VALUE]=CRYO_ADC_SUPPLY_CURRENT_SCALE*vin;
+      supplyCurrent230V=CRYO_ADC_SUPPLY_CURRENT_SCALE*vin;
 
     return ASYNC_DONE;
 }
@@ -468,7 +464,7 @@ int setTurboPumpEnable(unsigned char enable){
     frontend.
      cryostat.
       turboPump.
-       enable[CURRENT_VALUE]=(enable==TURBO_PUMP_ENABLE)?TURBO_PUMP_ENABLE:
+       enable=(enable==TURBO_PUMP_ENABLE)?TURBO_PUMP_ENABLE:
                                                          TURBO_PUMP_DISABLE;
 
     return NO_ERROR;
@@ -504,7 +500,7 @@ int getTurboPumpStates(void){
     frontend.
      cryostat.
       turboPump.
-       state[CURRENT_VALUE]=cryoRegisters.
+       state=cryoRegisters.
                              statusReg.
                               bitField.
                                turboPumpError;
@@ -513,7 +509,7 @@ int getTurboPumpStates(void){
     frontend.
      cryostat.
       turboPump.
-       speed[CURRENT_VALUE]=cryoRegisters.
+       speed=cryoRegisters.
                              statusReg.
                               bitField.
                                turboPumpSpeed;
@@ -558,19 +554,19 @@ int getGateValveState(void){
             frontend.
              cryostat.
               gateValve.
-               state[CURRENT_VALUE]=GATE_VALVE_UNKNOWN;
+               state=GATE_VALVE_UNKNOWN;
             break;
         case GATE_VALVE_4SENSORS_OPEN: // If the sensors configuration correspond to a open gate valve
             frontend.
              cryostat.
               gateValve.
-               state[CURRENT_VALUE]=GATE_VALVE_OPEN;
+               state=GATE_VALVE_OPEN;
             break;
         case GATE_VALVE_4SENSORS_CLOSE: // If the sensors configuration correspond to a close gate valve
             frontend.
              cryostat.
               gateValve.
-               state[CURRENT_VALUE]=GATE_VALVE_CLOSE;
+               state=GATE_VALVE_CLOSE;
             break;
         case GATE_VALVE_4SENSORS_OVER_CURR: // If the sensors configuration correspond to an over current situation
         /* Check if the backing pump is disabled. If it is disabled, return
@@ -579,23 +575,23 @@ int getGateValveState(void){
             if(frontend.
                 cryostat.
                  backingPump.
-                  enable[CURRENT_VALUE]==BACKING_PUMP_ENABLE){
+                  enable==BACKING_PUMP_ENABLE){
                 frontend.
                  cryostat.
                   gateValve.
-                   state[CURRENT_VALUE]=GATE_VALVE_OVER_CURR;
+                   state=GATE_VALVE_OVER_CURR;
             } else {
                 frontend.
                  cryostat.
                   gateValve.
-                   state[CURRENT_VALUE]=GATE_VALVE_UNKNOWN;
+                   state=GATE_VALVE_UNKNOWN;
             }
             break;
         default: // Any other sensor configuration is due to hardware error
             frontend.
              cryostat.
               gateValve.
-               state[CURRENT_VALUE]=GATE_VALVE_ERROR;
+               state=GATE_VALVE_ERROR;
             break;
     }
 
@@ -636,25 +632,25 @@ int getSolenoidValveState(void){
             frontend.
              cryostat.
               solenoidValve.
-               state[CURRENT_VALUE]=SOLENOID_VALVE_UNKNOWN;
+               state=SOLENOID_VALVE_UNKNOWN;
             break;
         case SOLENOID_VALVE_SENSORS_OPEN: // If the sensors configuration correspond to a open solenoid valve
             frontend.
              cryostat.
               solenoidValve.
-               state[CURRENT_VALUE]=SOLENOID_VALVE_OPEN;
+               state=SOLENOID_VALVE_OPEN;
             break;
         case SOLENOID_VALVE_SENSORS_CLOSE: // If the sensors configuration correspond to a close solenoid valve
             frontend.
              cryostat.
               solenoidValve.
-               state[CURRENT_VALUE]=SOLENOID_VALVE_CLOSE;
+               state=SOLENOID_VALVE_CLOSE;
             break;
         default: // Any other sensor configuration is due to hardware error
             frontend.
              cryostat.
               solenoidValve.
-               state[CURRENT_VALUE]=SOLENOID_VALVE_ERROR;
+               state=SOLENOID_VALVE_ERROR;
     }
 
     return NO_ERROR;
@@ -855,7 +851,7 @@ int getVacuumSensor(void){
          cryostat.
           vacuumController.
            vacuumSensor[currentAsyncVacuumControllerModule].
-            pressure[CURRENT_VALUE]=CRYOSTAT_PRESS_CONV_ERR;
+            pressure=CRYOSTAT_PRESS_CONV_ERR;
 
         return ERROR;
     }
@@ -865,7 +861,7 @@ int getVacuumSensor(void){
      cryostat.
       vacuumController.
        vacuumSensor[currentAsyncVacuumControllerModule].
-        pressure[CURRENT_VALUE]=pressure;
+        pressure=pressure;
 
     return ASYNC_DONE;
 }
@@ -935,7 +931,7 @@ int setVacuumControllerEnable(unsigned char enable){
     frontend.
      cryostat.
       vacuumController.
-       enable[CURRENT_VALUE]=(enable==VACUUM_CONTROLLER_ENABLE)?VACUUM_CONTROLLER_ENABLE:
+       enable=(enable==VACUUM_CONTROLLER_ENABLE)?VACUUM_CONTROLLER_ENABLE:
                                                                 VACUUM_CONTROLLER_DISABLE;
 
     return NO_ERROR;
@@ -971,7 +967,7 @@ int getVacuumControllerState(void){
     frontend.
      cryostat.
       vacuumController.
-       state[CURRENT_VALUE]=(cryoRegisters.
+       state=(cryoRegisters.
                               statusReg.
                                bitField.
                                vacuumControllerState==VACUUM_CONTROLLER_HRDW_OK?VACUUM_CONTROLLER_OK:
@@ -993,16 +989,15 @@ int getVacuumControllerState(void){
         -# Select the desired monitor point by:
             - updating AREG
         -# Execute the core set of functions common to all the analog monitor
-           requests for the cryostat module (verify that this is true)
+           requests for the cryostat module
         -# Scale the raw binary data to with the correct unit and store the
            result in the \ref frontend variable
 
     \return
         - \ref NO_ERROR     -> if no error occurred
         - \ref ERROR        -> if something wrong happened
-        - \ref ASYNC_DONE   -> if the async measurement is completed
+        - \ref ASYNC_DONE   -> if the async measurement is completed */
 
-    \todo Verify that point 2 is true. */
 int getCryostatTemp(void){
 
     /* Floats to help perform the temperature evaluation */
@@ -1150,7 +1145,7 @@ int getCryostatTemp(void){
         frontend.
          cryostat.
           cryostatTemp[currentAsyncCryoTempModule].
-           temp[CURRENT_VALUE]=CRYOSTAT_TEMP_CONV_ERR;
+           temp=CRYOSTAT_TEMP_CONV_ERR;
 
         return ERROR;
     }
@@ -1159,7 +1154,7 @@ int getCryostatTemp(void){
     frontend.
      cryostat.
       cryostatTemp[currentAsyncCryoTempModule].
-       temp[CURRENT_VALUE]=temperature;
+       temp=temperature;
 
     return ASYNC_DONE;
 }

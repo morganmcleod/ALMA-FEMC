@@ -1,6 +1,10 @@
 *.obj
 *.exe
 *.sym
+*.err
 releases/
 CVS/
 session.log
+SocketsSDK/
+*.pyc
+*.sublime-*

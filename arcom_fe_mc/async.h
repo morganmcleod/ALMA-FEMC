@@ -1,11 +1,8 @@
 /*! \file   async.h
     \brief  Async operations header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2009/03/25 18:20:44 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: async.h,v 1.6 2011/11/09 00:40:30 avaccari Exp $
 
     This file contains the information necessary to define the characteristics
     of the functions that take care of executing operation while the cpu is idle

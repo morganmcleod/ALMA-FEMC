@@ -1,11 +1,8 @@
 /*! \file   globalDefinitions.h
     \brief  Global definitions file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 13:24:53 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: globalDefinitions.h,v 1.31 2011/11/09 00:40:30 avaccari Exp $
 
     This file contains definitions that are used throughout the various modules
     of the program. */
@@ -19,24 +16,6 @@
     #define SERIAL_NUMBER_SIZE       8  /*! This is the size in byte of the
                                             array that have to contain serial
                                             number */
-    //! Data array size
-    #define OPERATION_ARRAY_SIZE     8   /*! This is the size of operation array that
-                                             is defined for every value that can be
-                                             either monitored or controlled. This
-                                             array is used to store the following
-                                             informations:
-                                                - Current values
-                                                - Ranges for control operations
-                                                - Warning and error ranges for monitor operations */
-    /* Indexes in the operation arrays */
-    #define DEFAULT_VALUE       0   //! Index to the defalut value
-    #define CURRENT_VALUE       1   //! Index to the current value
-    #define MIN_SET_VALUE       2   //! Index to the minimum settable value
-    #define MAX_SET_VALUE       3   //! Index to the maximum settable value
-    #define LOW_WARNING_RANGE   4   //! Index to the lower limit of the warning range
-    #define HI_WARNING_RANGE    5   //! Index to the higher limit of the warning range
-    #define LOW_ERROR_RANGE     6   //! Index to the lower limit of the error range
-    #define HI_ERROR_RANGE      7   //! Index to the higher limit of the error range
 
     /* Build file name definitions */
     #define MAX_STRING_SIZE     40                  //! Max lenght of string
@@ -61,6 +40,8 @@
     #define FLOAT_ERROR     (-1.0)  //!< Global definition for a float value error
     #define FLOAT_UNINIT    (-2.0)  //!< Global definition for an uninitialized float
 
+    /* Disable "Hardware Availability" checks from INI files: */
+    #undef CHECK_HW_AVAIL
 
     /* Useful fast macros */
     /* Round a float to the closest int */

@@ -1,13 +1,10 @@
 /*! \file   pll.c
     \brief  PLL functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: pll.c,v 1.25 2009/08/25 21:39:39 avaccari Exp $
-
-    This files contains all the functions necessary to handle the PLL events. */
+    This file contains all the functions necessary to handle the PLL events. */
 
 /* Includes */
 #include <string.h>     /* memcpy */
@@ -17,7 +14,6 @@
 #include "frontend.h"
 #include "loSerialInterface.h"
 #include "debug.h"
-#include "database.h"
 
 /* Globals */
 /* Externs */
@@ -95,14 +91,14 @@ static void lockDetectVoltageHandler(void){
                    cartridge[currentModule].
                     lo.
                      pll.
-                      lockDetectVoltage[CURRENT_VALUE];
+                      lockDetectVoltage;
     } else {
         /* If no error during monitor process, gather the stored data */
         CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        pll.
-                        lockDetectVoltage[CURRENT_VALUE];
+                        lockDetectVoltage;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -149,14 +145,14 @@ static void correctionVoltageHandler(void){
                    cartridge[currentModule].
                     lo.
                      pll.
-                      correctionVoltage[CURRENT_VALUE];
+                      correctionVoltage;
     } else {
         /* If no error during monitor process, gather the stored data */
         CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        pll.
-                        correctionVoltage[CURRENT_VALUE];
+                        correctionVoltage;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -203,14 +199,14 @@ static void assemblyTempHandler(void){
                    cartridge[currentModule].
                     lo.
                      pll.
-                      assemblyTemp[CURRENT_VALUE];
+                      assemblyTemp;
     } else {
         /* If no error during monitor process, gather the stored data */
         CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        pll.
-                        assemblyTemp[CURRENT_VALUE];
+                        assemblyTemp;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -257,14 +253,14 @@ static void YIGHeaterCurrentHandler(void){
                    cartridge[currentModule].
                     lo.
                      pll.
-                      YIGHeaterCurrent[CURRENT_VALUE];
+                      YIGHeaterCurrent;
     } else {
         /* If no error during monitor process, gather the stored data */
         CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        pll.
-                        YIGHeaterCurrent[CURRENT_VALUE];
+                        YIGHeaterCurrent;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -312,14 +308,14 @@ static void refTotalPowerHandler(void){
                    cartridge[currentModule].
                     lo.
                      pll.
-                      refTotalPower[CURRENT_VALUE];
+                      refTotalPower;
     } else {
         /* If no error during monitor process, gather the stored data */
         CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        pll.
-                        refTotalPower[CURRENT_VALUE];
+                        refTotalPower;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -367,14 +363,14 @@ static void ifTotalPowerHandler(void){
                    cartridge[currentModule].
                     lo.
                      pll.
-                      ifTotalPower[CURRENT_VALUE];
+                      ifTotalPower;
     } else {
         /* If no error during monitor process, gather the stored data */
         CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        pll.
-                        ifTotalPower[CURRENT_VALUE];
+                        ifTotalPower;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -423,21 +419,21 @@ static void unlockDetectLatchHandler(void){
                   cartridge[currentModule].
                    lo.
                     pll.
-                     unlockDetectLatch[CURRENT_VALUE];
+                     unlockDetectLatch;
     } else {
         /* If no error during monitor process, gather the stored data */
         CAN_BYTE=frontend.
                   cartridge[currentModule].
                    lo.
                     pll.
-                     unlockDetectLatch[CURRENT_VALUE];
+                     unlockDetectLatch;
     }
     /* Load the CAN message payload with the returned value and set the size. */
     CAN_BYTE=frontend.
               cartridge[currentModule].
                lo.
                 pll.
-                 unlockDetectLatch[CURRENT_VALUE];
+                 unlockDetectLatch;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }
 
@@ -512,8 +508,7 @@ static void loopBandwidthSelectHandler(void){
                                      pll.
                                       lastLoopBandwidthSelect)
 
-        /* Change the status of the PLL unlock detect latch according to the
-           content of the CAN message. */
+        /* Change the status of the PLL loop BW according to the content of the CAN message. */
         if(setLoopBandwidthSelect(CAN_BYTE?PLL_LOOP_BANDWIDTH_ALTERNATE:
                                            PLL_LOOP_BANDWIDTH_DEFAULT)==ERROR){
             /* Store the ERROR state in the last control message variable */
@@ -551,7 +546,7 @@ static void loopBandwidthSelectHandler(void){
               cartridge[currentModule].
                lo.
                 pll.
-                 loopBandwidthSelect[CURRENT_VALUE];
+                 loopBandwidthSelect;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }
 
@@ -612,7 +607,7 @@ static void sidebandLockPolaritySelectHandler(void){
               cartridge[currentModule].
                lo.
                 pll.
-                 sidebandLockPolaritySelect[CURRENT_VALUE];
+                 sidebandLockPolaritySelect;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 
 }
@@ -674,7 +669,7 @@ static void nullLoopIntegratorHandler(void){
               cartridge[currentModule].
                lo.
                 pll.
-                 nullLoopIntegrator[CURRENT_VALUE];
+                 nullLoopIntegrator;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }
 

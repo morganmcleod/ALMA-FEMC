@@ -2,13 +2,10 @@
     \ingroup    interlock
     \brief      FETIM interlock state header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/03/29 17:51:00 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: interlockState.h,v 1.1 2011/08/05 19:18:06 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the FETIM interlock state. */
 
 /*! \defgroup   interlockState       FETIM interlock state
@@ -51,24 +48,24 @@
         \param      glitch           This contains the state of the glitch
                                      subsystem. See \ref INTRLK_GLITCH for more
                                      information.
-        \param      multiFail[Op]    This contains the current state of the multi
+        \param      multiFail    This contains the current state of the multi
                                      fail register which record if more than one
                                      of the sensor failed:
                                          - \ref OK    -> Not more that one sensor failed
                                          - \ref ERROR -> At least two sensors failed
-        \param      tempOutRng[Op]   This signals if any of the temperature
+        \param      tempOutRng   This signals if any of the temperature
                                      sensors is out of the preset range:
                                          - \ref OK    -> Sensors in range
                                          - \ref ERROR -> Sensors out of range
-        \param      flowOutRng[Op]   This signals if any of the flow
+        \param      flowOutRng   This signals if any of the flow
                                      sensors is out of the preset range:
                                          - \ref OK    -> Sensors in range
                                          - \ref ERROR -> Sensors out of range
-        \param      delayTrig[Op]    This signals if the shutdown delay has been
+        \param      delayTrig    This signals if the shutdown delay has been
                                      triggered:
                                          - \ref OFF -> Delay not triggered
                                          - \ref ON  -> Delay triggered
-        \param      shutdownTrig[Op] This signals if the final shutdown delay
+        \param      shutdownTrig This signals if the final shutdown delay
                                      has been triggered (no coming back):
                                          - \ref OFF -> Delay not triggered
                                          - \ref ON  -> Delay triggered */
@@ -81,28 +78,28 @@
         /*! This contains the state of the multifail register:
                 - \ref OK    -> Not more than one sensor failes
                 - \ref ERROR -> At least two sensors failed */
-        unsigned char   multiFail[OPERATION_ARRAY_SIZE];
+        unsigned char   multiFail;
         //! Temperature sensor out of range
         /*! This contains the state of the temperature sensor out of range
             register:
                 - \ref OK    -> Sensors in range
                 - \ref ERROR -> Sensors out of range */
-        unsigned char   tempOutRng[OPERATION_ARRAY_SIZE];
+        unsigned char   tempOutRng;
         //! Flow sensor out of range
         /*! This contains the state of the flowe sensor out of range register:
                 - \ref OK    -> Sensors in range
                 - \ref ERROR -> Sensors out of range */
-        unsigned char   flowOutRng[OPERATION_ARRAY_SIZE];
+        unsigned char   flowOutRng;
         //! Shutdown delay
         /*! This contains the state of the shutdown delay register:
                 - \ref OFF -> Delay not triggered
                 - \ref OK  -> Delay triggered */
-        unsigned char   delayTrig[OPERATION_ARRAY_SIZE];
+        unsigned char   delayTrig;
         //! Final shutdown delay
         /*! This contains the state of the final shutdown delay register:
                 - \ref OFF -> Delay not triggered
                 - \ref OK  -> Delay triggered */
-        unsigned char   shutdownTrig[OPERATION_ARRAY_SIZE];
+        unsigned char   shutdownTrig;
     } INTRLK_STATE;
 
 

@@ -1,11 +1,8 @@
 /*! \file   modulationInput.c
     \brief  EDFA modulation input functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created:  2007/06/02 10:29:39 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: modulationInput.c,v 1.6 2009/08/25 21:39:39 avaccari Exp $
 
     This file contains all the functions necessary to handle the EDFA modulation
     input port. */
@@ -18,7 +15,6 @@
 #include "frontend.h"
 #include "lprSerialInterface.h"
 #include "debug.h"
-#include "database.h"
 
 /* Globals */
 unsigned char   currentModulationInputModule=0;
@@ -118,13 +114,13 @@ static void valueHandler(void){
      lpr.
       edfa.
        modulationInput.
-        value[CURRENT_VALUE]=CONV_FLOAT;
+        value=CONV_FLOAT;
 
     CONV_FLOAT=frontend.
                lpr.
                 edfa.
                  modulationInput.
-                  value[CURRENT_VALUE];
+                  value;
 
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to

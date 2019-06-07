@@ -2,11 +2,8 @@
     \ingroup    edfa
     \brief      EDFA modulation input header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/05/29 14:51:56 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: modulationInput.h,v 1.2 2007/06/22 22:03:00 avaccari Exp $
 
     This file contains all the information necessary to define the
     characteristics and operate the modulation input port of the edfa. */
@@ -49,7 +46,7 @@
     //! Current state of the EDFA modulation input
     /*! This structure represent the current state of the EDFA modulation input
         \ingroup    edfa
-        \param      value[Op]   This contains the current value of the
+        \param      value   This contains the current value of the
                                 modulation input. It has to be remembered that
                                 this is \em not a read-back from the hardware
                                 but just a register holding the last issued
@@ -62,13 +59,13 @@
             \warning    It is not a read back of the actual value. The returned
                         value is the one stored by the software after a control
                         command has been issued. */
-        float                   value[OPERATION_ARRAY_SIZE];
+        float                   value;
         //! Last control message: value
         /*! This is the content of the last control message sent to the value
             of the modulation input. */
         LAST_CONTROL_MESSAGE    lastValue;
         //! Modulation Input special messages current state
-        /*! Please see \ref MI_SPECIAL_MSGS for more informations. */
+        /*! Please see \ref MI_SPECIAL_MSGS for more information. */
         MI_SPECIAL_MSGS         miSpecialMsgs;
     } MODULATION_INPUT;
 

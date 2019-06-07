@@ -1,11 +1,8 @@
 /*! \file   interlockState.c
     \brief  FETIM Interlock State
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/03/29 17:34:50 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: interlockState.c,v 1.1 2011/08/05 19:18:06 avaccari Exp $
 
     This file contains all the functions necessary to handle FETIM interlock
     state events. */
@@ -88,7 +85,7 @@ static void multiFailHandler(void){
                   fetim.
                    interlock.
                     state.
-                     multiFail[CURRENT_VALUE];
+                     multiFail;
 
         /* Check the result against the warning and error range. Right now this
            function is only printing out a warning/error message depending on
@@ -99,7 +96,7 @@ static void multiFailHandler(void){
                   fetim.
                    interlock.
                     state.
-                     multiFail[CURRENT_VALUE];
+                     multiFail;
     }
 
     /* The CAN message payload is already loaded. Set the size */
@@ -145,7 +142,7 @@ static void tempOutOfRangeHandler(void){
                   fetim.
                    interlock.
                     state.
-                     tempOutRng[CURRENT_VALUE];
+                     tempOutRng;
 
         /* Check the result against the warning and error range. Right now this
            function is only printing out a warning/error message depending on
@@ -156,7 +153,7 @@ static void tempOutOfRangeHandler(void){
                   fetim.
                    interlock.
                     state.
-                     tempOutRng[CURRENT_VALUE];
+                     tempOutRng;
     }
     /* The CAN message payload is already loaded. Set the size */
     CAN_SIZE=CAN_BOOLEAN_SIZE;
@@ -199,7 +196,7 @@ static void flowOutOfRangeHandler(void){
                   fetim.
                    interlock.
                     state.
-                     flowOutRng[CURRENT_VALUE];
+                     flowOutRng;
 
         /* Check the result against the warning and error range. Right now this
            function is only printing out a warning/error message depending on
@@ -210,7 +207,7 @@ static void flowOutOfRangeHandler(void){
                   fetim.
                    interlock.
                     state.
-                     flowOutRng[CURRENT_VALUE];
+                     flowOutRng;
    }
     /* The CAN message payload is already loaded. Set the size */
     CAN_SIZE=CAN_BOOLEAN_SIZE;
@@ -252,7 +249,7 @@ static void delayTrigHandler(void){
                   fetim.
                    interlock.
                     state.
-                     delayTrig[CURRENT_VALUE];
+                     delayTrig;
 
         /* Check the result against the warning and error range. Right now this
            function is only printing out a warning/error message depending on
@@ -263,7 +260,7 @@ static void delayTrigHandler(void){
                   fetim.
                    interlock.
                     state.
-                     delayTrig[CURRENT_VALUE];
+                     delayTrig;
     }
     /* The CAN message payload is already loaded. Set the size */
     CAN_SIZE=CAN_BOOLEAN_SIZE;
@@ -305,7 +302,7 @@ static void shutdownTrigHandler(void){
                   fetim.
                    interlock.
                     state.
-                     shutdownTrig[CURRENT_VALUE];
+                     shutdownTrig;
 
         /* Check the result against the warning and error range. Right now this
            function is only printing out a warning/error message depending on
@@ -316,7 +313,7 @@ static void shutdownTrigHandler(void){
                   fetim.
                    interlock.
                     state.
-                     shutdownTrig[CURRENT_VALUE];
+                     shutdownTrig;
     }
     /* The CAN message payload is already loaded. Set the size */
     CAN_SIZE=CAN_BOOLEAN_SIZE;

@@ -1,11 +1,8 @@
 /*! \file   interlockGlitch.c
     \brief  FETIM Interlock glitch
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/04/08 17:34:50 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: interlockGlitch.c,v 1.1 2011/08/05 19:18:06 avaccari Exp $
 
     This file contains all the functions necessary to handle FETIM interlock
     glitch events. */
@@ -86,7 +83,7 @@ static void valueHandler(void){
                      interlock.
                       state.
                        glitch.
-                        value[CURRENT_VALUE];
+                        value;
 
         /* Check the result against the warning and error range. Right now this
            function is only printing out a warning/error message depending on
@@ -98,7 +95,7 @@ static void valueHandler(void){
                      interlock.
                       state.
                        glitch.
-                        value[CURRENT_VALUE];
+                        value;
     }
 
     /* Load the CAN message payload with the returned value and set the size.
@@ -148,7 +145,7 @@ static void countTrigHandler(void){
                    interlock.
                     state.
                      glitch.
-                      countTrig[CURRENT_VALUE];
+                      countTrig;
 
         /* Check the result against the warning and error range. Right now this
            function is only printing out a warning/error message depending on
@@ -160,7 +157,7 @@ static void countTrigHandler(void){
                    interlock.
                     state.
                      glitch.
-                      countTrig[CURRENT_VALUE];
+                      countTrig;
     }
 
     /* The CAN message payload is already loaded. Set the size */

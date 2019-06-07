@@ -2,13 +2,10 @@
     \ingroup    powerDistribution
     \brief      Power distribution module header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/10/25 10:24:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: pdModule.h,v 1.15 2011/03/24 13:34:10 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the power distribution module subsystem. There
     is one module for each cartridge. */
 
@@ -68,7 +65,7 @@
                                         distribution system. There can be up to
                                         \ref PD_CHANNELS_NUMBER channels in the
                                         power distribution system.
-        \param      enable[Op]          This contains the current state of this
+        \param      enable          This contains the current state of this
                                         module in the power distribution. It has
                                         to be remembered that this is \em not a
                                         read back from the hardware but just a
@@ -93,7 +90,7 @@
                 - Ch = 4: +24V
                 - Ch = 5: +8V
 
-            Please see \ref PD_CHANNEL for more informations. */
+            Please see \ref PD_CHANNEL for more information. */
         PD_CHANNEL  pdChannel[PD_CHANNELS_NUMBER];
         //! Current state of the module
         /*! This variables stores the current state of the module:
@@ -102,7 +99,7 @@
             \warning    It is not a read back of the actual value. The returned
                         value is the one stored by the software after a control
                         command has been issued. */
-        unsigned char   enable[OPERATION_ARRAY_SIZE];
+        unsigned char   enable;
         //! Last control message: pdModule state
         /*! This is the content of the last control message sent to the power
             distribution module state. */

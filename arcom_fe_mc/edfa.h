@@ -2,13 +2,10 @@
     \ingroup    edfa
     \brief      Erbium Doped Fiber Amplifier header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/05/29 14:51:00 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: edfa.h,v 1.3 2009/10/13 15:01:49 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the EDFA. */
 
 /*! \defgroup   edfa        Erbium Doped Fiber Amplifier
@@ -56,7 +53,7 @@
                                         photo detector.
         \param      modulationInput     This contains the information about the
                                         modulation input.
-        \param      driverTempAlarm[Op] This contains the current state of the
+        \param      driverTempAlarm This contains the current state of the
                                         EDFA driver temperature alarm:
                                             - \ref NO_ERROR -> No Error
                                             - \ref ERROR -> Error */
@@ -72,7 +69,7 @@
         MODULATION_INPUT   modulationInput;
         //! EDFA driver error status
         /*! This is the status of the EDFA driver temperature alarm */
-        unsigned char      driverTempAlarm[OPERATION_ARRAY_SIZE];
+        unsigned char      driverTempAlarm;
     } EDFA;
 
     /* Globals */

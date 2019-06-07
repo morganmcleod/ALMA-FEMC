@@ -1,13 +1,10 @@
 /*! \file   miSpecialMsgs.c
     \brief  Modulation input special messages functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/06/22 16:48:20 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: miSpecialMsgs.c,v 1.1 2007/06/22 22:03:00 avaccari Exp $
-
-    This files contains all the functions necessary to handle modulation input
+    This file contains all the functions necessary to handle modulation input
     special messages events. */
 
 /* Includes */

@@ -2,13 +2,10 @@
     \ingroup    serialInterface
     \brief      Cartridge power distribution serial interface header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 13:24:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: pdSerialInterface.h,v 1.13 2007/06/26 21:27:59 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the cartridge power distribution serial
     interface. */
 

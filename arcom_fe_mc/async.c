@@ -1,11 +1,8 @@
 /*! \file   async.c
     \brief  Async operations executed at idle time
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2009/03/25 18:17:13 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: async.c,v 1.7 2011/11/09 00:40:30 avaccari Exp $
 
     This file contains the functions that take care of executing operation while
     the cpu is idle between incoming CAN messages. */

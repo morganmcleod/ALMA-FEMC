@@ -1,13 +1,10 @@
 /*! \file   error.h
     \brief  Error handling header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 13:24:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: error.h,v 1.47 2011/04/15 15:17:19 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the error handling module. */
 
 #ifndef _ERROR_H
@@ -104,7 +101,7 @@
     #define ERR_COMP_HE2_PRESS      0x40 //!< Error in the FETIM compressor He2 pressure module
     /* Error codes - shared by all modules */
     #define ERC_NO_MEMORY           0x01 //!< Not enough memory
-    #define ERC_REDIRECT_STDERR     0x02 //!< Error library: redirecting stderr
+    #define ERC_02                  0x02 //!<
     #define ERC_IRQ_DISABLED        0x03 //!< Parallel port: IRQ was disabled
     #define ERC_IRQ_RANGE           0x04 //!< Parallel port: IRQ out of range
     #define ERC_AMBSI_WAIT          0x05 //!< Parallel port: Waiting for AMBSI ready
@@ -116,7 +113,7 @@
     #define ERC_FLASH_ERROR         0x0B //!< Error reading/writing flash disk
     #define ERC_HARDWARE_BLOCKED    0x0C //!< Command blocked by safety check
     #define ERC_DEBUG_ME            0x0D //!< Software entered an invalid or impossible state
-    #define ERC_0E                  0x0E //!< 
+    #define ERC_FPGA_NOT_READY      0x0E //!< Serial mux: critical error - FPGA not ready
     #define ERC_0F                  0x0F //!< 
     #define ERC_MODULE_RANGE        0x10 //!< Submodule is out of range
     #define ERC_MODULE_ABSENT       0x11 //!< Submodule is not installed

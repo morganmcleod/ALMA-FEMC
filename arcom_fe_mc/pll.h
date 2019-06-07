@@ -2,13 +2,10 @@
     \ingroup    lo
     \brief      PLL header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:07:30 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: pll.h,v 1.23 2008/03/10 22:15:43 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the PLL. */
 
 /*! \defgroup   pll Phase Locked Loop (PLL)
@@ -51,37 +48,37 @@
     typedef struct {
         //! PLL lock detect voltage
         /*! This is the lock detect voltage (in V) of the PLL. */
-        float   lockDetectVoltage[OPERATION_ARRAY_SIZE];
+        float   lockDetectVoltage;
         //! PLL lock detect voltage scale factor
         /*! This is the lock detect voltage scale factor */
-        float   correctionVoltage[OPERATION_ARRAY_SIZE];
+        float   correctionVoltage;
         //! PLL correction voltage scale factor
         /*! This is the correction voltage scale factor */
-        float   assemblyTemp[OPERATION_ARRAY_SIZE];
+        float   assemblyTemp;
         //! PLL YIG Heater Current
         /*! This is the YIG heater current (in mA) of the PLL. */
-        float   YIGHeaterCurrent[OPERATION_ARRAY_SIZE];
+        float   YIGHeaterCurrent;
         /*! PLL YIG heater current scale factor */
         /*! This is the scale factor for the YIG heater current */
-        float   refTotalPower[OPERATION_ARRAY_SIZE];
+        float   refTotalPower;
         //! PLL IF total power
         /*! This is a measure (in V) of the total power of the IF for the PLL */
-        float   ifTotalPower[OPERATION_ARRAY_SIZE];
+        float   ifTotalPower;
         //! Latched unlock detect bit
         /*! This is a bit that monitor the lock state of the PLL. If the PLL
             looses lock, the unlock state will be latched until manually
             cleared. */
-        char    unlockDetectLatch[OPERATION_ARRAY_SIZE];
+        char    unlockDetectLatch;
         //! Select loop bandwidth
         /*! This bit controls the selection of the loop bandwidth for the
             PLL. */
-        char    loopBandwidthSelect[OPERATION_ARRAY_SIZE];
+        char    loopBandwidthSelect;
         //! Select sideband lock polarity
         /*! This bit controls the selection of the sideband lock polarity. */
-        char    sidebandLockPolaritySelect[OPERATION_ARRAY_SIZE];
+        char    sidebandLockPolaritySelect;
         //! Null the loop integrator
         /*! This bit controls the operation of the PLL loop integrator. */
-        char    nullLoopIntegrator[OPERATION_ARRAY_SIZE];
+        char    nullLoopIntegrator;
         //! Last control message: clear unlock latched bit
         /*! This is the content of the last control message sent to the PLL
             clear unlock latched bit. */

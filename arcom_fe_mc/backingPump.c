@@ -1,13 +1,10 @@
 /*! \file   backingPump.c
     \brief  Backing pump functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/03/14 17:00:37 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: backingPump.c,v 1.7 2007/08/09 16:06:00 avaccari Exp $
-
-    This files contains all the functions necessary to handle backing pump
+    This file contains all the functions necessary to handle backing pump
     events. */
 
 /* Includes */
@@ -19,7 +16,6 @@
 #include "frontend.h"
 #include "globalDefinitions.h"
 #include "error.h"
-#include "database.h"
 #include "cryostatSerialInterface.h"
 
 /* Globals */
@@ -60,10 +56,7 @@ static void enableHandler(void){
     /* If control (size !=0) */
     if(CAN_SIZE){
          // save the incoming message:
-        SAVE_LAST_CONTROL_MESSAGE(frontend.
-                                   cryostat.
-                                    backingPump.
-                                     lastEnable)
+        SAVE_LAST_CONTROL_MESSAGE(frontend.cryostat.backingPump.lastEnable)
 
         /* If turning the backing pump off, then shut down the hardware that is
            biased by the backing pump: turbo, gate and solenoid valve. */
@@ -89,12 +82,7 @@ static void enableHandler(void){
         if(setBackingPumpEnable(CAN_BYTE?BACKING_PUMP_ENABLE:
                                          BACKING_PUMP_DISABLE)==ERROR){
             /* Store the ERROR state in the last control message variable */
-            frontend.
-             cryostat.
-              backingPump.
-               lastEnable.
-                status=ERROR;
-
+            frontend.cryostat.backingPump.lastEnable.status=ERROR;
             return;
         }
 
@@ -105,10 +93,7 @@ static void enableHandler(void){
     /* If monitor on a control RCA */
     if(currentClass==CONTROL_CLASS){
         // Return the last control message and status:
-        RETURN_LAST_CONTROL_MESSAGE(frontend.
-                                     cryostat.
-                                      backingPump.
-                                       lastEnable)
+        RETURN_LAST_CONTROL_MESSAGE(frontend.cryostat.backingPump.lastEnable)
         return;
     }
 
@@ -116,9 +101,6 @@ static void enableHandler(void){
     /* This monitor point doesn't return an hardware status but just the current
        status that is stored in memory. The memory status is updated when the
        state of the backing pump is changed by a control command. */
-    CAN_BYTE=frontend.
-              cryostat.
-               backingPump.
-                enable[CURRENT_VALUE];
+    CAN_BYTE=frontend.cryostat.backingPump.enable;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }

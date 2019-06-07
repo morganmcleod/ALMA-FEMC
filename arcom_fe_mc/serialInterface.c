@@ -1,13 +1,10 @@
 /*! \file   serialInterface.c
     \brief  Serial Interface functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: serialInterface.c,v 1.12 2006/09/13 18:53:27 avaccari Exp $
-
-    This files contains all the functions necessary to communcate with the
+    This file contains all the functions necessary to communcate with the
     serial mux board drivers.
 
     This modules builds the frame containing the information necessary for the

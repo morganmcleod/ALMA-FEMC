@@ -2,13 +2,10 @@
     \ingroup    frontend
     \brief      Cryostat system header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/10/25 15:39:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: cryostat.h,v 1.23 2010/08/11 22:05:20 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the cryostat system. */
 
 /*! \defgroup   cryostat  Cryostat system
@@ -98,10 +95,6 @@
                                                    19   -> coldHeadHours */
     #define CRYOSTAT_MODULES_MASK_SHIFT 2       // Bits right shift for the submodules mask
 
-    #define CRYO_HOURS_MODULES_NUMBER    2       // See list below
-    #define CRYO_HOURS_MODULES_RCA_MASK  0x00001 /* Mask to extract the submodule number:
-                                                           0 -> coldHeadHoursHandler
-                                                           1 -> coldHeadHoursResetHandler */
     #define CRYOSTAT_TEMP_RANGE_LOW   0.0       // cryostat sensor readings are considered valid if they
     #define CRYOSTAT_TEMP_RANGE_HIGH  350.0     //   are within this range of real-world temperatures.
 
@@ -148,39 +141,42 @@
                 - Se = 11: 90K plate far side
                 - Se = 12: 90K shield top
 
-            Please see \ref CRYOSTAT_TEMP for more informations. */
+            Please see \ref CRYOSTAT_TEMP for more information. */
         CRYOSTAT_TEMP       cryostatTemp[CRYOSTAT_TEMP_SENSORS_NUMBER];
         
         //! Backing pump current state
-        /*! Please see \ref BACKING_PUMP for more informations. */
+        /*! Please see \ref BACKING_PUMP for more information. */
         BACKING_PUMP        backingPump;
         
         //! Turbo pump current state
-        /*! Please see \ref TURBO_PUMP for more informations. */
+        /*! Please see \ref TURBO_PUMP for more information. */
         TURBO_PUMP          turboPump;
         
         //! Gate valve current state
-        /*! Please see \ref GATE_VALVE for more informations. */
+        /*! Please see \ref GATE_VALVE for more information. */
         GATE_VALVE          gateValve;
         
         //! Solenoid valve current state
-        /*! Please see \ref SOLENOID_VALVE for more informations. */
+        /*! Please see \ref SOLENOID_VALVE for more information. */
         GATE_VALVE          solenoidValve;
         
         //! Current state of the vacuum controller
-        /*! Please see \ref VACUUM_CONTROLLER for more informations. */
+        /*! Please see \ref VACUUM_CONTROLLER for more information. */
         VACUUM_CONTROLLER   vacuumController;
         
         //! 230V suplly current
         /*! This contains the last monitored value of the current used by the
             230V supply. */
-        float               supplyCurrent230V[OPERATION_ARRAY_SIZE];
+        float               supplyCurrent230V;
        
         //! Cold head operating hours since last reset
         unsigned long       coldHeadHours;
 
+        //! Cold head hours need to be written to NV memory?
+        unsigned char       coldHeadHoursDirty;
+
         //! Last cold head reset message
-        LAST_CONTROL_MESSAGE    lastResetColdHeadHours;
+        LAST_CONTROL_MESSAGE    lastColdHeadHours;
 
         //! Configuration File
         /*! This contains the configuration file name as extracted from the
@@ -194,7 +190,6 @@
     /* Globals */
     /* Externs */
     extern unsigned char currentCryostatModule; //!< Currently addressed cryostat submodule
-    extern unsigned char currentColdHeadModule; //!< Currently addressed Cold Head submodule
     extern unsigned char currentAsyncCryoTempModule; //!< A global to keep track of the cryostat temperature module currently addressed by the async routine
     extern int asyncCryoTempError[CRYOSTAT_TEMP_SENSORS_NUMBER]; //!< A global to keep track of the async error while monitoring cryostat temperatures
     extern unsigned char currentAsyncVacuumControllerModule; //!< A global to keep track of the cryostat pressure module currently addressed by the async routine
@@ -204,9 +199,7 @@
     /* Prototypes */
     /* Statics */
     static void supplyCurrent230VHandler(void);
-    static void coldHeadHandler(void);
     static void coldHeadHoursHandler(void);
-    static void coldHeadHoursResetHandler(void);
     /* Externs */
     extern void cryostatHandler(void); 
     //!< This function deals with the incoming CAN messages
@@ -216,4 +209,6 @@
     //!< This function deals with the asychronous monitoring of the cryostat
     extern int cryostatAsyncLogHours(void);
     //!< Asynchronous recording of cryostat cold head hours.
+    extern int cryostatSensorTablesReport(void);    
+    //!< Print cryostat sensor tables report
 #endif /* _CRYTOSTAT_H */

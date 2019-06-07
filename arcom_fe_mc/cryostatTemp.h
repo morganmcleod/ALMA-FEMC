@@ -1,19 +1,11 @@
 /*! \file       cryostatTemp.h
     \ingroup    cryostat
     \brief      Cryostat temperature sensor header file
-    \todo       Add defines to specify what temperature is each sensor measuring.
-                This informations are probably stored into the configuration
-                database so they have to be downloaded at configuration time to
-                the embedded controller. Make sure to reserve some CAN address
-                to perform the download operation.
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/10/25 16:45:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: cryostatTemp.h,v 1.10 2010/08/11 22:05:20 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the dewar temperature sensor. */
 
 /*! \defgroup   cryostatTemp  Dewar temperature sensor
@@ -27,10 +19,8 @@
     #define _CRYOSTATTEMP_H
 
     /* Extra includes */
-    /* GLOBAL DEFINITIONS Defines */
-    #ifndef _GLOBALDEFINITIONS_H
-        #include "globalDefinitions.h"
-    #endif /* _GLOBALDEFINITIONS_H */
+    #include "can.h"
+    #include "globalDefinitions.h"
 
     /* Defines */
     #define CRYOSTAT_TEMP_SENSORS_NUMBER    13  //!< Number of temperature sensors in the dewar
@@ -86,25 +76,28 @@
     #define PRT_B6              (-152.808821)
 
     /* Submodule definistions */
-    #define CRYOSTAT_TEMP_MODULES_NUMBER        1   // It's just the temperature
+    #define CRYOSTAT_TEMP_MODULES_NUMBER    2       // See list below
+    #define CRYOSTAT_TEMP_MODULES_RCA_MASK  0x00001 // Mask to extract the submodule number:
+                                                    // 0 -> sensor temp
+                                                    // 1 -> sensor TVO coeff
+    #define CRYOSTAT_TEMP_MODULES_MASK_SHIFT    0   // no shift
 
     /* Typedefs */
-    //! Current state of the dewar temperature sensors
-    /*! This structure represent the current state of the dewar temperature
-        system.
-        \ingroup    cryostat
-        \param      temp[Op]    This contains the most recent read-back value
-                                for the temperature
-        \param      coeff[Cf]   Interpolation coefficient for the TVO
-                                temperature sensors */
     typedef struct {
         //! Dewar temperature
         /*! This is the temperature (in K) as registered by the sensor. */
-        float   temp[OPERATION_ARRAY_SIZE];
+        float temp;
+
         //! TVO interpolation coefficient
         /*! These are the coefficients necessary to calculate the temperature
             of the TVO sensors. */
-        float  coeff[TVO_COEFFS_NUMBER];
+        float coeff[TVO_COEFFS_NUMBER];
+        
+        //! Last or next TVO coefficient order to monitor:
+        unsigned char nextCoeff;
+
+        //! Last control message: value
+        LAST_CONTROL_MESSAGE lastCommand;
     } CRYOSTAT_TEMP;
 
     /* Globals */
@@ -115,6 +108,7 @@
     /* Prototypes */
     /* Statics */
     static void tempHandler(void);
+    static void coeffHandler(void);
     /* Externs */
     extern void cryostatTempHandler(void); //!< This function deals with the incoming CAN message
 

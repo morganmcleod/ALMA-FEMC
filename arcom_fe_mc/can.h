@@ -1,18 +1,17 @@
 /*! \file   can.h
     \brief  CAN header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 13:24:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: can.h,v 1.40 2011/04/15 15:17:19 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the Controlled Area Network interface included
     in the AMBSI1 board. */
 
 #ifndef _CAN_H
     #define _CAN_H
+
+    #include <string.h> /* memcpy */
 
     /* Defines */
     /* General */
@@ -103,7 +102,7 @@
                     firmwares to allow the system to work. If it is necessary to
                     change this address then a change \b has to be made in the
                     AMBSI1 firmware to reflect the new value and vice-versa.
-                    The AMBSI1 uses this address to get informations about its
+                    The AMBSI1 uses this address to get information about its
                     firmware version so this request should never be received by
                     this software. */
     #define BASE_SPECIAL_MONITOR_RCA    0x20000L
@@ -122,7 +121,8 @@
     #define GET_ERRORS_NUMBER           0x2000CL    //!< \b BASE+0x0C -> Returns the number unread errors in the error buffer
     #define GET_NEXT_ERROR              0x2000DL    //!< \b BASE+0x0D -> Returns the next unread error
     #define GET_FE_MODE                 0x2000EL    //!< \b BASE+0x0E -> Returns the current FE operating mode
-    #define GET_LO_PA_LIMITS_TABLE_ESN  0x20010L    //!< \b BASE+0x10 through 0x19 return the PA LIMITS table ESN
+    #define GET_TCPIP_ADDRESS           0x2000FL    //!< \b BASE+0x0E -> Returns the IP address of the FEMC module ethernet port
+    #define GET_LO_PA_LIMITS_TABLE_ESN  0x20010L    //!< \b BASE+0x10 through 0x19 return the PA LIMITS table ESN for band 1-10
     #define LAST_SPECIAL_MONITOR_RCA    (BASE_SPECIAL_MONITOR_RCA+0x00FFF)  // Last possible special monitor RCA
     /* Control */
     //! \b 0x21000 -> Base address for the special control RCAs
@@ -133,8 +133,11 @@
     #define SET_EXIT_PROGRAM            0x21000L    //!< \b BASE+0x00 -> Ends the execution of the main program
     #define SET_REBOOT                  0x21001L    //!< \b BASE+0x01 -> Reboots the ARCOM board
     #define SET_CONSOLE_ENABLE          0x21009L    //!< \b BASE+0x09 -> Enables/Disables the console
+    #define SET_WRITE_NV_MEMORY         0x2100DL    //!< \b BASE+0x0D -> Writes cold head hours to the flash disk
     #define SET_FE_MODE                 0x2100EL    //!< \b BASE+0x0E -> Changes the current FE operating mode
     #define SET_READ_ESN                0x2100FL    //!< \b BASE+0x0F -> Forces the firmware to read again the ESN available on the OWB
+    #define SET_LO_CLEAR_PA_LIMITS      0x21020L    //!< \b BASE+0x20 through 0x29 clear the PA LIMITS table for band 1-10
+    #define SET_LO_SET_PA_LIMITS_ENTRY  0x21030L    //!< \b BASE+0x30 through 0x39 upload a PA LIMITS table entry for band 1-10
     #define LAST_SPECIAL_CONTROL_RCA    (BASE_SPECIAL_CONTROL_RCA+0x00FFF)  // Last possible special monitor RCA
 
 

@@ -1,15 +1,10 @@
 /*! \file   powerDistribution.c
     \brief  Power distribution functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-
-    \$Id: powerDistribution.c,v 1.21 2012/01/17 16:30:58 avaccari Exp $
-
-
-    This files contains all the functions necessary to handle power distribution
+    This file contains all the functions necessary to handle power distribution
     events. */
 
 /* Includes */
@@ -110,14 +105,18 @@ int powerDistributionStartup(void){
        serial communication have to be implemented. */
     currentModule=POWER_DIST_MODULE;
 
-    printf(" Initializing Power Distribution System...\n\n");
+    #ifdef DEBUG_STARTUP
+        printf(" Initializing Power Distribution System...\n\n");
+    #endif
 
     /* Power down all the cartridges to prevent misalignment between software
        status and hardware status. */
     powerDistributionStop();
-
     /* Now we can proceed with initialization */
-    printf(" done!\n\n");
+
+    #ifdef DEBUG_STARTUP
+        printf(" done!\n\n");
+    #endif
 
     return NO_ERROR;
 }
@@ -136,20 +135,27 @@ int powerDistributionStop(void){
        serial communication have to be implemented. */
     currentModule=POWER_DIST_MODULE;
 
-    printf(" Powering down Power Distribution System...\n");
+    #ifdef DEBUG_STARTUP
+        printf(" Powering down Power Distribution System...\n");
+    #endif
 
     /* Unconditionally turn off all the modules */
-    for(currentPowerDistributionModule=0;
-        currentPowerDistributionModule<CARTRIDGES_NUMBER;
+    for(currentPowerDistributionModule = 0;
+        currentPowerDistributionModule < CARTRIDGES_NUMBER;
         currentPowerDistributionModule++){
-        printf(" - Powering down module: %d...",
-               currentPowerDistributionModule);
+        #ifdef DEBUG_STARTUP
+            printf(" - Powering down module: %d...", currentPowerDistributionModule);
+        #endif
         setPdModuleEnable(PD_MODULE_DISABLE);
         cartridgeStop(currentPowerDistributionModule);
-        printf(" done!\n");
+        #ifdef DEBUG_STARTUP
+            printf(" done!\n");
+        #endif
     }
 
-    printf(" done!\n\n");
+    #ifdef DEBUG_STARTUP
+        printf(" done!\n\n");
+    #endif
 
     return NO_ERROR;
 }

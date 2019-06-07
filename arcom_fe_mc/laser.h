@@ -2,11 +2,8 @@
     \ingroup    edfa
     \brief      EDFA laser header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/05/29 14:51:12 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: laser.h,v 1.2 2007/08/09 16:06:01 avaccari Exp $
 
     This file contains all the information necessary to define the
     characteristics and operate the EDFA laser. */
@@ -53,31 +50,31 @@
     //! Current state of the EDFA laser
     /*! This structure represent the current state of the EDFA laser
         \ingroup    edfa
-        \param      pumpTemp[Op]            This contains the last read-back
+        \param      pumpTemp            This contains the last read-back
                                             value for the pump temperature.
-        \param      driveCurrent[Op]        This contains the last read-back
+        \param      driveCurrent        This contains the last read-back
                                             value for the drive current.
         \param      lastDriveCurrent        This contains a copy of the last
                                             issued control message to the
                                             drive current.
-        \param      photoDetectCurrent[Op]  This contains the last read-back
+        \param      photoDetectCurrent  This contains the last read-back
                                             value for the photo detector
                                             current. */
     typedef struct {
         //! Pump Temperature
         /*! This is the current pump temperature for the EDFA pump laser. */
-        float                   pumpTemp[OPERATION_ARRAY_SIZE];
+        float                   pumpTemp;
         //! Drive Current
         /*! This is the current value for the drive current of the EDFA pump
             laser. */
-        float                   driveCurrent[OPERATION_ARRAY_SIZE];
+        float                   driveCurrent;
         //! Last control message: drive current
         /*! This is the content of the last control message sent ot the drive
             current. */
         LAST_CONTROL_MESSAGE    lastDriveCurrent;
         //! Photo detector current
         /*! This is the current value for the photo detector current. */
-        float                   photoDetectCurrent[OPERATION_ARRAY_SIZE];
+        float                   photoDetectCurrent;
     } LASER;
 
     /* Globals */

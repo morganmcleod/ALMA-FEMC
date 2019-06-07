@@ -2,13 +2,10 @@
     \ingroup    lna
     \brief      LNA stage header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 15:42:19 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: lnaStage.h,v 1.20 2007/05/21 15:49:26 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the LNA stage. */
 
 /*! \defgroup   lnaStage    LNA Stage
@@ -33,7 +30,7 @@
     #endif /* _CAN_H */
 
     /* Defines */
-    #define LNA_STAGES_NUMBER   6 //!< Number of LNA stages per LNA
+    #define LNA_STAGES_NUMBER   3 //!< Number of LNA stages per LNA
 
     /* Submodules definitions */
     #define LNA_STAGE_MODULES_NUMBER      3       // See list below
@@ -42,38 +39,17 @@
                                                      1 -> drainCurrent
                                                      2 -> gateVoltage */
     /* Typedefs */
-    //! Current state of theLNAstage
-    /*! This structure represent the current state of the LNA stage.
-        \ingroup    lna
-        \param      available           This indicates the availability of the
-                                        required stage:
-                                            - 0 -> Unavailable
-                                            - 1 -> Available
-        \param      drainVoltage        This contains the most recent read-back
-                                        value for the drain voltage.
-        \param      drainCurrent        This contains the most recent read-back
-                                        value for the drain current.
-        \param      gateVoltage         This contains the most recent read-back
-                                        value for the gate voltage.
-        \param      lastDrainVolage     This contains a copy of the last issued
-                                        control message for the drain voltage.
-        \param      lastDrainCurrent    This contains a copy of the last issued
-                                        control message for the drain current. */
+    //! Current state of the LNAstage
     typedef struct {
-        //!LNAstage availability
-        /*! This variable indicates if thisLNAis outfitted with this
-            particular stage. This value should be part of the device
-            dependent informations retrived from the configuration database. */
-        unsigned char   available;
         //! LNA stage drain voltage
         /*! This is the drain voltage (in V) of the LNA stage. */
-        float   drainVoltage[OPERATION_ARRAY_SIZE];
+        float   drainVoltage;
         //! LNA stage drain coltage
         /*! This is the drain coltage (in mA) of the LNA stage. */
-        float   drainCurrent[OPERATION_ARRAY_SIZE];
+        float   drainCurrent;
         //! LNA stage gate voltage
         /*! This is the gate voltage (in V) of the LNA stage. */
-        float   gateVoltage[OPERATION_ARRAY_SIZE];
+        float   gateVoltage;
         //! Last control message: LNA stage drain voltage
         /*! This is the content of the last control message sent to the LNA
             stage drain voltage. */

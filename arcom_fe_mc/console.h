@@ -1,13 +1,10 @@
 /*! \file   console.h
     \brief  Console handling header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/05/22 11:31:57 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: console.h,v 1.6 2010/04/27 22:08:16 avaccari Exp $
-
-    This files contains all the informations necessary to handle the console
+    This file contains all the information necessary to handle the console
     accesses to the software. */
 
 #ifndef _CONSOLE_H

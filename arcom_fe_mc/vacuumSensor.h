@@ -1,16 +1,11 @@
 /*! \file       vacuumSensor.h
     \ingroup    vacuumController
     \brief      Vacuum sensors header file
-    \todo       Information on the characteristics of the vacuum sensor
-                connected to the vacuum controller.
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/04/06 14:25:15 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: vacuumSensor.h,v 1.7 2011/11/09 00:40:30 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the dewar vacuum sensors. */
 
 /*! \defgroup   vacuumSensor  Dewar vacuum sensor
@@ -43,12 +38,12 @@
     /*! This structure represent the current state of the dewar temperature
         system.
         \ingroup    vacuumSensor
-        \param      pressure[Op]    This contains the most recent read-back
+        \param      pressure    This contains the most recent read-back
                                     value for the pressure */
     typedef struct {
         //! Vacuum Sensor Pressure
         /*! This is the pressure (in mbar) as registered by the sensor. */
-        float   pressure[OPERATION_ARRAY_SIZE];
+        float   pressure;
     } VACUUM_SENSOR;
 
     /* Globals */

@@ -2,13 +2,10 @@
     \ingroup    cartridge
     \brief      Local oscillator header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:46:19 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: lo.h,v 1.20 2008/03/10 22:15:43 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the local oscillator system in each cartridge.
     See \ref lo for more information. */
 
@@ -60,7 +57,7 @@
     #define LO_PA_LIMITS_ESN_EXPECTED   1                   // Expected keys containting ESN
     #define LO_PA_LIMITS_ENTRIES_KEY    "ENTRIES"           // Key containing number of PA limits entries
     #define LO_PA_LIMITS_EXPECTED       1                   // Expected keys containing PA limits
-    #define LO_PA_LIMITS_MAX_ENTRIES    255                 // Maximum number of entries allowed
+    #define LO_PA_LIMITS_MAX_ENTRIES    256                 // Maximum number of entries allowed
     #define LO_PA_LIMITS_ENTRY_KEY      "ENTRY_%d"          // Key for individual PA limits entries
                                                             // Entries are formatted as <YTO count>,<PAVD0 limit>,<PAVD1 limit>
     /* Submodules definitions */
@@ -113,27 +110,27 @@
 
         //! AMC current state
         /*! Please see the definition of the \ref AMC structure for more
-            informations. */
+            information. */
         AMC         amc;
 
         //! PLL current state
         /*! Please see the definition of the \ref PLL structure for more
-            informations. */
+            information. */
         PLL         pll;
 
         //! PA current state
         /*! Please see the definition of the \ref PA structure for more
-            informations. */
+            information. */
         PA          pa;
 
         //! Photomixer current state
         /*! Please see the definition of the \ref PHOTOMIXER structure for more
-            informations. */
+            information. */
         PHOTOMIXER  photomixer;
 
         //! YTO current state
         /*! Please see the definition of the \ref YTO structure for more
-            informations. */
+            information. */
         YTO         yto;
 
         //! Configuration File
@@ -148,6 +145,10 @@
         //! Max safe LO PA entries table size
         //* Size of the max safe LO PA entries table */
         unsigned char maxSafeLoPaTableSize;
+
+        //! Number of entries currently allocated to the max safe LO PA entries table
+        //* Number of entries allocated may be greater than maxSafeLoPaTableSize 
+        unsigned char allocatedLoPaTableSize;        
 
         //! Max safe LO PA entries table
         /*! Table of max safe LO PA entries.  See definition above */
@@ -169,6 +170,12 @@
     extern int loZeroPaDrainVoltage(void);  //!< Helper function to set the LO PA drain voltages to zero
     extern int loZeroPAGateVoltage(void);   //!< Helper function to set the LO PA gate voltages to zero
     extern int loZeroYtoCoarseTuning(void); //!< Helper function to set the YTO coarse tuning to zero
+
+    extern int loResetPaLimitsTable(unsigned char band);  //!< Helper function to clear the PA limits table
+    extern int loAddPaLimitsEntry(unsigned char band, unsigned char pol, unsigned int ytoTuning, float maxVD);
+                                            //!< Helper function to add a PA limits table entry
+
+    extern int printPaLimitsTable(unsigned char band);
 
     extern int limitSafePaDrainVoltage(unsigned char paModule);
         //!< Limit the CONV_FLOAT value about to be sent to the PA channel.

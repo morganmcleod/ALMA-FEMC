@@ -1,13 +1,10 @@
 /*! \file   ppComm.h
     \brief  Parallel Port communication interface header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 13:24:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: ppComm.h,v 1.19 2011/03/24 13:34:11 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the parallel port included in the ARCOM Pegasus
     board. */
 

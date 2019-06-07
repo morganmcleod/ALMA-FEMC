@@ -2,13 +2,10 @@
     \ingroup    cryostat
     \brief      Gate valve header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/10/25 18:06:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: gateValve.h,v 1.9 2011/08/05 19:18:06 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the gate valve. */
 
 /*! \defgroup   gateValve  Gate valve
@@ -39,7 +36,7 @@
     //! Current state of the gate valve
     /*! This structure represent the current state of the gate valve system.
         \ingroup    cryostat
-        \param      state[Op]   This contains the current state of the gate
+        \param      state   This contains the current state of the gate
                                 valve:
                                     - \ref GATE_VALVE_OPEN -> Valve is open
                                     - \ref GATE_VALVE_CLOSE -> Valve is close
@@ -60,7 +57,7 @@
                 - \ref GATE_VALVE_UNKNOWN -> Valve is in an unknown state
                 - \ref GATE_VALVE_OVER_CURR -> Valve is stuck due to an overcurrent
                 - \ref GATE_VALVE_ERROR -> Valve is in error state. */
-        unsigned char   state[OPERATION_ARRAY_SIZE];
+        unsigned char   state;
         //! Last control message: gate valve state
         /*! This is the content of the last control message sent to the gate
             valve state. */

@@ -2,13 +2,10 @@
     \ingroup    fetim
     \brief      Front End Thermal Interlock Module
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/03/25 17:29:12 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: fetim.h,v 1.2 2011/11/09 00:40:30 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the Front End Thermal Interlock Module. */
 
 /*! \defgroup   fetim       Front End Thermal Interlock Module
@@ -53,11 +50,6 @@
         /*! This field indicated if the FETIM is installed or not in the front
             end. This will be determined at startup by the FEMC hardware. */
         unsigned char   available;
-
-        //! Configuration File
-        /*! This contains the configuration file name as extracted from the
-            frontend configuration file. */
-        char            configFile[MAX_FILE_NAME_SIZE];
 
         //! FETIM board hardware revision level
         /*! This contains the FETIM board hardware revision level */

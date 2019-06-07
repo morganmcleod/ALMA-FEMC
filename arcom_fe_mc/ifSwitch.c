@@ -1,13 +1,10 @@
 /*! \file   ifSwitch.c
     \brief  IF Switch functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: ifSwitch.c,v 1.10 2010/11/02 14:36:29 avaccari Exp $
-
-    This files contains all the functions necessary to handle IF Switch
+    This file contains all the functions necessary to handle IF Switch
     events. */
 
 /* Includes */
@@ -18,7 +15,6 @@
 #include "frontend.h"
 #include "ifSerialInterface.h"
 #include "debug.h"
-#include "database.h"
 
 /* Globals */
 /* Externs */
@@ -39,7 +35,8 @@ static HANDLER  ifSwitchModulesHandler[IF_SWITCH_MODULES_NUMBER]={ifChannelHandl
                                                                   ifChannelHandler,
                                                                   ifChannelHandler,
                                                                   ifChannelHandler,
-                                                                  bandSelectHandler};
+                                                                  bandSelectHandler,
+                                                                  allChannelsHandler};
 
 /* IF Switch handler */
 /*! This function will be called by the CAN message handler when the received
@@ -67,7 +64,7 @@ void ifSwitchHandler(void){
 
 
 /* Band select handler */
-void bandSelectHandler(void){
+void bandSelectHandler(void) {
 
     #ifdef DEBUG_IFSWITCH
         printf("  Band Select\n");
@@ -76,40 +73,24 @@ void bandSelectHandler(void){
     /* If control (size!=0) */
     if(CAN_SIZE){
         // save the incoming message:
-        SAVE_LAST_CONTROL_MESSAGE(frontend.
-                                   ifSwitch.
-                                    lastBandSelect)
+        SAVE_LAST_CONTROL_MESSAGE(frontend.ifSwitch.lastBandSelect)
 
         /* Since the payload is just a byte, there is no need to conver the
            received data from the can message to any particular format, the
            data is already available in CAN_BYTE. */
-        if(checkRange(frontend.
-                       ifSwitch.
-                        bandSelect[MIN_SET_VALUE],
-                      CAN_BYTE,
-                      frontend.
-                       ifSwitch.
-                       bandSelect[MAX_SET_VALUE])){
+        if(checkRange(BAND1, CAN_BYTE, BAND10)) {
             storeError(ERR_IF_SWITCH, ERC_COMMAND_VAL); //Selected band set value out of range
 
             /* Store error in the last control message variable */
-            frontend.
-             ifSwitch.
-              lastBandSelect.
-               status=CON_ERROR_RNG;
-
+            frontend.ifSwitch.lastBandSelect.status = CON_ERROR_RNG;
             return;
         }
 
         /* Set the IF switch band. If an error occurs then store the state and
            return. */
-        if(setIfSwitchBandSelect()==ERROR){
+        if(setIfSwitchBandSelect() == ERROR) {
             /* Store the error state in the last control message variable */
-            frontend.
-             ifSwitch.
-              lastBandSelect.
-               status=ERROR;
-
+            frontend.ifSwitch.lastBandSelect.status=ERROR;
             return;
         }
 
@@ -120,9 +101,7 @@ void bandSelectHandler(void){
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){ // If monitor on control RCA
         // return the last control message and status
-        RETURN_LAST_CONTROL_MESSAGE(frontend.
-                                     ifSwitch.
-                                      lastBandSelect)
+        RETURN_LAST_CONTROL_MESSAGE(frontend.ifSwitch.lastBandSelect)
         return;
     }
 
@@ -131,11 +110,62 @@ void bandSelectHandler(void){
        current status that is stored in memory. The memory status is
        update when the state of the IF switch select band is changed by a
        control command. */
-    CAN_BYTE=frontend.
-              ifSwitch.
-               bandSelect[CURRENT_VALUE];
+    CAN_BYTE = frontend.ifSwitch.bandSelect;
+    CAN_SIZE = CAN_BYTE_SIZE;
+}
 
-    CAN_SIZE=CAN_BYTE_SIZE;
+void allChannelsHandler(void) {
+    #ifdef DEBUG_IFSWITCH
+        printf("  All Channels Atten\n");
+    #endif /* DEBUG_IFSWITCH */
+
+    /* If control (size!=0) */
+    if (CAN_SIZE) {
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.ifSwitch.lastAllChannelsAtten)
+
+        // Set all four IF switch attenuators:
+        for (currentIfSwitchModule = 0; currentIfSwitchModule < IF_CHANNELS_NUMBER; currentIfSwitchModule++)
+        {
+            // Range check:
+            if (checkRange(IF_CHANNEL_SET_ATTENUATION_MIN, CAN_DATA(currentIfSwitchModule), IF_CHANNEL_SET_ATTENUATION_MAX))
+            {
+                storeError(ERR_IF_SWITCH, ERC_COMMAND_VAL); //Attenuation set value out of range
+
+                /* Store error in the last control message variable */
+                frontend.ifSwitch.lastAllChannelsAtten.status = CON_ERROR_RNG;
+                return;
+            }
+            // Copy the attenuation for the current module being set to CAN_BYTE:
+            CAN_BYTE = CAN_DATA(currentIfSwitchModule);
+
+            // Set the current attenuator using CAN_BYTE:
+            if (setIfChannelAttenuation() == ERROR) {
+                /* Store the Error state in the last control message variable */
+                frontend.ifSwitch.lastAllChannelsAtten.status = ERROR;
+                // bail out early if error:
+                return;
+            }
+        }
+        /* If everything went fine, it's a control message, we're done. */
+        return;
+    }
+
+    /* If monitor on control RCA */
+    if (currentClass==CONTROL_CLASS) { // If monitor on control RCA
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.ifSwitch.lastAllChannelsAtten)
+        return;
+    }
+
+    /* If monitor on monitor RCA */
+    for (currentIfSwitchModule = 0; currentIfSwitchModule < IF_CHANNELS_NUMBER; currentIfSwitchModule++)
+    {
+        CAN_DATA(currentIfSwitchModule) = 
+            frontend.ifSwitch.ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
+                                       [currentIfChannelSideband[currentIfSwitchModule]].attenuation;
+    }
+    CAN_SIZE = IF_CHANNELS_NUMBER;
 }
 
 /* IF Switch initialization */
@@ -152,8 +182,10 @@ int ifSwitchStartup(void){
        serial communication have to be implemented. */
     currentModule=IF_SWITCH_MODULE;
 
-    printf(" Initializing IF Switch Module...\n");
-    printf("  - Reading IF switch M&C module hardware revision level...\n");
+    #ifdef DEBUG_STARTUP
+        printf(" Initializing IF Switch Module...\n");
+        printf("  - Reading IF switch M&C module hardware revision level...\n");
+    #endif
 
     /* Call the getIfSwitchHadrwRevision() function to read the hardware
        revision level. If error, return error and abort initialization. */
@@ -161,76 +193,11 @@ int ifSwitchStartup(void){
         return ERROR;
     }
 
-    printf("     Revision level: %d\n",
-           frontend.
-            ifSwitch.
-             hardwRevision);
-
-    printf("    done!\n"); // Hardware Revision Level
-
-    /* Set the limits for control messages */
-    printf("  - Setting limits for control messages\n");
-    printf("    - Band select\n");
-    frontend.
-     ifSwitch.
-      bandSelect[MIN_SET_VALUE]=BAND1;
-    frontend.
-     ifSwitch.
-      bandSelect[MAX_SET_VALUE]=BAND10;
-    printf("      done!\n"); // Band select
-
-
-    printf("    - Channel attenuation\n");
-    printf("      - Channel 1\n"); // The channel identification here has no meaning it's only to print out a message
-    frontend.
-     ifSwitch.
-      ifChannel[POLARIZATION0][SIDEBAND0].
-       attenuation[MIN_SET_VALUE]=IF_CHANNEL_SET_ATTENUATION_MIN;
-    frontend.
-     ifSwitch.
-      ifChannel[POLARIZATION0][SIDEBAND0].
-       attenuation[MAX_SET_VALUE]=IF_CHANNEL_SET_ATTENUATION_MAX;
-    printf("        done!\n"); // Channel 1
-
-    printf("      - Channel 2\n"); // The channel identification here has no meaning it's only to print out a message
-    frontend.
-     ifSwitch.
-      ifChannel[POLARIZATION0][SIDEBAND1].
-       attenuation[MIN_SET_VALUE]=IF_CHANNEL_SET_ATTENUATION_MIN;
-    frontend.
-     ifSwitch.
-      ifChannel[POLARIZATION0][SIDEBAND1].
-       attenuation[MAX_SET_VALUE]=IF_CHANNEL_SET_ATTENUATION_MAX;
-    printf("        done!\n"); // Channel 2
-
-    printf("      - Channel 3\n"); // The channel identification here has no meaning it's only to print out a message
-    frontend.
-     ifSwitch.
-      ifChannel[POLARIZATION1][SIDEBAND0].
-       attenuation[MIN_SET_VALUE]=IF_CHANNEL_SET_ATTENUATION_MIN;
-    frontend.
-     ifSwitch.
-      ifChannel[POLARIZATION1][SIDEBAND0].
-       attenuation[MAX_SET_VALUE]=IF_CHANNEL_SET_ATTENUATION_MAX;
-    printf("        done!\n"); // Channel 3
-
-    printf("      - Channel 4\n"); // The channel identification here has no meaning it's only to print out a message
-    frontend.
-     ifSwitch.
-      ifChannel[POLARIZATION1][SIDEBAND1].
-       attenuation[MIN_SET_VALUE]=IF_CHANNEL_SET_ATTENUATION_MIN;
-    frontend.
-     ifSwitch.
-      ifChannel[POLARIZATION1][SIDEBAND1].
-       attenuation[MAX_SET_VALUE]=IF_CHANNEL_SET_ATTENUATION_MAX;
-    printf("        done!\n"); // Channel 4
-
-    printf("      done!\n"); // Channel Attenuation
-
-    printf("    done!\n"); // Control message limits
-
-    printf(" done!\n\n"); // Initialization
-
+    #ifdef DEBUG_STARTUP
+        printf("     Revision level: %d\n", frontend.ifSwitch.hardwRevision);
+        printf("    done!\n"); // Hardware Revision Level
+        printf(" done!\n\n"); // Initialization
+    #endif
     return NO_ERROR;
 }
 

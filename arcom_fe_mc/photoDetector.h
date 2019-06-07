@@ -2,13 +2,10 @@
     \ingroup    edfa
     \brief      EDFA photodetector header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/05/29 12:51:41 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: photoDetector.h,v 1.2 2007/06/22 22:03:00 avaccari Exp $
-
-    This files contains all the information necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the EDFA photodetector. */
 
 /*! \defgroup   photoDetector   EDFA Photodetector
@@ -40,11 +37,11 @@
     typedef struct {
         //! Photodetector current
         /*! This is the current used by the photodetector. */
-        float   current[OPERATION_ARRAY_SIZE];
+        float   current;
         
         //! Photodetector power
         /*! This is the power used by the photodetector. */
-        float   power[OPERATION_ARRAY_SIZE];
+        float   power;
         
         //! Power conversion coefficient
         /*! This is the coefficient necessary to calculate the power of the

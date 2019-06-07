@@ -2,13 +2,10 @@
     \ingroup    cryostat
     \brief      Turbo pump header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/10/27 14:27:40 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: turboPump.h,v 1.9 2011/11/09 00:40:30 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the turbo pump included in the cryostat. */
 
 /*! \defgroup   turboPump Turbo pump
@@ -49,17 +46,17 @@
     //! Current state of the turbo pump
     /*! This structure represent the current state of the turbo pump.
         \ingroup    cryostat
-        \param      enable[Op]  This contains the current state of the turbo
+        \param      enable  This contains the current state of the turbo
                                 pump. It has to be remembered that this is
                                 \em not a read-back from the hardware but just a
                                 register holding the last issued control:
                                     - \ref TURBO_PUMP_DISABLE -> Disable/OFF
                                     - \ref TURBO_PUMP_ENABLE -> Enable/ON
-        \param      state[Op]   This contains the current error state for the
+        \param      state   This contains the current error state for the
                                 turbo pump:
                                     - \ref NO_ERROR -> No error
                                     - \ref ERROR -> Error
-        \param      speed[Op]   This contains the current speed state for the
+        \param      speed   This contains the current speed state for the
                                 turbo pump:
                                     - \ref SPEED_OK -> Speed OK
                                     - \ref SPEED_LOW -> Speed Low
@@ -73,18 +70,17 @@
             \warning    It is not a read back of the actual value. The returned
                         value is the one stored by the software after a control
                         command has been issued. */
-        unsigned char   enable[OPERATION_ARRAY_SIZE];
+        unsigned char   enable;
         //! Turbo pump error state
         /*! This is the error state of the turbo pump:
                 - \ref NO_ERROR -> no error
-                - \ref ERROR -> error
-            \todo   Verify that this is correct. */
-        unsigned char   state[OPERATION_ARRAY_SIZE];
+                - \ref ERROR -> error */
+        unsigned char   state;
         //! Turbo pump speed state
         /*! This is the speed state of the turbo pump:
                 - \ref SPEED_LOW -> not up to speed
                 - \ref SPEED_OK -> up to speed */
-        unsigned char   speed[OPERATION_ARRAY_SIZE];
+        unsigned char   speed;
         //! Last control message: turbo pump state
         /*! This is the content of the last control message sent to the turbo
             pump state. */

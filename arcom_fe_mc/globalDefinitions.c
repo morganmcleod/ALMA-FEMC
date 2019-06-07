@@ -1,11 +1,8 @@
 /*! \file   globalDefinitions.c
     \brief  Global functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:16:14 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: globalDefinitions.c,v 1.18 2010/11/02 14:36:29 avaccari Exp $
 
     This file contains general use functions and variables. */
 

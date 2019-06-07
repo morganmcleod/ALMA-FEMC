@@ -4,10 +4,7 @@
     <b> File Informations: </b><br>
     Created: 2006/10/1 14:56:51 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: pdChannel.c,v 1.10 2009/08/25 21:39:39 avaccari Exp $
-
-    This files contains all the functions necessary to handle the power
+    This file contains all the functions necessary to handle the power
     distribution submodules' channels. */
 
 /* Includes */
@@ -17,7 +14,6 @@
 #include "frontend.h"
 #include "error.h"
 #include "pdSerialInterface.h"
-#include "database.h"
 
 /* Globals */
 /* Externs */
@@ -82,14 +78,14 @@ static void voltageHandler(void){
                    powerDistribution.
                     pdModule[currentPowerDistributionModule].
                      pdChannel[currentPdModuleModule].
-                      voltage[CURRENT_VALUE];
+                      voltage;
     } else {
         /* If no error during monitor pocess, gather the stored data */
         CONV_FLOAT=frontend.
                    powerDistribution.
                     pdModule[currentPowerDistributionModule].
                      pdChannel[currentPdModuleModule].
-                      voltage[CURRENT_VALUE];
+                      voltage;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -132,14 +128,14 @@ static void currentHandler(void){
                    powerDistribution.
                     pdModule[currentPowerDistributionModule].
                      pdChannel[currentPdModuleModule].
-                      current[CURRENT_VALUE];
+                      current;
     } else {
         /* If no error during monitor pocess, gather the stored data */
         CONV_FLOAT=frontend.
                    powerDistribution.
                     pdModule[currentPowerDistributionModule].
                      pdChannel[currentPdModuleModule].
-                      current[CURRENT_VALUE];
+                      current;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to

@@ -1,20 +1,11 @@
 /*! \file       cartridge.h
     \ingroup    frontend
     \brief      Cartridge header file
-    \todo       Find a way to write down the mapping of the temperatures so that
-                it is spell out one way or another in the manual. If only one
-                cartridge (Band3) is different from the others than maybe it is
-                possible to spell out the table, otherwise just write something
-                and refer to wither the .c or the .h file that contains the
-                mapping.
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 13:24:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: cartridge.h,v 1.26 2011/03/24 13:34:10 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate each cartridge in the frontend system.
     See \ref cartridge for more information. */
 
@@ -177,9 +168,7 @@
     /*! This structure represent the current state of the cartridge. */
     typedef struct {
         //! Cartridge availability
-        /*! This field indicates if a cartridge is installed or not in the
-            receiver. This will be determined at startup time depending on the
-            results of the handshake with the main software. */
+        /*! This field indicates if a cartridge is installed or not in the receiver. */
         unsigned char   available;
         
         //! Cartrdige current state
@@ -199,12 +188,12 @@
                 - Po = 1: Polarization 1
 
             Please see the definition of the \ref POLARIZATION structure for
-            more informations.*/
+            more information.*/
         POLARIZATION    polarization[POLARIZATIONS_NUMBER];
         
         //! 1st local oscillator current state
         /*! Please see the definition of the \ref LO structures for more
-            informations. */
+            information. */
         LO              lo;
         
         //! Cartridge temperature sensor current state

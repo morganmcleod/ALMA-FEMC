@@ -1,11 +1,8 @@
 /*! \file   edfa.c
     \brief  EDFA
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/06/02 12:34:50 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: edfa.c,v 1.5 2011/04/15 15:17:19 avaccari Exp $
 
     This file contains all the functions necessary to handle EDFA events. */
 
@@ -15,7 +12,6 @@
 #include "frontend.h"
 #include "error.h"
 #include "debug.h"
-#include "database.h"
 #include "lprSerialInterface.h"
 
 /* Globals */
@@ -86,13 +82,13 @@ static void driverStateHandler(void){
         CAN_BYTE=frontend.
                   lpr.
                    edfa.
-                    driverTempAlarm[CURRENT_VALUE];
+                    driverTempAlarm;
     } else {
         /* If no error during monitor process, gather the stored data */
         CAN_BYTE=frontend.
                   lpr.
                    edfa.
-                    driverTempAlarm[CURRENT_VALUE];
+                    driverTempAlarm;
     }
 
     /* If the alarm is triggered, set the modulation input to 0.0 to prevent
@@ -106,7 +102,7 @@ static void driverStateHandler(void){
              lpr.
               edfa.
                modulationInput.
-                value[CURRENT_VALUE]=CONV_FLOAT;
+                value=CONV_FLOAT;
 
             CAN_STATUS=MON_ERROR_ACT; // Notify control software that action was taken
         }
@@ -116,7 +112,7 @@ static void driverStateHandler(void){
     CAN_BYTE=frontend.
               lpr.
                edfa.
-                driverTempAlarm[CURRENT_VALUE];
+                driverTempAlarm;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }
 

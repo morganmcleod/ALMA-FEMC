@@ -2,13 +2,10 @@
     \ingroup    lo
     \brief      YTO header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:01:13 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: yto.h,v 1.19 2010/11/02 14:36:29 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the YTO . */
 
 /*! \defgroup   yto YIG Tuned Oscillator (YTO)
@@ -57,7 +54,7 @@
             \warning    It is not a read back of the actual value. The returned
                         value is the one stored by the software after a control
                         command has been issued.*/
-        unsigned int    ytoCoarseTune[OPERATION_ARRAY_SIZE];
+        unsigned int    ytoCoarseTune;
         //! Last control message: Current YTO counts
         /*! This is the content of the last control message sent to the current
             YTO counts. */

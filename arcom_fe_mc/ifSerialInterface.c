@@ -1,13 +1,10 @@
 /*! \file   ifSerialInterface.c
     \brief  IF Switch serial interface functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2006/11/30 16:49:28 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: ifSerialInterface.c,v 1.12 2010/08/11 22:05:20 avaccari Exp $
-
-    This files contains all the functions necessary to control and operate the
+    This file contains all the functions necessary to control and operate the
     IF Switch serial interface.
 
     This module is a software implementation of the hardware description
@@ -221,7 +218,7 @@ int setIfTempServoEnable(unsigned char enable){
       ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
                [currentIfChannelSideband[currentIfSwitchModule]].
        ifTempServo.
-        enable[CURRENT_VALUE]=(enable==IF_TEMP_SERVO_ENABLE)?IF_TEMP_SERVO_ENABLE:
+        enable=(enable==IF_TEMP_SERVO_ENABLE)?IF_TEMP_SERVO_ENABLE:
                                                              IF_TEMP_SERVO_DISABLE;
 
     return NO_ERROR;
@@ -338,7 +335,7 @@ int getIfChannelTemp(void){
      ifSwitch.
       ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
                [currentIfChannelSideband[currentIfSwitchModule]].
-       assemblyTemp[CURRENT_VALUE]=temperature-TEMP_OFFSET;
+       assemblyTemp=temperature-TEMP_OFFSET;
 
 
     return NO_ERROR;
@@ -506,7 +503,7 @@ int setIfChannelAttenuation(void){
      ifSwitch.
       ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
                [currentIfChannelSideband[currentIfSwitchModule]].
-       attenuation[CURRENT_VALUE]=CAN_BYTE;
+       attenuation=CAN_BYTE;
 
     return NO_ERROR;
 }
@@ -560,7 +557,7 @@ int setIfSwitchBandSelect(void){
        current state is updated to reflect the issued command. */
     frontend.
      ifSwitch.
-      bandSelect[CURRENT_VALUE]=CAN_BYTE;
+      bandSelect=CAN_BYTE;
 
     return NO_ERROR;
 }

@@ -1,13 +1,10 @@
 /*! \file   lnaLed.c
     \brief  LNA led functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: lnaLed.c,v 1.20 2007/04/09 21:01:34 avaccari Exp $
-
-    This files contains all the functions necessary to handle LNA led
+    This file contains all the functions necessary to handle LNA led
     events. */
 
 /* Includes */
@@ -18,7 +15,6 @@
 #include "frontend.h"
 #include "biasSerialInterface.h"
 #include "debug.h"
-#include "database.h"
 
 /* Globals */
 /* Externs */
@@ -40,20 +36,6 @@ void lnaLedHandler(void){
     #ifdef DEBUG
         printf("    LNA Led\n");
     #endif /* DEBUG */
-
-    #ifdef DATABASE_HARDW
-        /* Check if the selected polarization is outfitted with the LNA led */
-        if(frontend.
-            cartridge[currentModule].
-             polarization[currentBiasModule].
-              lnaLed.
-               available==UNAVAILABLE){
-            storeError(ERR_LNA_LED, ERC_MODULE_ABSENT); //LNA led not installed
-
-            CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
-            return;
-        }
-    #endif /* DATABASE_HARDW */
 
     /* Since the is only one submodule in the lna led, the check to see if the
        desired submodule is in range, is not needed and we can directly call
@@ -133,26 +115,13 @@ static void enableHandler(void){
               cartridge[currentModule].
                polarization[currentBiasModule].
                 lnaLed.
-                 enable[CURRENT_VALUE];
+                 enable;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }
 
 // set the specified LNA LED to STANDBY2 mode
 void lnaLedGoStandby2() {
     int ret;
-
-    #ifdef DATABASE_HARDW
-        /* Check if the selected sideband is outfitted with the desired SIS */
-        if(frontend.
-            cartridge[currentModule].
-             polarization[currentBiasModule].
-              lnaLed.
-               available==UNAVAILABLE) {
-
-            // nothing to do:
-            return;
-        }
-    #endif /* DATABASE_HARDW */
 
     #ifdef DEBUG_GO_STANDBY2
         printf(" - lnaLedGoStandby2 pol=%d\n", currentBiasModule);

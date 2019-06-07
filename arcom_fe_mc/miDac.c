@@ -1,13 +1,10 @@
 /*! \file   miDac.c
     \brief  Modulation Input DAC functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/06/21 17:01:45 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: miDac.c,v 1.1 2007/06/22 22:03:00 avaccari Exp $
-
-    This files contains all the functions necessary to handle the modulation
+    This file contains all the functions necessary to handle the modulation
     input DAC events. */
 
 /* Includes */

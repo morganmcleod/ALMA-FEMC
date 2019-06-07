@@ -1,13 +1,10 @@
 /*! \file   pa.c
     \brief  PA functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: pa.c,v 1.13 2009/08/25 21:39:39 avaccari Exp $
-
-    This files contains all the functions necessary to handle the PA events. */
+    This file contains all the functions necessary to handle the PA events. */
 
 /* Includes */
 #include <stdio.h>      /* printf */
@@ -16,7 +13,6 @@
 #include "error.h"
 #include "loSerialInterface.h"
 #include "debug.h"
-#include "database.h"
 #include "globalDefinitions.h"
 
 /* Globals */
@@ -88,14 +84,14 @@ void supplyVoltage3VHandler(void){
                    cartridge[currentModule].
                     lo.
                      pa.
-                      supplyVoltage3V[CURRENT_VALUE];
+                      supplyVoltage3V;
     } else {
         /* If no error during monitor process, gather the stored data */
         CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        pa.
-                        supplyVoltage3V[CURRENT_VALUE];
+                        supplyVoltage3V;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -142,14 +138,14 @@ void supplyVoltage5VHandler(void){
                    cartridge[currentModule].
                     lo.
                      pa.
-                      supplyVoltage5V[CURRENT_VALUE];
+                      supplyVoltage5V;
     } else {
         /* If no error during monitor process, gather the stored data */
         CONV_FLOAT = frontend.
                      cartridge[currentModule].
                       lo.
                        pa.
-                        supplyVoltage5V[CURRENT_VALUE];
+                        supplyVoltage5V;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to

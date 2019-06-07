@@ -1,13 +1,10 @@
 /*! \file   amc.c
     \brief  MC functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: amc.c,v 1.19 2009/08/25 21:39:39 avaccari Exp $
-
-    This files contains all the functions necessary to handle the MC events. */
+    This file contains all the functions necessary to handle the MC events. */
 
 /* Includes */
 #include <string.h>     /* memcpy */
@@ -17,8 +14,6 @@
 #include "error.h"
 #include "loSerialInterface.h"
 #include "debug.h"
-#include "database.h"
-
 
 /* Globals */
 /* Externs */
@@ -94,18 +89,10 @@ static void gateAVoltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CONV_FLOAT=frontend.
-                   cartridge[currentModule].
-                    lo.
-                     amc.
-                      gateAVoltage[CURRENT_VALUE];
+        CONV_FLOAT=frontend.cartridge[currentModule].lo.amc.gateAVoltage;
     } else {
         /* If no error during monitor process, gather the stored data */
-        CONV_FLOAT = frontend.
-                     cartridge[currentModule].
-                      lo.
-                       amc.
-                        gateAVoltage[CURRENT_VALUE];
+        CONV_FLOAT = frontend.cartridge[currentModule].lo.amc.gateAVoltage;
     }
 
     /* Load the CAN message payload with the returned value and set the
@@ -149,18 +136,10 @@ static void drainAVoltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CONV_FLOAT=frontend.
-                   cartridge[currentModule].
-                    lo.
-                     amc.
-                      drainAVoltage[CURRENT_VALUE];
+        CONV_FLOAT=frontend.cartridge[currentModule].lo.amc.drainAVoltage;
     } else {
         /* If no error during monitor process, gather the stored data */
-        CONV_FLOAT = frontend.
-                     cartridge[currentModule].
-                      lo.
-                       amc.
-                        drainAVoltage[CURRENT_VALUE];
+        CONV_FLOAT = frontend.cartridge[currentModule].lo.amc.drainAVoltage;
     }
 
     /* Load the CAN message payload with the returned value and set the
@@ -204,18 +183,10 @@ static void drainACurrentHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CONV_FLOAT=frontend.
-                   cartridge[currentModule].
-                    lo.
-                     amc.
-                      drainACurrent[CURRENT_VALUE];
+        CONV_FLOAT=frontend.cartridge[currentModule].lo.amc.drainACurrent;
     } else {
         /* If no error during monitor process, gather the stored data */
-        CONV_FLOAT = frontend.
-                     cartridge[currentModule].
-                      lo.
-                       amc.
-                        drainACurrent[CURRENT_VALUE];
+        CONV_FLOAT = frontend.cartridge[currentModule].lo.amc.drainACurrent;
     }
 
     /* Load the CAN message payload with the returned value and set the
@@ -259,18 +230,10 @@ static void gateBVoltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CONV_FLOAT=frontend.
-                   cartridge[currentModule].
-                    lo.
-                     amc.
-                      gateBVoltage[CURRENT_VALUE];
+        CONV_FLOAT=frontend.cartridge[currentModule].lo.amc.gateBVoltage;
     } else {
         /* If no error during monitor process, gather the stored data */
-        CONV_FLOAT = frontend.
-                     cartridge[currentModule].
-                      lo.
-                       amc.
-                        gateBVoltage[CURRENT_VALUE];
+        CONV_FLOAT = frontend.cartridge[currentModule].lo.amc.gateBVoltage;
     }
 
     /* Load the CAN message payload with the returned value and set the
@@ -295,11 +258,7 @@ static void drainBVoltageHandler(void){
     /* If control (size !=0) */
     if(CAN_SIZE){
         // save the incoming message:
-        SAVE_LAST_CONTROL_MESSAGE(frontend.
-                                   cartridge[currentModule].
-                                    lo.
-                                     amc.
-                                      lastDrainBVoltage)
+        SAVE_LAST_CONTROL_MESSAGE(frontend.cartridge[currentModule].lo.amc.lastDrainBVoltage)
 
         /* Extract the float from the can message */
         changeEndian(CONV_CHR_ADD,
@@ -309,12 +268,7 @@ static void drainBVoltageHandler(void){
            and return the error state then return. */
         if(setAmc(AMC_DRAIN_B_VOLTAGE)==ERROR){
             /* Store the ERROR state in the last control message variable */
-            frontend.
-             cartridge[currentModule].
-              lo.
-               amc.
-                lastDrainBVoltage.
-                 status=ERROR;
+            frontend.cartridge[currentModule].lo.amc.lastDrainBVoltage.status=ERROR;
 
             return;
         }
@@ -326,11 +280,7 @@ static void drainBVoltageHandler(void){
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
         // return the last control message and status
-        RETURN_LAST_CONTROL_MESSAGE(frontend.
-                                     cartridge[currentModule].
-                                      lo.
-                                       amc.
-                                        lastDrainBVoltage)
+        RETURN_LAST_CONTROL_MESSAGE(frontend.cartridge[currentModule].lo.amc.lastDrainBVoltage)
 
         return;
     }
@@ -342,19 +292,11 @@ static void drainBVoltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CONV_FLOAT=frontend.
-                   cartridge[currentModule].
-                    lo.
-                     amc.
-                      drainBVoltage[CURRENT_VALUE];
+        CONV_FLOAT=frontend.cartridge[currentModule].lo.amc.drainBVoltage;
     } else {
 
         /* If no error during the monitor process gather the stored data */
-        CONV_FLOAT=frontend.
-                   cartridge[currentModule].
-                    lo.
-                     amc.
-                      drainBVoltage[CURRENT_VALUE];
+        CONV_FLOAT=frontend.cartridge[currentModule].lo.amc.drainBVoltage;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -398,18 +340,10 @@ static void drainBCurrentHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CONV_FLOAT=frontend.
-                   cartridge[currentModule].
-                    lo.
-                     amc.
-                      drainBCurrent[CURRENT_VALUE];
+        CONV_FLOAT=frontend.cartridge[currentModule].lo.amc.drainBCurrent;
     } else {
         /* If no error during monitor process, gather the stored data */
-        CONV_FLOAT = frontend.
-                     cartridge[currentModule].
-                      lo.
-                       amc.
-                        drainBCurrent[CURRENT_VALUE];
+        CONV_FLOAT = frontend.cartridge[currentModule].lo.amc.drainBCurrent;
     }
 
     /* Load the CAN message payload with the returned value and set the
@@ -433,22 +367,12 @@ static void multiplierDVoltageHandler(void){
     /* If control (size !=0) */
     if(CAN_SIZE){
         // save the incoming message:
-        SAVE_LAST_CONTROL_MESSAGE(frontend.
-                                   cartridge[currentModule].
-                                    lo.
-                                     amc.
-                                      lastMultiplierDVoltage);
+        SAVE_LAST_CONTROL_MESSAGE(frontend.cartridge[currentModule].lo.amc.lastMultiplierDVoltage);
         /* Set the AMC multiplier D voltage. If an error occurs then store the state
            and return the error state then return. */
         if(setAmc(AMC_MULTIPLIER_D_VOLTAGE)==ERROR){
             /* Store the ERROR state in the last control message variable */
-            frontend.
-             cartridge[currentModule].
-              lo.
-               amc.
-                lastMultiplierDVoltage.
-                 status=ERROR;
-
+            frontend.cartridge[currentModule].lo.amc.lastMultiplierDVoltage.status=ERROR;
             return;
         }
 
@@ -459,11 +383,7 @@ static void multiplierDVoltageHandler(void){
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
         // return the last control message and status
-        RETURN_LAST_CONTROL_MESSAGE(frontend.
-                                     cartridge[currentModule].
-                                      lo.
-                                       amc.
-                                        lastMultiplierDVoltage)
+        RETURN_LAST_CONTROL_MESSAGE(frontend.cartridge[currentModule].lo.amc.lastMultiplierDVoltage)
         return;
     }
 
@@ -472,11 +392,7 @@ static void multiplierDVoltageHandler(void){
        current status that is stored in memory. The memory status is
        update when the state of the multiplier D voltage tune is changed by a
        control command. */
-    CAN_BYTE=frontend.
-              cartridge[currentModule].
-               lo.
-                amc.
-                 multiplierDVoltage[CURRENT_VALUE];
+    CAN_BYTE=frontend.cartridge[currentModule].lo.amc.multiplierDVoltage;
 
     CAN_SIZE=CAN_BYTE_SIZE;
 }
@@ -513,19 +429,11 @@ static void multiplierDCurrentHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CONV_FLOAT=frontend.
-                   cartridge[currentModule].
-                    lo.
-                     amc.
-                      multiplierDCurrent[CURRENT_VALUE];
+        CONV_FLOAT=frontend.cartridge[currentModule].lo.amc.multiplierDCurrent;
     } else {
 
         /* If no error during the monitor process gather the stored data */
-        CONV_FLOAT=frontend.
-                   cartridge[currentModule].
-                    lo.
-                     amc.
-                      multiplierDCurrent[CURRENT_VALUE];
+        CONV_FLOAT=frontend.cartridge[currentModule].lo.amc.multiplierDCurrent;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -548,11 +456,7 @@ static void gateEVoltageHandler(void){
     /* If control (size !=0) */
     if(CAN_SIZE){
         // save the incoming message:
-        SAVE_LAST_CONTROL_MESSAGE(frontend.
-                                   cartridge[currentModule].
-                                    lo.
-                                     amc.
-                                      lastGateEVoltage);
+        SAVE_LAST_CONTROL_MESSAGE(frontend.cartridge[currentModule].lo.amc.lastGateEVoltage);
 
         /* Extract the float from the can message */
         changeEndian(CONV_CHR_ADD,
@@ -562,13 +466,7 @@ static void gateEVoltageHandler(void){
            and return the error state then return. */
         if(setAmc(AMC_GATE_E_VOLTAGE)==ERROR){
             /* Store the ERROR state in the last control message variable */
-            frontend.
-             cartridge[currentModule].
-              lo.
-               amc.
-                lastGateEVoltage.
-                 status=ERROR;
-
+            frontend.cartridge[currentModule].lo.amc.lastGateEVoltage.status=ERROR;
             return;
         }
 
@@ -579,11 +477,7 @@ static void gateEVoltageHandler(void){
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
         // return the last control message and status
-        RETURN_LAST_CONTROL_MESSAGE(frontend.
-                                     cartridge[currentModule].
-                                      lo.
-                                       amc.
-                                        lastGateEVoltage)
+        RETURN_LAST_CONTROL_MESSAGE(frontend.cartridge[currentModule].lo.amc.lastGateEVoltage)
         return;
     }
 
@@ -594,19 +488,11 @@ static void gateEVoltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CONV_FLOAT=frontend.
-                   cartridge[currentModule].
-                    lo.
-                     amc.
-                      gateEVoltage[CURRENT_VALUE];
+        CONV_FLOAT=frontend.cartridge[currentModule].lo.amc.gateEVoltage;
     } else {
 
         /* If no error during the monitor process gather the stored data */
-        CONV_FLOAT=frontend.
-                   cartridge[currentModule].
-                    lo.
-                     amc.
-                      gateEVoltage[CURRENT_VALUE];
+        CONV_FLOAT=frontend.cartridge[currentModule].lo.amc.gateEVoltage;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -629,11 +515,7 @@ static void drainEVoltageHandler(void){
     /* If control (size !=0) */
     if(CAN_SIZE){
         // save the incoming message:
-        SAVE_LAST_CONTROL_MESSAGE(frontend.
-                                   cartridge[currentModule].
-                                    lo.
-                                     amc.
-                                      lastDrainEVoltage)
+        SAVE_LAST_CONTROL_MESSAGE(frontend.cartridge[currentModule].lo.amc.lastDrainEVoltage)
 
         /* Extract the float from the can message */
         changeEndian(CONV_CHR_ADD,
@@ -643,12 +525,7 @@ static void drainEVoltageHandler(void){
            and return the error state then return. */
         if(setAmc(AMC_DRAIN_E_VOLTAGE)==ERROR){
             /* Store the ERROR state in the last control message variable */
-            frontend.
-             cartridge[currentModule].
-              lo.
-               amc.
-                lastDrainEVoltage.
-                 status=ERROR;
+            frontend.cartridge[currentModule].lo.amc.lastDrainEVoltage.status=ERROR;
 
             return;
         }
@@ -660,11 +537,7 @@ static void drainEVoltageHandler(void){
     /* If monitor on control RCA */
     if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
         // return the last control message and status
-        RETURN_LAST_CONTROL_MESSAGE(frontend.
-                                     cartridge[currentModule].
-                                      lo.
-                                       amc.
-                                        lastDrainEVoltage)
+        RETURN_LAST_CONTROL_MESSAGE(frontend.cartridge[currentModule].lo.amc.lastDrainEVoltage)
         return;
     }
 
@@ -675,19 +548,11 @@ static void drainEVoltageHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CONV_FLOAT=frontend.
-                   cartridge[currentModule].
-                    lo.
-                     amc.
-                      drainEVoltage[CURRENT_VALUE];
+        CONV_FLOAT=frontend.cartridge[currentModule].lo.amc.drainEVoltage;
     } else {
 
         /* If no error during the monitor process gather the stored data */
-        CONV_FLOAT=frontend.
-                   cartridge[currentModule].
-                    lo.
-                     amc.
-                      drainEVoltage[CURRENT_VALUE];
+        CONV_FLOAT=frontend.cartridge[currentModule].lo.amc.drainEVoltage;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -730,18 +595,10 @@ static void drainECurrentHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CONV_FLOAT=frontend.
-                   cartridge[currentModule].
-                    lo.
-                     amc.
-                      drainECurrent[CURRENT_VALUE];
+        CONV_FLOAT=frontend.cartridge[currentModule].lo.amc.drainECurrent;
     } else {
         /* If no error during monitor process, gather the stored data */
-        CONV_FLOAT = frontend.
-                     cartridge[currentModule].
-                      lo.
-                       amc.
-                        drainECurrent[CURRENT_VALUE];
+        CONV_FLOAT = frontend.cartridge[currentModule].lo.amc.drainECurrent;
     }
 
     /* Load the CAN message payload with the returned value and set the
@@ -786,18 +643,10 @@ static void supplyVoltage5VHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CONV_FLOAT=frontend.
-                   cartridge[currentModule].
-                    lo.
-                     amc.
-                      supplyVoltage5V[CURRENT_VALUE];
+        CONV_FLOAT=frontend.cartridge[currentModule].lo.amc.supplyVoltage5V;
     } else {
         /* If no error during monitor process, gather the stored data */
-        CONV_FLOAT = frontend.
-                     cartridge[currentModule].
-                      lo.
-                       amc.
-                        supplyVoltage5V[CURRENT_VALUE];
+        CONV_FLOAT = frontend.cartridge[currentModule].lo.amc.supplyVoltage5V;
     }
 
     /* Load the CAN message payload with the returned value and set the

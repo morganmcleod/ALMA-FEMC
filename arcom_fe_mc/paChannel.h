@@ -2,13 +2,10 @@
     \ingroup    pa
     \brief      PA channel header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/10/20 15:39:19 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: paChannel.h,v 1.22 2011/11/09 00:40:30 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate each PA channel. Every PA channel is connected
     to one polarization and the amplification is controllable. */
 
@@ -71,13 +68,13 @@
      typedef struct {
         //! A channel Gate Voltage
         /*! This is the PA channel gate voltage (in V). */
-        float   gateVoltage[OPERATION_ARRAY_SIZE];
+        float   gateVoltage;
         //! A channel Drain  Voltage
         /*! This is the PA channel drain voltage (in V). */
-        float   drainVoltage[OPERATION_ARRAY_SIZE];
+        float   drainVoltage;
         //! A channel Drain  Current
         /*! This is the PA channel drain current (in mA). */
-        float   drainCurrent[OPERATION_ARRAY_SIZE];
+        float   drainCurrent;
         //! Last control message: PA channel Gate Voltage
         /*! This is the content of the last control message sent to the PA
             channel gate voltage. */

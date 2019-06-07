@@ -2,13 +2,10 @@
     \ingroup    serialInterface
     \brief      BIAS serial interface header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 13:24:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: biasSerialInterface.h,v 1.39 2009/10/13 15:01:49 avaccari Exp $
-
-    This file contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the BIAS serial interface. */
 
 /*! \defgroup   biasSerialInterface  Cartridge BIAS serial interface

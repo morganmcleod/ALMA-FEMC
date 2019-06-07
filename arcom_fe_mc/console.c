@@ -1,13 +1,10 @@
 /*! \file   console.c
     \brief  Console
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/05/22 11:31:31 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: console.c,v 1.16 2011/04/15 15:17:19 avaccari Exp $
-
-    This files contains all the functions necessary to handle console accesses
+    This file contains all the functions necessary to handle console accesses
     to the software. */
 
 
@@ -20,6 +17,7 @@
 #include "console.h"
 #include "can.h"
 #include "main.h"
+#include "frontend.h"
 #include "globalDefinitions.h"
 #include "debug.h"
 #include "version.h"
@@ -166,9 +164,11 @@ static void parseBuffer(void){
                             CAN_SIZE = CAN_BYTE_SIZE;
                             // Disable interrupts (if necessary)
                             CANMessageHandler();
-                            // Get the monitor on control
-                            CAN_SIZE = 0;
-                            CANMessageHandler();
+                            // IF this is a standard control RCA, get the monitor on control:
+                            if (currentClass == 1) {
+                                CAN_SIZE = 0;
+                                CANMessageHandler();
+                            }
                             // Enable interrupts
                         }
                     } else if(strcmp(token,
@@ -242,6 +242,15 @@ static void parseBuffer(void){
                 // Enable interrupts
             }
             break;
+        case 'p': // *** 'p' -> LO PA_LIMITS tables report ***
+            loPaLimitsTablesReport();
+            break;             
+        case 's': // *** 's' -> cryostat sensor tables report ***
+            cryostatSensorTablesReport();
+            break; 
+        case 't': // *** 't' -> FE and cartridges configuration report ***
+            feAndCartridgesConfigurationReport();
+            break;            
         case 'q': // *** 'q' -> Quit ***
             stop = 1;
             break;
@@ -252,28 +261,27 @@ static void parseBuffer(void){
         default: // Anything else print help
             displayVersion();
             printf("Console help\n");
+            printf(" RCAs from ALMA-40.00.00.00-75.35.25.00-D-ICD\n");
             printf(" ' -> retypes last command\n");
             printf(" \" -> repeats last command\n");
             printf(" a<CR> -> enables/disables the async process (DEBUG only)\n");
-            printf(" c RCA q data <CR> -> control the specified address\n");
-            printf("                   RCA is the Relative CAN Address.\n");
-            printf("                       It can be in decimal or exadecimal (0x...) format\n");
-            printf("                   q is the qualifier for the payload:\n");
-            printf("                     b for a byte or a boolean\n");
-            printf("                     i for an unsigned integer\n");
-            printf("                     f for a float\n");
-            printf("                   data is the payload in the format specified by the qualifier\n");
+            printf(" c RCA q data<CR> -> Send a control command, where:\n");
+            printf("         RCA is the Relative CAN Address in dec or hex (0x...) format\n");
+            printf("         q is the qualifier for the payload:\n");
+            printf("         b for a byte or a boolean\n");
+            printf("         i for an unsigned integer\n");
+            printf("         f for a float\n");
+            printf("         data is the payload in the format specified by the qualifier\n");
             printf(" d<CR> -> disable console\n");
             printf(" e<CR> -> reads and display ESNs on the OWB\n");
             printf(" i<CR> -> display version information\n");
-            printf(" m RCA<CR> -> monitor the specified address\n");
-            printf("           RCA is the Relative CAN Address.\n");
-            printf("               It can be in decimal or exadecimal (0x...) format\n");
+            printf(" m RCA<cr> -> send a monitor request, where:\n");
+            printf("         RCA is the Relative CAN Address in dec or hex (0x...) format\n");
+            printf(" p<CR> -> LO PA_LIMITS tables report\n");
+            printf(" s<CR> -> cryostat sensor tables report\n");
+            printf(" t<CR> -> FE and cartridges configuration report\n");
             printf(" q<CR> -> quit\n");
             printf(" r<CR> -> restart\n");
-            printf("For a list of the RCAs check:\n");
-            printf("- ALMA-40.00.00.00-75.35.25.00-X-ICD\n");
-            printf("- ALMA-40.04.03.03-002-X-DSN\n\n");
             break;
     }
 }

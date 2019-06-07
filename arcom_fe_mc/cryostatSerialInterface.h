@@ -2,13 +2,10 @@
     \ingroup    serialInterface
     \brief      Cryostat serial interface header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/04/10 11:08:20 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: cryostatSerialInterface.h,v 1.19 2011/11/09 00:40:30 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the cryostat serial interface. */
 
 /*! \defgroup   cryostatSerialInterface  Cryostat serial interface

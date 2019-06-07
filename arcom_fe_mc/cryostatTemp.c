@@ -1,13 +1,10 @@
 /*! \file   cryostatTemp.c
     \brief  Cryostat temperature sensors functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/03/14 16:44:04 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: cryostatTemp.c,v 1.13 2009/10/13 15:01:49 avaccari Exp $
-
-    This files contains all the functions necessary to handle cryostat
+    This file contains all the functions necessary to handle cryostat
     temperature sensors events. */
 
 /* Includes */
@@ -17,7 +14,6 @@
 #include "frontend.h"
 #include "can.h"
 #include "error.h"
-#include "database.h"
 #include "cryostatSerialInterface.h"
 #include "globalDefinitions.h"
 #include "async.h"
@@ -42,7 +38,8 @@ unsigned int    currentCryostatTempSensorAdd[CRYOSTAT_TEMP_SENSORS_NUMBER]={0x00
                                                                             0x0140, // Sensor 11 -> PRT Sensor 90K plate far side
                                                                             0x0160};// Sensor 12 -> PRT Sensor 90K shield top
 /* Statics */
-static HANDLER cryostatTempModulesHandler[CRYOSTAT_TEMP_MODULES_NUMBER]={tempHandler};
+static HANDLER cryostatTempModulesHandler[CRYOSTAT_TEMP_MODULES_NUMBER]={tempHandler, 
+                                                                         coeffHandler};
 
 /* Cryostat temperatures sensors handler */
 /*! This function will be called by the CAN message handling subrutine when the
@@ -57,10 +54,15 @@ void cryostatTempHandler(void){
     /* Since the cryostat is always outfitted with all the temperature sensors,
        no hardware check is performed. */
 
-    /* Since there is only one submodule in the cryostat temperature sensor, the
-       check to see if the desired submodule is in range is not needed and we
-       can directly call the correct handler. */
+    /* Check if the submodule is in range */
+    currentCryostatTempModule = (CAN_ADDRESS & CRYOSTAT_TEMP_MODULES_RCA_MASK) >> CRYOSTAT_TEMP_MODULES_MASK_SHIFT;
+    if(currentCryostatTempModule >= CRYOSTAT_TEMP_MODULES_NUMBER){
+        storeError(ERR_CRYOSTAT_TEMP, ERC_MODULE_RANGE); //Cryostat submodule out of range
 
+        CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
+
+        return;
+    }
     /* Call the correct handler */
     (cryostatTempModulesHandler[currentCryostatTempModule])();
 }
@@ -68,7 +70,7 @@ void cryostatTempHandler(void){
 /* Temperature Value Handler */
 /* This function deals with the messages directed to the cryostat temperature
    sensors. */
-static void tempHandler(void){
+static void tempHandler(void) {
 
     #ifdef DEBUG_CRYOSTAT
         printf("   Temperature Value\n");
@@ -83,7 +85,7 @@ static void tempHandler(void){
 
     /* If monitor on control RCA return error snce there are no control messages
        allowed on the RCA. */
-    if(currentClass==CONTROL_CLASS){ // If monitor on a control RCA
+    if(currentClass == CONTROL_CLASS){ // If monitor on a control RCA
         storeError(ERR_CRYOSTAT_TEMP, ERC_RCA_RANGE); //Monitor message out of range
         /* Store the sate in the outgoing CAN message */
         CAN_STATUS = MON_CAN_RNG;
@@ -98,10 +100,7 @@ static void tempHandler(void){
         CAN_STATUS = ERROR;
 
         /* Store the last known value in the outgoing message */
-        CONV_FLOAT=frontend.
-                   cryostat.
-                    cryostatTemp[currentCryostatModule].
-                     temp[CURRENT_VALUE];
+        CONV_FLOAT=frontend.cryostat.cryostatTemp[currentCryostatModule].temp;
 
         /* If the error was a conversion error, store the status in the CAN
            message. */
@@ -111,21 +110,77 @@ static void tempHandler(void){
 
     } else {
         /* If no error during monitor process, gather the stored data */
-        CONV_FLOAT=frontend.
-                   cryostat.
-                    cryostatTemp[currentCryostatModule].
-                     temp[CURRENT_VALUE];
+        CONV_FLOAT=frontend.cryostat.cryostatTemp[currentCryostatModule].temp;
     }
 
     /* If the async monitoring is disabled, notify the monitored message */
-    if(asyncState==ASYNC_OFF){
+    if(asyncState==ASYNC_OFF) {
         CAN_STATUS = HARDW_BLKD_ERR;
     }
 
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big endian
        (CAN). */
-    changeEndian(CAN_DATA_ADD,
-                 CONV_CHR_ADD);
+    changeEndian(CAN_DATA_ADD, CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
+}
+
+static void coeffHandler(void) {
+    unsigned char coeff;
+
+    #ifdef DEBUG_CRYOSTAT
+        printf("   Temperature TVO coeff\n");
+    #endif /* DEBUG_CRYOSTAT */
+    
+    /* If control (size !=0) */
+    if (CAN_SIZE) {
+        // save the incoming message:
+        SAVE_LAST_CONTROL_MESSAGE(frontend.cryostat.cryostatTemp[currentCryostatModule].lastCommand)
+
+        /* Extract the coefficient order byte */
+        coeff = CAN_DATA(4);
+
+        /* Range-check order */
+        if (coeff >= TVO_COEFFS_NUMBER) {
+            storeError(ERR_CRYOSTAT_TEMP, ERC_COMMAND_VAL);
+
+            /* Store the error in the last control message variable */
+            frontend.cryostat.cryostatTemp[currentCryostatModule].lastCommand.status = CON_ERROR_RNG;
+
+            /* Reset the last order to a legal value */
+            frontend.cryostat.cryostatTemp[currentCryostatModule].nextCoeff = TVO_COEFF_0;
+            return;
+        }
+
+        /* Extract the float from the can message. */
+        changeEndian(CONV_CHR_ADD, CAN_DATA_ADD);
+        frontend.cryostat.cryostatTemp[currentCryostatModule].coeff[coeff] = CONV_FLOAT;
+        frontend.cryostat.cryostatTemp[currentCryostatModule].nextCoeff = coeff;
+
+        /* If everything went fine, it's a control message, we're done. */
+        return;
+    }
+
+    /* If monitor on control RCA */
+    if (currentClass==CONTROL_CLASS){
+        // return the last control message and status
+        RETURN_LAST_CONTROL_MESSAGE(frontend.cryostat.cryostatTemp[currentCryostatModule].lastCommand)
+        return;
+    }
+
+    /* If monitor on a monitor RCA */
+    /* Return the next/last coeffiecent and order */
+    coeff = frontend.cryostat.cryostatTemp[currentCryostatModule].nextCoeff;
+
+    CONV_FLOAT=frontend.cryostat.cryostatTemp[currentCryostatModule].coeff[coeff];
+    changeEndian(CAN_DATA_ADD, CONV_CHR_ADD);
+    CAN_DATA(4) = coeff;
+
+    // float plus coeff byte:
+    CAN_SIZE = 5;
+
+    /* Cycle through the coeffs on subsequent reads */
+    if (++coeff >= TVO_COEFFS_NUMBER)
+        coeff = TVO_COEFF_0;
+    frontend.cryostat.cryostatTemp[currentCryostatModule].nextCoeff = coeff;
 }

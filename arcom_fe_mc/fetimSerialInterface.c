@@ -1,13 +1,10 @@
 /*! \file   fetimSerialInterface.c
     \brief  FETIM serial interface functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/05/04 11:26:37 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: fetimSerialInterface.c,v 1.3 2013/07/12 20:16:35 mmcleod Exp $
-
-    This files contains all the functions necessary to control and operate the
+    This file contains all the functions necessary to control and operate the
     FETIM interface.
 
     This module is a software implementation of the hardware description
@@ -69,7 +66,7 @@ int getInterlockTemp(void){
        sensors.
         temperature.
          intrlkTempSens[currentInterlockTempModule].
-          temp[CURRENT_VALUE]=FETIM_PAR_ADC_TEMP_OFFSET+(FETIM_PAR_ADC_TEMP_SCALE*fetimRegisters.
+          temp=FETIM_PAR_ADC_TEMP_OFFSET+(FETIM_PAR_ADC_TEMP_SCALE*fetimRegisters.
                                                                                    parAdcData)/FETIM_PAR_ADC_RANGE;
 
     return NO_ERROR;
@@ -107,7 +104,7 @@ int getInterlockFlow(void){
        sensors.
         flow.
          intrlkFlowSens[currentInterlockFlowModule].
-          flow[CURRENT_VALUE]=(FETIM_PAR_ADC_FLOW_SCALE*fetimRegisters.
+          flow=(FETIM_PAR_ADC_FLOW_SCALE*fetimRegisters.
                                                          parAdcData)/FETIM_PAR_ADC_RANGE;
 
 
@@ -147,7 +144,7 @@ int getIntrlkGlitchValue(void){
       interlock.
        state.
         glitch.
-         value[CURRENT_VALUE]=FETIM_PAR_ADC_GLITCH_OFFSET+(FETIM_PAR_ADC_GLITCH_SCALE*fetimRegisters.
+         value=FETIM_PAR_ADC_GLITCH_OFFSET+(FETIM_PAR_ADC_GLITCH_SCALE*fetimRegisters.
                                                                                        parAdcData)/(FETIM_PAR_ADC_RANGE - 1);
     return NO_ERROR;
 }
@@ -190,7 +187,7 @@ int getFetimExtTemp(void){
      fetim.
       compressor.
        temp[currentAsyncFetimExtTempModule].
-        temp[CURRENT_VALUE]=FETIM_SER_ADC_TEMP_OFFSET+(FETIM_SER_ADC_TEMP_SCALE*fetimRegisters.
+        temp=FETIM_SER_ADC_TEMP_OFFSET+(FETIM_SER_ADC_TEMP_SCALE*fetimRegisters.
                                                                                  serAdcData)/FETIM_SER_ADC_RANGE;
 
 
@@ -240,7 +237,7 @@ int getCompHe2Press(void){
      fetim.
       compressor.
        he2Press.
-        pressure[CURRENT_VALUE]=FETIM_SER_ADC_HE2_PRESS_OFFSET+(FETIM_SER_ADC_HE2_PRESS_SCALE*fetimRegisters.
+        pressure=FETIM_SER_ADC_HE2_PRESS_OFFSET+(FETIM_SER_ADC_HE2_PRESS_SCALE*fetimRegisters.
                                                                                                serAdcData)/FETIM_SER_ADC_RANGE;
 
 
@@ -302,7 +299,7 @@ int setN2FillEnable(unsigned char enable){
     frontend.
      fetim.
       dewar.
-       n2Fill[CURRENT_VALUE]=(enable==N2_FILL_ENABLE)?N2_FILL_ENABLE:
+       n2Fill=(enable==N2_FILL_ENABLE)?N2_FILL_ENABLE:
                                                       N2_FILL_DISABLE;
 
     return NO_ERROR;
@@ -366,7 +363,7 @@ int setFeSafeStatus(unsigned char safe){
     frontend.
      fetim.
       compressor.
-       feStatus[CURRENT_VALUE]=(safe==FE_STATUS_SAFE)?FE_STATUS_SAFE:
+       feStatus=(safe==FE_STATUS_SAFE)?FE_STATUS_SAFE:
                                                       FE_STATUS_UNSAFE;
 
     return NO_ERROR;
@@ -426,7 +423,7 @@ int getFetimDigital(unsigned char port){
              fetim.
               interlock.
                state.
-                flowOutRng[CURRENT_VALUE]=fetimRegisters.
+                flowOutRng=fetimRegisters.
                                            bRegIn.
                                             bitField.
                                              intrlkFlowOutRng;
@@ -436,7 +433,7 @@ int getFetimDigital(unsigned char port){
              fetim.
               interlock.
                state.
-                tempOutRng[CURRENT_VALUE]=fetimRegisters.
+                tempOutRng=fetimRegisters.
                                            bRegIn.
                                             bitField.
                                              intrlkTempOutRng;
@@ -447,7 +444,7 @@ int getFetimDigital(unsigned char port){
               interlock.
                state.
                 glitch.
-                 countTrig[CURRENT_VALUE]=fetimRegisters.
+                 countTrig=fetimRegisters.
                                            bRegIn.
                                             bitField.
                                              glitchCntTrig;
@@ -457,7 +454,7 @@ int getFetimDigital(unsigned char port){
              fetim.
               interlock.
                state.
-                shutdownTrig[CURRENT_VALUE]=fetimRegisters.
+                shutdownTrig=fetimRegisters.
                                              bRegIn.
                                               bitField.
                                                shutdownTrig;
@@ -467,7 +464,7 @@ int getFetimDigital(unsigned char port){
              fetim.
               interlock.
                state.
-                delayTrig[CURRENT_VALUE]=fetimRegisters.
+                delayTrig=fetimRegisters.
                                           bRegIn.
                                            bitField.
                                             shutdownDelayTrig;
@@ -477,7 +474,7 @@ int getFetimDigital(unsigned char port){
              fetim.
               interlock.
                sensors.
-                singleFail[CURRENT_VALUE]=fetimRegisters.
+                singleFail=fetimRegisters.
                                            bRegIn.
                                             bitField.
                                              singleFail;
@@ -487,7 +484,7 @@ int getFetimDigital(unsigned char port){
              fetim.
               interlock.
                state.
-                multiFail[CURRENT_VALUE]=fetimRegisters.
+                multiFail=fetimRegisters.
                                           bRegIn.
                                            bitField.
                                             multiFail;
@@ -496,7 +493,7 @@ int getFetimDigital(unsigned char port){
             frontend.
              fetim.
              compressor.
-              cableStatus[CURRENT_VALUE]=fetimRegisters.
+              cableStatus=fetimRegisters.
                                           bRegIn.
                                            bitField.
                                             compCableStatus;
@@ -505,7 +502,7 @@ int getFetimDigital(unsigned char port){
             frontend.
              fetim.
               compressor.
-               intrlkStatus[CURRENT_VALUE]=fetimRegisters.
+               intrlkStatus=fetimRegisters.
                                             bRegIn.
                                              bitField.
                                               compIntrlkStatus;
@@ -515,7 +512,7 @@ int getFetimDigital(unsigned char port){
              fetim.
               compressor.
                he2Press.
-                pressOutRng[CURRENT_VALUE]=fetimRegisters.
+                pressOutRng=fetimRegisters.
                                             bRegIn.
                                              bitField.
                                               he2PressOutRng;
@@ -527,7 +524,7 @@ int getFetimDigital(unsigned char port){
                      fetim.
                       compressor.
                        temp[currentCompressorModule].
-                        tempOutRng[CURRENT_VALUE]=fetimRegisters.
+                        tempOutRng=fetimRegisters.
                                                    bRegIn.
                                                     bitField.
                                                      compExtTemp1OutRng;
@@ -537,7 +534,7 @@ int getFetimDigital(unsigned char port){
                      fetim.
                       compressor.
                        temp[currentCompressorModule].
-                        tempOutRng[CURRENT_VALUE]=fetimRegisters.
+                        tempOutRng=fetimRegisters.
                                                    bRegIn.
                                                     bitField.
                                                      compExtTemp2OutRng;

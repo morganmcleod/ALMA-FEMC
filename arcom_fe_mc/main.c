@@ -2,17 +2,10 @@
     \brief  Main module functions
     \note   Just a testing version while developping the other modules!
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:46:19 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: main.c,v 1.37 2010/11/02 14:36:29 avaccari Exp $
-
-    This is \ref main.c
-
-    \todo Make sure that the the console() call doesn't affect the software
-          performance in a noticeable way. If it's a problem, put it under
-          #ifdef DEBUG or frontend debug mode. */
+    This is \ref main.c */
 
 /* Includes */
 #include <stdio.h>      /* printf */

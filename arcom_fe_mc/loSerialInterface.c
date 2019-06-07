@@ -4,10 +4,7 @@
     <b> File Informations: </b><br>
     Created: 2006/09/06 11:52:38 by avaccari
 
-    <b> CVS Informations: </b><br>
-    \$Id: loSerialInterface.c,v 1.17 2011/08/05 19:18:06 avaccari Exp $
-
-    This files contains all the functions necessary to control and operate the
+    This file contains all the functions necessary to control and operate the
     LO serial interface.
 
     This module is a software implementation of the hardware description
@@ -266,7 +263,7 @@ int setYtoCoarseTune(void){
      cartridge[currentModule].
       lo.
        yto.
-        ytoCoarseTune[CURRENT_VALUE]=CONV_UINT(0);
+        ytoCoarseTune=CONV_UINT(0);
 
     return NO_ERROR;
 }
@@ -332,7 +329,7 @@ int setPhotomixerEnable(unsigned char enable){
      cartridge[currentModule].
       lo.
        photomixer.
-        enable[CURRENT_VALUE]=(enable==PHOTOMIXER_ENABLE)?PHOTOMIXER_ENABLE:
+        enable=(enable==PHOTOMIXER_ENABLE)?PHOTOMIXER_ENABLE:
                                                           PHOTOMIXER_DISABLE;
 
     return NO_ERROR;
@@ -394,7 +391,7 @@ int getPhotomixer(unsigned char port){
              cartridge[currentModule].
               lo.
                photomixer.
-                voltage[CURRENT_VALUE]=(LO_ADC_PHOTOMIXER_BIAS_V_SCALE*loRegisters[currentModule].
+                voltage=(LO_ADC_PHOTOMIXER_BIAS_V_SCALE*loRegisters[currentModule].
                                                                         adcData)/LO_ADC_RANGE;
             break;
         /* The photomixer bias current is given by: -10*(adcData/65536) */
@@ -403,7 +400,7 @@ int getPhotomixer(unsigned char port){
              cartridge[currentModule].
               lo.
                photomixer.
-                current[CURRENT_VALUE]=fabs((LO_ADC_PHOTOMIXER_BIAS_C_SCALE*loRegisters[currentModule].
+                current=fabs((LO_ADC_PHOTOMIXER_BIAS_C_SCALE*loRegisters[currentModule].
                                                                              adcData)/LO_ADC_RANGE);
             break;
         default:
@@ -472,7 +469,7 @@ int getPll(unsigned char port){
              cartridge[currentModule].
               lo.
                pll.
-                lockDetectVoltage[CURRENT_VALUE]=(LO_LOCK_DETECT_V_SCALE*loRegisters[currentModule].
+                lockDetectVoltage=(LO_LOCK_DETECT_V_SCALE*loRegisters[currentModule].
                                                                               adcData)/LO_ADC_RANGE;
             break;
         /* The correction voltage coefficient is stored in the configuration
@@ -482,7 +479,7 @@ int getPll(unsigned char port){
              cartridge[currentModule].
               lo.
                pll.
-                correctionVoltage[CURRENT_VALUE]=(LO_PLL_CORRECTION_V_SCALE*loRegisters[currentModule].
+                correctionVoltage=(LO_PLL_CORRECTION_V_SCALE*loRegisters[currentModule].
                                                                               adcData)/LO_ADC_RANGE;
             break;
         /* The assembly temperature is given by 1000*(adcData/65536) */
@@ -491,7 +488,7 @@ int getPll(unsigned char port){
              cartridge[currentModule].
               lo.
                pll.
-                assemblyTemp[CURRENT_VALUE]=(LO_PLL_ASSEMBLY_TEMP_SCALE*loRegisters[currentModule].
+                assemblyTemp=(LO_PLL_ASSEMBLY_TEMP_SCALE*loRegisters[currentModule].
                                                                          adcData)/LO_ADC_RANGE;
             break;
         /* The YIG heater current is given by 10*[(40*adcData/65536)+15] */
@@ -500,7 +497,7 @@ int getPll(unsigned char port){
              cartridge[currentModule].
               lo.
                pll.
-                YIGHeaterCurrent[CURRENT_VALUE]=LO_YIG_HEATER_I_OFFSET+(LO_YIG_HEATER_I_SCALE*loRegisters[currentModule].
+                YIGHeaterCurrent=LO_YIG_HEATER_I_OFFSET+(LO_YIG_HEATER_I_SCALE*loRegisters[currentModule].
                                                                                                          adcData)/LO_ADC_RANGE;
             break;
         /* The REF total power is given by 10*(adcData/65536) */
@@ -509,7 +506,7 @@ int getPll(unsigned char port){
              cartridge[currentModule].
               lo.
                pll.
-                refTotalPower[CURRENT_VALUE]=(LO_PLL_TTL_PWR_SCALE*loRegisters[currentModule].
+                refTotalPower=(LO_PLL_TTL_PWR_SCALE*loRegisters[currentModule].
                                                                     adcData)/LO_ADC_RANGE;
             break;
         /* The IF total power is given by 10*(adcData/65536) */
@@ -518,7 +515,7 @@ int getPll(unsigned char port){
              cartridge[currentModule].
               lo.
                pll.
-                ifTotalPower[CURRENT_VALUE]=(LO_PLL_TTL_PWR_SCALE*loRegisters[currentModule].
+                ifTotalPower=(LO_PLL_TTL_PWR_SCALE*loRegisters[currentModule].
                                                                    adcData)/LO_ADC_RANGE;
             break;
         default:
@@ -556,7 +553,7 @@ int getPllStates(void){
      cartridge[currentModule].
       lo.
        pll.
-        unlockDetectLatch[CURRENT_VALUE]=loRegisters[currentModule].
+        unlockDetectLatch=loRegisters[currentModule].
                                           statusReg.
                                            bitField.
                                             pllLockDetect;
@@ -719,7 +716,7 @@ int setLoopBandwidthSelect(unsigned char bandwidth){
      cartridge[currentModule].
       lo.
        pll.
-        loopBandwidthSelect[CURRENT_VALUE]=(bandwidth==PLL_LOOP_BANDWIDTH_ALTERNATE)?PLL_LOOP_BANDWIDTH_ALTERNATE:
+        loopBandwidthSelect=(bandwidth==PLL_LOOP_BANDWIDTH_ALTERNATE)?PLL_LOOP_BANDWIDTH_ALTERNATE:
                                                                                      PLL_LOOP_BANDWIDTH_DEFAULT;
 
     return NO_ERROR;
@@ -785,7 +782,7 @@ int setSidebandLockPolaritySelect(unsigned char sideband){
      cartridge[currentModule].
       lo.
        pll.
-        sidebandLockPolaritySelect[CURRENT_VALUE]=(sideband==PLL_SIDEBAND_LOCK_POLARITY_USB)?PLL_SIDEBAND_LOCK_POLARITY_USB:
+        sidebandLockPolaritySelect=(sideband==PLL_SIDEBAND_LOCK_POLARITY_USB)?PLL_SIDEBAND_LOCK_POLARITY_USB:
                                                                                              PLL_SIDEBAND_LOCK_POLARITY_LSB;
 
     return NO_ERROR;
@@ -852,7 +849,7 @@ int setNullLoopIntegrator(unsigned char state){
      cartridge[currentModule].
       lo.
        pll.
-        nullLoopIntegrator[CURRENT_VALUE]=(state==PLL_NULL_LOOP_INTEGRATOR_NULL)?PLL_NULL_LOOP_INTEGRATOR_NULL:
+        nullLoopIntegrator=(state==PLL_NULL_LOOP_INTEGRATOR_NULL)?PLL_NULL_LOOP_INTEGRATOR_NULL:
                                                                                  PLL_NULL_LOOP_INTEGRATOR_OPERATE;
 
     return NO_ERROR;
@@ -929,7 +926,7 @@ int getAmc(unsigned char port){
              cartridge[currentModule].
               lo.
                amc.
-                gateAVoltage[CURRENT_VALUE]=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
+                gateAVoltage=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
                                                                     adcData)/LO_ADC_RANGE;
             break;
         /* The A drain voltage is given by  10*(adcData/65536) */
@@ -938,7 +935,7 @@ int getAmc(unsigned char port){
              cartridge[currentModule].
               lo.
                amc.
-                drainAVoltage[CURRENT_VALUE]=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
+                drainAVoltage=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
                                                                      adcData)/LO_ADC_RANGE;
             break;
         /* The A drain current is given by  1000*(adcData/65536) */
@@ -947,7 +944,7 @@ int getAmc(unsigned char port){
              cartridge[currentModule].
               lo.
                amc.
-                drainACurrent[CURRENT_VALUE]=(LO_DRAIN_C_SCALE*loRegisters[currentModule].
+                drainACurrent=(LO_DRAIN_C_SCALE*loRegisters[currentModule].
                                                                 adcData)/LO_ADC_RANGE;
             break;
         /* The B gate voltage is given by  10*(adcData/65536) */
@@ -956,7 +953,7 @@ int getAmc(unsigned char port){
              cartridge[currentModule].
               lo.
                amc.
-                gateBVoltage[CURRENT_VALUE]=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
+                gateBVoltage=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
                                                                     adcData)/LO_ADC_RANGE;
             break;
         /* The B drain voltage is given by  10*(adcData/65536) */
@@ -965,7 +962,7 @@ int getAmc(unsigned char port){
              cartridge[currentModule].
               lo.
                amc.
-                drainBVoltage[CURRENT_VALUE]=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
+                drainBVoltage=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
                                                                      adcData)/LO_ADC_RANGE;
             break;
         /* The B drain current is given by  1000*(adcData/65536) */
@@ -974,7 +971,7 @@ int getAmc(unsigned char port){
              cartridge[currentModule].
               lo.
                amc.
-                drainBCurrent[CURRENT_VALUE]=(LO_DRAIN_C_SCALE*loRegisters[currentModule].
+                drainBCurrent=(LO_DRAIN_C_SCALE*loRegisters[currentModule].
                                                                 adcData)/LO_ADC_RANGE;
             break;
         /* The 5V supply voltage is given by 10*(adcData/65536) */
@@ -983,7 +980,7 @@ int getAmc(unsigned char port){
              cartridge[currentModule].
               lo.
                amc.
-                supplyVoltage5V[CURRENT_VALUE]=(LO_SUPPLY_V_SCALE*loRegisters[currentModule].
+                supplyVoltage5V=(LO_SUPPLY_V_SCALE*loRegisters[currentModule].
                                                                         adcData)/LO_ADC_RANGE;
             break;
         /* The D multiplier current is given by 100*(adcData/65536) */
@@ -992,7 +989,7 @@ int getAmc(unsigned char port){
              cartridge[currentModule].
               lo.
                amc.
-                multiplierDCurrent[CURRENT_VALUE]=(LO_AMC_MULTIPLIER_I_SCALE*loRegisters[currentModule].
+                multiplierDCurrent=(LO_AMC_MULTIPLIER_I_SCALE*loRegisters[currentModule].
                                                                                  adcData)/LO_ADC_RANGE;
             break;
         /* The E gate voltage is given by  10*(adcData/65536) */
@@ -1001,7 +998,7 @@ int getAmc(unsigned char port){
              cartridge[currentModule].
               lo.
                amc.
-                gateEVoltage[CURRENT_VALUE]=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
+                gateEVoltage=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
                                                                     adcData)/LO_ADC_RANGE;
             break;
         /* The E drain voltage is given by  10*(adcData/65536) */
@@ -1010,7 +1007,7 @@ int getAmc(unsigned char port){
              cartridge[currentModule].
               lo.
                amc.
-                drainEVoltage[CURRENT_VALUE]=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
+                drainEVoltage=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
                                                                      adcData)/LO_ADC_RANGE;
             break;
         /* The E drain current is given by  1000*(adcData/65536) */
@@ -1019,7 +1016,7 @@ int getAmc(unsigned char port){
              cartridge[currentModule].
               lo.
                amc.
-                drainECurrent[CURRENT_VALUE]=(LO_DRAIN_C_SCALE*loRegisters[currentModule].
+                drainECurrent=(LO_DRAIN_C_SCALE*loRegisters[currentModule].
                                                                 adcData)/LO_ADC_RANGE;
             break;
         default:
@@ -1131,7 +1128,7 @@ int setAmc(unsigned char port){
               cartridge[currentModule].
                lo.
                 amc.
-                 multiplierDVoltage[CURRENT_VALUE]=loRegisters[currentModule].
+                 multiplierDVoltage=loRegisters[currentModule].
                                                     amcPotReg.
                                                      bitField.
                                                       pot2;
@@ -1201,7 +1198,7 @@ int getPa(unsigned char port){
              cartridge[currentModule].
               lo.
                pa.
-                supplyVoltage3V[CURRENT_VALUE]=(LO_SUPPLY_V_SCALE*loRegisters[currentModule].
+                supplyVoltage3V=(LO_SUPPLY_V_SCALE*loRegisters[currentModule].
                                                                         adcData/LO_ADC_RANGE);
             break;
         /* The 5V supply voltage is given by 10*(adcData/65536) */
@@ -1210,7 +1207,7 @@ int getPa(unsigned char port){
              cartridge[currentModule].
               lo.
                pa.
-                supplyVoltage5V[CURRENT_VALUE]=(LO_SUPPLY_V_SCALE*loRegisters[currentModule].
+                supplyVoltage5V=(LO_SUPPLY_V_SCALE*loRegisters[currentModule].
                                                                         adcData/LO_ADC_RANGE);
             break;
         default:
@@ -1269,7 +1266,7 @@ int getPaChannel(void){
               lo.
                pa.
                 paChannel[currentPaChannel()].
-                 gateVoltage[CURRENT_VALUE]=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
+                 gateVoltage=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
                                                                     adcData/LO_ADC_RANGE);
             break;
         /* The drain voltage is given by 10*(adcData/65536) */
@@ -1279,7 +1276,7 @@ int getPaChannel(void){
               lo.
                pa.
                 paChannel[currentPaChannel()].
-                 drainVoltage[CURRENT_VALUE]=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
+                 drainVoltage=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
                                                                      adcData/LO_ADC_RANGE);
             break;
         /* The drain current is given by 1000*(adcData/65536) */
@@ -1289,7 +1286,7 @@ int getPaChannel(void){
               lo.
                pa.
                 paChannel[currentPaChannel()].
-                 drainCurrent[CURRENT_VALUE]=(LO_DRAIN_C_SCALE*loRegisters[currentModule].
+                 drainCurrent=(LO_DRAIN_C_SCALE*loRegisters[currentModule].
                                                                 adcData/LO_ADC_RANGE);
             break;
         default:

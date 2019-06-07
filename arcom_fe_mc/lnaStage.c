@@ -1,13 +1,10 @@
 /*! \file   lnaStage.c
     \brief  LNA Stage functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: lnaStage.c,v 1.26 2009/08/25 21:39:39 avaccari Exp $
-
-    This files contains all the functions necessary to handle the LNA Stage
+    This file contains all the functions necessary to handle the LNA Stage
     events. */
 
 /* Includes */
@@ -19,7 +16,6 @@
 #include "frontend.h"
 #include "biasSerialInterface.h"
 #include "debug.h"
-#include "database.h"
 
 /* Globals */
 /* Externs */
@@ -40,27 +36,11 @@ void lnaStageHandler(void){
         printf("       LNA Stage: %d (currentLnaModule)\n",
                currentLnaModule);
     #endif /* DEBUG */
-
-    #ifdef DATABASE_HARDW
-        /* Check if the selected LNA is outfitted with the desired stage */
-        if(frontend.
-            cartridge[currentModule].
-             polarization[currentBiasModule].
-              sideband[currentPolarizationModule].
-               lna.
-                stage[currentLnaModule].
-                 available==UNAVAILABLE){
-
-            storeError(ERR_LNA_STAGE, ERC_MODULE_ABSENT); //LNA stage not installed
-
-            CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of the error
-            return;
-        }
-    #endif /* DATABASE_HARDW */
-
+    
     /* Check if the submodule is in range */
     currentLnaStageModule=(CAN_ADDRESS&LNA_STAGE_MODULES_RCA_MASK);
-    if(currentLnaStageModule>=LNA_STAGE_MODULES_NUMBER){
+    if(currentLnaStageModule>=LNA_STAGE_MODULES_NUMBER)
+    {
 
         storeError(ERR_LNA_STAGE, ERC_MODULE_RANGE); //LNA stage submodule out of range
 
@@ -159,7 +139,7 @@ static void drainVoltageHandler(void){
                      sideband[currentPolarizationModule].
                       lna.
                        stage[currentLnaModule].
-                        drainVoltage[CURRENT_VALUE];
+                        drainVoltage;
     } else {
         /* If no error during the monitor process gather the stored data */
         CONV_FLOAT=frontend.
@@ -168,7 +148,7 @@ static void drainVoltageHandler(void){
                      sideband[currentPolarizationModule].
                       lna.
                        stage[currentLnaModule].
-                        drainVoltage[CURRENT_VALUE];
+                        drainVoltage;
     }
 
     /* Load the CAN message payload with the returned value and set the
@@ -270,7 +250,7 @@ static void drainCurrentHandler(void){
                      sideband[currentPolarizationModule].
                       lna.
                        stage[currentLnaModule].
-                        drainCurrent[CURRENT_VALUE];
+                        drainCurrent;
     } else {
 
         /* If no error during the monitor process gather the stored data */
@@ -280,7 +260,7 @@ static void drainCurrentHandler(void){
                      sideband[currentPolarizationModule].
                       lna.
                        stage[currentLnaModule].
-                        drainCurrent[CURRENT_VALUE];
+                        drainCurrent;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -330,7 +310,7 @@ static void gateVoltageHandler(void){
                      sideband[currentPolarizationModule].
                       lna.
                        stage[currentLnaModule].
-                        gateVoltage[CURRENT_VALUE];
+                        gateVoltage;
     } else {
         /* If no error during the monitor process gather the stored data */
         CONV_FLOAT=frontend.
@@ -339,7 +319,7 @@ static void gateVoltageHandler(void){
                      sideband[currentPolarizationModule].
                       lna.
                        stage[currentLnaModule].
-                        gateVoltage[CURRENT_VALUE];
+                        gateVoltage;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to

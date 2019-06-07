@@ -1,17 +1,13 @@
 /*! \file   debug.h
     \brief  Debug handling header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/31 18:21:05 by avaccari
 
-    <b> CVS informations: </b><br>
-
-    \$Id: debug.h,v 1.48 2013/07/12 20:16:35 mmcleod Exp $
-
-    This files contains all the informations necessary to debug the running
+    This file contains all the information necessary to debug the running
     software.
 
-    This files right now contains only one define (DEBUG) used to turn on
+    This file right now contains only one define (DEVELOPMENT) used to turn on
     software debugging features within the various software modules. */
 
 #ifndef _DEBUG_H
@@ -27,7 +23,8 @@
 
         // #define DEBUG_CAN                   // Turn on CAN interface debug
         // #define DEBUG_CAN_FAST              // Uncomment this line to enable the minimalistic CAN message debug in fast version
-        
+        #define DEBUG_PA_LIMITS
+
         // #define DEBUG_SERIAL_READ           // Turn on Serial interface read debug
         // #define DEBUG_SERIAL_WRITE          // Turn on Serial interface write debug
                                                //   Note that this mode works as a one-shot only.
@@ -50,7 +47,7 @@
         #define ERROR_REPORT                // Uncomment this line to enable the console error report
 
         // #define DEBUG_CRYOSTAT_ASYNC        // Turn on cryotat async debugging
-        #define DEBUG_FETIM_ASYNC           // Turn on the FETIM async debugging
+        // #define DEBUG_FETIM_ASYNC           // Turn on the FETIM async debugging
         // #define DEBUG_GO_STANDBY2           // Turn on debugging the STANDBY2 transition
     
     #else /* If we are NOT developing: for release build */

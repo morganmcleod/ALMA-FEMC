@@ -1,13 +1,10 @@
 /*! \file   vacuumController.c
     \brief  Vacuum controller functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/03/14 17:17:31 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: vacuumController.c,v 1.5 2007/05/21 15:49:27 avaccari Exp $
-
-    This files contains all the functions necessary to handle vacuum controller
+    This file contains all the functions necessary to handle vacuum controller
     events. */
 
 /* Includes */
@@ -18,7 +15,6 @@
 #include "frontend.h"
 #include "globalDefinitions.h"
 #include "error.h"
-#include "database.h"
 #include "cryostatSerialInterface.h"
 
 /* Globals */
@@ -108,7 +104,7 @@ static void enableHandler(void){
     CAN_BYTE=frontend.
               cryostat.
                vacuumController.
-                enable[CURRENT_VALUE];
+                enable;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }
 
@@ -147,18 +143,18 @@ static void stateHandler(void){
         CAN_BYTE=frontend.
                   cryostat.
                    vacuumController.
-                    state[CURRENT_VALUE];
+                    state;
     } else {
         /* If no error during monitor process, gather the stored data */
         CAN_BYTE = frontend.
                     cryostat.
                      vacuumController.
-                      state[CURRENT_VALUE];
+                      state;
     }
     /* Load the CAN message payload with the returned value and set the size */
     CAN_BYTE=frontend.
               cryostat.
                vacuumController.
-                state[CURRENT_VALUE];
+                state;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }

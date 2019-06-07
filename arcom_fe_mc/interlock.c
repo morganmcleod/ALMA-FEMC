@@ -1,11 +1,8 @@
 /*! \file   interlock.c
     \brief  FETIM Interlock
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/03/25 17:34:50 by avaccari
-
-    <b> CVS informations: </b><br>
-    \$Id: interlock.c,v 1.1 2011/08/05 19:18:06 avaccari Exp $
 
     This file contains all the functions necessary to handle FETIM interlock
     events. */

@@ -2,13 +2,10 @@
     \ingroup    polarization
     \brief      Sideband header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: sideband.h,v 1.15 2010/11/02 14:36:29 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate one of the two sidebands available for each
     polarization. See \ref sideband for more information. */
 
@@ -53,29 +50,18 @@
 
     /* Typedefs */
     //! Current state of the sideband
-    /*! This structure represent the current state of the sideband.
-        \ingroup    polarization
-        \param      available   an unsigned int
-        \param      lna         a LNA
-        \param      sis         a SIS
-        \param      sisMagnet   a SIS_MAGNET  */
     typedef struct {
-        //! Sideband availability
-        /*! This variable indicates if the polarization is outfitted with this
-            particular sideband. This value should be part of the device
-            dependent informations retrived from the configuration database. */
-        unsigned char   available;
         //!LNAcurrent state
         /*! Please see the definition of the \ref LNA structure for more
-            informations. */
+            information. */
         LNA         lna;
         //! SIS mixer current state
         /*! Please see the definition of the \ref SIS structure for more
-            informations. */
+            information. */
         SIS         sis;
         //! SIS magnetic coil current state
         /*! Please see the definition of the \ref SIS_MAGNET structure for more
-            informations. */
+            information. */
         SIS_MAGNET  sisMagnet;
     } SIDEBAND;
 

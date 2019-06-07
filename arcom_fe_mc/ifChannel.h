@@ -2,13 +2,10 @@
     \ingroup    ifSwitch
     \brief      IF Switch channel header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/10/25 14:48:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: ifChannel.h,v 1.9 2010/11/02 14:36:29 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the power distribution channel subsystem. There
     is one channel for each voltage provided to each cartridge. */
 
@@ -77,14 +74,14 @@
                                     control message for the attenuation. */
     typedef struct {
         //! Temperature servo current state
-        /*! Please see \ref IF_TEMP_SERVO for more informations. */
+        /*! Please see \ref IF_TEMP_SERVO for more information. */
         IF_TEMP_SERVO   ifTempServo;
         //! Channel attenuation
         /*! This is the attenuation for this channel. */
-        unsigned char   attenuation[OPERATION_ARRAY_SIZE];
+        unsigned char   attenuation;
         //! Assembly temperature
         /*! This is the current temperature for the specified IF channel. */
-        float           assemblyTemp[OPERATION_ARRAY_SIZE];
+        float           assemblyTemp;
         //! Last control message: attenuation
         /*! This is the content of the last control message sent to the IF
             channel attenuation. */

@@ -1,13 +1,10 @@
 /*! \file       serialMux.h
     \brief      Serial multiplexing board header files
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 13:24:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: serialMux.h,v 1.17 2010/10/01 22:13:46 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the serial multiplexing board.
     See \ref serialMux for more information. */
 
@@ -58,7 +55,7 @@
 
     /* Typedefs */
     //! Serial multiplexing board's frame
-    /*! This structure contains all the informations necessary to create a
+    /*! This structure contains all the information necessary to create a
         communication frame to be sent to the mux board in order to deliver
         data to the required device.
         \param port         This is the port to be addressed.

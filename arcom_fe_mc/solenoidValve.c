@@ -1,13 +1,10 @@
 /*! \file   solenoidValve.c
     \brief  Solenoid valve functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/03/14 17:15:48 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: solenoidValve.c,v 1.5 2007/08/09 16:06:01 avaccari Exp $
-
-    This files contains all the functions necessary to handle solenoid valve
+    This file contains all the functions necessary to handle solenoid valve
     events. */
 
 /* Includes */
@@ -18,7 +15,6 @@
 #include "frontend.h"
 #include "globalDefinitions.h"
 #include "error.h"
-#include "database.h"
 #include "cryostatSerialInterface.h"
 
 /* Globals */
@@ -66,7 +62,7 @@ static void stateHandler(void) {
         if(frontend.
             cryostat.
              backingPump.
-              enable[CURRENT_VALUE] == BACKING_PUMP_DISABLE) {
+              enable == BACKING_PUMP_DISABLE) {
             storeError(ERR_SOLENOID_VALVE, ERC_MODULE_POWER); //Backing Pump off -> Solenoid valve disabled
             
             frontend.
@@ -114,13 +110,13 @@ static void stateHandler(void) {
         CAN_BYTE=frontend.
                   cryostat.
                    solenoidValve.
-                    state[CURRENT_VALUE];
+                    state;
     } else {
         /* If no error during monitor process, gather the stored data */
         CAN_BYTE = frontend.
                     cryostat.
                      solenoidValve.
-                      state[CURRENT_VALUE];
+                      state;
     }
 
     // If the solenoid valve monitor state differs from the control register status..
@@ -133,7 +129,7 @@ static void stateHandler(void) {
         if (frontend.
              cryostat.
               backingPump.
-               enable[CURRENT_VALUE] == BACKING_PUMP_ENABLE)
+               enable == BACKING_PUMP_ENABLE)
         {
             // Report a wanrning that the interlock is in control:
             storeError(ERR_SOLENOID_VALVE, ERC_HARDWARE_BLOCKED); //Warning: Solenoid valve closed by interlock
@@ -146,7 +142,7 @@ static void stateHandler(void) {
     CAN_BYTE=frontend.
               cryostat.
                solenoidValve.
-                state[CURRENT_VALUE];
+                state;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 
 }

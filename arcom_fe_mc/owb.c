@@ -1,13 +1,10 @@
 /*! \file   owb.c
     \brief  One Wire Bus functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/09/05 14:33:02 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: owb.c,v 1.13 2012/01/17 16:30:58 avaccari Exp $
-
-    This files contains all the functions necessary to handle the one wire bus
+    This file contains all the functions necessary to handle the one wire bus
     communication. */
 
 /*  Includes */
@@ -27,7 +24,6 @@
 
 /* Globals */
 /* Static */
-static unsigned char useSimulator;
 /* Externs */
 unsigned char esnDevicesFound;
 unsigned char ESNS[MAX_DEVICES_NUMBER][SERIAL_NUMBER_SIZE];
@@ -40,42 +36,10 @@ unsigned char ESNS[MAX_DEVICES_NUMBER][SERIAL_NUMBER_SIZE];
         - \ref ERROR    -> if something wrong happened */
 
 int owbInit(void){
-
-    /* A few local to deal with the initialization */
-    CFG_STRUCT dataIn;
-
-    printf("Initializing One Wire Bus...\n");
-
-    /* Check the configuration file to see if we are using the simulator */
-    printf(" - Checking if we use the simulator...\n");
-    dataIn.
-     Name=ESNS_SIM_USE_KEY;
-    dataIn.
-     VarType=Cfg_Boolean;
-    dataIn.
-     DataPtr=&useSimulator;
-
-    /* Access configuration file, if error, assume no simulator. */
-    if(myReadCfg(ESNS_DATA_FILE,
-                 ESNS_SIM_SECTION,
-                 &dataIn,
-                 ESNS_SIM_USE_EXPECTED)!=NO_ERROR){
-        #ifdef DEBUG_STARTUP
-            printf("\n\nWARNING - Error opening the file:%s\n\n",
-                   ESNS_DATA_FILE);
-        #endif /* DEBUG_STARTUP */
-
-        useSimulator=0;
-    }
-
-    if(useSimulator){
-        printf("   Using Simulator\n");
-    } else {
-        printf("   Using Hardware\n");
-    }
-
-    printf("   done!\n");
-    printf("done!\n\n");
+    #ifdef DEBUG_STARTUP
+        printf("Initializing One Wire Bus...\n");
+        printf("done!\n\n");
+    #endif
 
     return NO_ERROR;
 }
@@ -89,370 +53,189 @@ int owbInit(void){
 int owbGetEsn(void){
 
     /* A few local to deal with the initialization */
-    CFG_STRUCT dataIn;
-    unsigned char esnDevicesStored;
-    unsigned char storedESNS[MAX_DEVICES_NUMBER][SERIAL_NUMBER_SIZE];
     unsigned char device;
     unsigned char loop;
-    char base[6]; // 5 char for up to 65535 + 1 NULL
     int TData[SEARCH_BYTES_LENGTH];
     int RData[SEARCH_BYTES_LENGTH];
     int timedOut=0; // A local to keep track of time out errors
 
-    printf("Gathering ESN... ");
+    #ifdef DEBUG_OWB
+        printf("Gathering ESN... ");
+    #endif
 
-    if(useSimulator){
-        printf("   Using Simulator\n");
-    } else {
-        printf("   Using Hardware\n");
-    }
+    /* Enable the section of the bus extending outside the FEMC */
+    #ifdef DEBUG_OWB
+        printf(" - Enabling external OWB...");
+    #endif /* DEBUG_OWB */
 
-    /* If the simulator is enable create the simulated data. The data should be
-       the same every time a particular front end is used. */
-    if(useSimulator){
-        /* Check how many devices to simulate */
-        dataIn.
-         Name=ESNS_SIM_DEV_NO_KEY;
-        dataIn.
-         VarType=Cfg_Byte;
-        dataIn.
-         DataPtr=&esnDevicesFound;
+    outp(MUX_OWB_ENABLE, ENABLE);
 
-        /* Access configuration file, if error, assume no simulator */
-        if(myReadCfg(ESNS_DATA_FILE,
-                     ESNS_SIM_SECTION,
-                     &dataIn,
-                     ESNS_SIM_DEV_NO_EXPECTED)!=NO_ERROR){
+    #ifdef DEBUG_OWB
+        printf("done!\n");
+    #endif /* DEBUG_OWB */
 
-            #ifdef DEBUG_STARTUP
-                printf("\n\nWARNING - Error opening the file:%s\n\n",
-                       ESNS_DATA_FILE);
-            #endif /* DEBUG_STARTUP */
+    /* Reset the one wire master in the FPGA. The data sent is not important */
+    #ifdef DEBUG_OWB
+        printf(" - Reset the one wire master...");
+    #endif /* DEBUG_OWB */
 
-            printf(" - Aborting simulator\n");
-            useSimulator=0;
-        }
-    }
+    outp(MUX_OWB_RESET, 0);
 
-    if(useSimulator){
-        printf(" - Simulating %d devices\n",
-               esnDevicesFound);
+    #ifdef DEBUG_OWB
+        printf("done!\n"); // Reset one wire master
+    #endif /* DEBUG_OWB */
 
-        /* Check if the base for the ESN is in the configuration file */
-        dataIn.
-         Name=ESNS_SIM_BASE_KEY;
-        dataIn.
-         VarType=Cfg_Ushort;
-        CONV_UINT(0)=0; // zero the data
-        dataIn.
-         DataPtr=&CONV_UINT(0);
-        /* Access configuration file. */
-        do{
-            #ifdef DEBUG_OWB
-                printf(" - Loading base\n");
-            #endif /* DEBUG_OWB */
+    /* Select 10-12 MHz clock */
+    #ifdef DEBUG_OWB
+        printf(" - Set up clock rate...");
+    #endif /* DEBUG_OWB */
 
-            switch(myReadCfg(ESNS_DATA_FILE,
-                             ESNS_SIM_SECTION,
-                             &dataIn,
-                             ESNS_SIM_BASE_EXPECTED)){
-                /* If file access error, assume no simulator */
-                case FILE_OPEN_ERROR:
-                case FILE_ERROR:
-                    #ifdef DEBUG_STARTUP
-                        printf("\n\nWARNING - Error opening the file:%s\n\n",
-                               ESNS_DATA_FILE);
-                    #endif /* DEBUG_STARTUP */
+    outp(MUX_OWB_CLK_DIV, OWB_10_12MHZ);
 
-                    #ifdef DEBUG_OWB
-                        printf(" - Aborting simulator\n");
-                    #endif /* DEBUG_OWB */
+    #ifdef DEBUG_OWB
+        printf("done!\n"); // Setup clock
+    #endif /* DEBUG_OWB */
 
-                    useSimulator=0;
-                    break;
-                /* If data missmatch error or zero value, create data */
-                case NO_ERROR:
-                    if(CONV_UINT(0)!=0){
-                        /* Reload base with the HEX data */
-                        base[0]=CONV_CHR(0);
-                        base[1]=CONV_CHR(1);
+    /* Select Long Line Mode and Presence Pulse Masking Mode */
+    #ifdef DEBUG_OWB
+        printf(" - Set up LLM and PPM mode...");
+    #endif /* DEBUG_OWB */
 
-                            #ifdef DEBUG_OWB
-                                 printf(" - Base: %u (%X %X)\n",
-                                        CONV_UINT(0),
-                                        base[1],
-                                        base[0]);
-                            #endif /* DEBUG_OWB */
+    outp(MUX_OWB_CONTROL, OWB_LLM | OWB_PPM);
 
-                        break;
-                    }
-                case DATA_NOT_FOUND:
-                case ITEMS_NO_ERROR:
-                    /* Generate a unique base for the esns */
-                    #ifdef DEBUG_OWB
-                        printf(" - Generating base\n");
-                    #endif /* DEBUG_OWB */
+    #ifdef DEBUG_OWB
+        printf("done!\n"); // Setup LLM+PPM
+    #endif /* DEBUG_OWB */
 
-                    srand((unsigned int)(time(NULL)+clock()));
-                    itoa(rand(),
-                         base,
-                         10);
+    /* Initialize the device discovery algorithm */
+    #ifdef DEBUG_OWB
+        printf(" - Initializing device search algorithm...");
+    #endif /* DEBUG_OWB */
 
-                    #ifdef DEBUG_OWB
-                        printf("   New base: %s\n",
-                               base);
-                    #endif /* DEBUG_OWB */
+    RecoverROM(NULL, TData, NULL);
 
-                    /* If error storing the data, assume no simulator */
-                    #ifdef DEBUG_OWB
-                        printf(" - Writing base to configuration file\n");
-                    #endif /* DEBUG_OWB */
-
-                    if(myWriteCfg(ESNS_DATA_FILE,
-                                  ESNS_SIM_SECTION,
-                                  ESNS_SIM_BASE_KEY,
-                                  base)==ERROR){
-                        #ifdef DEBUG_STARTUP
-                            printf("\n\nWARNING - Error opening the file:%s\n\n",
-                                   ESNS_DATA_FILE);
-                        #endif /* DEBUG_STARTUP */
-
-                        printf(" - Aborting simulator\n");
-                        useSimulator=0;
-                        break;
-
-                    }
-                    break;
-                default:
-                    /* In any other case assume no simulator */
-                    #ifdef DEBUG_STARTUP
-                        printf("\n\nWARNING - Error opening the file:%s\n\n",
-                               ESNS_DATA_FILE);
-                    #endif /* DEBUG_STARTUP */
-
-                    printf(" - Aborting simulator\n");
-                    useSimulator = 0;
-                    break;
-            }
-        } while (useSimulator&&(CONV_UINT(0)==0));
-    }
-
-    /* Get the serial number of the drive. This will be as well in the base
-       for the ESNs. */
-    if(useSimulator){
-        CONV_LONGINT=getVolSerial();
-
-        /* If error, assume no simulator */
-        if(CONV_LONGINT==ERROR){
-            printf(" - Aborting simulator\n");
-            useSimulator=0;
-        }
-    }
-
-    /* Generate the ESNs */
-    if(useSimulator){
-        for(device=0;
-            device<esnDevicesFound;
-            device++){
-            /* Set the first number to 0. It might end up holding the Front End
-               serial number, but right now, 0 is good. */
-            ESNS[device][0]=0;
-            /* Set the next 2 numbers to the SIMBASE */
-            ESNS[device][1]=base[1];
-            ESNS[device][2]=base[0];
-            /* Set the next 4 number to the drive serial number */
-            ESNS[device][3]=CONV_CHR(3);
-            ESNS[device][4]=CONV_CHR(2);
-            ESNS[device][5]=CONV_CHR(1);
-            ESNS[device][6]=CONV_CHR(0);
-            /* Set LSB to progressive */
-            ESNS[device][7]=device;
-        }
-        device--; // Necessary to simulate the results of the real search
-    } else {
-        /* If we are not using the simulator at this point, gather the data
-           from the OWB */
-
-        /* Enable the section of the bus extending outside the FEMC */
-        #ifdef DEBUG_OWB
-            printf(" - Enabling external OWB...");
-        #endif /* DEBUG_OWB */
-
-        outp(MUX_OWB_ENABLE,
-             ENABLE);
-
-        #ifdef DEBUG_OWB
-	        printf("done!\n");
-        #endif /* DEBUG_OWB */
-
-        /* Reset the one wire master in the FPGA. The data sent is not important */
-        #ifdef DEBUG_OWB
-            printf(" - Reset the one wire master...");
-        #endif /* DEBUG_OWB */
-
-        outp(MUX_OWB_RESET,
-             0);
-
-        #ifdef DEBUG_OWB
-            printf("done!\n"); // Reset one wire master
-        #endif /* DEBUG_OWB */
-
-        /* Select 10-12 MHz clock */
-        #ifdef DEBUG_OWB
-            printf(" - Set up clock rate...");
-        #endif /* DEBUG_OWB */
-
-        outp(MUX_OWB_CLK_DIV,
-             OWB_10_12MHZ);
-
-        #ifdef DEBUG_OWB
-            printf("done!\n"); // Setup clock
-        #endif /* DEBUG_OWB */
-
-        /* Select Long Line Mode and Presence Pulse Masking Mode */
-        #ifdef DEBUG_OWB
-            printf(" - Set up LLM and PPM mode...");
-        #endif /* DEBUG_OWB */
-
-        outp(MUX_OWB_CONTROL,
-             OWB_LLM|OWB_PPM);
-
-        #ifdef DEBUG_OWB
-            printf("done!\n"); // Setup LLM+PPM
-        #endif /* DEBUG_OWB */
-
-        /* Initialize the device discovery algorithm */
-        #ifdef DEBUG_OWB
-            printf(" - Initializing device search algorithm...");
-        #endif /* DEBUG_OWB */
-
-        RecoverROM(NULL,
-                   TData,
-                   NULL);
-
-        #ifdef DEBUG_OWB
-            printf("done!\n"); // Initialize search algorithm
-        #endif /* DEBUG_OWB */
+    #ifdef DEBUG_OWB
+        printf("done!\n"); // Initialize search algorithm
 
         /* Find available devices */
         printf(" - Searching devices...\n");
+    #endif /* DEBUG_OWB */
 
-        for(device=0;
-            device<MAX_DEVICES_NUMBER;
-            device++){
+    for(device = 0;
+        device < MAX_DEVICES_NUMBER;
+        device++){
 
-                #ifdef DEBUG_OWB
-                    printf("   - Searching device %d...\n",
-                           device);
-                #endif /* DEBUG_OWB */
-
-            /* Send the bus reset and check for presence pulse. */
             #ifdef DEBUG_OWB
-                printf("     - Send bus reset...\n");
+                printf("   - Searching device %d...\n",
+                       device);
             #endif /* DEBUG_OWB */
 
-            /* Set up for 10 seconds and start the asynchronous timer */
-            if(startAsyncTimer(TIMER_OWB_RESET,
-                               TIMER_TO_OWB_RESET,
-                               FALSE)==ERROR){
+        /* Send the bus reset and check for presence pulse. */
+        #ifdef DEBUG_OWB
+            printf("     - Send bus reset...\n");
+        #endif /* DEBUG_OWB */
+
+        /* Set up for 10 seconds and start the asynchronous timer */
+        if(startAsyncTimer(TIMER_OWB_RESET,
+                           TIMER_TO_OWB_RESET,
+                           FALSE)==ERROR){
+            return ERROR;
+        }
+
+        /* Wait for the one wire bus to be resetted or for the timer to
+           expire. */
+        do {
+            timedOut=queryAsyncTimer(TIMER_OWB_RESET);
+            if(timedOut==ERROR){
                 return ERROR;
             }
+        } while(owbReset()&&!timedOut);
 
-            /* Wait for the one wire bus to be resetted or for the timer to
-               expire. */
-            do {
-                timedOut=queryAsyncTimer(TIMER_OWB_RESET);
-                if(timedOut==ERROR){
-                    return ERROR;
-                }
-            } while(owbReset()&&!timedOut);
+        /* If the timer has expired signal the error */
+        if(timedOut==TIMER_EXPIRED){
+            storeError(ERR_OWB, ERC_HARDWARE_TIMEOUT); //Timeout while waiting for the bus reset
+            return ERROR;
+        }
 
-            /* If the timer has expired signal the error */
-            if(timedOut==TIMER_EXPIRED){
-                storeError(ERR_OWB, ERC_HARDWARE_TIMEOUT); //Timeout while waiting for the bus reset
-                return ERROR;
-            }
+        /* In case of no error, clear the asynchronous timer. */
+        if(stopAsyncTimer(TIMER_OWB_RESET)==ERROR){
+            return ERROR;
+        }
 
-            /* In case of no error, clear the asynchronous timer. */
-            if(stopAsyncTimer(TIMER_OWB_RESET)==ERROR){
-                return ERROR;
-            }
+        #ifdef DEBUG_OWB
+            printf("       done!\n"); // Bus reset
+        #endif /* DEBUG_OWB */
 
-            #ifdef DEBUG_OWB
-                printf("       done!\n"); // Bus reset
-            #endif /* DEBUG_OWB */
+        /* Send "search ROM" command to the bus */
+        #ifdef DEBUG_OWB
+            printf("     - Send search ROM code...\n");
+        #endif /* DEBUG_OWB */
 
-            /* Send "search ROM" command to the bus */
-            #ifdef DEBUG_OWB
-                printf("     - Send search ROM code...\n");
-            #endif /* DEBUG_OWB */
+        writeOwb(SEARCH_ROM_CODE);
 
-            writeOwb(SEARCH_ROM_CODE);
+        #ifdef DEBUG_OWB
+            printf("       done!\n"); // Search ROM code
+        #endif /* DEBUG_OWB */
 
-            #ifdef DEBUG_OWB
-                printf("       done!\n"); // Search ROM code
-            #endif /* DEBUG_OWB */
+        /* Enter accelerated search mode */
+        #ifdef DEBUG_OWB
+            printf("     - Enter accelerated search mode...");
+        #endif /* DEBUG_OWB */
 
-            /* Enter accelerated search mode */
-            #ifdef DEBUG_OWB
-                printf("     - Enter accelerated search mode...");
-            #endif /* DEBUG_OWB */
+        outp(MUX_OWB_COMMAND, ACC_SEARCH_MODE);
 
-            outp(MUX_OWB_COMMAND,
-                 ACC_SEARCH_MODE);
+        #ifdef DEBUG_OWB
+            printf("done!\n"); // Enter accelerated search
+        #endif /* DEBUG_OWB */
 
-            #ifdef DEBUG_OWB
-                printf("done!\n"); // Enter accelerated search
-            #endif /* DEBUG_OWB */
+        /* Transmit first set of search data */
+        #ifdef DEBUG_OWB
+            printf("     - Sending search data...\n");
+        #endif /* DEBUG_OWB */
 
-            /* Transmit first set of search data */
-            #ifdef DEBUG_OWB
-                printf("     - Sending search data...\n");
-            #endif /* DEBUG_OWB */
+        for(loop=0;
+            loop<SEARCH_BYTES_LENGTH;
+            loop++){
+            RData[loop]=writeOwb(TData[loop]);
+        }
 
-            for(loop=0;
-                loop<SEARCH_BYTES_LENGTH;
-                loop++){
-                RData[loop]=writeOwb(TData[loop]);
-            }
+        #ifdef DEBUG_OWB
+            printf("       done!\n"); // Send search data
+        #endif /* DEBUG_OWB */
 
-            #ifdef DEBUG_OWB
-                printf("       done!\n"); // Send search data
-            #endif /* DEBUG_OWB */
+        /* Check state of search tree */
+        #ifdef DEBUG_OWB
+            printf("     - Check state of search tree...");
+        #endif /* DEBUG_OWB */
 
-            /* Check state of search tree */
-            #ifdef DEBUG_OWB
-                printf("     - Check state of search tree...");
-            #endif /* DEBUG_OWB */
-
-            if(RecoverROM(RData,
-                          TData,
-                          ESNS[device])==TRUE){
-
-                #ifdef DEBUG_OWB
-                    printf("done!\n"); // Search tree state
-                    printf("     done!\n"); // Searching device No.x
-                #endif /* DEBUG_OWB */
-
-                break;
-            }
+        if(RecoverROM(RData,
+                      TData,
+                      ESNS[device])==TRUE){
 
             #ifdef DEBUG_OWB
                 printf("done!\n"); // Search tree state
                 printf("     done!\n"); // Searching device No.x
             #endif /* DEBUG_OWB */
 
+            break;
         }
-        printf("   done!\n"); // Search devices
+
+        #ifdef DEBUG_OWB
+            printf("done!\n"); // Search tree state
+            printf("     done!\n"); // Searching device No.x
+        #endif /* DEBUG_OWB */
+
     }
+    #ifdef DEBUG_OWB
+        printf("   done!\n"); // Search devices
+    #endif
 
     /* Disable the section of the bus extending outside the FEMC */
     #ifdef DEBUG_OWB
         printf("   - Disabling external OWB...");
     #endif /* DEBUG_OWB */
 
-    outp(MUX_OWB_ENABLE,
-         DISABLE);
+    outp(MUX_OWB_ENABLE, DISABLE);
 
     #ifdef DEBUG_OWB
         printf("done!\n");
@@ -473,14 +256,15 @@ int owbGetEsn(void){
         esnDevicesFound = device+1;
     }
 
-    printf("   - Devices found: %d\n",
+    printf("OWB - Devices found: %d\n",
            esnDevicesFound);
 
     /* Print devices list */
-    for(device=0;
-        device<esnDevicesFound;
-        device++){
-        printf("     - ESN%d: %02X %02X %02X %02X %02X %02X %02X %02X\n",
+    for(device = 0;
+        device < esnDevicesFound;
+        device++)
+    {
+        printf("    - ESN%d: %02X %02X %02X %02X %02X %02X %02X %02X\n",
                device,
                ESNS[device][0],
                ESNS[device][1],
@@ -491,81 +275,9 @@ int owbGetEsn(void){
                ESNS[device][6],
                ESNS[device][7]);
     }
-
-
-    /* Check found list against stored list. */
-    printf(" - Checking against stored list...\n");
-    /* Load the number of stored devices from the file */
-    dataIn.
-     Name=ESNS_NO_KEY;
-    dataIn.
-     VarType=Cfg_Byte;
-    dataIn.
-     DataPtr=&esnDevicesStored;
-
-    /* Access configuration file, if error, store in status register. */
-    if(myReadCfg(ESNS_DATA_FILE,
-                 ESNS_NO_SECTION,
-                 &dataIn,
-                 ESNS_NO_EXPECTED)!=NO_ERROR){
-        #ifdef DEBUG_STARTUP
-            printf("\n\nWARNING - Error opening the file:%s\n\n",
-                   ESNS_DATA_FILE);
-        #endif /* DEBUG_STARTUP */
-    } else {
-        /* If no error accessing the file, process the file */
-        printf("   - Number of stored devices: %d\n",
-               esnDevicesStored);
-
-        /* Load the Stored list in memory */
-        dataIn.
-         VarType=Cfg_HB_Array;
-
-        for(device=0;
-            device<esnDevicesStored;
-            device++){
-            dataIn.
-             Name=ESNS_DEVICE_KEY(device);
-            dataIn.
-             DataPtr=storedESNS[device];
-
-            /* Access configuration file, if error, store in status register and
-               exit loop */
-            if(myReadCfg(ESNS_DATA_FILE,
-                         ESNS_DEVICE_SECTION,
-                         &dataIn,
-                         ESNS_DEVICE_EXPECTED)!=NO_ERROR){
-                break;
-            }
-        }
-        /* Print devices list */
-        for(device=0;
-            device<esnDevicesStored;
-            device++){
-            printf("     - ESN%d: %02X %02X %02X %02X %02X %02X %02X %02X\n",
-                   device,
-                   storedESNS[device][0],
-                   storedESNS[device][1],
-                   storedESNS[device][2],
-                   storedESNS[device][3],
-                   storedESNS[device][4],
-                   storedESNS[device][5],
-                   storedESNS[device][6],
-                   storedESNS[device][7]);
-        }
-    }
-
-    printf("   done!\n"); // Check against stored list
-
-
-        /* Update stored list with new list. */
-        printf(" - Updating stored list...\n");
-        printf("   done!\n");
-
-    printf("done!\n\n");
-
-
-
+    #ifdef DEBUG_OWB
+        printf("done!\n\n");
+    #endif
 
     return NO_ERROR;
 }
@@ -574,8 +286,7 @@ int owbGetEsn(void){
 /* Write to the one wire bus */
 int writeOwb(int data){
     /* Write the data on the bus */
-    outp(MUX_OWB_TXRX,
-         data);
+    outp(MUX_OWB_TXRX, data);
 
     /* Since every time data is written to the bus, data is received in the
        receive buffer, we need to wait for the receive buffer full flag to be

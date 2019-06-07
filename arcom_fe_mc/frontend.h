@@ -1,13 +1,10 @@
 /*! \file       frontend.h
     \brief      Frontend header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 13:24:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: frontend.h,v 1.27 2011/11/09 00:40:30 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the entire frontend system.
     See \ref frontend for more information. */
 
@@ -90,16 +87,6 @@
 
     /* Typedefs */
     //! Current state of the frontend
-    /*! This structure represent the current state of the frontend.
-        \param  mode                an unsigned char
-        \param  cartridge[Ca]       a CARTRIDGE
-        \param  powerDistribution   a POWER_DISTRIBUTION
-        \param  ifSwitch            a IF_SWITCH
-        \param  cryostat            a CRYOSTAT
-        \param  lpr                 a LPR
-        \param  fetim               a FETIM
-        \warning    Modules will be added/changed when more informations about
-                    them are available. */
     typedef struct {
         //! Frontend current state
         /*! The receiver can be in one of the following modes:
@@ -116,7 +103,11 @@
                                                mode. In this mode only operation
                                                allowed by special CAN addressed
                                                are allowed. */
-        unsigned char       mode[OPERATION_ARRAY_SIZE];
+        unsigned char       mode;
+
+        /*! Ethernet IP address */
+        unsigned char ipaddress[4];
+
         //! Cartridge current state
         /*! Cartridges \p Ca are assigned according to the following:
                 - Ca = 0: Band 01
@@ -130,19 +121,19 @@
                 - Ca = 8: Band 09
                 - Ca = 9: Band 10
 
-            Please see \ref CARTRIDGE for more informations. */
+            Please see \ref CARTRIDGE for more information. */
         CARTRIDGE           cartridge[CARTRIDGES_NUMBER];
         //! Power distibution system current state
-        /*! Please see \ref POWER_DISTRIBUTION for more informations. */
+        /*! Please see \ref POWER_DISTRIBUTION for more information. */
         POWER_DISTRIBUTION  powerDistribution;
         //! IF switch current state
-        /*! Please see \ref IF_SWITCH for more informations. */
+        /*! Please see \ref IF_SWITCH for more information. */
         IF_SWITCH           ifSwitch;
         //! Cryostat system current state
-        /*! Please see \ref CRYOSTAT for more informations. */
+        /*! Please see \ref CRYOSTAT for more information. */
         CRYOSTAT            cryostat;
         //! LPR current state
-        /*! Please see \ref LPR for more informations. */
+        /*! Please see \ref LPR for more information. */
         LPR                 lpr;
         //! FETIM current state
         /*! Please see \ref FETIM for more information. */
@@ -157,5 +148,9 @@
     /* Externs */
     extern int frontendInit(void); //!< This function initializes the frontend
     extern int frontendStop(void); //!< This function stops the frontend
+    extern int frontendInitIPAddress(void);  //!< Initialize the ipaddress from SOCKETS
+    extern int frontendWriteNVMemory(void);  //!< Implement SET_WRITE_NV_MEMORY
+    extern int feAndCartridgesConfigurationReport(void);  //!< Print FE and cartridges configuration report
+    extern int loPaLimitsTablesReport(void);        //!< Print LO PA_LIMITS tables report
 
 #endif // _FRONTEND_H

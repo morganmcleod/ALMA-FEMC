@@ -2,13 +2,10 @@
     \ingroup    sideband
     \brief      SIS magnetic coils header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 13:58:00 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: sisMagnet.h,v 1.16 2006/11/30 23:01:43 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the SIS magnetic coils used to kill the
     zero voltage Josephson currents in the SIS junctions. */
 
@@ -56,16 +53,13 @@
                                 message for the current. */
     typedef struct {
         //! SIS magnet availability
-        /*! This variable indicates if this sideband is outfitted with this
-            particular SIS magnet. This value should be part of the device
-            dependent informations retrived from the configuration database. */
         unsigned char   available;
         //! SIS magnetic coil voltage
         /*! This is the voltage (in mV) across the magnetic coils. */
-        float   voltage[OPERATION_ARRAY_SIZE];
+        float   voltage;
         //! SIS magnetic coil current
         /*! This is the current (in mA) across the magnetic coils. */
-        float   current[OPERATION_ARRAY_SIZE];
+        float   current;
         //! Last control message: SIS magnetic coil current
         /*! This is the content of the last control message sent to the SIS
             magnetic coil current. */

@@ -1,13 +1,10 @@
 /*! \file   vacuumSensor.c
     \brief  Cryostat vacuum sensors functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2007/04/06 14:41:08 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: vacuumSensor.c,v 1.11 2009/10/13 15:01:49 avaccari Exp $
-
-    This files contains all the functions necessary to handle cryostat
+    This file contains all the functions necessary to handle cryostat
     vacuum sensors events. */
 
 /* Includes */
@@ -17,7 +14,6 @@
 #include "frontend.h"
 #include "globalDefinitions.h"
 #include "error.h"
-#include "database.h"
 #include "cryostatSerialInterface.h"
 #include "can.h"
 #include "async.h"
@@ -82,7 +78,7 @@ static void pressureHandler(void){
                    cryostat.
                     vacuumController.
                      vacuumSensor[currentVacuumControllerModule].
-                      pressure[CURRENT_VALUE];
+                      pressure;
         /* If the error was a conversion error, store the status in the CAN
            message. */
         if(CONV_FLOAT==CRYOSTAT_PRESS_CONV_ERR){
@@ -95,7 +91,7 @@ static void pressureHandler(void){
                    cryostat.
                     vacuumController.
                      vacuumSensor[currentVacuumControllerModule].
-                      pressure[CURRENT_VALUE];
+                      pressure;
     }
     /* If the async monitoring is disabled, notify the monitored message */
     if(asyncState==ASYNC_OFF){

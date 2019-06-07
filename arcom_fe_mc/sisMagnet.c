@@ -1,13 +1,10 @@
 /*! \file   sisMagnet.c
     \brief  SIS magnet functions
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 16:24:39 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: sisMagnet.c,v 1.17 2009/08/25 21:39:39 avaccari Exp $
-
-    This files contains all the functions necessary to handle SIS magnet
+    This file contains all the functions necessary to handle SIS magnet
     events. */
 
 /* Includes */
@@ -18,7 +15,6 @@
 #include "error.h"
 #include "biasSerialInterface.h"
 #include "debug.h"
-#include "database.h"
 
 /* Globals */
 /* Externs */
@@ -36,19 +32,14 @@ void sisMagnetHandler(void){
         printf("      SIS magnet\n");
     #endif /* DEBUG */
 
-    #ifdef DATABASE_HARDW
-        /* Check if the selected sideband is outfitted with the desired SIS magnet */
-        if(frontend.
-            cartridge[currentModule].
-             polarization[currentBiasModule].
-              sideband[currentPolarizationModule].
-               sisMagnet.
-                available==UNAVAILABLE){
-            storeError(ERR_SIS_MAGNET, ERC_MODULE_ABSENT); //SIS magnet not installed
-            CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
-            return;
-        }
-    #endif /* DATABASE_HARDW */
+    /* Check if the selected sideband is outfitted with the desired SIS magnet */
+    if(frontend.cartridge[currentModule].polarization[currentBiasModule].
+           sideband[currentPolarizationModule].sisMagnet.available == UNAVAILABLE)
+    {
+        storeError(ERR_SIS_MAGNET, ERC_MODULE_ABSENT); //SIS magnet not installed
+        CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
+        return;
+    }
 
     /* Check if the submodule is in range */
     currentSisMagnetModule=(CAN_ADDRESS&SIS_MAGNET_MODULES_RCA_MASK)>>SIS_MAGNET_MODULES_MASK_SHIFT;
@@ -100,7 +91,7 @@ static void voltageHandler(void){
                     polarization[currentBiasModule].
                      sideband[currentPolarizationModule].
                       sisMagnet.
-                       voltage[CURRENT_VALUE];
+                       voltage;
     } else {
         /* If no error during monitor process, gather the stored data */
         CONV_FLOAT=frontend.
@@ -108,7 +99,7 @@ static void voltageHandler(void){
                     polarization[currentBiasModule].
                      sideband[currentPolarizationModule].
                       sisMagnet.
-                       voltage[CURRENT_VALUE];
+                       voltage;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -204,7 +195,7 @@ static void currentHandler(void){
                     polarization[currentBiasModule].
                      sideband[currentPolarizationModule].
                       sisMagnet.
-                       current[CURRENT_VALUE];
+                       current;
     } else {
         /* if no error during the monitor process gather the stored data */
         CONV_FLOAT=frontend.
@@ -212,7 +203,7 @@ static void currentHandler(void){
                     polarization[currentBiasModule].
                      sideband[currentPolarizationModule].
                       sisMagnet.
-                       current[CURRENT_VALUE];
+                       current;
     }
     /* Load the CAN message payload with the returned value and set the
        size. The value has to be converted from little endian (Intel) to
@@ -227,19 +218,13 @@ static void currentHandler(void){
 void sisMagnetGoStandby2() {
     int ret;
 
-    #ifdef DATABASE_HARDW
-        /* Check if the selected sideband is outfitted with the desired SIS */
-        if(frontend.
-            cartridge[currentModule].
-             polarization[currentBiasModule].
-              sideband[currentPolarizationModule].
-               sisMagnet.
-                available == UNAVAILABLE) {
-
-            // nothing to do:
-            return;
-        }
-    #endif /* DATABASE_HARDW */
+    /* Check if the selected sideband is outfitted with the desired SIS */
+    if(frontend.cartridge[currentModule].polarization[currentBiasModule].
+           sideband[currentPolarizationModule].sisMagnet.available == UNAVAILABLE) 
+    {
+        // nothing to do:
+        return;
+    }
 
     #ifdef DEBUG_GO_STANDBY2
         printf(" - sisMagnetGoStandby2 pol=%d sb=%d\n", currentBiasModule, currentPolarizationModule);

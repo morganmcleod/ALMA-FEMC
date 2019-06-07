@@ -2,13 +2,10 @@
     \ingroup    serialInterface
     \brief      FETIM serial interface header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2011/05/04 10:38:01 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: fetimSerialInterface.h,v 1.3 2013/07/12 20:16:35 mmcleod Exp $
-
-    This file contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the FETIM serial interface. */
 
 /*! \defgroup   fetimSerialInterface  FETIM serial interface
@@ -16,7 +13,7 @@
     \brief      FETIM serial interface
     \note       The \ref fetimSerialInterface module doesn't include any submodule.
 
-    For more informations on this module see \ref fetimSerialInterface.h */
+    For more information on this module see \ref fetimSerialInterface.h */
 
 #ifndef _FETIMSERIALINTERFACE_H
     #define _FETIMSERIALINTERFACE_H

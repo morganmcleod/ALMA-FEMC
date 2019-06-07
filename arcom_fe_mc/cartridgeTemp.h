@@ -2,13 +2,10 @@
     \ingroup    cartridge
     \brief      Cartridge temperature sensor header file
 
-    <b> File informations: </b><br>
+    <b> File information: </b><br>
     Created: 2004/08/24 13:24:53 by avaccari
 
-    <b> CVS informations: </b><br>
-    \$Id: cartridgeTemp.h,v 1.17 2007/06/01 20:55:10 avaccari Exp $
-
-    This files contains all the informations necessary to define the
+    This file contains all the information necessary to define the
     characteristics and operate the cartridge temperature sensor . */
 
 /*! \defgroup   cartridgeTemp   Cartridge temperature sensor
@@ -46,37 +43,25 @@
     #define S2          SENSOR2
 
     /* Submodules definitions */
-    #define CARTRIDGE_TEMP_MODULES_NUMBER       1   // It's just the temperature
-
-
+    #define CARTRIDGE_TEMP_MODULES_NUMBER       2       // See list below
+    #define CARTRIDGE_TEMP_MODULES_RCA_MASK     0x0008  /* Mask to extract the submodule number:
+                                                           0 -> Sensor temperature
+                                                           1 -> Sensor offset */
+    #define CARTRIDGE_TEMP_MODULES_MASK_SHIFT   3       // Bits right shift of the submodule mask
 
     /* Typedefs */
     //! Current state of the cartridge temperature sensor
-    /*! This structure represent the current state of the cartridge temperature sensor.
-        \ingroup    cartridge
-        \param      available   This indicates the availability of the sensor:
-                                    - 0 -> Unavailable
-                                    - 1 -> Available
-        \param      temp[Op]    This contains the most recent read-back value
-                                for the temperature
-        \param      offset      This contains the offset value to be applied to
-                                the readback from the sensor */
     typedef struct {
-        //! Cartridge temperature sensor availability
-        /*! This variable indicates if the cartridge is outfitted with this
-            particular temperature sensor. This value should be part of the
-            device dependent informations retrived from the configuration
-            database. */
-        unsigned char           available;
         //! Cartridge temperature sensor temperature
         /*! This is the temperature (in K) of the cartridge temperature
             sensor. */
-        float                   temp[OPERATION_ARRAY_SIZE];
+        float                   temp;
         //! Cartridge temperature sensor offset
         /*! This is the offset (in K) respect to the standard calibration
             curve which is applied to all the sensors in the cartrdige. */
         float                   offset;
         //! Last control message: set offset
+        LAST_CONTROL_MESSAGE    lastOffset;
     } CARTRIDGE_TEMP;
 
 
@@ -93,6 +78,7 @@
 
     /* Prototypes */
     /* Statics */
+    static void tempOffsetHandler(void); //!< This function deals with the incoming can message
     static void tempHandler(void);
     /* Externs */
     extern void cartridgeTempHandler(void); //!< This function deals with the incoming can message
