@@ -20,7 +20,7 @@
 
     REVISION HISTORY
 
-    2.9.x
+    2020-02-20 3.0.0
         Delete remaining DATABASE_RANGE code
         Undefine CHECK_HW_AVAIL: No longer reading availability and other things which don't change from INI files.
         Delete all DATABASE_HW code; delete database.h; Delete 'available' for pol, sb, cartridgeTemp, lna, lnaStage, lnaLed
@@ -385,12 +385,12 @@
     #define _VERSION_H
 
     /* Defines */
-    #define VERSION_MAJOR   2  //!< Major version
-    #define VERSION_MINOR   9  //!< Minor version
+    #define VERSION_MAJOR   3  //!< Major version
+    #define VERSION_MINOR   0  //!< Minor version
     #define VERSION_PATCH   0  //!< Patch level
 
-    #define VERSION_DATE    "2019-11-22" //!< Version Date
-    #define VERSION_NOTES   "Development version 2.9.x"  //!<Version Notes
+    #define VERSION_DATE    "2020-02-28" //!< Version Date
+    #define VERSION_NOTES   "FEMC 3.0.0 released for antenna testing"  //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"
