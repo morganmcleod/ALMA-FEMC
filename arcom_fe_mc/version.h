@@ -20,6 +20,10 @@
 
     REVISION HISTORY
 
+    2020-10-07 3.5.0
+        Adds set/get specific cryostat TVO sensor coefficients.
+        Fix printing band numbers to console
+
     2020-02-20 3.0.0
         Delete remaining DATABASE_RANGE code
         Undefine CHECK_HW_AVAIL: No longer reading availability and other things which don't change from INI files.
@@ -32,7 +36,7 @@
         Suppress errors about redirect stderr on startup; reassigned IRQ.  
         Delete OWB simulator and stored list.     
         Added console system report.
-        Added ifSwitch: allChannelsHandler, cryostatTemp: coeffHandler, monitor readback LPR EDFA coeff.
+        Added ifSwitch: allChannelsHandler, cryostatTemp: sequentialCoeffHandler, monitor readback LPR EDFA coeff.
         Always allow LO PA drain voltage setting for BAND1 and BAND2.
         Create CRYO_HRS.INI file if it doesn't exist.
 
@@ -386,11 +390,11 @@
 
     /* Defines */
     #define VERSION_MAJOR   3  //!< Major version
-    #define VERSION_MINOR   0  //!< Minor version
+    #define VERSION_MINOR   5  //!< Minor version
     #define VERSION_PATCH   0  //!< Patch level
 
-    #define VERSION_DATE    "2020-02-28" //!< Version Date
-    #define VERSION_NOTES   "FEMC 3.0.0 released for antenna testing"  //!<Version Notes
+    #define VERSION_DATE    "2020-10-07" //!< Version Date
+    #define VERSION_NOTES   "FEMC 3.5.0 Adds set/get specific cryostat TVO sensor coefficients."  //!<Version Notes
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"

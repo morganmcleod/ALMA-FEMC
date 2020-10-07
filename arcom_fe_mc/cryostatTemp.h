@@ -108,9 +108,10 @@
     /* Prototypes */
     /* Statics */
     static void tempHandler(void);
-    static void coeffHandler(void);
+    static void sequentialCoeffHandler(void);
     /* Externs */
     extern void cryostatTempHandler(void); //!< This function deals with the incoming CAN message
+    extern void specificCoeffHandler(unsigned int sensor, unsigned int coeff);
 
 
 #endif /* _CRYOSTATTEMP_H */
