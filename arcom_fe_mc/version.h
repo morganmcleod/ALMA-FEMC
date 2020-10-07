@@ -8,21 +8,11 @@
     This file contains all the information about the current version of the
     software and its revision history.
 
-    The revision numbering system is according to the following rules:
-        - The <em>Patch level</em> is changed when bugs are fixed
-        - The <em>Minor version</em> is changed when features are added
-        - The <em>Major version</em> is changed when major changes are made to
-          the software:
-            - Affected backward compatibility
-            - Changed functionality
-            - Official global new releases
-            - ...
-
     REVISION HISTORY
 
     2020-10-07 3.5.0
         Adds set/get specific cryostat TVO sensor coefficients.
-        Fix printing band numbers to console
+        Fix console PA LIMITS report to display 1-based band numbers.
 
     2020-02-20 3.0.0
         Delete remaining DATABASE_RANGE code
@@ -395,6 +385,7 @@
 
     #define VERSION_DATE    "2020-10-07" //!< Version Date
     #define VERSION_NOTES   "FEMC 3.5.0 Adds set/get specific cryostat TVO sensor coefficients."  //!<Version Notes
+
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"

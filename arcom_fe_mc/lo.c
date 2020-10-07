@@ -615,7 +615,7 @@ int printPaLimitsTable(unsigned char band) {
     int i;
     char *str;
     
-    printf("Band %d: ENTRIES=%d alloc=%d ESN=", band,
+    printf("Band %d: ENTRIES=%d alloc=%d ESN=", band + 1,
             frontend.cartridge[band].lo.maxSafeLoPaTableSize,
             frontend.cartridge[band].lo.allocatedLoPaTableSize);
     

@@ -51,8 +51,8 @@ void ifSwitchHandler(void){
        check is performed. */
 
     /* Check if the submodule is in range */
-    currentIfSwitchModule=(CAN_ADDRESS&IF_SWITCH_MODULES_RCA_MASK)>>IF_SWITCH_MODULES_MASK_SHIFT;
-    if(currentIfSwitchModule>=IF_SWITCH_MODULES_NUMBER){
+    currentIfSwitchModule=(CAN_ADDRESS & IF_SWITCH_MODULES_RCA_MASK) >> IF_SWITCH_MODULES_MASK_SHIFT;
+    if(currentIfSwitchModule >= IF_SWITCH_MODULES_NUMBER){
         storeError(ERR_IF_SWITCH, ERC_MODULE_RANGE); //IF Switch submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
         return;
