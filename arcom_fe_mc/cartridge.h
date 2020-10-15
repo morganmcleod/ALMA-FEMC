@@ -57,11 +57,6 @@
     #define SIS_HEATER_AVAIL_KEY        "AVAILABLE"                             // Key containing the SIS heater availability info
     #define SIS_HEATER_AVAIL_EXPECTED   1                                       // Expected keys in the section containing the SIS heater availability info
 
-    #define SCHOTTKY_BASE(Po)       buildString(POL_BASE,Po,"_SCHOTTKY")    // Base for Schottky mixer heater section name
-    #define SCHOTTKY_AVAIL_SECT(Po) SCHOTTKY_BASE(Po)                       // Section containing the Schottky mixer availability info
-    #define SCHOTTKY_AVAIL_KEY      "AVAILABLE"                             // Key containing the Schottky mixer availability info
-    #define SCHOTTKY_AVAIL_EXPECTED 1                                       // Expected keys in the section containing the Schottky mixer availability info
-
     #define SB_BASE(Po)             buildString(POL_BASE,Po,"_S")       // Base for sideband section name
     #define SB_AVAIL_SECT(Po,Sb)    buildString(SB_BASE(Po),Sb,NULL)    // Section containing the sideband availability info
     #define SB_AVAIL_KEY            "AVAILABLE"                         // Key containing the sideband availability info

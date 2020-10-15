@@ -97,16 +97,17 @@ void cryostatHandler(void){
     // get the cryostat submodule bits:
     currentCryostatModule = (CAN_ADDRESS & CRYOSTAT_MODULES_RCA_MASK) >> CRYOSTAT_MODULES_MASK_SHIFT;
 
-    if (currentCryostatModule < CRYOSTAT_MODULES_UNNASIGNED_RANGE_START)
+    if (currentCryostatModule < CRYOSTAT_MODULES_UNNASIGNED_RANGE_START) {
         // call the cryostat subsystem handler:
         (cryostatModulesHandler[currentCryostatModule])();
+        return;
 
-    else if (currentCryostatModule < CRYOSTAT_MODULES_NUMBER &&
-             currentCryostatModule >= CRYOSTAT_MODULES_TVO_RANGE_START)
+    } else if (currentCryostatModule >= CRYOSTAT_MODULES_TVO_RANGE_START
+             && currentCryostatModule < CRYOSTAT_MODULES_NUMBER)
     {
-        // call specific TVO coeffs handler:
-        specificCoeffHandler(currentCryostatModule & CRYOSTAT_TVO_SENSOR_MASK,
-                             currentCryostatModule & CRYOSTAT_TVO_COEFF_MASK);
+        // get the sensor and coeff from the un-shifted RCA and call specific TVO coeffs handler:
+        specificCoeffHandler((CAN_ADDRESS & CRYOSTAT_TVO_SENSOR_MASK) >> CRYOSTAT_TVO_SENSOR_MASK_SHIFT,
+                             CAN_ADDRESS & CRYOSTAT_TVO_COEFF_MASK);
         return;
     }
     // NOTE: not checking CRYOSTAT_MODULES_TVO_RANGE_END because the check of CRYOSTAT_MODULES_NUMBER covers that.

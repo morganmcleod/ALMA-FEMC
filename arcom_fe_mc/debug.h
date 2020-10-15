@@ -14,7 +14,7 @@
     #define _DEBUG_H
 
     /* Defines */
-    // #define DEVELOPMENT         // Uncomment this when developping the software
+    //#define DEVELOPMENT         // Uncomment this when developing the software
 
     /* If we are developing the software */
     #ifdef DEVELOPMENT
@@ -23,7 +23,7 @@
 
         // #define DEBUG_CAN                   // Turn on CAN interface debug
         // #define DEBUG_CAN_FAST              // Uncomment this line to enable the minimalistic CAN message debug in fast version
-        #define DEBUG_PA_LIMITS
+        // #define DEBUG_PA_LIMITS
 
         // #define DEBUG_SERIAL_READ           // Turn on Serial interface read debug
         // #define DEBUG_SERIAL_WRITE          // Turn on Serial interface write debug
@@ -33,7 +33,7 @@
 
         // #define DEBUG_POWERDIS              // Turn on Power Distribution debug
         // #define DEBUG_IFSWITCH              // Turn on IF Switch debug
-        // #define DEBUG_CRYOSTAT              // Turn on Cryostat debug
+        #define DEBUG_CRYOSTAT              // Turn on Cryostat debug
         #define NO_STOREERROR_CRYOSTAT      // Master switch for cryostat storeError calls.  For debugging with no cryostat
         // #define DEBUG_LPR                   // Turn on LPR debug
         // #define DEBUG_FETIM                 // Turn on FETIM debug

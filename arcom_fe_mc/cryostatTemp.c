@@ -191,31 +191,22 @@ void specificCoeffHandler(unsigned int sensor, unsigned int coeff) {
 // This implements GET_CRYOSTAT_TEMP[Se]_TVO_COEFF[Co] and SET_CRYOSTAT_TEMP[Se]_TVO_COEFF[Co
 // which set/get specific coefficients encoded in the RCA are therefore stateless.
     #ifdef DEBUG_CRYOSTAT
-        printf("   Temperature TVO specific coeff\n");
+        printf("   Temperature TVO %d specific coeff A%d\n", sensor, coeff);
     #endif /* DEBUG_CRYOSTAT */
     
+    /* Range-check sensor and coeff */
+    if (sensor >= TVO_SENSORS_NUMBER || coeff >= TVO_COEFFS_NUMBER) {
+        storeError(ERR_CRYOSTAT_TEMP, ERC_COMMAND_VAL);
+
+        /* Store the error in the last control message variable */
+        frontend.cryostat.cryostatTemp[currentCryostatModule].lastCommand.status = CON_ERROR_RNG;
+        return;
+    }
+
     /* If control (size !=0) */
     if (CAN_SIZE) {
         // save the incoming message:
         SAVE_LAST_CONTROL_MESSAGE(frontend.cryostat.cryostatTemp[sensor].lastCommand)
-
-        /* Range-check sensor */
-        if (sensor >= TVO_SENSORS_NUMBER) {
-            storeError(ERR_CRYOSTAT_TEMP, ERC_COMMAND_VAL);
-
-            /* Store the error in the last control message variable */
-            frontend.cryostat.cryostatTemp[currentCryostatModule].lastCommand.status = CON_ERROR_RNG;
-            return;
-        }
-
-        /* Range-check coeff */
-        if (coeff >= TVO_COEFFS_NUMBER) {
-            storeError(ERR_CRYOSTAT_TEMP, ERC_COMMAND_VAL);
-
-            /* Store the error in the last control message variable */
-            frontend.cryostat.cryostatTemp[currentCryostatModule].lastCommand.status = CON_ERROR_RNG;
-            return;
-        }
 
         /* Extract the float from the can message. */
         changeEndian(CONV_CHR_ADD, CAN_DATA_ADD);

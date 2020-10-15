@@ -568,5 +568,5 @@ uumController.obj,vacuumSensor.obj,version.obj,yto.obj
 q op symf op el @fe_mc.lk1
  copy fe_mc.exe releases\3-5-0.exe /y
  copy fe_mc.exe releases\fe_mc.exe /y
- #ftp -n -s:updateFemc.scr
+ 
 

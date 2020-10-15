@@ -10,7 +10,7 @@
 
     REVISION HISTORY
 
-    2020-10-07 3.5.0
+    2020-10-15 3.5.0
         Adds set/get specific cryostat TVO sensor coefficients.
         Fix console PA LIMITS report to display 1-based band numbers.
 
@@ -379,14 +379,14 @@
     #define _VERSION_H
 
     /* Defines */
-    #define VERSION_MAJOR   3  //!< Major version
-    #define VERSION_MINOR   5  //!< Minor version
-    #define VERSION_PATCH   0  //!< Patch level
+    #define VERSION_MAJOR   3
+    #define VERSION_MINOR   5
+    #define VERSION_PATCH   0
 
-    #define VERSION_DATE    "2020-10-07" //!< Version Date
-    #define VERSION_NOTES   "FEMC 3.5.0 Adds set/get specific cryostat TVO sensor coefficients."  //!<Version Notes
+    #define VERSION_DATE    "2020-10-15"
+    #define VERSION_NOTES   "FEMC 3.5.0 Adds set/get specific cryostat TVO sensor coefficients."
 
-    #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
+    #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM"
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"
 
