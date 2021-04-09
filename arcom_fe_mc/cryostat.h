@@ -83,8 +83,8 @@
     #define TVO_NO_EXPECTED             1           // Expected keys containing the TVO sensor number
 
     /* Submodule definitions */
-    #define CRYOSTAT_MODULES_NUMBER     20      // See list below
-    #define CRYOSTAT_MODULES_RCA_MASK   0x0007C /* Mask to extract the submodule number:
+    #define CRYOSTAT_MODULES_NUMBER     0xA0    // See list below
+    #define CRYOSTAT_MODULES_RCA_MASK   0x000FC /* Mask to extract the submodule number:
                                                    0-12 -> cryostatTemp
                                                    13   -> backingPump
                                                    14   -> turboPump
@@ -92,11 +92,23 @@
                                                    16   -> solenoidValve
                                                    17   -> vacuumController
                                                    18   -> supplyCurrent230V
-                                                   19   -> coldHeadHours */
-    #define CRYOSTAT_MODULES_MASK_SHIFT 2       // Bits right shift for the submodules mask
+                                                   19   -> coldHeadHours
+                                                   20..31 unassigned
+                                                   32..63 (0x20..0x3F) -> cryostatTVOSpecificCoeffs */
+    #define CRYOSTAT_MODULES_MASK_SHIFT 2        // Bits right shift for the submodules mask
 
-    #define CRYOSTAT_TEMP_RANGE_LOW   0.0       // cryostat sensor readings are considered valid if they
-    #define CRYOSTAT_TEMP_RANGE_HIGH  350.0     //   are within this range of real-world temperatures.
+
+    #define CRYOSTAT_MODULES_UNNASIGNED_RANGE_START 20    // start of unassigned range 20..30
+    #define CRYOSTAT_MODULES_TVO_RANGE_START        0x20  // Start of range for specific TVO coeffs
+    #define CRYOSTAT_MODULES_TVO_RANGE_END          0x3F  // End of range for specific TVO coeffs
+
+    #define CRYOSTAT_MODULES_TVO_MASK            0x0007F  // Mask to extract TVO sensor and coefficient from .
+    #define CRYOSTAT_TVO_SENSOR_MASK                0x78  // Mask to extract TVO sensor number from un-shifted RCA
+    #define CRYOSTAT_TVO_SENSOR_MASK_SHIFT          3     // Bits to shift right after masking TVO sensor number
+    #define CRYOSTAT_TVO_COEFF_MASK                 0x07  // Mask to extract coeff number from un-shifted RCA
+
+    #define CRYOSTAT_TEMP_RANGE_LOW   0.0         // cryostat sensor readings are considered valid if they
+    #define CRYOSTAT_TEMP_RANGE_HIGH  350.0       //   are within this range of real-world temperatures.
 
     #define CRYOSTAT_TEMP_SANITY_CHECK(T) \
         ((T != FLOAT_ERROR) && (T != FLOAT_UNINIT) && \

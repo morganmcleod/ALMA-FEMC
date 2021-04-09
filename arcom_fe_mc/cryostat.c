@@ -94,19 +94,29 @@ void cryostatHandler(void){
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
         return;
     }
+    // get the cryostat submodule bits:
+    currentCryostatModule = (CAN_ADDRESS & CRYOSTAT_MODULES_RCA_MASK) >> CRYOSTAT_MODULES_MASK_SHIFT;
 
-    /* Check if the submodule is in range */
-    currentCryostatModule=(CAN_ADDRESS&CRYOSTAT_MODULES_RCA_MASK)>>CRYOSTAT_MODULES_MASK_SHIFT;
-    if(currentCryostatModule>=CRYOSTAT_MODULES_NUMBER){
-        storeError(ERR_CRYOSTAT, ERC_MODULE_RANGE); //Cryostat submodule out of range
+    if (currentCryostatModule < CRYOSTAT_MODULES_UNNASIGNED_RANGE_START) {
+        // call the cryostat subsystem handler:
+        (cryostatModulesHandler[currentCryostatModule])();
+        return;
 
-        CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
-
+    } else if (currentCryostatModule >= CRYOSTAT_MODULES_TVO_RANGE_START
+             && currentCryostatModule < CRYOSTAT_MODULES_NUMBER)
+    {
+        // get the sensor and coeff from the un-shifted RCA and call specific TVO coeffs handler:
+        specificCoeffHandler((CAN_ADDRESS & CRYOSTAT_TVO_SENSOR_MASK) >> CRYOSTAT_TVO_SENSOR_MASK_SHIFT,
+                             CAN_ADDRESS & CRYOSTAT_TVO_COEFF_MASK);
         return;
     }
+    // NOTE: not checking CRYOSTAT_MODULES_TVO_RANGE_END because the check of CRYOSTAT_MODULES_NUMBER covers that.
+    //  If more RCAs were added above the specific TVO coeffs then this would need to be reworked.
 
-    /* Call the correct handler */
-    (cryostatModulesHandler[currentCryostatModule])();
+    // RCA is out of range:
+    storeError(ERR_CRYOSTAT, ERC_MODULE_RANGE);
+    CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
+    return;
 }
 
 /* Cryostat initialization */

@@ -8,17 +8,11 @@
     This file contains all the information about the current version of the
     software and its revision history.
 
-    The revision numbering system is according to the following rules:
-        - The <em>Patch level</em> is changed when bugs are fixed
-        - The <em>Minor version</em> is changed when features are added
-        - The <em>Major version</em> is changed when major changes are made to
-          the software:
-            - Affected backward compatibility
-            - Changed functionality
-            - Official global new releases
-            - ...
-
     REVISION HISTORY
+
+    2020-10-15 3.5.0
+        Adds set/get specific cryostat TVO sensor coefficients.
+        Fix console PA LIMITS report to display 1-based band numbers.
 
     2020-02-20 3.0.0
         Delete remaining DATABASE_RANGE code
@@ -32,7 +26,7 @@
         Suppress errors about redirect stderr on startup; reassigned IRQ.  
         Delete OWB simulator and stored list.     
         Added console system report.
-        Added ifSwitch: allChannelsHandler, cryostatTemp: coeffHandler, monitor readback LPR EDFA coeff.
+        Added ifSwitch: allChannelsHandler, cryostatTemp: sequentialCoeffHandler, monitor readback LPR EDFA coeff.
         Always allow LO PA drain voltage setting for BAND1 and BAND2.
         Create CRYO_HRS.INI file if it doesn't exist.
 
@@ -385,13 +379,14 @@
     #define _VERSION_H
 
     /* Defines */
-    #define VERSION_MAJOR   3  //!< Major version
-    #define VERSION_MINOR   0  //!< Minor version
-    #define VERSION_PATCH   0  //!< Patch level
+    #define VERSION_MAJOR   3
+    #define VERSION_MINOR   5
+    #define VERSION_PATCH   0
 
-    #define VERSION_DATE    "2020-02-28" //!< Version Date
-    #define VERSION_NOTES   "FEMC 3.0.0 released for antenna testing"  //!<Version Notes
-    #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM" //! Product Tree number
+    #define VERSION_DATE    "2020-10-15"
+    #define VERSION_NOTES   "FEMC 3.5.0 Adds set/get specific cryostat TVO sensor coefficients."
+
+    #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM"
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
     #define BUGZILLA        "jira.alma.cl"
 
