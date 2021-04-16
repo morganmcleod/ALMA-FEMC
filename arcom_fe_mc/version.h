@@ -10,6 +10,9 @@
 
     REVISION HISTORY
 
+    2021-04-16 3.5.1
+        SIS Sense resistor for band 5 -> 5.1
+
     2020-10-15 3.5.0
         Adds set/get specific cryostat TVO sensor coefficients.
         Fix console PA LIMITS report to display 1-based band numbers.
@@ -381,10 +384,10 @@
     /* Defines */
     #define VERSION_MAJOR   3
     #define VERSION_MINOR   5
-    #define VERSION_PATCH   0
+    #define VERSION_PATCH   1
 
     #define VERSION_DATE    "2020-10-15"
-    #define VERSION_NOTES   "FEMC 3.5.0 Adds set/get specific cryostat TVO sensor coefficients."
+    #define VERSION_NOTES   "FEMC 3.5.1 Correct band 5 SIS sense resistor."
 
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM"
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"

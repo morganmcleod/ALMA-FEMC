@@ -255,7 +255,7 @@ int cartridgeStartup(void){
                 resistor = 5.0;
                 break;
             case 5:
-                resistor = 10.0;
+                resistor = 5.1;
                 break;
             case 6:
                 resistor = 5.0;
