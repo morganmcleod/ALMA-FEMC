@@ -386,7 +386,7 @@
     #define VERSION_MINOR   5
     #define VERSION_PATCH   1
 
-    #define VERSION_DATE    "2020-10-15"
+    #define VERSION_DATE    "2021-04-16"
     #define VERSION_NOTES   "FEMC 3.5.1 Correct band 5 SIS sense resistor."
 
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM"
