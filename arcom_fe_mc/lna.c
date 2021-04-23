@@ -83,12 +83,18 @@ static void enableHandler(void){
 
         /* Change the status of the LNA according to the content of the CAN
            message. */
-        if(setLnaBiasEnable(CAN_BYTE?LNA_BIAS_ENABLE:
-                                     LNA_BIAS_DISABLE)==ERROR){
+        if (setLnaBiasEnable(CAN_BYTE ? LNA_BIAS_ENABLE : LNA_BIAS_DISABLE) == ERROR) {
             /* Store the ERROR state in the last control message variable */
             frontend.cartridge[currentModule].polarization[currentBiasModule].
                 sideband[currentPolarizationModule].lna.lastEnable.status=ERROR;
             return;
+        }
+
+        /* If this is band 1 or 2, and if this is SB1, also set SB2:    */
+        if ((currentModule == BAND1 || currentModule == BAND2) && currentPolarizationModule == SIDEBAND0) {
+            currentPolarizationModule = SIDEBAND1;
+            setLnaBiasEnable(CAN_BYTE ? LNA_BIAS_ENABLE : LNA_BIAS_DISABLE);
+            currentPolarizationModule = SIDEBAND0;
         }
 
         /* If everything went fine, it's a control message, we're done. */

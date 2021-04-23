@@ -10,6 +10,9 @@
 
     REVISION HISTORY
 
+    2021-04-23 3.5.2
+        In SET_CARTRIDGE[Ca]_POL[Po]_SB[Sb]_LNA_ENABLE, if Ca=Band1 or Band2 and Sb = 1, also set Sb2.
+
     2021-04-16 3.5.1
         SIS Sense resistor for band 5 -> 5.1
 
@@ -384,10 +387,10 @@
     /* Defines */
     #define VERSION_MAJOR   3
     #define VERSION_MINOR   5
-    #define VERSION_PATCH   1
+    #define VERSION_PATCH   2
 
-    #define VERSION_DATE    "2021-04-16"
-    #define VERSION_NOTES   "FEMC 3.5.1 Correct band 5 SIS sense resistor."
+    #define VERSION_DATE    "2021-04-23"
+    #define VERSION_NOTES   "FEMC 3.5.2 Correct band 5 SIS sense resistor; Enable/disable B1 B2 Sb2 LNA stages with Sb1."
 
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM"
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
