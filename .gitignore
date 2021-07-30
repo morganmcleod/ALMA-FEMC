@@ -8,3 +8,5 @@ session.log
 SocketsSDK/
 *.pyc
 *.sublime-*
+*log.txt
+*log.xlsx

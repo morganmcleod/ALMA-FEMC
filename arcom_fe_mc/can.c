@@ -9,6 +9,7 @@
 
 /* Includes */
 #include <conio.h>      /* inpw */
+#include <stdlib.h>     /* system */
 #include <string.h>     /* memcpy */
 #include <stdio.h>      /* printf */
 
@@ -221,6 +222,8 @@ static void specialRCAsHandler(void){
 
     /* A static to take care of the ESNs monitoring */
     static unsigned char device=0;
+    /* Return code from stdlib calls: */
+    static int ret;
 
     #ifdef DEBUG_CAN
         printf("Special message:\n");
@@ -229,7 +232,7 @@ static void specialRCAsHandler(void){
     /* Set the status to the default */
     CAN_STATUS=NO_ERROR;
 
-    if (CAN_SIZE == CAN_MONITOR) { // If size = 0 -> message = monitor, everyting else -> message = control
+    if (CAN_SIZE == CAN_MONITOR) { // If size = 0 -> message = monitor, everything else -> message = control
         #ifdef DEBUG_CAN
             printf(" Monitor\n");
         #endif /* DEBUG_CAN */
@@ -571,16 +574,28 @@ static void specialRCAsHandler(void){
                     printf("  0x%lX->SET_FE_MODE\n\n",
                            SET_FE_MODE);
                 #endif // DEBUG_CAN
-                switch(CAN_BYTE){
-                    case OPERATIONAL_MODE:
-                    case TROUBLESHOOTING_MODE:
-                    case MAINTENANCE_MODE:
-                        frontend.
-                         mode=CAN_BYTE;
-                        break;
-                    default:
-                        storeError(ERR_CAN, ERC_COMMAND_VAL); // Illegal Front End Mode
-                        break;
+                if (CAN_BYTE == MAINTENANCE_MODE) {
+                    if (frontend.mode != MAINTENANCE_MODE) {
+                        // entering maintenance mode, start the ftp service:
+                        ret = system("ftpd.exe /r\n");
+                        #ifdef DEBUG_CAN
+                            printf("system() returned %d\n", ret);
+                        #endif // DEBUG_CAN
+                    }
+                    frontend.mode = MAINTENANCE_MODE;
+
+                } else if (CAN_BYTE == OPERATIONAL_MODE || CAN_BYTE == TROUBLESHOOTING_MODE) {
+                    if (frontend.mode == MAINTENANCE_MODE) {
+                        // leaving maintenance mode, stop the ftp service:
+                        system("ftpd.exe /u\n");
+                        #ifdef DEBUG_CAN
+                            printf("system() returned %d\n", ret);
+                        #endif // DEBUG_CAN
+                    }
+                    frontend.mode = CAN_BYTE;
+
+                } else {
+                    storeError(ERR_CAN, ERC_COMMAND_VAL); // Illegal Front End Mode
                 }
                 break;
             case SET_READ_ESN: // 0x2100F -> Read the ESN available on the OWB
