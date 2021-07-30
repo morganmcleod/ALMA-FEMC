@@ -1,12 +1,6 @@
 /*! \file   globalOperations.c
     \brief  Global operations
-
-    <b> File information: </b><br>
-    Created: 2006/10/24 11:52:13 by avaccari
-
-    This file contains all the functions necessary to handle global frontend
-    operations. */
-
+    Hardware initialization and shutdown. */
 
 /* Includes */
 #include <i86.h>        /* _enable, _disable */
@@ -29,64 +23,48 @@
     \return
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
-int initialization(void){
+int initialization(void) {
     #ifdef DEBUG_STARTUP
         printf("Initializing...\n\n");
     #endif
 
     /* Initialize the error library */
-    if(errorInit()==ERROR){
+    if (errorInit() == ERROR) {
         return ERROR;
     }
 
     /* Initialize the Serial Mux board */
-    if(serialMuxInit()==ERROR){
+    if (serialMuxInit() == ERROR) {
         return ERROR;
     }
 
     /* One wire bus initialization */
     #ifdef OWB
-        if(owbInit()==ERROR){
+        if (owbInit() == ERROR) {
             return ERROR;
         }
 
-        if(owbGetEsn()==ERROR){
+        if (owbGetEsn() == ERROR) {
             return ERROR;
         }
     #endif /* OWB */
 
-    /* Switch to maintenance mode before allowing interrupt. The idea is that at
-       this point the FE will be in a state where it knows about the installed
-       hardware and the data is available for the control software to analyze.
-       While in maintenance mode, all the housekeeping operation should be
-       performed if necessary:
-       - update configuration files
-       - ...
-       The FE will wait for a message to switch to operational mode. (Right now
-       the switch is automatic. But the framework is put in place to allow this
-       control of states during startup). */
-    /* Switch to operational mode */
+    /* Switch to maintenance mode before allowing interrupt. */
     frontend.mode = MAINTENANCE_MODE;
 
     /* Initialize the parallel port communication. This is done after the OWB
        initialization because there is no need for communication between ABMSI1
        and ARCOM before that.
        Up to this point, interrupts have been practically disabled. */
-    if(PPOpen()==ERROR){
+    if (PPOpen() == ERROR) {
         return ERROR;
     }
 
-
     /* At this point we gathered all the information about the ESNs and the
-       communication is fully established with the AMBSI. Now we wait for the
-       user to send a go-ahead command. During this wait, the configuration INI
-       file can be uploaded via ethernet to the ARCOM drive. During the frontend
-       initialization, they will be read. At the end of the initialization, the
-       frontend module switched the mode to operational. */
-
+       communication is fully established with the AMBSI. */
 
     /* Initialize the frontend */
-    if(frontendInit()==ERROR){
+    if (frontendInit() == ERROR) {
         return ERROR;
     }
 
@@ -101,25 +79,19 @@ int initialization(void){
     \return
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
-int shutDown(void){
+int shutDown(void) {
     #ifdef DEBUG_STARTUP
         printf("Shutting down...\n\n");
     #endif
 
     /* Shut down the frontend */
-    if(frontendStop()==ERROR){
-/**************************************************** Do something? ******/
-    }
+    frontendStop();
 
     /* Shut down the parallel port communication */
-    if(PPClose()==ERROR){
-/**************************************************** Do something? ******/
-    }
+    PPClose();
 
     /* Shut down the error handling */
-    if(errorStop()==ERROR){
-/**************************************************** Do something? ******/
-    }
+    errorStop();
 
     #ifdef DEBUG_STARTUP
         printf("Shut down complete! Exiting...\n\n");
