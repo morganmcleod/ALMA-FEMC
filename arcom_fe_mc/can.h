@@ -84,13 +84,13 @@
         available in the firmware. Address 0x00000 is reserved within the
         AMBSI1 to return the ID. */
     #define BASE_MONITOR_RCA    0x00001L
-    #define LAST_MONITOR_RCA    (BASE_MONITOR_RCA+0x0FFFF) // Last possible monitor RCA
+    #define LAST_MONITOR_RCA    (BASE_MONITOR_RCA + 0x0FFFF - 1) // Last possible monitor RCA
     /* Control */
     //! \b 0x10000 -> Base address for the control RCAs
     /*! This is the starting relative CAN address for the control requests
         available in the firmware. */
     #define BASE_CONTROL_RCA    0x10000L
-    #define LAST_CONTROL_RCA    (BASE_CONTROL_RCA+0x0FFFF) // Last possible control RCA
+    #define LAST_CONTROL_RCA    (BASE_CONTROL_RCA + 0x0FFFF) // Last possible control RCA
 
 
     /* Special RCAs */
@@ -210,7 +210,7 @@
         memcpy(&target, &CAN_SIZE, CAN_LAST_CONTROL_MESSAGE_SIZE); \
         target.status = NO_ERROR; }
 
-    //! A macro to return the last control mesage and status.
+    //! A macro to return the last control message and status.
     //!  This pattern is repeated all over the code!
     #define RETURN_LAST_CONTROL_MESSAGE(source) { \
         memcpy(&CAN_SIZE, &source, CAN_LAST_CONTROL_MESSAGE_SIZE); }
