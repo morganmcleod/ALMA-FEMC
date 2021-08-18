@@ -551,7 +551,8 @@ static void specialRCAsHandler(void){
                     printf("  0x%lX->SET_REBOOT\n\n",
                            SET_REBOOT);
                 #endif /* DEBUG_CAN */
-                reboot();
+                stop = 1;
+                restart = 1;
                 break;
             case SET_CONSOLE_ENABLE: // 0x21009 -> Enables/Disables the console
                 #ifdef DEBUG_CAN

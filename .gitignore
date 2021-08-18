@@ -10,3 +10,4 @@ SocketsSDK/
 *.sublime-*
 *log.txt
 *log.xlsx
+local_docs/

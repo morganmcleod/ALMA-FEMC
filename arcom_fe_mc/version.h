@@ -10,7 +10,7 @@
 
     REVISION HISTORY
 
-    2021-07-29 3.5.3-beta1
+    2021-07-29 3.5.3
     	Start/stop the FTP service when entering/exiting MAITENANCE_MODE
 
     2021-04-23 3.5.2
@@ -393,7 +393,7 @@
     #define VERSION_PATCH   3
 
     #define VERSION_DATE    "2021-07-29"
-    #define VERSION_NOTES   "3.5.3-beta1: Start/stop the FTP service when entering/exiting MAITENANCE_MODE."
+    #define VERSION_NOTES   "3.5.3: Start/stop the FTP service when entering/exiting MAITENANCE_MODE."
 
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM"
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
