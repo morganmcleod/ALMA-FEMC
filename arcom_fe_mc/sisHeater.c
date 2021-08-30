@@ -25,7 +25,7 @@ static HANDLER  sisHeaterModulesHandler[SIS_HEATER_MODULES_NUMBER]={enableHandle
                                                                     currentHandler};
 
 /* SIS Heater handler */
-/*! This function will be called by the CAN message handling subrutine when the
+/*! This function will be called by the CAN message handling subroutine when the
     received message is pertinent to the SIS heater. */
 void sisHeaterHandler(void){
 

@@ -67,9 +67,8 @@ static HANDLER      modulesHandler[MODULES_NUMBER]={cartridgeHandler,   // Cartr
                                                     lprHandler,
                                                     fetimHandler}; // The modules handler array is initialized
 
-
-
-
+// Bytes to return for GET_PPCOMM_TIME, can be overridden by SET_PPCOMM_BYTES:
+static unsigned char getPPCommBytes[8] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
 /*! This function handles the incoming CAN messages.
 
@@ -322,18 +321,18 @@ static void specialRCAsHandler(void){
                            GET_PPCOMM_TIME);
                 #endif /* DEBUG_CAN */
                 /* This message doesn't perform any operation. It is intended for debug purposes only.
-                   When called it will fill up a message payload with 8 0xFF and return. This will give
+                   When called it will fill up a message payload with 8 bytes and return. This will give
                    an estimate on the longest time necessary to acknowledge and respond to the largest
                    monitor request without performing any operation: it is a measure of the longest
                    communication time between the ARCOM and the AMBSI1 board */
-                CAN_DATA(7)=0xFF;
-                CAN_DATA(6)=0xFF;
-                CAN_DATA(5)=0xFF;
-                CAN_DATA(4)=0xFF;
-                CAN_DATA(3)=0xFF;
-                CAN_DATA(2)=0xFF;
-                CAN_DATA(1)=0xFF;
-                CAN_DATA(0)=0xFF;
+                CAN_DATA(7) = getPPCommBytes[0];
+                CAN_DATA(6) = getPPCommBytes[1];
+                CAN_DATA(5) = getPPCommBytes[2];
+                CAN_DATA(4) = getPPCommBytes[3];
+                CAN_DATA(3) = getPPCommBytes[4];
+                CAN_DATA(2) = getPPCommBytes[5];
+                CAN_DATA(1) = getPPCommBytes[6];
+                CAN_DATA(0) = getPPCommBytes[7];
                 CAN_SIZE=CAN_FULL_SIZE;
                 break;
             case GET_FPGA_VERSION_INFO: // 0x20008 -> Get FPGA firmware info
@@ -554,6 +553,20 @@ static void specialRCAsHandler(void){
                 stop = 1;
                 restart = 1;
                 break;
+            case SET_PPCOMM_BYTES:
+                #ifdef DEBUG_CAN
+                    printf("  0x%lX->SET_PPCOMM_BYTES\n\n",
+                            SET_PPCOMM_BYTES);
+                #endif /* DEBUG_CAN */
+                getPPCommBytes[0] = CAN_DATA(7);
+                getPPCommBytes[1] = CAN_DATA(6);
+                getPPCommBytes[2] = CAN_DATA(5);
+                getPPCommBytes[3] = CAN_DATA(4);
+                getPPCommBytes[4] = CAN_DATA(3);
+                getPPCommBytes[5] = CAN_DATA(2);
+                getPPCommBytes[6] = CAN_DATA(1);
+                getPPCommBytes[7] = CAN_DATA(0);
+
             case SET_CONSOLE_ENABLE: // 0x21009 -> Enables/Disables the console
                 #ifdef DEBUG_CAN
                     printf("  0x%lX->SET_CONSOLE\n\n",

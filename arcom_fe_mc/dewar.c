@@ -24,7 +24,7 @@ static HANDLER dewarModulesHandler[DEWAR_MODULES_NUMBER]={n2FillHandler};
 
 
 /* FETIM dewar handler */
-/*! This function will be called by the CAN message handling subrutine when the
+/*! This function will be called by the CAN message handling subroutine when the
     received message is pertinent to the FETIM dewar. */
 void dewarHandler(void){
 

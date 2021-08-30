@@ -24,7 +24,7 @@ static HANDLER  edfaModulesHandler[EDFA_MODULES_NUMBER]={laserHandler,
                                                          driverStateHandler};
 
 /* EDFA handler */
-/*! This function will be called by the CAN message handling subrutine when the
+/*! This function will be called by the CAN message handling subroutine when the
     received message is pertinent to the EDFA. */
 void edfaHandler(void){
 

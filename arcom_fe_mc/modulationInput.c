@@ -23,7 +23,7 @@ static HANDLER  modulationInputModulesHandler[MODULATION_INPUT_MODULES_NUMBER]={
                                                                                 miSpecialMsgsHandler};
 
 /* EDFA modulation input handler */
-/*! This function will be called by the CAN message handling subrutine when the
+/*! This function will be called by the CAN message handling subroutine when the
     received message is pertinent to the EDFA modulation input. */
 void modulationInputHandler(void){
 

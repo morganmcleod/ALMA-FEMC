@@ -49,16 +49,8 @@ int initialization(void) {
         }
     #endif /* OWB */
 
-    /* Switch to maintenance mode before allowing interrupt. */
+    /* Switch to maintenance while initializing frontend and before enabling interrupt. */
     frontend.mode = MAINTENANCE_MODE;
-
-    /* Initialize the parallel port communication. This is done after the OWB
-       initialization because there is no need for communication between ABMSI1
-       and ARCOM before that.
-       Up to this point, interrupts have been practically disabled. */
-    if (PPOpen() == ERROR) {
-        return ERROR;
-    }
 
     /* At this point we gathered all the information about the ESNs and the
        communication is fully established with the AMBSI. */
@@ -67,6 +59,15 @@ int initialization(void) {
     if (frontendInit() == ERROR) {
         return ERROR;
     }
+
+    /* Initialize the parallel port communication.
+       Up to this point, interrupts have been practically disabled. */
+    if (PPOpen() == ERROR) {
+        return ERROR;
+    }
+
+    /* Switch to operational mode */
+    frontend.mode = OPERATIONAL_MODE;
 
     #ifdef DEBUG_STARTUP
         printf("End initialization!\n\n");
@@ -84,11 +85,14 @@ int shutDown(void) {
         printf("Shutting down...\n\n");
     #endif
 
-    /* Shut down the frontend */
-    frontendStop();
+    /* Switch to maintenance so no commands will be processed during shutdown. */
+    frontend.mode = MAINTENANCE_MODE;
 
     /* Shut down the parallel port communication */
     PPClose();
+
+    /* Shut down the frontend */
+    frontendStop();
 
     /* Shut down the error handling */
     errorStop();

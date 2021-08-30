@@ -142,7 +142,7 @@ int frontendInit(void){
     {
         if(frontend.cartridge[currentModule].available) {
 
-            /* Perform cartrdige startup configuration */
+            /* Perform cartridge startup configuration */
             if(cartridgeStartup()==ERROR){
                 return ERROR;
             }

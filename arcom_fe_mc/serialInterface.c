@@ -80,7 +80,7 @@ int serialAccess(unsigned int command,
 
     /* Figure out the port on the serial mux board.
        Every cartridge has two port, the bias and the lo. If a cartridge is
-       addressed then the port is given by the cartrdige number multiplied by a
+       addressed then the port is given by the cartridge number multiplied by a
        factor of two plus the index to the cartridge subsystem (1 -> Bias,
        0 -> Lo).
        On the other end if any other module is addressed, the port is offsetted

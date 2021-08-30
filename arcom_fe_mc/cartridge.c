@@ -38,7 +38,7 @@ static HANDLER cartridgeTempSubsystemModulesHandler[CARTRIDGE_TEMP_SUBSYSTEM_MOD
 
 /* Externs */
 unsigned char currentCartridgeSubsystem=0; /*! This global keep track of the
-                                               currently addressed cartrdige
+                                               currently addressed cartridge
                                                subsystem (WCA or CCA) */
 unsigned char currentLoAndTempModule=0; /*! This global keeps track of the
                                             currently addressed LO and cartridge
@@ -51,8 +51,8 @@ unsigned char currentCartridgeTempSubsystemModule=0; /*! This global keeps track
                                                          sensor */
 
 /* Cartridge handler */
-/*! This function will be called by the CAN message handling subrutine when the
-    received message is pertinent to the cartriges. */
+/*! This function will be called by the CAN message handling subroutine when the
+    received message is pertinent to the cartridges. */
 void cartridgeHandler(void){
     #ifdef DEBUG
         printf(" Cartridge: %d (currentModule)\n",
@@ -68,21 +68,21 @@ void cartridgeHandler(void){
     /* Check the state of the cartridge */
     switch(frontend.cartridge[currentModule].state) {
 
-        /* Check if the cartrdige is in error state. If this is the case, then
+        /* Check if the cartridge is in error state. If this is the case, then
            no action is allowed until the error is cleared. See ICD. */
         case CARTRIDGE_ERROR:
-            storeError(ERR_CARTRIDGE, ERC_HARDWARE_ERROR);  //The cartrdige is in error state
+            storeError(ERR_CARTRIDGE, ERC_HARDWARE_ERROR);  //The cartridge is in error state
             CAN_STATUS = HARDW_ERROR; // Notify incoming message
             return;
             break;
 
-        /* Check if the cartrdige is powered before allowing monitor and control.
+        /* Check if the cartridge is powered before allowing monitor and control.
            This check should always be performed because if the cartridge doesn't
            go through the initialization sequence, the CPLDs in the cartridge will
            think that they should operate at 5MHz instead of 10 and the returned
            data will be half of the real data. */
         case CARTRIDGE_OFF:
-            storeError(ERR_CARTRIDGE, ERC_MODULE_POWER); //The cartrdige is not powered
+            storeError(ERR_CARTRIDGE, ERC_MODULE_POWER); //The cartridge is not powered
             CAN_STATUS = HARDW_BLKD_ERR; // Notify incoming message
             return;
             break;
@@ -188,7 +188,7 @@ static void biasSubsystemHandler(void){
 
 /* Cartrdige stop */
 /*! This function performs the operations necessary to shut down a cartidge.
-    \param cartrdige    This is the selected cartrdige to power off
+    \param cartridge    This is the selected cartridge to power off
     \return
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
@@ -491,15 +491,15 @@ int cartridgeStartup(void){
 
 
 /* Cartrige init */
-/*! This function performs the operations necessary to initialize a cartrdige at
+/*! This function performs the operations necessary to initialize a cartridge at
     runtime. These are executed everytime a cartridge is powered up.
-    \param cartridge    This is the selected cartrdige to initialize
+    \param cartridge    This is the selected cartridge to initialize
     \return
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
 int cartridgeInit(unsigned char cartridge){
 
-    /* Set currentModule variable to reflect the selected cartrdige.
+    /* Set currentModule variable to reflect the selected cartridge.
        This is necessary because currentModule is the global variable pointing
        to the selected cartridge. */
     currentModule = cartridge;
@@ -512,7 +512,7 @@ int cartridgeInit(unsigned char cartridge){
     }
     
     #ifdef DEBUG_INIT
-        printf("Initializing cartrdige (%d)\n", currentModule+1);
+        printf("Initializing cartridge (%d)\n", currentModule+1);
     #endif // DEBUG_INIT
 
     /* Enable the 10MHz communication for the BIAS and the LO and update the
@@ -522,7 +522,7 @@ int cartridgeInit(unsigned char cartridge){
        is not installed, it doesn't matter. */
 
     /* Polarizations */
-    /* Set current cartrdige subsystem to bias */
+    /* Set current cartridge subsystem to bias */
     currentCartridgeSubsystem=CARTRIDGE_SUBSYSTEM_BIAS;
     /* Set the 10MHz */
     for(currentBiasModule = 0;
@@ -536,7 +536,7 @@ int cartridgeInit(unsigned char cartridge){
     }
 
     /* LO */
-    /* Set current cartrdige subsystem to LO */
+    /* Set current cartridge subsystem to LO */
     currentCartridgeSubsystem=CARTRIDGE_SUBSYSTEM_LO;
 
     /* Initialize the LO */
@@ -553,7 +553,7 @@ int cartridgeInit(unsigned char cartridge){
     /* Actual turn-on handled below in cartridgeAsync() */
 
     #ifdef DEBUG_INIT
-        printf(" done!\n"); // Turning cartrdige on
+        printf(" done!\n"); // Turning cartridge on
         printf("done!\n\n"); // Cartridge
     #endif // DEBUG_INIT
 
@@ -617,15 +617,15 @@ int cartridgeAsync(void){
                     /* If there was an error in the initialization, attempt to
                        turn off the cartridge. */
 
-                    /* Turn off the power to the cartrdige. */
+                    /* Turn off the power to the cartridge. */
                     if(setPdModuleEnable(PD_MODULE_DISABLE)==ERROR){
                         /* If we end up in here, it means that something very major
                            has happened and the communication within the FEMC
                            module is compromised. At this point all the bets on
                            the state of the system are off. This would require
-                           a HALT but we are just going to notify the cartrdige
+                           a HALT but we are just going to notify the cartridge
                            module that there was an urecoverable error with the
-                           initialization and allow for a restart of the cartrdige. */
+                           initialization and allow for a restart of the cartridge. */
                         /* Store the Error state in the last control message variable */
                         frontend.powerDistribution.pdModule[currentAsyncCartridge].
                             lastEnable.status=ERROR;
@@ -721,7 +721,7 @@ int asyncCartridgeInit(void){
     /* Switch depening on the current initialization state */
     switch(asyncCartridgeInitState){
         case ASYNC_CARTRIDGE_INIT_SET_WAIT:
-            /* Set the state of the cartrdige to 'initializing' */
+            /* Set the state of the cartridge to 'initializing' */
             frontend.cartridge[currentModule].state=CARTRIDGE_INITING;
 
             /* Setup timer to wait before initializing the cartridge */
@@ -773,7 +773,7 @@ int asyncCartridgeInit(void){
                 return ERROR;
             }
 
-            /* Set the state of the cartrdige to 'ready' */
+            /* Set the state of the cartridge to 'ready' */
             frontend.cartridge[currentModule].state=CARTRIDGE_READY;
 
             /* Next state: start state */

@@ -27,7 +27,7 @@ static HANDLER  vacuumControllerModulesHandler[VACUUM_CONTROLLER_MODULES_NUMBER]
                                                                                   stateHandler};
 
 /* Vacuum controller handler */
-/*! This function will be called by the CAN message handling subrutine when the
+/*! This function will be called by the CAN message handling subroutine when the
     received message is pertinent to the cryostat vacuum controller. */
 void vacuumControllerHandler(void){
 

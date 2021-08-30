@@ -1,0 +1,23 @@
+!define BLANK ""
+L:\C\ALMA-FEMC\arcom_test_sets\TestPpComm\TestPpComm.obj : L:\C\ALMA-FEMC\ar&
+com_test_sets\TestPpComm\TestPpComm.c .AUTODEPEND
+ @L:
+ cd L:\C\ALMA-FEMC\arcom_test_sets\TestPpComm
+ *wcc TestPpComm.c -i="C:\WATCOM/h" -w4 -zq -od -d1 -5 -bt=dos -fo=.obj -ml
+
+L:\C\ALMA-FEMC\arcom_test_sets\TestPpComm\timer.obj : L:\C\ALMA-FEMC\arcom_t&
+est_sets\TestPpComm\timer.c .AUTODEPEND
+ @L:
+ cd L:\C\ALMA-FEMC\arcom_test_sets\TestPpComm
+ *wcc timer.c -i="C:\WATCOM/h" -w4 -zq -od -d1 -5 -bt=dos -fo=.obj -ml
+
+L:\C\ALMA-FEMC\arcom_test_sets\TestPpComm\T_PPCOM.exe : L:\C\ALMA-FEMC\arcom&
+_test_sets\TestPpComm\TestPpComm.obj L:\C\ALMA-FEMC\arcom_test_sets\TestPpCo&
+mm\timer.obj .AUTODEPEND
+ @L:
+ cd L:\C\ALMA-FEMC\arcom_test_sets\TestPpComm
+ @%write T_PPCOM.lk1 FIL TestPpComm.obj,timer.obj
+ @%append T_PPCOM.lk1 
+ *wlink name T_PPCOM d all sys dos op maxe=25 op q op symf op el @T_PPCOM.lk&
+1
+

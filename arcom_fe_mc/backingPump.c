@@ -25,7 +25,7 @@ unsigned char   currentBackingPumpModule=0;
 static HANDLER backingPumpModulesHandler[BACKING_PUMP_MODULES_NUMBER]={enableHandler};
 
 /* Backing pump handler */
-/*! This function will be called by the CAN message handling subrutine when the
+/*! This function will be called by the CAN message handling subroutine when the
     received message is pertinent to the cryostat backing pump. */
 void backingPumpHandler(void){
 

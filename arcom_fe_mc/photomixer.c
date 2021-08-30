@@ -163,8 +163,8 @@ static void voltageHandler(void){
 }
 
 /* Current Handler */
-/* This function deals with all the monitor requests diected to the photomixer
-   current. There are no control messages allowed for the photomixer voltage. */
+/* This function deals with all the monitor requests directed to the photomixer
+   current. There are no control messages allowed for the photomixer current. */
 static void currentHandler(void){
 
     #ifdef DEBUG
@@ -188,7 +188,7 @@ static void currentHandler(void){
     }
 
     /* Monitor the photomixer current */
-    /** This is a fix to enable a stable reading of the photmixer current.
+    /** This is a fix to enable a stable reading of the photomixer current.
         once (if ever) the hardware is going to be able to return a stable
         reading within the allocated time, this should be removed. For this
         fix, the first readout will not check for errors. **/

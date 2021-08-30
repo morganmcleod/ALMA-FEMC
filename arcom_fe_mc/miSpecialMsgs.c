@@ -22,7 +22,7 @@ unsigned char   currentMiSpecialMsgsModule=0;
 static HANDLER  miSpecialMsgsModulesHandler[MI_SPECIAL_MSGS_MODULES_NUMBER]={miDacHandler};
 
 /* Modulation Input special messages handler */
-/*! This function will be called by the CAN message handling subrutine when the
+/*! This function will be called by the CAN message handling subroutine when the
     received message is pertinent to the modulation input special messages. */
 void miSpecialMsgsHandler(void){
     /* The value of currentMiSpecialMsgsModule is not changed since there is

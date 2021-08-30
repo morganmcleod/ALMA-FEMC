@@ -271,14 +271,14 @@ static void enableHandler(void) {
                     return;
                 }
 
-                // Set the state of the cartrdige to CARTRIDGE_ON (powered but not
+                // Set the state of the cartridge to CARTRIDGE_ON (powered but not
                 // yet initialized. This state will trigger the initialization by
-                // the cartrdige async routine.
+                // the cartridge async routine.
                 frontend.
                  cartridge[currentPowerDistributionModule].
                   state = CARTRIDGE_ON;
                 
-                // Force the priority of the async to address the cartrdige next.
+                // Force the priority of the async to address the cartridge next.
                 // This will also re-eable the async procedure if it has been
                 // disabled via CAN message or console
                 asyncState = ASYNC_CARTRIDGE;
@@ -402,14 +402,14 @@ static void enableHandler(void) {
                         printPoweredModuleCounts();
                     #endif /* DEBUG_POWERDIS */
 
-                    // Set the state of the cartrdige to CARTRIDGE_GO_STANDBY2
+                    // Set the state of the cartridge to CARTRIDGE_GO_STANDBY2
                     // This state will trigger shutting down cold electronics in
-                    // the cartrdige async routine.
+                    // the cartridge async routine.
                     frontend.
                      cartridge[currentPowerDistributionModule].
                       state = CARTRIDGE_GO_STANDBY2;
 
-                    // Force the priority of the async to address the cartrdige next.
+                    // Force the priority of the async to address the cartridge next.
                     // This will also re-eable the async procedure if it has been
                     // disabled via CAN message or console
                     asyncState = ASYNC_CARTRIDGE;

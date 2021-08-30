@@ -58,7 +58,7 @@
         float                   temp;
         //! Cartridge temperature sensor offset
         /*! This is the offset (in K) respect to the standard calibration
-            curve which is applied to all the sensors in the cartrdige. */
+            curve which is applied to all the sensors in the cartridge. */
         float                   offset;
         //! Last control message: set offset
         LAST_CONTROL_MESSAGE    lastOffset;

@@ -24,7 +24,7 @@ static HANDLER  sisMagnetModulesHandler[SIS_MAGNET_MODULES_NUMBER]={voltageHandl
                                                                     currentHandler};
 
 /* SIS magnet handler */
-/*! This function will be called by the CAN message handling subrutine when the
+/*! This function will be called by the CAN message handling subroutine when the
     received message is pertinent to the SIS magnet. */
 void sisMagnetHandler(void){
 

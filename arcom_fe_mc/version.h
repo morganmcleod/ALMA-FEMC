@@ -10,6 +10,13 @@
 
     REVISION HISTORY
 
+    2022-01-19 3.6.1
+        Clear parallel port EPP timeout between transactions
+
+    2021-12-15 3.6.0
+        Now boot into Operational Mode and don't bother with ppComm handshaking.
+        Add command SET_PPCOMM_BYTES which overrides the default 8 bytes returned by GET_PPCOMM_TIME
+
     2021-07-29 3.5.3
     	Start/stop the FTP service when entering/exiting MAITENANCE_MODE
 
@@ -186,7 +193,7 @@
         - The error counting and returning has been fixed. (Jira ticket: FE-151)
         - The limits for the control message to set the LPR optical channel are
           now hardcoded and implemented. (Jira ticket: FE-258)
-        - The limits for the control message to set the IF switch cartrdige are
+        - The limits for the control message to set the IF switch cartridge are
           now hardcoded and implemented. (Jira ticket: FE-238)
         - The monitoring of the gate valve has been modified to allow monitoring
           also when the backing pump is turned off. In this case the evaluation
@@ -389,11 +396,11 @@
 
     /* Defines */
     #define VERSION_MAJOR   3
-    #define VERSION_MINOR   5
-    #define VERSION_PATCH   3
+    #define VERSION_MINOR   6
+    #define VERSION_PATCH   1
 
-    #define VERSION_DATE    "2021-07-29"
-    #define VERSION_NOTES   "3.5.3: Start/stop the FTP service when entering/exiting MAITENANCE_MODE."
+    #define VERSION_DATE    "2022-01-19"
+    #define VERSION_NOTES   "3.6.1: Boot into Operational Mode, no waiting for AMBSI1. Clear PP timeout between messages."
 
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM"
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"

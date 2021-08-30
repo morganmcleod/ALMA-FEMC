@@ -42,7 +42,7 @@ static HANDLER cryostatTempModulesHandler[CRYOSTAT_TEMP_MODULES_NUMBER]={tempHan
                                                                          sequentialCoeffHandler};
 
 /* Cryostat temperatures sensors handler */
-/*! This function will be called by the CAN message handling subrutine when the
+/*! This function will be called by the CAN message handling subroutine when the
     received message is pertinent to the cryostat temperature sensors. */
 void cryostatTempHandler(void){
 

@@ -36,8 +36,8 @@ static TEMP_SENSOR temperatureSensor[CARTRIDGE_TEMP_SENSORS_NUMBER]
      {{P1,S2},{P1,S2},{P1,S2},{P1,S2},{P1,S2},{P1,S2},{P1,S2},{P1,S2},{P1,S2},{P1,S2}}};    // Mixer Pol1
 
 /* Cartridge Temperature sensors handler */
-/*! This function will be called by the CAN message handling subrutine when the
-    received message is pertinent to the cartriges temperature sensors. */
+/*! This function will be called by the CAN message handling subroutine when the
+    received message is pertinent to the cartridges temperature sensors. */
 void cartridgeTempHandler(void) {
     #ifdef DEBUG
         printf("    Cartridge Temperature Sensors: %d\n",

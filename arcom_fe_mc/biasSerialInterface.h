@@ -173,7 +173,7 @@
     #define BIAS_ADC_LNA_DRAIN_C_SCALE  100.0       // Scale factor for LNA drain current
     #define BIAS_ADC_LNA_GATE_V_SCALE   10.0        // Scale factor for LNA gate voltage
     #define BIAS_ADC_SIS_HEATER_I_SCALE 4166.67     // Scale factor for SIS heater current
-    #define BIAS_ADC_CART_TEMP_V_SCALE  10.0        // Scale factor for the cartrdige temperature sensor
+    #define BIAS_ADC_CART_TEMP_V_SCALE  10.0        // Scale factor for the cartridge temperature sensor
     #define BIAS_ADC_BUSY               0           // Busy state signal
 
 

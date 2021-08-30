@@ -25,7 +25,7 @@ static HANDLER gateValveModulesHandler[GATE_VALVE_MODULES_NUMBER]={stateHandler}
 
 
 /* Gate Valve handler */
-/*! This function will be called by the CAN message handling subrutine when the
+/*! This function will be called by the CAN message handling subroutine when the
     received message is pertinent to the cryostat gate valve. */
 void gateValveHandler(void){
 

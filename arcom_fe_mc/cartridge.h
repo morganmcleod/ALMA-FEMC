@@ -220,8 +220,8 @@
     /* Externs */
     extern int cartridgeStartup(void); //!< This function initializes the selected cartridge during startup
     extern void cartridgeHandler(void); //!< This function deals with the incoming can message
-    extern int cartridgeInit(unsigned char cartridge); //!< This function initializes the selected cartrdige at runtime
-    extern int cartridgeStop(unsigned char cartridge); //!< Shut down the selected cartrdige
-    extern int cartridgeAsync(void); //!< This function deals with the asynchronous operation of a cartrdige
+    extern int cartridgeInit(unsigned char cartridge); //!< This function initializes the selected cartridge at runtime
+    extern int cartridgeStop(unsigned char cartridge); //!< Shut down the selected cartridge
+    extern int cartridgeAsync(void); //!< This function deals with the asynchronous operation of a cartridge
 
 #endif /* _CARTRIDGE_H */

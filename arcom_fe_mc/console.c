@@ -23,6 +23,7 @@
 #include "version.h"
 #include "async.h"
 #include "owb.h"
+#include "ppComm.h"
 
 /* Globals */
 /* Externs */
@@ -251,6 +252,9 @@ static void parseBuffer(void){
         case 't': // *** 't' -> FE and cartridges configuration report ***
             feAndCartridgesConfigurationReport();
             break;            
+        case 'o': // *** 'o' -> Parallel port status report ***
+            PPStatusReport();
+            break;
         case 'q': // *** 'q' -> Quit ***
             stop = 1;
             break;
@@ -280,6 +284,7 @@ static void parseBuffer(void){
             printf(" p<CR> -> LO PA_LIMITS tables report\n");
             printf(" s<CR> -> cryostat sensor tables report\n");
             printf(" t<CR> -> FE and cartridges configuration report\n");
+            printf(" o<CR> -> Parallel port status report\n");
             printf(" q<CR> -> quit\n");
             printf(" r<CR> -> restart\n");
             break;

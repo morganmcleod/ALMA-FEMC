@@ -231,7 +231,7 @@ int loZeroYtoCoarseTuning(void) {
 /*! This function performs the operations necessary to initialize a LO during
     startup. These operations are performed only once during the startup
     sequence. This function is called by the frontendInit function one time for
-    every available cartrdige so the currentModule veriable is updated every
+    every available cartridge so the currentModule veriable is updated every
     single time with the currently addressed WCA.
     \return
         - \ref NO_ERROR -> if no error occurred
@@ -303,7 +303,7 @@ int loShutdown(void) {
 }
 
 /* LO handler */
-/*! This function will be called by the CAN message handling subrutine when the
+/*! This function will be called by the CAN message handling subroutine when the
     received message is pertinent to the LO. */
 void loHandler(void) {
     #ifdef DEBUG

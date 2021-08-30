@@ -132,6 +132,7 @@
     #define BASE_SPECIAL_CONTROL_RCA    0x21000L
     #define SET_EXIT_PROGRAM            0x21000L    //!< \b BASE+0x00 -> Ends the execution of the main program
     #define SET_REBOOT                  0x21001L    //!< \b BASE+0x01 -> Reboots the ARCOM board
+    #define SET_PPCOMM_BYTES            0x21007L    //!< \b BASE+0x07 -> Bytes to return from GET_PPCOMM_TIME.  Defaults to 8 0xFF.
     #define SET_CONSOLE_ENABLE          0x21009L    //!< \b BASE+0x09 -> Enables/Disables the console
     #define SET_WRITE_NV_MEMORY         0x2100DL    //!< \b BASE+0x0D -> Writes cold head hours to the flash disk
     #define SET_FE_MODE                 0x2100EL    //!< \b BASE+0x0E -> Changes the current FE operating mode

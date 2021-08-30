@@ -23,7 +23,7 @@ static HANDLER  polSpecialMsgsModulesHandler[POL_SPECIAL_MSGS_MODULES_NUMBER]={p
                                                                                polDacHandler};
 
 /* Polarization special messages handler */
-/*! This function will be called by the CAN message handling subrutine when the
+/*! This function will be called by the CAN message handling subroutine when the
     received message is pertinent to the polarization special messages. */
 void polSpecialMsgsHandler(void){
 

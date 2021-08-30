@@ -22,7 +22,7 @@ static HANDLER  sidebandModulesHandler[SIDEBAND_MODULES_NUMBER]={sisHandler,
                                                                  lnaHandler};
 
 /* Sideband handler */
-/*! This function will be called by the CAN message handling subrutine when the
+/*! This function will be called by the CAN message handling subroutine when the
     received message is pertinent to the sideband. */
 void sidebandHandler(void){
 

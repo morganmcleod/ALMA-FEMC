@@ -25,7 +25,7 @@ unsigned char   currentVacuumSensorModule=0;
 static HANDLER vacuumSensorModulesHandler[VACUUM_SENSOR_MODULES_NUMBER]={pressureHandler};
 
 /* Cryostat vacuum sensors handler */
-/*! This function will be called by the CAN message handling subrutine when the
+/*! This function will be called by the CAN message handling subroutine when the
     receivd message is pertinent to the cryostat vacuum sensors. */
 void vacuumSensorHandler(void){
 

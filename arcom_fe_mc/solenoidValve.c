@@ -24,7 +24,7 @@ unsigned char   currentSolenoidValveModule=0;
 static HANDLER solenoidValveModulesHandler[SOLENOID_VALVE_MODULES_NUMBER]={stateHandler};
 
 /* Solenoid Valve handler */
-/*! This function will be called by the CAN message handling subrutine when the
+/*! This function will be called by the CAN message handling subroutine when the
     received message is pertinent to the cryostat solenoid valve. */
 void solenoidValveHandler(void){
 

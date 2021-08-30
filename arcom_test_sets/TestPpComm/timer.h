@@ -76,6 +76,11 @@
     #define TIMER_OWB_RESET             81      // Timer number
     #define TIMER_TO_OWB_RESET          10000   // Timeout in milliseconds
 
+    /*** Parallel port communication ***/
+    /* AMBSI1 Ready */
+    #define TIMER_PP_AMBSI_RDY          90      // Timer number
+    #define TIMER_PP_TO_AMBSI_RDY       1000    // Timeout in milliseconds
+
     /* Timer control */
     #define TIMER_ON                    1
     #define TIMER_OFF                   0
