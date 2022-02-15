@@ -189,29 +189,31 @@ int setPdModuleEnable(unsigned char enable){
     int tempAReg=pdRegisters.
                   aReg;
 
-    /* Update AREG */
-    pdRegisters.
-     aReg=(enable==PD_MODULE_ENABLE)?SET_PD_MODULE_ENABLE(currentPowerDistributionModule):
-                                     SET_PD_MODULE_DISABLE(currentPowerDistributionModule);
-
-    /* 2 - Parallel write AREG */
-    #ifdef DEBUG_POWERDIS_SERIAL
-        printf("         - Writing AREG\n");
-    #endif /* DEBUG_POWERDIS_SERIAL */
-
-    /* If there is a problem writing AREG, restore AREG and return the ERROR */
-    if(serialAccess(PD_PARALLEL_WRITE(PD_AREG),
-                    &pdRegisters.
-                      aReg,
-                    PD_AREG_SIZE,
-                    PD_AREG_SHIFT_SIZE,
-                    PD_AREG_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        /* Restore AREG to its original saved value */
+    if (frontend.mode != SIMULATION_MODE) {
+        /* Update AREG */
         pdRegisters.
-         aReg = tempAReg;
+         aReg=(enable==PD_MODULE_ENABLE)?SET_PD_MODULE_ENABLE(currentPowerDistributionModule):
+                                         SET_PD_MODULE_DISABLE(currentPowerDistributionModule);
 
-        return ERROR;
+        /* 2 - Parallel write AREG */
+        #ifdef DEBUG_POWERDIS_SERIAL
+            printf("         - Writing AREG\n");
+        #endif /* DEBUG_POWERDIS_SERIAL */
+
+        /* If there is a problem writing AREG, restore AREG and return the ERROR */
+        if(serialAccess(PD_PARALLEL_WRITE(PD_AREG),
+                        &pdRegisters.
+                          aReg,
+                        PD_AREG_SIZE,
+                        PD_AREG_SHIFT_SIZE,
+                        PD_AREG_SHIFT_DIR,
+                        SERIAL_WRITE)==ERROR){
+            /* Restore AREG to its original saved value */
+            pdRegisters.
+             aReg = tempAReg;
+
+            return ERROR;
+        }
     }
 
     /* Since there is no real hardware read back, if no error occurred the
@@ -245,92 +247,133 @@ int getPdChannel(void){
     /* A float to hold the scaling factor */
     float scale=0.0;
 
-    /* Clear the power distribution BREG */
-    pdRegisters.
-     bReg.
-      integer=0x0000;
+    if (frontend.mode != SIMULATION_MODE) {
+        /* Clear the power distribution BREG */
+        pdRegisters.
+         bReg.
+          integer=0x0000;
 
-    /* 1 - Select the desired monitor point
-           a - update BREG */
-    pdRegisters.
-     bReg.
-      bitField.
-       monitorBand=PD_BREG_SELECT_BAND(currentPowerDistributionModule);
-    pdRegisters.
-     bReg.
-      bitField.
-       monitorPoint=PD_BREG_SELECT_MONITOR(currentPdModuleModule,
-                                           currentPdChannelModule);
+        /* 1 - Select the desired monitor point
+               a - update BREG */
+        pdRegisters.
+         bReg.
+          bitField.
+           monitorBand=PD_BREG_SELECT_BAND(currentPowerDistributionModule);
+        pdRegisters.
+         bReg.
+          bitField.
+           monitorPoint=PD_BREG_SELECT_MONITOR(currentPdModuleModule,
+                                               currentPdChannelModule);
 
-    /* 2->5 Call the getPdAnalogMonitor function */
-    if(getPdAnalogMonitor()==ERROR){
-        return ERROR;
-    }
+        /* 2->5 Call the getPdAnalogMonitor function */
+        if(getPdAnalogMonitor()==ERROR){
+            return ERROR;
+        }
 
-    /* 6 - Scale the data */
-    switch(currentPdChannelModule){
-        case PD_CHANNEL_CURRENT:
-            switch(currentPdModuleModule){
-                case PLUS_6:
-                    scale=PD_ADC_PLUS_6I_SCALE;
-                    break;
-                case MINUS_6:
-                    scale=PD_ADC_MINUS_6I_SCALE;
-                    break;
-                case PLUS_15:
-                    scale=PD_ADC_PLUS_15I_SCALE;
-                    break;
-                case MINUS_15:
-                    scale=PD_ADC_MINUS_15I_SCALE;
-                    break;
-                case PLUS_24:
-                    scale=PD_ADC_PLUS_24I_SCALE;
-                    break;
-                case PLUS_8:
-                    scale=PD_ADC_PLUS_8I_SCALE;
-                    break;
-                default:
-                    break;
-            }
-            frontend.
-             powerDistribution.
-              pdModule[currentPowerDistributionModule].
-               pdChannel[currentPdModuleModule].
-                current=(scale*pdRegisters.
-                                               adcData)/PD_ADC_RANGE;
-            break;
-        case PD_CHANNEL_VOLTAGE:
-            switch(currentPdModuleModule){
-                case PLUS_6:
-                    scale=PD_ADC_PLUS_6V_SCALE;
-                    break;
-                case MINUS_6:
-                    scale=PD_ADC_MINUS_6V_SCALE;
-                    break;
-                case PLUS_15:
-                    scale=PD_ADC_PLUS_15V_SCALE;
-                    break;
-                case MINUS_15:
-                    scale=PD_ADC_MINUS_15V_SCALE;
-                    break;
-                case PLUS_24:
-                    scale=PD_ADC_PLUS_24V_SCALE;
-                    break;
-                case PLUS_8:
-                    scale=PD_ADC_PLUS_8V_SCALE;
-                    break;
-                default:
-                    break;
-            }
-            frontend.
-             powerDistribution.
-              pdModule[currentPowerDistributionModule].
-               pdChannel[currentPdModuleModule].
-                voltage=(scale*pdRegisters.
-                                               adcData)/PD_ADC_RANGE;
-            break;
-        default:
-            break;
+        /* 6 - Scale the data */
+        switch(currentPdChannelModule){
+            case PD_CHANNEL_CURRENT:
+                switch(currentPdModuleModule){
+                    case PLUS_6:
+                        scale=PD_ADC_PLUS_6I_SCALE;
+                        break;
+                    case MINUS_6:
+                        scale=PD_ADC_MINUS_6I_SCALE;
+                        break;
+                    case PLUS_15:
+                        scale=PD_ADC_PLUS_15I_SCALE;
+                        break;
+                    case MINUS_15:
+                        scale=PD_ADC_MINUS_15I_SCALE;
+                        break;
+                    case PLUS_24:
+                        scale=PD_ADC_PLUS_24I_SCALE;
+                        break;
+                    case PLUS_8:
+                        scale=PD_ADC_PLUS_8I_SCALE;
+                        break;
+                    default:
+                        break;
+                }
+                frontend.
+                 powerDistribution.
+                  pdModule[currentPowerDistributionModule].
+                   pdChannel[currentPdModuleModule].
+                    current=(scale*pdRegisters.
+                                                   adcData)/PD_ADC_RANGE;
+                break;
+            case PD_CHANNEL_VOLTAGE:
+                switch(currentPdModuleModule){
+                    case PLUS_6:
+                        scale=PD_ADC_PLUS_6V_SCALE;
+                        break;
+                    case MINUS_6:
+                        scale=PD_ADC_MINUS_6V_SCALE;
+                        break;
+                    case PLUS_15:
+                        scale=PD_ADC_PLUS_15V_SCALE;
+                        break;
+                    case MINUS_15:
+                        scale=PD_ADC_MINUS_15V_SCALE;
+                        break;
+                    case PLUS_24:
+                        scale=PD_ADC_PLUS_24V_SCALE;
+                        break;
+                    case PLUS_8:
+                        scale=PD_ADC_PLUS_8V_SCALE;
+                        break;
+                    default:
+                        break;
+                }
+                frontend.
+                 powerDistribution.
+                  pdModule[currentPowerDistributionModule].
+                   pdChannel[currentPdModuleModule].
+                    voltage=(scale*pdRegisters.
+                                                   adcData)/PD_ADC_RANGE;
+                break;
+            default:
+                break;
+        }
+    } else {
+        //SIMULATION_MODE
+        switch(currentPdChannelModule) {
+            case PD_CHANNEL_CURRENT:
+                frontend.powerDistribution.pdModule[currentPowerDistributionModule].
+                        pdChannel[currentPdModuleModule].current =
+                    (float) frontend.powerDistribution.pdModule[currentPowerDistributionModule].
+                        enable * 1.0 + (float) currentPdModuleModule * 0.01;
+                break;
+            case PD_CHANNEL_VOLTAGE:
+                switch(currentPdModuleModule) {
+                    case PLUS_6:
+                         scale = 6.0;
+                         break;
+                     case MINUS_6:
+                         scale = -6.0;
+                         break;
+                     case PLUS_15:
+                         scale = 15.0;
+                         break;
+                     case MINUS_15:
+                         scale = -15.0;
+                         break;
+                     case PLUS_24:
+                         scale = 24.0;
+                         break;
+                     case PLUS_8:
+                         scale = 8.0;
+                         break;
+                     default:
+                         break;
+                }
+                frontend.powerDistribution.pdModule[currentPowerDistributionModule]
+                        .pdChannel[currentPdModuleModule].voltage =
+                        (float) frontend.powerDistribution.pdModule[currentPowerDistributionModule].enable * scale;
+                break;
+            default:
+                break;
+        }
     }
     return NO_ERROR;
 }

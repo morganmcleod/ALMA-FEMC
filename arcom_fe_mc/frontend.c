@@ -179,9 +179,6 @@ int frontendInit(void){
         return ERROR;
     }
 
-    /* Switch to operational mode */
-    frontend.mode = OPERATIONAL_MODE;
-
     #ifdef DEBUG_INIT
         printf("done!\n\n");
     #endif
@@ -198,7 +195,6 @@ int frontendInitIPAddress(void) {
 
     // get the IP addres from the SOCKET API
     ret = GetKernelInformation(0, K_INF_IP_ADDR, 0, frontend.ipaddress, &uSize);
-
 
     printf("IP Address: %d.%d.%d.%d\n", frontend.ipaddress[0], frontend.ipaddress[1], frontend.ipaddress[2], frontend.ipaddress[3]);
     return NO_ERROR;

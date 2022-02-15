@@ -43,32 +43,37 @@ FETIM_REGISTERS fetimRegisters;
         - \ref ERROR    -> if something wrong happened */
 int getInterlockTemp(void){
 
-    /* Clear the FETIM AREG */
-    fetimRegisters.
-     aRegOut.
-      integer=0x0000;
+    if (frontend.mode != SIMULATION_MODE) {
+        /* Clear the FETIM AREG */
+        fetimRegisters.
+         aRegOut.
+          integer=0x0000;
 
-    /* Select the desired monitor point */
-    fetimRegisters.
-     aRegOut.
-      bitField.
-       monitorPoint=FETIM_AREG_OUT_TEMPERATURE(currentInterlockTempModule);
+        /* Select the desired monitor point */
+        fetimRegisters.
+         aRegOut.
+          bitField.
+           monitorPoint=FETIM_AREG_OUT_TEMPERATURE(currentInterlockTempModule);
 
-    /* Call the parallel adc monitor function */
-    if(getFetimParallelMonitor()==ERROR){
-        return ERROR;
+        /* Call the parallel adc monitor function */
+        if(getFetimParallelMonitor()==ERROR){
+            return ERROR;
+        }
+
+        /* Scale the data */
+        frontend.
+         fetim.
+          interlock.
+           sensors.
+            temperature.
+             intrlkTempSens[currentInterlockTempModule].
+              temp=FETIM_PAR_ADC_TEMP_OFFSET+(FETIM_PAR_ADC_TEMP_SCALE*fetimRegisters.
+                                                                                       parAdcData)/FETIM_PAR_ADC_RANGE;
+    } else {
+        // SIMULATION_MODE
+        frontend.fetim.interlock.sensors.temperature.intrlkTempSens[currentInterlockTempModule].temp =
+            22.0 + (float) currentInterlockTempModule * 0.2;
     }
-
-    /* Scale the data */
-    frontend.
-     fetim.
-      interlock.
-       sensors.
-        temperature.
-         intrlkTempSens[currentInterlockTempModule].
-          temp=FETIM_PAR_ADC_TEMP_OFFSET+(FETIM_PAR_ADC_TEMP_SCALE*fetimRegisters.
-                                                                                   parAdcData)/FETIM_PAR_ADC_RANGE;
-
     return NO_ERROR;
 }
 
@@ -81,33 +86,37 @@ int getInterlockTemp(void){
         - \ref ERROR    -> if something wrong happened */
 int getInterlockFlow(void){
 
-    /* Clear the FETIM AREG */
-    fetimRegisters.
-     aRegOut.
-      integer=0x0000;
+    if (frontend.mode != SIMULATION_MODE) {
 
-    /* Select the desired monitor point */
-    fetimRegisters.
-     aRegOut.
-      bitField.
-       monitorPoint=FETIM_AREG_OUT_FLOW(currentInterlockFlowModule);
+        /* Clear the FETIM AREG */
+        fetimRegisters.
+         aRegOut.
+          integer=0x0000;
 
-    /* Call the parallel adc monitor function */
-    if(getFetimParallelMonitor()==ERROR){
-        return ERROR;
+        /* Select the desired monitor point */
+        fetimRegisters.
+         aRegOut.
+          bitField.
+           monitorPoint=FETIM_AREG_OUT_FLOW(currentInterlockFlowModule);
+
+        /* Call the parallel adc monitor function */
+        if(getFetimParallelMonitor()==ERROR){
+            return ERROR;
+        }
+
+        /* Scale the data */
+        frontend.
+         fetim.
+          interlock.
+           sensors.
+            flow.
+             intrlkFlowSens[currentInterlockFlowModule].
+              flow=(FETIM_PAR_ADC_FLOW_SCALE*fetimRegisters.
+                                                             parAdcData)/FETIM_PAR_ADC_RANGE;
+    } else {
+        // SIMULATION_MODE
+        frontend.fetim.interlock.sensors.flow.intrlkFlowSens[currentInterlockFlowModule].flow = 2.1;
     }
-
-    /* Scale the data */
-    frontend.
-     fetim.
-      interlock.
-       sensors.
-        flow.
-         intrlkFlowSens[currentInterlockFlowModule].
-          flow=(FETIM_PAR_ADC_FLOW_SCALE*fetimRegisters.
-                                                         parAdcData)/FETIM_PAR_ADC_RANGE;
-
-
     return NO_ERROR;
 }
 
@@ -122,30 +131,36 @@ int getInterlockFlow(void){
         - \ref ERROR    -> if something wrong happened */
 int getIntrlkGlitchValue(void){
 
-    /* Clear the FETIM AREG */
-    fetimRegisters.
-     aRegOut.
-      integer=0x0000;
+    if (frontend.mode != SIMULATION_MODE) {
 
-    /* Select the desired monitor point */
-    fetimRegisters.
-     aRegOut.
-      bitField.
-       monitorPoint=FETIM_AREG_OUT_GLITCH_VALUE;
+        /* Clear the FETIM AREG */
+        fetimRegisters.
+         aRegOut.
+          integer=0x0000;
 
-    /* Call the parallel adc monitor function */
-    if(getFetimParallelMonitor()==ERROR){
-        return ERROR;
+        /* Select the desired monitor point */
+        fetimRegisters.
+         aRegOut.
+          bitField.
+           monitorPoint=FETIM_AREG_OUT_GLITCH_VALUE;
+
+        /* Call the parallel adc monitor function */
+        if(getFetimParallelMonitor()==ERROR){
+            return ERROR;
+        }
+
+        /* Scale the data */
+        frontend.
+         fetim.
+          interlock.
+           state.
+            glitch.
+             value=FETIM_PAR_ADC_GLITCH_OFFSET+(FETIM_PAR_ADC_GLITCH_SCALE*fetimRegisters.
+                                                                                           parAdcData)/(FETIM_PAR_ADC_RANGE - 1);
+    } else {
+        //SIMULATION_MODE
+        frontend.fetim.interlock.state.glitch.value = 0.333;
     }
-
-    /* Scale the data */
-    frontend.
-     fetim.
-      interlock.
-       state.
-        glitch.
-         value=FETIM_PAR_ADC_GLITCH_OFFSET+(FETIM_PAR_ADC_GLITCH_SCALE*fetimRegisters.
-                                                                                       parAdcData)/(FETIM_PAR_ADC_RANGE - 1);
     return NO_ERROR;
 }
 
@@ -156,41 +171,47 @@ int getIntrlkGlitchValue(void){
         - \ref ERROR    -> if something wrong happened */
 int getFetimExtTemp(void){
 
-    /* Clear the FETIM BREG */
-    fetimRegisters.
-     bRegOut.
-      integer=0x0000;
+    if (frontend.mode != SIMULATION_MODE) {
 
-    /* Select the desired monitor point */
-    fetimRegisters.
-     bRegOut.
-      bitField.
-       monitorPoint=FETIM_BREG_OUT_TEMPERATURE(currentAsyncFetimExtTempModule);
+        /* Clear the FETIM BREG */
+        fetimRegisters.
+         bRegOut.
+          integer=0x0000;
 
-    /* Call the serial adc monitor function */
-    switch(getFetimSerialMonitor()){
-        case NO_ERROR:
-            return NO_ERROR;
-            break;
-        case ERROR:
-            return ERROR;
-            break;
-        case ASYNC_DONE:
-            break;
-        default:
-            return ERROR;
-            break;
+        /* Select the desired monitor point */
+        fetimRegisters.
+         bRegOut.
+          bitField.
+           monitorPoint=FETIM_BREG_OUT_TEMPERATURE(currentAsyncFetimExtTempModule);
+
+        /* Call the serial adc monitor function */
+        switch(getFetimSerialMonitor()){
+            case NO_ERROR:
+                return NO_ERROR;
+                break;
+            case ERROR:
+                return ERROR;
+                break;
+            case ASYNC_DONE:
+                break;
+            default:
+                return ERROR;
+                break;
+        }
+
+        /* Scale the data */
+        frontend.
+         fetim.
+          compressor.
+           temp[currentAsyncFetimExtTempModule].
+            temp=FETIM_SER_ADC_TEMP_OFFSET+(FETIM_SER_ADC_TEMP_SCALE*fetimRegisters.
+                                                                                     serAdcData)/FETIM_SER_ADC_RANGE;
+
+    } else {
+        //SIMULATION_MODE
+        frontend.fetim.compressor.temp[currentAsyncFetimExtTempModule].temp =
+            22.0 + (float) currentAsyncFetimExtTempModule * 0.2;
     }
-
-    /* Scale the data */
-    frontend.
-     fetim.
-      compressor.
-       temp[currentAsyncFetimExtTempModule].
-        temp=FETIM_SER_ADC_TEMP_OFFSET+(FETIM_SER_ADC_TEMP_SCALE*fetimRegisters.
-                                                                                 serAdcData)/FETIM_SER_ADC_RANGE;
-
-
     return ASYNC_DONE;
 }
 
@@ -206,40 +227,45 @@ int getFetimExtTemp(void){
         - \ref ERROR    -> if something wrong happened */
 int getCompHe2Press(void){
 
-    /* Clear the FETIM BREG */
-    fetimRegisters.
-     bRegOut.
-      integer=0x0000;
+    if (frontend.mode != SIMULATION_MODE) {
 
-    /* Select the desired monitor point */
-    fetimRegisters.
-     bRegOut.
-      bitField.
-       monitorPoint=FETIM_BREG_OUT_HE2_PRESS;
+        /* Clear the FETIM BREG */
+        fetimRegisters.
+         bRegOut.
+          integer=0x0000;
 
-    /* Call the serial adc monitor function */
-    switch(getFetimSerialMonitor()){
-        case NO_ERROR:
-            return NO_ERROR;
-            break;
-        case ERROR:
-            return ERROR;
-            break;
-        case ASYNC_DONE:
-            break;
-        default:
-            return ERROR;
-            break;
+        /* Select the desired monitor point */
+        fetimRegisters.
+         bRegOut.
+          bitField.
+           monitorPoint=FETIM_BREG_OUT_HE2_PRESS;
+
+        /* Call the serial adc monitor function */
+        switch(getFetimSerialMonitor()){
+            case NO_ERROR:
+                return NO_ERROR;
+                break;
+            case ERROR:
+                return ERROR;
+                break;
+            case ASYNC_DONE:
+                break;
+            default:
+                return ERROR;
+                break;
+        }
+
+        /* Scale the data */
+        frontend.
+         fetim.
+          compressor.
+           he2Press.
+            pressure=FETIM_SER_ADC_HE2_PRESS_OFFSET+(FETIM_SER_ADC_HE2_PRESS_SCALE*fetimRegisters.
+                                                                                                   serAdcData)/FETIM_SER_ADC_RANGE;
+    } else {
+        //SIMULATION_MODE
+        frontend.fetim.compressor.he2Press.pressure = 4.2;
     }
-
-    /* Scale the data */
-    frontend.
-     fetim.
-      compressor.
-       he2Press.
-        pressure=FETIM_SER_ADC_HE2_PRESS_OFFSET+(FETIM_SER_ADC_HE2_PRESS_SCALE*fetimRegisters.
-                                                                                               serAdcData)/FETIM_SER_ADC_RANGE;
-
 
     return ASYNC_DONE;
 }
@@ -272,26 +298,28 @@ int setN2FillEnable(unsigned char enable){
                        cRegOut.
                         integer;
 
-    /* Update CREG_OUT */
-    fetimRegisters.
-     cRegOut.
-      bitField.
-       n2Fill=(enable==N2_FILL_ENABLE)?N2_FILL_ENABLE:
-                                       N2_FILL_DISABLE;
-
-    if(serialAccess(FETIM_PARALLEL_WRITE(FETIM_CREG_OUT),
-                    &fetimRegisters.
-                      cRegOut.
-                       integer,
-                    FETIM_CREG_OUT_SIZE,
-                    FETIM_CREG_OUT_SHIFT_SIZE,
-                    FETIM_CREG_OUT_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        /* Restore CREG_OUT to its original saved value */
+    if (frontend.mode != SIMULATION_MODE) {
+        /* Update CREG_OUT */
         fetimRegisters.
          cRegOut.
-          integer = tempCRegOut;
-        return ERROR;
+          bitField.
+           n2Fill=(enable==N2_FILL_ENABLE)?N2_FILL_ENABLE:
+                                           N2_FILL_DISABLE;
+
+        if(serialAccess(FETIM_PARALLEL_WRITE(FETIM_CREG_OUT),
+                        &fetimRegisters.
+                          cRegOut.
+                           integer,
+                        FETIM_CREG_OUT_SIZE,
+                        FETIM_CREG_OUT_SHIFT_SIZE,
+                        FETIM_CREG_OUT_SHIFT_DIR,
+                        SERIAL_WRITE)==ERROR){
+            /* Restore CREG_OUT to its original saved value */
+            fetimRegisters.
+             cRegOut.
+              integer = tempCRegOut;
+            return ERROR;
+        }
     }
 
     /* Since there is no real hardware read back, if no error occurred the
@@ -305,12 +333,6 @@ int setN2FillEnable(unsigned char enable){
     return NO_ERROR;
 
 }
-
-
-
-
-
-
 
 /* Set FE safe status */
 /*! This function controls the FE safe status bit. This is set by the FEMC based
@@ -335,29 +357,30 @@ int setFeSafeStatus(unsigned char safe){
     int tempDRegOut = fetimRegisters.
                        dRegOut.
                         integer;
+    if (frontend.mode != SIMULATION_MODE) {
 
-    /* Update DREG_OUT */
-    fetimRegisters.
-     dRegOut.
-      bitField.
-       feStatus=(safe==FE_STATUS_SAFE)?FE_STATUS_SAFE:
-                                       FE_STATUS_UNSAFE;
-
-    if(serialAccess(FETIM_PARALLEL_WRITE(FETIM_DREG_OUT),
-                    &fetimRegisters.
-                      dRegOut.
-                       integer,
-                    FETIM_DREG_OUT_SIZE,
-                    FETIM_DREG_OUT_SHIFT_SIZE,
-                    FETIM_DREG_OUT_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        /* Restore CREG_OUT to its original saved value */
+        /* Update DREG_OUT */
         fetimRegisters.
          dRegOut.
-          integer = tempDRegOut;
-        return ERROR;
-    }
+          bitField.
+           feStatus=(safe==FE_STATUS_SAFE)?FE_STATUS_SAFE:
+                                           FE_STATUS_UNSAFE;
 
+        if(serialAccess(FETIM_PARALLEL_WRITE(FETIM_DREG_OUT),
+                        &fetimRegisters.
+                          dRegOut.
+                           integer,
+                        FETIM_DREG_OUT_SIZE,
+                        FETIM_DREG_OUT_SHIFT_SIZE,
+                        FETIM_DREG_OUT_SHIFT_DIR,
+                        SERIAL_WRITE)==ERROR){
+            /* Restore CREG_OUT to its original saved value */
+            fetimRegisters.
+             dRegOut.
+              integer = tempDRegOut;
+            return ERROR;
+        }
+    }
     /* Since there is no real hardware read back, if no error occurred the
        current state is updated to reflect the issued command. */
     frontend.
@@ -369,11 +392,6 @@ int setFeSafeStatus(unsigned char safe){
     return NO_ERROR;
 
 }
-
-
-
-
-
 
 
 /* Get FETIM digital values */
@@ -398,165 +416,200 @@ int setFeSafeStatus(unsigned char safe){
         - \ref ERROR    -> if something went wrong */
 int getFetimDigital(unsigned char port){
 
-        /* A variable to temporarily hold the read data */
+    /* A variable to temporarily hold the read data */
     int tempDigData = 0x0000;
 
-    /* Read the digital data */
-    if(serialAccess(FETIM_PARALLEL_READ(FETIM_BREG_IN),
-                    &tempDigData,
-                    FETIM_BREG_IN_SIZE,
-                    FETIM_BREG_IN_SHIFT_SIZE,
-                    FETIM_BREG_IN_SHIFT_DIR,
-                    SERIAL_READ)==ERROR){
-        return ERROR;
+    if (frontend.mode != SIMULATION_MODE) {
+        /* Read the digital data */
+        if(serialAccess(FETIM_PARALLEL_READ(FETIM_BREG_IN),
+                        &tempDigData,
+                        FETIM_BREG_IN_SIZE,
+                        FETIM_BREG_IN_SHIFT_SIZE,
+                        FETIM_BREG_IN_SHIFT_DIR,
+                        SERIAL_READ)==ERROR){
+            return ERROR;
+        }
+
+        /* If no error store the data */
+        fetimRegisters.
+         bRegIn.
+          integer = tempDigData;
+
+        /* Assign to the correct variable depending on the port */
+        switch(port){
+            case FETIM_DIG_FLOW_OOR:
+                frontend.
+                 fetim.
+                  interlock.
+                   state.
+                    flowOutRng=fetimRegisters.
+                                               bRegIn.
+                                                bitField.
+                                                 intrlkFlowOutRng;
+                break;
+            case FETIM_DIG_TEMP_OOR:
+                frontend.
+                 fetim.
+                  interlock.
+                   state.
+                    tempOutRng=fetimRegisters.
+                                               bRegIn.
+                                                bitField.
+                                                 intrlkTempOutRng;
+                break;
+            case FETIM_DIG_GLITCH_CNT:
+                frontend.
+                 fetim.
+                  interlock.
+                   state.
+                    glitch.
+                     countTrig=fetimRegisters.
+                                               bRegIn.
+                                                bitField.
+                                                 glitchCntTrig;
+                break;
+            case FETIM_DIG_SHTDWN_TRIG:
+                frontend.
+                 fetim.
+                  interlock.
+                   state.
+                    shutdownTrig=fetimRegisters.
+                                                 bRegIn.
+                                                  bitField.
+                                                   shutdownTrig;
+                break;
+            case FETIM_DIG_SHTDWN_DELAY:
+                frontend.
+                 fetim.
+                  interlock.
+                   state.
+                    delayTrig=fetimRegisters.
+                                              bRegIn.
+                                               bitField.
+                                                shutdownDelayTrig;
+                break;
+            case FETIM_DIG_SINGLE_FAIL:
+                frontend.
+                 fetim.
+                  interlock.
+                   sensors.
+                    singleFail=fetimRegisters.
+                                               bRegIn.
+                                                bitField.
+                                                 singleFail;
+                break;
+            case FETIM_DIG_MULTI_FAIL:
+                frontend.
+                 fetim.
+                  interlock.
+                   state.
+                    multiFail=fetimRegisters.
+                                              bRegIn.
+                                               bitField.
+                                                multiFail;
+                break;
+            case FETIM_DIG_COMP_CBL_STA:
+                frontend.
+                 fetim.
+                 compressor.
+                  cableStatus=fetimRegisters.
+                                              bRegIn.
+                                               bitField.
+                                                compCableStatus;
+                break;
+            case FETIM_DIG_INTRLK_STA:
+                frontend.
+                 fetim.
+                  compressor.
+                   intrlkStatus=fetimRegisters.
+                                                bRegIn.
+                                                 bitField.
+                                                  compIntrlkStatus;
+                break;
+            case FETIM_DIG_HE2_PRESS_OOR:
+                frontend.
+                 fetim.
+                  compressor.
+                   he2Press.
+                    pressOutRng=fetimRegisters.
+                                                bRegIn.
+                                                 bitField.
+                                                  he2PressOutRng;
+                break;
+            case FETIM_DIG_EXT_TEMP_OOR: // currentCompressorModule
+                switch(currentCompressorModule){
+                    case EXT_TEMP_1:
+                        frontend.
+                         fetim.
+                          compressor.
+                           temp[currentCompressorModule].
+                            tempOutRng=fetimRegisters.
+                                                       bRegIn.
+                                                        bitField.
+                                                         compExtTemp1OutRng;
+                        break;
+                    case EXT_TEMP_2:
+                        frontend.
+                         fetim.
+                          compressor.
+                           temp[currentCompressorModule].
+                            tempOutRng=fetimRegisters.
+                                                       bRegIn.
+                                                        bitField.
+                                                         compExtTemp2OutRng;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    } else {
+        //SIMULATION_MODE
+        switch(port){
+            case FETIM_DIG_FLOW_OOR:
+                frontend.fetim.interlock.state.flowOutRng = 0;
+                break;
+            case FETIM_DIG_TEMP_OOR:
+                frontend.fetim.interlock.state.tempOutRng = 0;
+                break;
+            case FETIM_DIG_GLITCH_CNT:
+                frontend.fetim.interlock.state.glitch.countTrig = 0;
+                break;
+            case FETIM_DIG_SHTDWN_TRIG:
+                frontend.fetim.interlock.state.shutdownTrig = 0;
+                break;
+            case FETIM_DIG_SHTDWN_DELAY:
+                frontend.fetim.interlock.state.delayTrig = 0;
+                break;
+            case FETIM_DIG_SINGLE_FAIL:
+                frontend.fetim.interlock.sensors.singleFail = 0;
+                break;
+            case FETIM_DIG_MULTI_FAIL:
+                frontend.fetim.interlock.state.multiFail = 0;
+                break;
+            case FETIM_DIG_COMP_CBL_STA:
+                frontend.fetim.compressor.cableStatus = 0;
+                break;
+            case FETIM_DIG_INTRLK_STA:
+                frontend.fetim.compressor.intrlkStatus = 0;
+                break;
+            case FETIM_DIG_HE2_PRESS_OOR:
+                frontend.fetim.compressor.he2Press.pressOutRng = 0;
+                break;
+            case FETIM_DIG_EXT_TEMP_OOR: // currentCompressorModule
+                frontend.fetim.compressor.temp[currentCompressorModule].tempOutRng = 0;
+                break;
+            default:
+                break;
+        }
     }
-
-    /* If no error store the data */
-    fetimRegisters.
-     bRegIn.
-      integer = tempDigData;
-
-    /* Assign to the correct variable depending on the port */
-    switch(port){
-        case FETIM_DIG_FLOW_OOR:
-            frontend.
-             fetim.
-              interlock.
-               state.
-                flowOutRng=fetimRegisters.
-                                           bRegIn.
-                                            bitField.
-                                             intrlkFlowOutRng;
-            break;
-        case FETIM_DIG_TEMP_OOR:
-            frontend.
-             fetim.
-              interlock.
-               state.
-                tempOutRng=fetimRegisters.
-                                           bRegIn.
-                                            bitField.
-                                             intrlkTempOutRng;
-            break;
-        case FETIM_DIG_GLITCH_CNT:
-            frontend.
-             fetim.
-              interlock.
-               state.
-                glitch.
-                 countTrig=fetimRegisters.
-                                           bRegIn.
-                                            bitField.
-                                             glitchCntTrig;
-            break;
-        case FETIM_DIG_SHTDWN_TRIG:
-            frontend.
-             fetim.
-              interlock.
-               state.
-                shutdownTrig=fetimRegisters.
-                                             bRegIn.
-                                              bitField.
-                                               shutdownTrig;
-            break;
-        case FETIM_DIG_SHTDWN_DELAY:
-            frontend.
-             fetim.
-              interlock.
-               state.
-                delayTrig=fetimRegisters.
-                                          bRegIn.
-                                           bitField.
-                                            shutdownDelayTrig;
-            break;
-        case FETIM_DIG_SINGLE_FAIL:
-            frontend.
-             fetim.
-              interlock.
-               sensors.
-                singleFail=fetimRegisters.
-                                           bRegIn.
-                                            bitField.
-                                             singleFail;
-            break;
-        case FETIM_DIG_MULTI_FAIL:
-            frontend.
-             fetim.
-              interlock.
-               state.
-                multiFail=fetimRegisters.
-                                          bRegIn.
-                                           bitField.
-                                            multiFail;
-            break;
-        case FETIM_DIG_COMP_CBL_STA:
-            frontend.
-             fetim.
-             compressor.
-              cableStatus=fetimRegisters.
-                                          bRegIn.
-                                           bitField.
-                                            compCableStatus;
-            break;
-        case FETIM_DIG_INTRLK_STA:
-            frontend.
-             fetim.
-              compressor.
-               intrlkStatus=fetimRegisters.
-                                            bRegIn.
-                                             bitField.
-                                              compIntrlkStatus;
-            break;
-        case FETIM_DIG_HE2_PRESS_OOR:
-            frontend.
-             fetim.
-              compressor.
-               he2Press.
-                pressOutRng=fetimRegisters.
-                                            bRegIn.
-                                             bitField.
-                                              he2PressOutRng;
-            break;
-        case FETIM_DIG_EXT_TEMP_OOR: // currentCompressorModule
-            switch(currentCompressorModule){
-                case EXT_TEMP_1:
-                    frontend.
-                     fetim.
-                      compressor.
-                       temp[currentCompressorModule].
-                        tempOutRng=fetimRegisters.
-                                                   bRegIn.
-                                                    bitField.
-                                                     compExtTemp1OutRng;
-                    break;
-                case EXT_TEMP_2:
-                    frontend.
-                     fetim.
-                      compressor.
-                       temp[currentCompressorModule].
-                        tempOutRng=fetimRegisters.
-                                                   bRegIn.
-                                                    bitField.
-                                                     compExtTemp2OutRng;
-                    break;
-                default:
-                    break;
-            }
-            break;
-        default:
-            break;
-    }
-
-
     return NO_ERROR;
 }
 
 
-
-
-
-
-/* Read the paralled ADC */
+/* Read the parallel ADC */
 int getFetimParallelMonitor(void){
 
     /* A variable to hold the incoming parallel ADC data */

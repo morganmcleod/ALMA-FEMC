@@ -19,7 +19,7 @@
 /* Includes */
 #include <stddef.h>     /* NULL */
 #include <stdio.h>      /* printf */
-
+#include <stdlib.h>     /* rand */
 #include "biasSerialInterface.h"
 #include "error.h"
 #include "serialInterface.h"
@@ -303,35 +303,51 @@ if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,BIAS_AREG),
         - \ref ERROR    -> if something wrong happened */
 int getSisMixerBias(unsigned char current){
 
-    /* Clear the BIAS AREG */
-    biasRegisters[currentModule].aReg.integer=0x0000;
+    if (frontend.mode != SIMULATION_MODE) {
+        /* Clear the BIAS AREG */
+        biasRegisters[currentModule].aReg.integer=0x0000;
 
-    /* 1 - Select the desired monitor point
-           a - update AREG */
-    biasRegisters[currentModule].aReg.bitField.monitorPoint =
-        BIAS_AREG_SIS_MIXER(currentPolarizationModule, current);
+        /* 1 - Select the desired monitor point
+               a - update AREG */
+        biasRegisters[currentModule].aReg.bitField.monitorPoint =
+            BIAS_AREG_SIS_MIXER(currentPolarizationModule, current);
 
-    /* 2->5 Call the getBiasAnalogMonitor function */
-    if(getBiasAnalogMonitor()==ERROR){
-        return ERROR;
-    }
+        /* 2->5 Call the getBiasAnalogMonitor function */
+        if(getBiasAnalogMonitor()==ERROR){
+            return ERROR;
+        }
 
-    /* 6 - Scale the data */
-    switch(current){
-        /* The current is given by: 20*(adcData/65536)/Rs */
-        case SIS_MIXER_BIAS_CURRENT:
-            frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
-                sis.current = (BIAS_ADC_SIS_I_SCALE * biasRegisters[currentModule].adcData / 
-                (frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
-                sis.resistor * BIAS_ADC_RANGE));
-            break;
-        /* The voltage is given by: 50*(adcData/65536) */
-        case SIS_MIXER_BIAS_VOLTAGE:
-            frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
-                sis.voltage = (BIAS_ADC_SIS_V_SCALE * biasRegisters[currentModule].adcData) / BIAS_ADC_RANGE;
-            break;
-        default:
-            break;
+        /* 6 - Scale the data */
+        switch(current){
+            /* The current is given by: 20*(adcData/65536)/Rs */
+            case SIS_MIXER_BIAS_CURRENT:
+                frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
+                    sis.current = (BIAS_ADC_SIS_I_SCALE * biasRegisters[currentModule].adcData /
+                    (frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
+                    sis.resistor * BIAS_ADC_RANGE));
+                break;
+            /* The voltage is given by: 50*(adcData/65536) */
+            case SIS_MIXER_BIAS_VOLTAGE:
+                frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
+                    sis.voltage = (BIAS_ADC_SIS_V_SCALE * biasRegisters[currentModule].adcData) / BIAS_ADC_RANGE;
+                break;
+            default:
+                break;
+        }
+    } else {
+        // SIMULATION_MODE
+        switch(current) {
+            case SIS_MIXER_BIAS_CURRENT:
+                frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
+                                   sis.current = 9.0 + ((float) rand() / (float) RAND_MAX) * 2.0;
+                break;
+            case SIS_MIXER_BIAS_VOLTAGE:
+                frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
+                                    sis.voltage = 2.5 + ((float) rand() / (float) RAND_MAX);
+                break;
+            default:
+                break;
+        }
     }
     return NO_ERROR;
 }
@@ -350,31 +366,33 @@ int getSisMixerBias(unsigned char current){
         - \ref ERROR    -> if something wrong happened */
 int setSisMixerBias(void){
 
-    /* Setup the DAC2 message */
-    /* Select the register to address */
-    biasRegisters[currentModule].dac2Reg.bitField.
-       inputRegister=BIAS_DAC2_REGISTER(BIAS_DAC2_SIS_MIXER_VOLTAGE(currentPolarizationModule));
-    /* Setup quick load */
-    biasRegisters[currentModule].dac2Reg.bitField.quickLoad=NO;
-    /* 1 - Format the data according to the dac specifications. */
-    biasRegisters[currentModule].dac2Reg.bitField.data=BIAS_DAC2_SIS_MIXER_V_SCALE(CONV_FLOAT);
+    if (frontend.mode != SIMULATION_MODE) {
 
-    /* 2 - Write the data to the serial access function */
-    #ifdef DEBUG_BIAS_SERIAL
-        printf("         - Writing DAC2: %u\n",
-               biasRegisters[currentModule].dac2Reg.bitField.data);
-    #endif /* DEBUG_BIAS_SERIAL */
+        /* Setup the DAC2 message */
+        /* Select the register to address */
+        biasRegisters[currentModule].dac2Reg.bitField.
+           inputRegister=BIAS_DAC2_REGISTER(BIAS_DAC2_SIS_MIXER_VOLTAGE(currentPolarizationModule));
+        /* Setup quick load */
+        biasRegisters[currentModule].dac2Reg.bitField.quickLoad=NO;
+        /* 1 - Format the data according to the dac specifications. */
+        biasRegisters[currentModule].dac2Reg.bitField.data=BIAS_DAC2_SIS_MIXER_V_SCALE(CONV_FLOAT);
 
-    /* If there is a problem writing DAC2, return the error. */
-    if(serialAccess(BIAS_DAC_DATA_WRITE(currentBiasModule,BIAS_DAC2),
-                    biasRegisters[currentModule].dac2Reg.integer,
-                    BIAS_DAC2_DATA_SIZE,
-                    BIAS_DAC2_DATA_SHIFT_SIZE,
-                    BIAS_DAC2_DATA_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        return ERROR;
+        /* 2 - Write the data to the serial access function */
+        #ifdef DEBUG_BIAS_SERIAL
+            printf("         - Writing DAC2: %u\n",
+                   biasRegisters[currentModule].dac2Reg.bitField.data);
+        #endif /* DEBUG_BIAS_SERIAL */
+
+        /* If there is a problem writing DAC2, return the error. */
+        if(serialAccess(BIAS_DAC_DATA_WRITE(currentBiasModule,BIAS_DAC2),
+                        biasRegisters[currentModule].dac2Reg.integer,
+                        BIAS_DAC2_DATA_SIZE,
+                        BIAS_DAC2_DATA_SHIFT_SIZE,
+                        BIAS_DAC2_DATA_SHIFT_DIR,
+                        SERIAL_WRITE)==ERROR){
+            return ERROR;
+        }
     }
-
     return NO_ERROR;
 }
 
@@ -400,38 +418,42 @@ int setSisMixerLoop(unsigned char biasMode){
        a temporary variable so that if any error occurs during the update of the
        hardware state, we don't end up with a BREG describing a different state
        than the hardware one. */
-    int tempBReg=biasRegisters[currentModule].bReg.integer;
 
-    /* Update BREG. */
-    switch(biasMode){
-        case SIS_MIXER_BIAS_MODE_OPEN:
-            biasRegisters[currentModule].bReg.bitField.
-               sisBiasMode|=BIAS_BREG_SIS_MODE(currentPolarizationModule);
-            break;
-        case SIS_MIXER_BIAS_MODE_CLOSE:
-            biasRegisters[currentModule].bReg.bitField.
-               sisBiasMode&=~BIAS_BREG_SIS_MODE(currentPolarizationModule);
-            break;
-        default:
-            break;
+    if (frontend.mode != SIMULATION_MODE) {
+
+        int tempBReg=biasRegisters[currentModule].bReg.integer;
+
+        /* Update BREG. */
+        switch(biasMode){
+            case SIS_MIXER_BIAS_MODE_OPEN:
+                biasRegisters[currentModule].bReg.bitField.
+                   sisBiasMode|=BIAS_BREG_SIS_MODE(currentPolarizationModule);
+                break;
+            case SIS_MIXER_BIAS_MODE_CLOSE:
+                biasRegisters[currentModule].bReg.bitField.
+                   sisBiasMode&=~BIAS_BREG_SIS_MODE(currentPolarizationModule);
+                break;
+            default:
+                break;
+        }
+        /* 1 - Parallel write BREG */
+        #ifdef DEBUG_BIAS_SERIAL
+            printf("         - Writing BREG\n");
+        #endif /* DEBUG_BIAS_SERIAL */
+        if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,BIAS_BREG),
+                        &biasRegisters[currentModule].bReg.integer,
+                        BIAS_BREG_SIZE,
+                        BIAS_BREG_SHIFT_SIZE,
+                        BIAS_BREG_SHIFT_DIR,
+                        SERIAL_WRITE)==ERROR){
+            /* Restore BREG to its original saved value */
+            biasRegisters[currentModule].bReg.integer = tempBReg;
+
+            return ERROR;
+        }
     }
-    /* 1 - Parallel write BREG */
-    #ifdef DEBUG_BIAS_SERIAL
-        printf("         - Writing BREG\n");
-    #endif /* DEBUG_BIAS_SERIAL */
-    if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,BIAS_BREG),
-                    &biasRegisters[currentModule].bReg.integer,
-                    BIAS_BREG_SIZE,
-                    BIAS_BREG_SHIFT_SIZE,
-                    BIAS_BREG_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        /* Restore BREG to its original saved value */
-        biasRegisters[currentModule].bReg.integer = tempBReg;
 
-        return ERROR;
-    }
-
-    /* Since there is no real hardware read-back, if no erro occurred, the
+    /* Since there is no real hardware read-back, if no error occurred, the
        current state is updated to reflect the issued command. */
     frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
         sis.openLoop = (biasMode == SIS_MIXER_BIAS_MODE_OPEN) ? SIS_MIXER_BIAS_MODE_OPEN : SIS_MIXER_BIAS_MODE_CLOSE;
@@ -463,33 +485,51 @@ int setSisMixerLoop(unsigned char biasMode){
 
 int getSisMagnetBias(unsigned char current){
 
-    /* Clear the BIAS AREG */
-    biasRegisters[currentModule].aReg.integer=0x0000;
+    if (frontend.mode != SIMULATION_MODE) {
 
-    /* 1 - Select the desired monitor point
-           a - update AREG */
-    biasRegisters[currentModule].aReg.bitField.monitorPoint = 
-        BIAS_AREG_SIS_MAGNET(currentPolarizationModule, current);
+        /* Clear the BIAS AREG */
+        biasRegisters[currentModule].aReg.integer=0x0000;
 
-    /* 2->5 Call the getBiasAnalogMonitor function */
-    if(getBiasAnalogMonitor()==ERROR){
-        return ERROR;
-    }
+        /* 1 - Select the desired monitor point
+               a - update AREG */
+        biasRegisters[currentModule].aReg.bitField.monitorPoint =
+            BIAS_AREG_SIS_MAGNET(currentPolarizationModule, current);
 
-    /* 6 - Scale the data */
-    switch(current){
-        /* The current is given by: 20*(adcData/65536)/Rs */
-        case SIS_MAGNET_BIAS_CURRENT:
-            frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
-                sisMagnet.current = (BIAS_ADC_SIS_MAG_I_SCALE * biasRegisters[currentModule].adcData) / BIAS_ADC_RANGE;
-            break;
-        /* The voltage is given by: 50*(adcData/65536) */
-        case SIS_MAGNET_BIAS_VOLTAGE:
-            frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
-                sisMagnet.voltage = (BIAS_ADC_SIS_MAG_V_SCALE * biasRegisters[currentModule].adcData) / BIAS_ADC_RANGE;
-            break;
-        default:
-            break;
+
+        /* 2->5 Call the getBiasAnalogMonitor function */
+        if(getBiasAnalogMonitor()==ERROR){
+            return ERROR;
+        }
+
+        /* 6 - Scale the data */
+        switch(current){
+            /* The current is given by: 20*(adcData/65536)/Rs */
+            case SIS_MAGNET_BIAS_CURRENT:
+                frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
+                    sisMagnet.current = (BIAS_ADC_SIS_MAG_I_SCALE * biasRegisters[currentModule].adcData) / BIAS_ADC_RANGE;
+                break;
+            /* The voltage is given by: 50*(adcData/65536) */
+            case SIS_MAGNET_BIAS_VOLTAGE:
+                frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
+                    sisMagnet.voltage = (BIAS_ADC_SIS_MAG_V_SCALE * biasRegisters[currentModule].adcData) / BIAS_ADC_RANGE;
+                break;
+            default:
+                break;
+        }
+    } else {
+        // SIMULATION_MODE
+        switch(current){
+            case SIS_MAGNET_BIAS_CURRENT:
+                frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
+                    sisMagnet.current = 24.0 + ((float) rand() / (float) RAND_MAX);
+                break;
+            case SIS_MAGNET_BIAS_VOLTAGE:
+                frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
+                    sisMagnet.voltage = ((float) rand() / (float) RAND_MAX);
+                break;
+            default:
+                break;
+        }
     }
     return NO_ERROR;
 }
@@ -507,29 +547,30 @@ int getSisMagnetBias(unsigned char current){
         - \ref ERROR    -> if something wrong happened */
 int setSisMagnetBias(void){
 
-    /* Setup the DAC2 message */
-    /* Select the register to address */
-    biasRegisters[currentModule].dac2Reg.bitField.inputRegister =
-        BIAS_DAC2_REGISTER(BIAS_DAC2_SIS_MAGNET_CURRENT(currentPolarizationModule));
-    /* Setup quick load */
-    biasRegisters[currentModule].dac2Reg.bitField.quickLoad = NO;
-    /* 1 - Format the data according to the dac specifications. */
-    biasRegisters[currentModule].dac2Reg.bitField.data = BIAS_DAC2_SIS_MAGNET_C_SCALE(CONV_FLOAT);
+    if (frontend.mode != SIMULATION_MODE) {
+        /* Setup the DAC2 message */
+        /* Select the register to address */
+        biasRegisters[currentModule].dac2Reg.bitField.inputRegister =
+            BIAS_DAC2_REGISTER(BIAS_DAC2_SIS_MAGNET_CURRENT(currentPolarizationModule));
+        /* Setup quick load */
+        biasRegisters[currentModule].dac2Reg.bitField.quickLoad = NO;
+        /* 1 - Format the data according to the dac specifications. */
+        biasRegisters[currentModule].dac2Reg.bitField.data = BIAS_DAC2_SIS_MAGNET_C_SCALE(CONV_FLOAT);
 
-    /* 2 - Write the data to the serial access function */
-    #ifdef DEBUG_BIAS_SERIAL
-        printf("         - Writing DAC2: %u\n",
-               biasRegisters[currentModule].dac2Reg.bitField.data);
-    #endif /* DEBUG_BIAS_SERIAL */
-    if(serialAccess(BIAS_DAC_DATA_WRITE(currentBiasModule,BIAS_DAC2),
-                    biasRegisters[currentModule].dac2Reg.integer,
-                    BIAS_DAC2_DATA_SIZE,
-                    BIAS_DAC2_DATA_SHIFT_SIZE,
-                    BIAS_DAC2_DATA_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        return ERROR;
+        /* 2 - Write the data to the serial access function */
+        #ifdef DEBUG_BIAS_SERIAL
+            printf("         - Writing DAC2: %u\n",
+                   biasRegisters[currentModule].dac2Reg.bitField.data);
+        #endif /* DEBUG_BIAS_SERIAL */
+        if(serialAccess(BIAS_DAC_DATA_WRITE(currentBiasModule,BIAS_DAC2),
+                        biasRegisters[currentModule].dac2Reg.integer,
+                        BIAS_DAC2_DATA_SIZE,
+                        BIAS_DAC2_DATA_SHIFT_SIZE,
+                        BIAS_DAC2_DATA_SHIFT_DIR,
+                        SERIAL_WRITE)==ERROR){
+            return ERROR;
+        }
     }
-
     return NO_ERROR;
 }
 
@@ -556,39 +597,40 @@ int setLnaBiasEnable(unsigned char enable){
        than the hardware one. */
     int tempBReg=biasRegisters[currentModule].bReg.integer;
 
-    /* Update BREG. */
-    switch(enable){
-        case LNA_BIAS_ENABLE:
-            biasRegisters[currentModule].bReg.bitField.lnaBiasEnable |= 
-                BIAS_BREG_LNA_ENABLE(currentPolarizationModule);
-            break;
-        case LNA_BIAS_DISABLE:
-            biasRegisters[currentModule].bReg.bitField.lnaBiasEnable &= 
-                ~BIAS_BREG_LNA_ENABLE(currentPolarizationModule);
-            break;
-        default:
-            break;
+    if (frontend.mode != SIMULATION_MODE) {
+        /* Update BREG. */
+        switch(enable){
+            case LNA_BIAS_ENABLE:
+                biasRegisters[currentModule].bReg.bitField.lnaBiasEnable |=
+                    BIAS_BREG_LNA_ENABLE(currentPolarizationModule);
+                break;
+            case LNA_BIAS_DISABLE:
+                biasRegisters[currentModule].bReg.bitField.lnaBiasEnable &=
+                    ~BIAS_BREG_LNA_ENABLE(currentPolarizationModule);
+                break;
+            default:
+                break;
+        }
+
+        /* 1 - Parallel write BREG */
+        #ifdef DEBUG_BIAS_SERIAL
+            printf("         - Writing BREG\n");
+        #endif /* DEBUG_BIAS_SERIAL */
+
+        /* If there is a problem writing BREG, restore BREG and return the ERROR. */
+        if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule, BIAS_BREG),
+                        &biasRegisters[currentModule].bReg.integer,
+                        BIAS_BREG_SIZE,
+                        BIAS_BREG_SHIFT_SIZE,
+                        BIAS_BREG_SHIFT_DIR,
+                        SERIAL_WRITE)==ERROR){
+
+            /* Restore BREG to its original saved value */
+            biasRegisters[currentModule].bReg.integer = tempBReg;
+
+            return ERROR;
+        }
     }
-
-    /* 1 - Parallel write BREG */
-    #ifdef DEBUG_BIAS_SERIAL
-        printf("         - Writing BREG\n");
-    #endif /* DEBUG_BIAS_SERIAL */
-
-    /* If there is a problem writing BREG, restore BREG and return the ERROR. */
-    if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule, BIAS_BREG),
-                    &biasRegisters[currentModule].bReg.integer,
-                    BIAS_BREG_SIZE,
-                    BIAS_BREG_SHIFT_SIZE,
-                    BIAS_BREG_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-
-        /* Restore BREG to its original saved value */
-        biasRegisters[currentModule].bReg.integer = tempBReg;
-
-        return ERROR;
-    }
-
     /* Since there is no real hardware read back, if no error occured the
        current state is updated to reflect the issued command. */
     frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
@@ -615,43 +657,63 @@ int setLnaBiasEnable(unsigned char enable){
         - \ref ERROR    -> if something wrong happened */
 int getLnaStage(void){
 
-    /* Clear the BIAS AREG */
-    biasRegisters[currentModule].aReg.integer=0x0000;
+    if (frontend.mode != SIMULATION_MODE) {
+        /* Clear the BIAS AREG */
+        biasRegisters[currentModule].aReg.integer=0x0000;
 
-    /* 1 - Select the desired monitor point
-           a - update AREG */
-    biasRegisters[currentModule].aReg.bitField.lnaStage=BIAS_AREG_LNA_STAGE(currentLnaModule);
+        /* 1 - Select the desired monitor point
+               a - update AREG */
+        biasRegisters[currentModule].aReg.bitField.lnaStage=BIAS_AREG_LNA_STAGE(currentLnaModule);
 
-    biasRegisters[currentModule].aReg.bitField.
-        lnaPoint = BIAS_AREG_LNA_STAGE_PORT(currentPolarizationModule, currentLnaStageModule);
+        biasRegisters[currentModule].aReg.bitField.
+            lnaPoint = BIAS_AREG_LNA_STAGE_PORT(currentPolarizationModule, currentLnaStageModule);
 
-    /* 2->5 Call the getBiasAnalogMonitor function */
-    if(getBiasAnalogMonitor()==ERROR){
-        return ERROR;
-    }
+        /* 2->5 Call the getBiasAnalogMonitor function */
+        if(getBiasAnalogMonitor()==ERROR){
+            return ERROR;
+        }
 
-    /* 6 - Scale the data */
-    switch(currentLnaStageModule){
-        /* The LNA drain voltage is given by: 10*(adcData/65536) */
-        case LNA_STAGE_DRAIN_V:
-            frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
-                lna.stage[currentLnaModule].drainVoltage = 
-                (BIAS_ADC_LNA_DRAIN_V_SCALE * biasRegisters[currentModule].adcData) / BIAS_ADC_RANGE;
-            break;
-        /* The LNA drain current is given by: 100*(adcData/65536) */
-        case LNA_STAGE_DRAIN_C:
-            frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
-                lna.stage[currentLnaModule].drainCurrent =
-                (BIAS_ADC_LNA_DRAIN_C_SCALE * biasRegisters[currentModule].adcData) / BIAS_ADC_RANGE;
-            break;
-        /* The LNA gate voltage is given by: 10*(adcData/65536) */
-        case LNA_STAGE_GATE_V:
-            frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
-                lna.stage[currentLnaModule].gateVoltage = 
-                (BIAS_ADC_LNA_GATE_V_SCALE * biasRegisters[currentModule].adcData) / BIAS_ADC_RANGE;
-            break;
-        default:
-            break;
+        /* 6 - Scale the data */
+        switch(currentLnaStageModule){
+            /* The LNA drain voltage is given by: 10*(adcData/65536) */
+            case LNA_STAGE_DRAIN_V:
+                frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
+                    lna.stage[currentLnaModule].drainVoltage =
+                    (BIAS_ADC_LNA_DRAIN_V_SCALE * biasRegisters[currentModule].adcData) / BIAS_ADC_RANGE;
+                break;
+            /* The LNA drain current is given by: 100*(adcData/65536) */
+            case LNA_STAGE_DRAIN_C:
+                frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
+                    lna.stage[currentLnaModule].drainCurrent =
+                    (BIAS_ADC_LNA_DRAIN_C_SCALE * biasRegisters[currentModule].adcData) / BIAS_ADC_RANGE;
+                break;
+            /* The LNA gate voltage is given by: 10*(adcData/65536) */
+            case LNA_STAGE_GATE_V:
+                frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
+                    lna.stage[currentLnaModule].gateVoltage =
+                    (BIAS_ADC_LNA_GATE_V_SCALE * biasRegisters[currentModule].adcData) / BIAS_ADC_RANGE;
+                break;
+            default:
+                break;
+        }
+    } else {
+        //SIMULATION_MODE
+        switch(currentLnaStageModule){
+            case LNA_STAGE_DRAIN_V:
+                frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
+                    lna.stage[currentLnaModule].drainVoltage = 3.0;
+                break;
+            case LNA_STAGE_DRAIN_C:
+                frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
+                    lna.stage[currentLnaModule].drainCurrent = 0.7;
+                break;
+            case LNA_STAGE_GATE_V:
+                frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
+                    lna.stage[currentLnaModule].gateVoltage = 0.2;
+                break;
+            default:
+                break;
+        }
     }
     return NO_ERROR;
 }
@@ -673,99 +735,101 @@ int setLnaStage(void){
     /* A temporary variable to deal with the timer. */
     int timedOut;
 
-    /* 1 - Setup the DAC1 message */
-    /* Set the toggle mode. Since we're not using the toggle function, this bit
-       is always to 0. */
-    biasRegisters[currentModule].dac1Reg.bitField.toggleABSelect=BIAS_DAC1_TOGGLE_OFF;
-    /* Set the read/_write mode. Since the read mode is not supported by the
-       hardware, this bit is always set to 0. */
-    biasRegisters[currentModule].dac1Reg.bitField.readWrite=BIAS_DAC1_READ_WRITE;
-    /* Select the channel to write to. */
-    biasRegisters[currentModule].dac1Reg.bitField.channel = 
-        BIAS_DAC1_LNA_STAGE_PORT(currentPolarizationModule, currentLnaStageModule, currentLnaModule);
-    /* Select the input register to update. */
-    biasRegisters[currentModule].dac1Reg.bitField.inputRegister=BIAS_DAC1_INPUT_DATA_REGISTER;
-    /* Scale the data to conform to the DAC1 requirements */
-    switch(currentLnaStageModule){
-        /* The LNA drain voltage is given by: (Vds/5)*16384 */
-        case LNA_STAGE_DRAIN_V:
-            biasRegisters[currentModule].dac1Reg.bitField.data = BIAS_DAC1_LNA_STAGE_DRAIN_V_SCALE(CONV_FLOAT);
-            break;
-        /* The LNA drain voltage is given by: (Ids/50)*16384 */
-        case LNA_STAGE_DRAIN_C:
-            biasRegisters[currentModule].dac1Reg.bitField.data=  BIAS_DAC1_LNA_STAGE_DRAIN_C_SCALE(CONV_FLOAT);
-            break;
-        default:
-            break;
-   }
+    if (frontend.mode != SIMULATION_MODE) {
 
-   /* 2 - Wait on DAC1 ready status
-       - parallel input */
+        /* 1 - Setup the DAC1 message */
+        /* Set the toggle mode. Since we're not using the toggle function, this bit
+           is always to 0. */
+        biasRegisters[currentModule].dac1Reg.bitField.toggleABSelect=BIAS_DAC1_TOGGLE_OFF;
+        /* Set the read/_write mode. Since the read mode is not supported by the
+           hardware, this bit is always set to 0. */
+        biasRegisters[currentModule].dac1Reg.bitField.readWrite=BIAS_DAC1_READ_WRITE;
+        /* Select the channel to write to. */
+        biasRegisters[currentModule].dac1Reg.bitField.channel =
+            BIAS_DAC1_LNA_STAGE_PORT(currentPolarizationModule, currentLnaStageModule, currentLnaModule);
+        /* Select the input register to update. */
+        biasRegisters[currentModule].dac1Reg.bitField.inputRegister=BIAS_DAC1_INPUT_DATA_REGISTER;
+        /* Scale the data to conform to the DAC1 requirements */
+        switch(currentLnaStageModule){
+            /* The LNA drain voltage is given by: (Vds/5)*16384 */
+            case LNA_STAGE_DRAIN_V:
+                biasRegisters[currentModule].dac1Reg.bitField.data = BIAS_DAC1_LNA_STAGE_DRAIN_V_SCALE(CONV_FLOAT);
+                break;
+            /* The LNA drain voltage is given by: (Ids/50)*16384 */
+            case LNA_STAGE_DRAIN_C:
+                biasRegisters[currentModule].dac1Reg.bitField.data=  BIAS_DAC1_LNA_STAGE_DRAIN_C_SCALE(CONV_FLOAT);
+                break;
+            default:
+                break;
+        }
 
-   /* Setup for 1 seconds and start the asynchronous timer */
-   if(startAsyncTimer(TIMER_BIAS_DAC1_RDY,
-                      TIMER_BIAS_TO_DAC1_RDY,
-                      FALSE)==ERROR){
-       return ERROR;
-   }
+        /* 2 - Wait on DAC1 ready status
+           - parallel input */
 
-   do {
-       #ifdef DEBUG_BIAS_SERIAL
-           printf("         - Waiting on DAC1 ready\n");
-       #endif /* DEBUG_BIAS_SERIAL */
+        /* Setup for 1 seconds and start the asynchronous timer */
+        if(startAsyncTimer(TIMER_BIAS_DAC1_RDY,
+                          TIMER_BIAS_TO_DAC1_RDY,
+                          FALSE)==ERROR){
+           return ERROR;
+        }
 
-       /* If there is a problem writing to DAC1, return error so that the
-          frontend variable is not going to be updated. */
-       if(serialAccess(BIAS_PARALLEL_READ(currentBiasModule), 
-                       &biasRegisters[currentModule].statusReg.integer,
-                       BIAS_STATUS_REG_SIZE,
-                       BIAS_STATUS_REG_SHIFT_SIZE,
-                       BIAS_STATUS_REG_SHIFT_DIR,
-                       SERIAL_READ)==ERROR){
+        do {
+           #ifdef DEBUG_BIAS_SERIAL
+               printf("         - Waiting on DAC1 ready\n");
+           #endif /* DEBUG_BIAS_SERIAL */
 
-           /* Stop the timer. */
-           if(stopAsyncTimer(TIMER_BIAS_DAC1_RDY)==ERROR){
+           /* If there is a problem writing to DAC1, return error so that the
+              frontend variable is not going to be updated. */
+           if(serialAccess(BIAS_PARALLEL_READ(currentBiasModule),
+                           &biasRegisters[currentModule].statusReg.integer,
+                           BIAS_STATUS_REG_SIZE,
+                           BIAS_STATUS_REG_SHIFT_SIZE,
+                           BIAS_STATUS_REG_SHIFT_DIR,
+                           SERIAL_READ)==ERROR){
+
+               /* Stop the timer. */
+               if(stopAsyncTimer(TIMER_BIAS_DAC1_RDY)==ERROR){
+                   return ERROR;
+               }
+
                return ERROR;
            }
+           timedOut=queryAsyncTimer(TIMER_BIAS_DAC1_RDY);
+           if(timedOut==ERROR){
+               return ERROR;
+           }
+        } while ((biasRegisters[currentModule].statusReg.bitField.dac1Ready == BIAS_DAC1_BUSY)
+            && (timedOut == TIMER_RUNNING));
 
+        /* If the timer has expired signal the error */
+        if(timedOut==TIMER_EXPIRED){
+           storeError(ERR_BIAS_SERIAL, ERC_HARDWARE_TIMEOUT); //Timeout while waiting for the DAC1 to become ready
            return ERROR;
-       }
-       timedOut=queryAsyncTimer(TIMER_BIAS_DAC1_RDY);
-       if(timedOut==ERROR){
+        }
+
+        /* In case of no error, clear the asynchronous timer. */
+        if(stopAsyncTimer(TIMER_BIAS_DAC1_RDY)==ERROR){
            return ERROR;
-       }
-   } while ((biasRegisters[currentModule].statusReg.bitField.dac1Ready == BIAS_DAC1_BUSY) 
-        && (timedOut == TIMER_RUNNING));
+        }
 
-   /* If the timer has expired signal the error */
-   if(timedOut==TIMER_EXPIRED){
-       storeError(ERR_BIAS_SERIAL, ERC_HARDWARE_TIMEOUT); //Timeout while waiting for the DAC1 to become ready
-       return ERROR;
-   }
+        /* 3 - Write the data to the serial access function */
+        #ifdef DEBUG_BIAS_SERIAL
+            printf("         - Writing DAC1: %u\n",
+                   biasRegisters[currentModule].dac1Reg.bitField.data);
+        #endif /* DEBUG_BIAS_SERIAL */
 
-   /* In case of no error, clear the asynchronous timer. */
-   if(stopAsyncTimer(TIMER_BIAS_DAC1_RDY)==ERROR){
-       return ERROR;
-   }
-
-   /* 3 - Write the data to the serial access function */
-   #ifdef DEBUG_BIAS_SERIAL
-        printf("         - Writing DAC1: %u\n",
-               biasRegisters[currentModule].dac1Reg.bitField.data);
-   #endif /* DEBUG_BIAS_SERIAL */
-
-   /* If there is a problem writing DAC1, return it so that the value in the
-      frontend variable is not going to be updated. */
-   if(serialAccess(BIAS_DAC_DATA_WRITE(currentBiasModule, BIAS_DAC1),
-                   biasRegisters[currentModule].dac1Reg.integer,
-                   BIAS_DAC1_DATA_SIZE,
-                   BIAS_DAC1_DATA_SHIFT_SIZE,
-                   BIAS_DAC1_DATA_SHIFT_DIR,
-                   SERIAL_WRITE)==ERROR){
-       return ERROR;
-   }
-
-   return NO_ERROR;
+        /* If there is a problem writing DAC1, return it so that the value in the
+          frontend variable is not going to be updated. */
+        if(serialAccess(BIAS_DAC_DATA_WRITE(currentBiasModule, BIAS_DAC1),
+                       biasRegisters[currentModule].dac1Reg.integer,
+                       BIAS_DAC1_DATA_SIZE,
+                       BIAS_DAC1_DATA_SHIFT_SIZE,
+                       BIAS_DAC1_DATA_SHIFT_DIR,
+                       SERIAL_WRITE)==ERROR){
+           return ERROR;
+        }
+    }
+    return NO_ERROR;
 }
 
 /* Set LNA led enable */
@@ -792,27 +856,30 @@ int setLnaLedEnable(unsigned char enable){
        state than the hardware one. */
     int tempBReg=biasRegisters[currentModule].bReg.integer;
 
-    /* Update BREG. */
-    biasRegisters[currentModule].bReg.bitField.lnaLedControl = 
-        (enable == LNA_LED_ENABLE) ? LNA_LED_ENABLE : LNA_LED_DISABLE;
+    if (frontend.mode != SIMULATION_MODE) {
 
-    /* 1 - Parallel write BREG */
-    #ifdef DEBUG_BIAS_SERIAL
-        printf("         - Writing BREG\n");
-    #endif /* DEBUG_BIAS_SERIAL */
+        /* Update BREG. */
+        biasRegisters[currentModule].bReg.bitField.lnaLedControl =
+            (enable == LNA_LED_ENABLE) ? LNA_LED_ENABLE : LNA_LED_DISABLE;
 
-    /* If there is a problem writing BREG, restore BREG and return the ERROR */
-    if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,BIAS_BREG),
-                    &biasRegisters[currentModule].bReg.integer,
-                    BIAS_BREG_SIZE,
-                    BIAS_BREG_SHIFT_SIZE,
-                    BIAS_BREG_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
+        /* 1 - Parallel write BREG */
+        #ifdef DEBUG_BIAS_SERIAL
+            printf("         - Writing BREG\n");
+        #endif /* DEBUG_BIAS_SERIAL */
 
-        /* Restore BREG to its original saved value */
-        biasRegisters[currentModule].bReg.integer = tempBReg;
+        /* If there is a problem writing BREG, restore BREG and return the ERROR */
+        if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,BIAS_BREG),
+                        &biasRegisters[currentModule].bReg.integer,
+                        BIAS_BREG_SIZE,
+                        BIAS_BREG_SHIFT_SIZE,
+                        BIAS_BREG_SHIFT_DIR,
+                        SERIAL_WRITE)==ERROR){
 
-        return ERROR;
+            /* Restore BREG to its original saved value */
+            biasRegisters[currentModule].bReg.integer = tempBReg;
+
+            return ERROR;
+        }
     }
 
     /* Since there is no real hardware read back, if no error occured the
@@ -848,27 +915,29 @@ int setSisHeaterEnable(unsigned char enable){
        state than the hardware one. */
     int tempBReg=biasRegisters[currentModule].bReg.integer;
 
-    /* Update BREG. */
-    biasRegisters[currentModule].bReg.bitField.sisHeaterControl = 
-        (enable == SIS_HEATER_ENABLE) ? SIS_HEATER_ENABLE : SIS_HEATER_DISABLE;
+    if (frontend.mode != SIMULATION_MODE) {
 
-    /* 1 - Parallel write BREG */
-    #ifdef DEBUG_BIAS_SERIAL
-        printf("         - Writing BREG\n");
-    #endif /* DEBUG_BIAS_SERIAL */
+        /* Update BREG. */
+        biasRegisters[currentModule].bReg.bitField.sisHeaterControl =
+            (enable == SIS_HEATER_ENABLE) ? SIS_HEATER_ENABLE : SIS_HEATER_DISABLE;
 
-    if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,BIAS_BREG),
-                    &biasRegisters[currentModule].bReg.integer,
-                    BIAS_BREG_SIZE,
-                    BIAS_BREG_SHIFT_SIZE,
-                    BIAS_BREG_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        /* Restore BREG to its original saved value */
-        biasRegisters[currentModule].bReg.integer = tempBReg;
+        /* 1 - Parallel write BREG */
+        #ifdef DEBUG_BIAS_SERIAL
+            printf("         - Writing BREG\n");
+        #endif /* DEBUG_BIAS_SERIAL */
 
-        return ERROR;
+        if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,BIAS_BREG),
+                        &biasRegisters[currentModule].bReg.integer,
+                        BIAS_BREG_SIZE,
+                        BIAS_BREG_SHIFT_SIZE,
+                        BIAS_BREG_SHIFT_DIR,
+                        SERIAL_WRITE)==ERROR){
+            /* Restore BREG to its original saved value */
+            biasRegisters[currentModule].bReg.integer = tempBReg;
+
+            return ERROR;
+        }
     }
-
     /* Since there is no real hardware read back, if no error occured the
        current state is updated to reflect the issued command. */
     frontend.cartridge[currentModule].polarization[currentBiasModule].sisHeater.enable = 
@@ -894,23 +963,29 @@ int setSisHeaterEnable(unsigned char enable){
         - \ref ERROR    -> if something wrong happened */
 int getSisHeater(void){
 
-    /* Clear the BIAS AREG */
-    biasRegisters[currentModule].aReg.integer=0x0000;
+    if (frontend.mode != SIMULATION_MODE) {
 
-    /* 1 - Select the desired monitor point
-           a - update AREG */
-    biasRegisters[currentModule].aReg.bitField.monitorPoint=BIAS_AREG_SIS_HEATER;
+        /* Clear the BIAS AREG */
+        biasRegisters[currentModule].aReg.integer=0x0000;
 
-    /* 2->5 Call the getBiasAnalogMonitor function */
-    if(getBiasAnalogMonitor()==ERROR){
-        return ERROR;
+        /* 1 - Select the desired monitor point
+               a - update AREG */
+        biasRegisters[currentModule].aReg.bitField.monitorPoint=BIAS_AREG_SIS_HEATER;
+
+        /* 2->5 Call the getBiasAnalogMonitor function */
+        if(getBiasAnalogMonitor()==ERROR){
+            return ERROR;
+        }
+
+        /* 6 - Scale the data */
+        /* The current is given by: 4166.67*(adcData/65536) */
+        frontend.cartridge[currentModule].polarization[currentBiasModule].sisHeater.current =
+            (BIAS_ADC_SIS_HEATER_I_SCALE * biasRegisters[currentModule].adcData / BIAS_ADC_RANGE);
+    } else {
+        //SIMULATION_MODE
+        frontend.cartridge[currentModule].polarization[currentBiasModule].sisHeater.current =
+            (float) frontend.cartridge[currentModule].polarization[currentBiasModule].sisHeater.enable * 21.0 + 0.5;
     }
-
-    /* 6 - Scale the data */
-    /* The current is given by: 4166.67*(adcData/65536) */
-    frontend.cartridge[currentModule].polarization[currentBiasModule].sisHeater.current = 
-        (BIAS_ADC_SIS_HEATER_I_SCALE * biasRegisters[currentModule].adcData / BIAS_ADC_RANGE);
-
     return NO_ERROR;
 }
 
@@ -997,39 +1072,63 @@ int getTemp(unsigned char polarization, unsigned char sensor){
     /* Set the polarization to the correct one. */
     currentBiasModule = polarization;
 
-    /* Clear the BIAS AREG */
-    biasRegisters[currentModule].aReg.integer=0x0000;
+    if (frontend.mode != SIMULATION_MODE) {
+        /* Clear the BIAS AREG */
+        biasRegisters[currentModule].aReg.integer=0x0000;
 
-    /* 1 - Select the desired monitor point
-           a - update AREG */
-    biasRegisters[currentModule].aReg.bitField.monitorPoint = BIAS_AREG_CARTRIDGE_TEMP;
+        /* 1 - Select the desired monitor point
+               a - update AREG */
+        biasRegisters[currentModule].aReg.bitField.monitorPoint = BIAS_AREG_CARTRIDGE_TEMP;
 
-    biasRegisters[currentModule].aReg.bitField.tempSensor = BIAS_AREG_TEMP_SENSOR(sensor);
+        biasRegisters[currentModule].aReg.bitField.tempSensor = BIAS_AREG_TEMP_SENSOR(sensor);
 
-    /* 2->5 Call the getBiasAnalogMonitor function */
-    if(getBiasAnalogMonitor()==ERROR){
-        return ERROR;
-    }
+        /* 2->5 Call the getBiasAnalogMonitor function */
+        if(getBiasAnalogMonitor()==ERROR){
+            return ERROR;
+        }
 
-    /* 6 - Scale the data */
-    voltage = (BIAS_ADC_CART_TEMP_V_SCALE * biasRegisters[currentModule].adcData) / BIAS_ADC_RANGE;
+        /* 6 - Scale the data */
+        voltage = (BIAS_ADC_CART_TEMP_V_SCALE * biasRegisters[currentModule].adcData) / BIAS_ADC_RANGE;
 
-    /* Apply the interpolation and add the offset */
-    temperature=temperatureConversion(voltage);
+        /* Apply the interpolation and add the offset */
+        temperature=temperatureConversion(voltage);
 
-    /* If error during interpolation, return conversion error */
-    if(temperature==CARTRIDGE_TEMP_CONV_ERR){
-        CAN_STATUS = HARDW_CON_ERR;
+        /* If error during interpolation, return conversion error */
+        if(temperature==CARTRIDGE_TEMP_CONV_ERR){
+            CAN_STATUS = HARDW_CON_ERR;
+            frontend.cartridge[currentModule].cartridgeTemp[currentCartridgeTempSubsystemModule].
+                temp = temperature;
+
+            return ERROR;
+        }
+
+        /* Store the data */
         frontend.cartridge[currentModule].cartridgeTemp[currentCartridgeTempSubsystemModule].
-            temp = temperature;
-
-        return ERROR;
+            temp = temperature +
+            frontend.cartridge[currentModule].cartridgeTemp[currentCartridgeTempSubsystemModule].offset;
+    } else {
+        //SIMULATION_MODE
+        switch (sensor) {
+            case 0:
+            case 2:
+            case 5:
+                frontend.cartridge[currentModule].cartridgeTemp[currentCartridgeTempSubsystemModule].temp =
+                    4.0 + ((float) rand() / (float) RAND_MAX) * 0.2;
+                break;
+            case 1:
+                frontend.cartridge[currentModule].cartridgeTemp[currentCartridgeTempSubsystemModule].temp =
+                    110.0 + ((float) rand() / (float) RAND_MAX);
+                break;
+            case 4:
+                frontend.cartridge[currentModule].cartridgeTemp[currentCartridgeTempSubsystemModule].temp =
+                    15.5 + ((float) rand() / (float) RAND_MAX);
+                break;
+            case 3:
+            default:
+                frontend.cartridge[currentModule].cartridgeTemp[currentCartridgeTempSubsystemModule].temp = -1.0;
+                break;
+        }
     }
-
-    /* Store the data */
-    frontend.cartridge[currentModule].cartridgeTemp[currentCartridgeTempSubsystemModule].
-        temp = temperature + 
-        frontend.cartridge[currentModule].cartridgeTemp[currentCartridgeTempSubsystemModule].offset;
 
     return NO_ERROR;
 }

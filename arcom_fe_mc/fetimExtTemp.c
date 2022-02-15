@@ -22,7 +22,7 @@ unsigned char   currentFetimExtTempModule=0;
 static HANDLER fetimExtTempModulesHandler[FETIM_EXT_MODULES_NUMBER]={tempHandler,
                                                                      outOfRangeHandler};
 
-/* Compressor Temperature Sensor Handler */
+/* External Temperature Sensor Handler */
 /*! This function will be called by the CAN message handler when the received
     message is in the address range of the compressor temperature sensors */
 void fetimExtTempHandler(void){

@@ -84,6 +84,7 @@
     #define OPERATIONAL_MODE        0
     #define TROUBLESHOOTING_MODE    1
     #define MAINTENANCE_MODE        2
+    #define SIMULATION_MODE         3
 
     /* Typedefs */
     //! Current state of the frontend
@@ -102,7 +103,10 @@
                 - \ref MAINTENANCE_MODE     -> The receiver is in maintenance
                                                mode. In this mode only operation
                                                allowed by special CAN addressed
-                                               are allowed. */
+                                               are allowed.
+                - \ref SIMULATION_MODE      -> All requests will be processed but
+                                               no access to front end hardware.
+                                               Simulated monitor data is returned. */
         unsigned char       mode;
 
         /*! Ethernet IP address */

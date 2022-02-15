@@ -186,7 +186,7 @@ static void biasSubsystemHandler(void){
 }
 
 
-/* Cartrdige stop */
+/* Cartridge stop */
 /*! This function performs the operations necessary to shut down a cartidge.
     \param cartridge    This is the selected cartridge to power off
     \return
@@ -456,7 +456,7 @@ int cartridgeStartup(void){
         printf("  - Temperature sensor offsets!\n"); 
     #endif // DEBUG_STARTUP
 
-    /* Cartridge temp sensors availability */
+    /* Cartridge temp sensors offsets */
     for(sensor = 0;
         sensor < CARTRIDGE_TEMP_SENSORS_NUMBER;
         sensor++)

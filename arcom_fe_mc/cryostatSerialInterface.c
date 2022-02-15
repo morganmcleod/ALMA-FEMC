@@ -305,31 +305,33 @@ int setBackingPumpEnable(unsigned char enable){
                   bReg.
                    integer;
 
-    /* Update BREG. */
-    cryoRegisters.
-     bReg.
-      bitField.
-       backingPump=(enable==BACKING_PUMP_ENABLE)?BACKING_PUMP_ENABLE:
-                                                 BACKING_PUMP_DISABLE;
-
-    /* 1 - Parallel write BREG */
-    #ifdef DEBUG_CRYOSTAT_SERIAL
-        printf("         - Writing BREG\n");
-    #endif /* DEBUG_CRYOSTAT_SERIAL */
-
-    if(serialAccess(CRYO_PARALLEL_WRITE(CRYO_BREG),
-                    &cryoRegisters.
-                      bReg.
-                       integer,
-                    CRYO_BREG_SIZE,
-                    CRYO_BREG_SHIFT_SIZE,
-                    CRYO_BREG_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        /* Restore BREG to its original saved value */
+    if (frontend.mode != SIMULATION_MODE) {
+        /* Update BREG. */
         cryoRegisters.
          bReg.
-          integer = tempBReg;
-        return ERROR;
+          bitField.
+           backingPump=(enable==BACKING_PUMP_ENABLE)?BACKING_PUMP_ENABLE:
+                                                     BACKING_PUMP_DISABLE;
+
+        /* 1 - Parallel write BREG */
+        #ifdef DEBUG_CRYOSTAT_SERIAL
+            printf("         - Writing BREG\n");
+        #endif /* DEBUG_CRYOSTAT_SERIAL */
+
+        if(serialAccess(CRYO_PARALLEL_WRITE(CRYO_BREG),
+                        &cryoRegisters.
+                          bReg.
+                           integer,
+                        CRYO_BREG_SIZE,
+                        CRYO_BREG_SHIFT_SIZE,
+                        CRYO_BREG_SHIFT_DIR,
+                        SERIAL_WRITE)==ERROR){
+            /* Restore BREG to its original saved value */
+            cryoRegisters.
+             bReg.
+              integer = tempBReg;
+            return ERROR;
+        }
     }
 
     /* Since there is no real hardware read back, if no error occurred the
@@ -365,42 +367,48 @@ int getSupplyCurrent230V(void){
     /* A float to hold the voltage in */
     float vin=0.0;
 
-    /* Clear the CRYO AREG */
-    cryoRegisters.
-     aReg.
-      integer=0x0000;
+    if (frontend.mode != SIMULATION_MODE) {
 
-    /* 1 - Select the desired monitor point
-           a - update AREG */
-    cryoRegisters.
-     aReg.
-      bitField.
-       monitorPoint=CRYO_AREG_SUPPLY_CURRENT_230V;
+        /* Clear the CRYO AREG */
+        cryoRegisters.
+         aReg.
+          integer=0x0000;
 
-    /* 2->5 Call the getCryoAnalogMonitor function */
-    switch(getCryoAnalogMonitor()){
-        case NO_ERROR:
-            return NO_ERROR;
-            break;
-        case ERROR:
-            return ERROR;
-            break;
-        case ASYNC_DONE:
-            break;
-        default:
-            return ERROR;
-            break;
+        /* 1 - Select the desired monitor point
+               a - update AREG */
+        cryoRegisters.
+         aReg.
+          bitField.
+           monitorPoint=CRYO_AREG_SUPPLY_CURRENT_230V;
+
+        /* 2->5 Call the getCryoAnalogMonitor function */
+        switch(getCryoAnalogMonitor()){
+            case NO_ERROR:
+                return NO_ERROR;
+                break;
+            case ERROR:
+                return ERROR;
+                break;
+            case ASYNC_DONE:
+                break;
+            default:
+                return ERROR;
+                break;
+        }
+
+        /* 6 - Scale the data */
+        /* Scale the input voltage to the right value: vin=10*(adcData/65536) */
+        vin=(CRYO_ADC_VOLTAGE_IN_SCALE*cryoRegisters.
+                                        adcData)/CRYO_ADC_RANGE;
+        /* The current is given by 1.488645855*vin */
+        frontend.cryostat.supplyCurrent230V=CRYO_ADC_SUPPLY_CURRENT_SCALE*vin;
+    } else {
+        //SIMULATION_MODE
+        if (frontend.cryostat.backingPump.enable)
+            frontend.cryostat.supplyCurrent230V=230.0;
+        else
+            frontend.cryostat.supplyCurrent230V=0.0;
     }
-
-    /* 6 - Scale the data */
-    /* Scale the input voltage to the right value: vin=10*(adcData/65536) */
-    vin=(CRYO_ADC_VOLTAGE_IN_SCALE*cryoRegisters.
-                                    adcData)/CRYO_ADC_RANGE;
-    /* The current is given by 1.488645855*vin */
-    frontend.
-     cryostat.
-      supplyCurrent230V=CRYO_ADC_SUPPLY_CURRENT_SCALE*vin;
-
     return ASYNC_DONE;
 }
 
@@ -432,33 +440,35 @@ int setTurboPumpEnable(unsigned char enable){
                   bReg.
                    integer;
 
-    /* Update BREG. */
-    cryoRegisters.
-     bReg.
-      bitField.
-       turboPump=(enable==TURBO_PUMP_ENABLE)?TURBO_PUMP_ENABLE:
-                                             TURBO_PUMP_DISABLE;
+    if (frontend.mode != SIMULATION_MODE) {
 
-    /* 1 - Parallel write BREG */
-    #ifdef DEBUG_CRYOSTAT_SERIAL
-        printf("         - Writing BREG\n");
-    #endif /* DEBUG_CRYOSTAT_SERIAL */
-
-    if(serialAccess(CRYO_PARALLEL_WRITE(CRYO_BREG),
-                    &cryoRegisters.
-                      bReg.
-                       integer,
-                    CRYO_BREG_SIZE,
-                    CRYO_BREG_SHIFT_SIZE,
-                    CRYO_BREG_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        /* Restore BREG to its original saved value */
+        /* Update BREG. */
         cryoRegisters.
          bReg.
-          integer = tempBReg;
-        return ERROR;
-    }
+          bitField.
+           turboPump=(enable==TURBO_PUMP_ENABLE)?TURBO_PUMP_ENABLE:
+                                                 TURBO_PUMP_DISABLE;
 
+        /* 1 - Parallel write BREG */
+        #ifdef DEBUG_CRYOSTAT_SERIAL
+            printf("         - Writing BREG\n");
+        #endif /* DEBUG_CRYOSTAT_SERIAL */
+
+        if(serialAccess(CRYO_PARALLEL_WRITE(CRYO_BREG),
+                        &cryoRegisters.
+                          bReg.
+                           integer,
+                        CRYO_BREG_SIZE,
+                        CRYO_BREG_SHIFT_SIZE,
+                        CRYO_BREG_SHIFT_DIR,
+                        SERIAL_WRITE)==ERROR){
+            /* Restore BREG to its original saved value */
+            cryoRegisters.
+             bReg.
+              integer = tempBReg;
+            return ERROR;
+        }
+    }
     /* Since there is no real hardware read back, if no error occurred the
        current state is updated to reflect the issued command. */
     frontend.
@@ -471,9 +481,6 @@ int setTurboPumpEnable(unsigned char enable){
 
 }
 
-
-
-
 /* Get turbo pump states */
 /*! This function monitors the current error and busy states of the selected
     turbo pump. This is a read-back real hardware status bits.
@@ -483,42 +490,32 @@ int setTurboPumpEnable(unsigned char enable){
         - \ref ERROR    -> if something wrong happened */
 int getTurboPumpStates(void){
 
-    /* Read the status register, if an error occurs, notify the calling
-       function. */
-    if(serialAccess(CRYO_PARALLEL_READ,
-                    &cryoRegisters.
-                      statusReg.
-                       integer,
-                    CRYO_STATUS_REG_SIZE,
-                    CRYO_STATUS_REG_SHIFT_SIZE,
-                    CRYO_STATUS_REG_SHIFT_DIR,
-                    SERIAL_READ)==ERROR){
-        return ERROR;
+    if (frontend.mode != SIMULATION_MODE) {
+        /* Read the status register, if an error occurs, notify the calling
+           function. */
+        if(serialAccess(CRYO_PARALLEL_READ,
+                        &cryoRegisters.
+                          statusReg.
+                           integer,
+                        CRYO_STATUS_REG_SIZE,
+                        CRYO_STATUS_REG_SHIFT_SIZE,
+                        CRYO_STATUS_REG_SHIFT_DIR,
+                        SERIAL_READ)==ERROR){
+            return ERROR;
+        }
+
+        /* Store the turbo pump error */
+        frontend.cryostat.turboPump.state = cryoRegisters.statusReg.bitField.turboPumpError;
+
+        /* Store the turbo pump speed */
+        frontend.cryostat.turboPump.speed = cryoRegisters.statusReg.bitField.turboPumpSpeed;
+    } else {
+        //SIMULATION_MODE
+        frontend.cryostat.turboPump.state = NO_ERROR;
+        frontend.cryostat.turboPump.speed = frontend.cryostat.turboPump.enable;
     }
-
-    /* Store the turbo pump error */
-    frontend.
-     cryostat.
-      turboPump.
-       state=cryoRegisters.
-                             statusReg.
-                              bitField.
-                               turboPumpError;
-
-    /* Store the turbo pump speed */
-    frontend.
-     cryostat.
-      turboPump.
-       speed=cryoRegisters.
-                             statusReg.
-                              bitField.
-                               turboPumpSpeed;
-
     return NO_ERROR;
 }
-
-
-
 
 /* Get gate valve state */
 /*! This function monitors the current state of the gate valve. This is a
@@ -530,76 +527,78 @@ int getTurboPumpStates(void){
 int getGateValveState(void){
     /* Read the status register, if an error occurs, notify the calling
        function. */
-    if(serialAccess(CRYO_PARALLEL_READ,
-                    &cryoRegisters.
-                      statusReg.
-                       integer,
-                    CRYO_STATUS_REG_SIZE,
-                    CRYO_STATUS_REG_SHIFT_SIZE,
-                    CRYO_STATUS_REG_SHIFT_DIR,
-                    SERIAL_READ)==ERROR){
-        return ERROR;
-    }
+    if (frontend.mode != SIMULATION_MODE) {
 
-    /* Check the gate valve state.
-       The hardware was then modified to always return 4 sensors and the
-       software followed suite. If the 24V switcher (backing pump) is not
-       turned on, then all the sensors will be triggered. This is equivalent
-       to an overcurrent situation so it must be differentiated. */
-    switch(cryoRegisters.
-            statusReg.
-             bitField.
-              gateValveState){
-        case GATE_VALVE_4SENSORS_UNKNOWN: // If the sensors configuration correspond to an unknown gate valve
-            frontend.
-             cryostat.
-              gateValve.
-               state=GATE_VALVE_UNKNOWN;
-            break;
-        case GATE_VALVE_4SENSORS_OPEN: // If the sensors configuration correspond to a open gate valve
-            frontend.
-             cryostat.
-              gateValve.
-               state=GATE_VALVE_OPEN;
-            break;
-        case GATE_VALVE_4SENSORS_CLOSE: // If the sensors configuration correspond to a close gate valve
-            frontend.
-             cryostat.
-              gateValve.
-               state=GATE_VALVE_CLOSE;
-            break;
-        case GATE_VALVE_4SENSORS_OVER_CURR: // If the sensors configuration correspond to an over current situation
-        /* Check if the backing pump is disabled. If it is disabled, return
-           "unknown". The new hardware doesn't return the location if either
-           of the supply voltages is off. */
-            if(frontend.
-                cryostat.
-                 backingPump.
-                  enable==BACKING_PUMP_ENABLE){
-                frontend.
-                 cryostat.
-                  gateValve.
-                   state=GATE_VALVE_OVER_CURR;
-            } else {
+        if(serialAccess(CRYO_PARALLEL_READ,
+                        &cryoRegisters.
+                          statusReg.
+                           integer,
+                        CRYO_STATUS_REG_SIZE,
+                        CRYO_STATUS_REG_SHIFT_SIZE,
+                        CRYO_STATUS_REG_SHIFT_DIR,
+                        SERIAL_READ)==ERROR){
+            return ERROR;
+        }
+
+        /* Check the gate valve state.
+           The hardware was then modified to always return 4 sensors and the
+           software followed suite. If the 24V switcher (backing pump) is not
+           turned on, then all the sensors will be triggered. This is equivalent
+           to an overcurrent situation so it must be differentiated. */
+        switch(cryoRegisters.
+                statusReg.
+                 bitField.
+                  gateValveState){
+            case GATE_VALVE_4SENSORS_UNKNOWN: // If the sensors configuration correspond to an unknown gate valve
                 frontend.
                  cryostat.
                   gateValve.
                    state=GATE_VALVE_UNKNOWN;
-            }
-            break;
-        default: // Any other sensor configuration is due to hardware error
-            frontend.
-             cryostat.
-              gateValve.
-               state=GATE_VALVE_ERROR;
-            break;
+                break;
+            case GATE_VALVE_4SENSORS_OPEN: // If the sensors configuration correspond to a open gate valve
+                frontend.
+                 cryostat.
+                  gateValve.
+                   state=GATE_VALVE_OPEN;
+                break;
+            case GATE_VALVE_4SENSORS_CLOSE: // If the sensors configuration correspond to a close gate valve
+                frontend.
+                 cryostat.
+                  gateValve.
+                   state=GATE_VALVE_CLOSE;
+                break;
+            case GATE_VALVE_4SENSORS_OVER_CURR: // If the sensors configuration correspond to an over current situation
+            /* Check if the backing pump is disabled. If it is disabled, return
+               "unknown". The new hardware doesn't return the location if either
+               of the supply voltages is off. */
+                if(frontend.
+                    cryostat.
+                     backingPump.
+                      enable==BACKING_PUMP_ENABLE){
+                    frontend.
+                     cryostat.
+                      gateValve.
+                       state=GATE_VALVE_OVER_CURR;
+                } else {
+                    frontend.
+                     cryostat.
+                      gateValve.
+                       state=GATE_VALVE_UNKNOWN;
+                }
+                break;
+            default: // Any other sensor configuration is due to hardware error
+                frontend.
+                 cryostat.
+                  gateValve.
+                   state=GATE_VALVE_ERROR;
+                break;
+        }
+    } else {
+        //SIMULATION_MODE
+        frontend.cryostat.gateValve.state=GATE_VALVE_UNKNOWN;
     }
-
     return NO_ERROR;
 }
-
-
-
 
 /* Get solenoid valve state */
 /*! This function monitors the current state of the solenoid valve. This is a
@@ -610,49 +609,54 @@ int getGateValveState(void){
         - \ref ERROR    -> if something wrong happened */
 int getSolenoidValveState(void){
 
-    /* Read the status register, if an error occurs, notify the calling
-       function. */
-    if(serialAccess(CRYO_PARALLEL_READ,
-                    &cryoRegisters.
-                      statusReg.
-                       integer,
-                    CRYO_STATUS_REG_SIZE,
-                    CRYO_STATUS_REG_SHIFT_SIZE,
-                    CRYO_STATUS_REG_SHIFT_DIR,
-                    SERIAL_READ)==ERROR){
-        return ERROR;
-    }
+    if (frontend.mode != SIMULATION_MODE) {
 
-    /* Check the solenoid valve state */
-    switch(cryoRegisters.
-            statusReg.
-             bitField.
-              solenoidValveState){
-        case SOLENOID_VALVE_SENSORS_UNKNOWN: // If the sensors configuration correspond to an unknown solenoid valve
-            frontend.
-             cryostat.
-              solenoidValve.
-               state=SOLENOID_VALVE_UNKNOWN;
-            break;
-        case SOLENOID_VALVE_SENSORS_OPEN: // If the sensors configuration correspond to a open solenoid valve
-            frontend.
-             cryostat.
-              solenoidValve.
-               state=SOLENOID_VALVE_OPEN;
-            break;
-        case SOLENOID_VALVE_SENSORS_CLOSE: // If the sensors configuration correspond to a close solenoid valve
-            frontend.
-             cryostat.
-              solenoidValve.
-               state=SOLENOID_VALVE_CLOSE;
-            break;
-        default: // Any other sensor configuration is due to hardware error
-            frontend.
-             cryostat.
-              solenoidValve.
-               state=SOLENOID_VALVE_ERROR;
-    }
+        /* Read the status register, if an error occurs, notify the calling
+           function. */
+        if(serialAccess(CRYO_PARALLEL_READ,
+                        &cryoRegisters.
+                          statusReg.
+                           integer,
+                        CRYO_STATUS_REG_SIZE,
+                        CRYO_STATUS_REG_SHIFT_SIZE,
+                        CRYO_STATUS_REG_SHIFT_DIR,
+                        SERIAL_READ)==ERROR){
+            return ERROR;
+        }
 
+        /* Check the solenoid valve state */
+        switch(cryoRegisters.
+                statusReg.
+                 bitField.
+                  solenoidValveState){
+            case SOLENOID_VALVE_SENSORS_UNKNOWN: // If the sensors configuration correspond to an unknown solenoid valve
+                frontend.
+                 cryostat.
+                  solenoidValve.
+                   state=SOLENOID_VALVE_UNKNOWN;
+                break;
+            case SOLENOID_VALVE_SENSORS_OPEN: // If the sensors configuration correspond to a open solenoid valve
+                frontend.
+                 cryostat.
+                  solenoidValve.
+                   state=SOLENOID_VALVE_OPEN;
+                break;
+            case SOLENOID_VALVE_SENSORS_CLOSE: // If the sensors configuration correspond to a close solenoid valve
+                frontend.
+                 cryostat.
+                  solenoidValve.
+                   state=SOLENOID_VALVE_CLOSE;
+                break;
+            default: // Any other sensor configuration is due to hardware error
+                frontend.
+                 cryostat.
+                  solenoidValve.
+                   state=SOLENOID_VALVE_ERROR;
+        }
+    } else {
+        //SIMULATION_MODE
+        frontend.cryostat.solenoidValve.state=SOLENOID_VALVE_UNKNOWN;
+    }
     return NO_ERROR;
 }
 
@@ -684,37 +688,37 @@ int setGateValveState(unsigned char state){
                   bReg.
                    integer;
 
-    /* Update BREG */
-    cryoRegisters.
-     bReg.
-      bitField.
-       gateValve=(state==GATE_VALVE_OPEN)?GATE_VALVE_OPEN:
-                                          GATE_VALVE_CLOSE;
+    if (frontend.mode != SIMULATION_MODE) {
 
-    /* 1 - Parallel write BREG */
-    #ifdef DEBUG_CRYOSTAT_SERIAL
-        printf("         - Writing BREG\n");
-    #endif /* DEBUG_CRYOSTAT_SERIAL */
-
-    if(serialAccess(CRYO_PARALLEL_WRITE(CRYO_BREG),
-                    &cryoRegisters.
-                      bReg.
-                       integer,
-                    CRYO_BREG_SIZE,
-                    CRYO_BREG_SHIFT_SIZE,
-                    CRYO_BREG_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        /* Restore BREG to its original saved value */
+        /* Update BREG */
         cryoRegisters.
          bReg.
-          integer = tempBReg;
-        return ERROR;
-    }
+          bitField.
+           gateValve=(state==GATE_VALVE_OPEN)?GATE_VALVE_OPEN:
+                                              GATE_VALVE_CLOSE;
 
+        /* 1 - Parallel write BREG */
+        #ifdef DEBUG_CRYOSTAT_SERIAL
+            printf("         - Writing BREG\n");
+        #endif /* DEBUG_CRYOSTAT_SERIAL */
+
+        if(serialAccess(CRYO_PARALLEL_WRITE(CRYO_BREG),
+                        &cryoRegisters.
+                          bReg.
+                           integer,
+                        CRYO_BREG_SIZE,
+                        CRYO_BREG_SHIFT_SIZE,
+                        CRYO_BREG_SHIFT_DIR,
+                        SERIAL_WRITE)==ERROR){
+            /* Restore BREG to its original saved value */
+            cryoRegisters.
+             bReg.
+              integer = tempBReg;
+            return ERROR;
+        }
+    }
     return NO_ERROR;
 }
-
-
 
 
 /* Set solenoid valve state */
@@ -745,33 +749,34 @@ int setSolenoidValveState(unsigned char state){
                   bReg.
                    integer;
 
-    /* Update BREG */
-    cryoRegisters.
-     bReg.
-      bitField.
-       solenoidValve=(state==SOLENOID_VALVE_OPEN)?SOLENOID_VALVE_OPEN:
-                                                  SOLENOID_VALVE_CLOSE;
-
-    /* 1 - Parallel write BREG */
-    #ifdef DEBUG_CRYOSTAT_SERIAL
-        printf("         - Writing BREG\n");
-    #endif /* DEBUG_CRYOSTAT_SERIAL */
-
-    if(serialAccess(CRYO_PARALLEL_WRITE(CRYO_BREG),
-                    &cryoRegisters.
-                      bReg.
-                       integer,
-                    CRYO_BREG_SIZE,
-                    CRYO_BREG_SHIFT_SIZE,
-                    CRYO_BREG_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        /* Restore BREG to its original saved value */
+    if (frontend.mode != SIMULATION_MODE) {
+        /* Update BREG */
         cryoRegisters.
          bReg.
-          integer = tempBReg;
-        return ERROR;
-    }
+          bitField.
+           solenoidValve=(state==SOLENOID_VALVE_OPEN)?SOLENOID_VALVE_OPEN:
+                                                      SOLENOID_VALVE_CLOSE;
 
+        /* 1 - Parallel write BREG */
+        #ifdef DEBUG_CRYOSTAT_SERIAL
+            printf("         - Writing BREG\n");
+        #endif /* DEBUG_CRYOSTAT_SERIAL */
+
+        if(serialAccess(CRYO_PARALLEL_WRITE(CRYO_BREG),
+                        &cryoRegisters.
+                          bReg.
+                           integer,
+                        CRYO_BREG_SIZE,
+                        CRYO_BREG_SHIFT_SIZE,
+                        CRYO_BREG_SHIFT_DIR,
+                        SERIAL_WRITE)==ERROR){
+            /* Restore BREG to its original saved value */
+            cryoRegisters.
+             bReg.
+              integer = tempBReg;
+            return ERROR;
+        }
+    }
     return NO_ERROR;
 }
 
@@ -799,70 +804,75 @@ int getVacuumSensor(void){
     /* A float to hold the voltage in and a temp */
     float vin=0.0, pressure=0.0;
 
-    /* Clear the CRYO AREG */
-    cryoRegisters.
-     aReg.
-      integer=0x0000;
+    if (frontend.mode != SIMULATION_MODE) {
 
-    /* 1 - Select the desired monitor point
-           a - update AREG */
-    cryoRegisters.
-     aReg.
-      bitField.
-       monitorPoint=CRYO_AREG_PRESSURE(currentAsyncVacuumControllerModule);
+        /* Clear the CRYO AREG */
+        cryoRegisters.
+         aReg.
+          integer=0x0000;
 
-    /* 2->5 Call the getCryoAnalogMonitor function */
-    switch(getCryoAnalogMonitor()){
-        case NO_ERROR:
-            return NO_ERROR;
-            break;
-        case ERROR:
+        /* 1 - Select the desired monitor point
+               a - update AREG */
+        cryoRegisters.
+         aReg.
+          bitField.
+           monitorPoint=CRYO_AREG_PRESSURE(currentAsyncVacuumControllerModule);
+
+        /* 2->5 Call the getCryoAnalogMonitor function */
+        switch(getCryoAnalogMonitor()){
+            case NO_ERROR:
+                return NO_ERROR;
+                break;
+            case ERROR:
+                return ERROR;
+                break;
+            case ASYNC_DONE:
+                break;
+            default:
+                return ERROR;
+                break;
+        }
+
+        /* 6 - Scale the data */
+        /* Scale the input voltage to the right value: vin=10*(adcData/65536) */
+        vin=(CRYO_ADC_VOLTAGE_IN_SCALE*cryoRegisters.
+                                        adcData)/CRYO_ADC_RANGE;
+        switch(currentAsyncVacuumControllerModule){
+            case CRYOSTAT_PRESSURE:
+                /* The cryostat pressure is given by: 10^[(vin-7.75)/0.75] */
+                pressure=pow(10.0,
+                             (vin+CRYO_ADC_CRYO_PRESS_OFFSET)/CRYO_ADC_CRYO_PRESS_SCALE);
+                break;
+            case VACUUM_PORT_PRESSURE:
+                /* The vacuum port pressure is given by: 10^[(vin-6.143)/1.286] */
+                pressure=pow(10.0,
+                             (vin+CRYO_ADC_VAC_PORT_PRESS_OFFSET)/CRYO_ADC_VAC_PORT_PRESS_SCALE);
+                break;
+            default:
+                break;
+        }
+
+        /* Check if a domain error occurred while evaluating the pow. */
+        if(errno==EDOM){
+            frontend.
+             cryostat.
+              vacuumController.
+               vacuumSensor[currentAsyncVacuumControllerModule].
+                pressure=CRYOSTAT_PRESS_CONV_ERR;
+
             return ERROR;
-            break;
-        case ASYNC_DONE:
-            break;
-        default:
-            return ERROR;
-            break;
-    }
+        }
 
-    /* 6 - Scale the data */
-    /* Scale the input voltage to the right value: vin=10*(adcData/65536) */
-    vin=(CRYO_ADC_VOLTAGE_IN_SCALE*cryoRegisters.
-                                    adcData)/CRYO_ADC_RANGE;
-    switch(currentAsyncVacuumControllerModule){
-        case CRYOSTAT_PRESSURE:
-            /* The cryostat pressure is given by: 10^[(vin-7.75)/0.75] */
-            pressure=pow(10.0,
-                         (vin+CRYO_ADC_CRYO_PRESS_OFFSET)/CRYO_ADC_CRYO_PRESS_SCALE);
-            break;
-        case VACUUM_PORT_PRESSURE:
-            /* The vacuum port pressure is given by: 10^[(vin-6.143)/1.286] */
-            pressure=pow(10.0,
-                         (vin+CRYO_ADC_VAC_PORT_PRESS_OFFSET)/CRYO_ADC_VAC_PORT_PRESS_SCALE);
-            break;
-        default:
-            break;
-    }
-
-    /* Check if a domain error occurred while evaluating the pow. */
-    if(errno==EDOM){
+        /* Store the data */
         frontend.
          cryostat.
           vacuumController.
            vacuumSensor[currentAsyncVacuumControllerModule].
-            pressure=CRYOSTAT_PRESS_CONV_ERR;
-
-        return ERROR;
+            pressure=pressure;
+    } else {
+        //SIMULATION_MODE
+        frontend.cryostat.vacuumController.vacuumSensor[currentAsyncVacuumControllerModule].pressure=0.0000005;
     }
-
-    /* Store the data */
-    frontend.
-     cryostat.
-      vacuumController.
-       vacuumSensor[currentAsyncVacuumControllerModule].
-        pressure=pressure;
-
     return ASYNC_DONE;
 }
 
@@ -899,33 +909,35 @@ int setVacuumControllerEnable(unsigned char enable){
                   bReg.
                    integer;
 
-    /* Update BREG. */
-    cryoRegisters.
-     bReg.
-      bitField.
-       vacuumController=(enable==VACUUM_CONTROLLER_ENABLE)?VACUUM_CONTROLLER_HRDW_ENABLE:
-                                                           VACUUM_CONTROLLER_HRDW_DISABLE;
+    if (frontend.mode != SIMULATION_MODE) {
 
-    /* 1 - Parallel write BREG */
-    #ifdef DEBUG_CRYOSTAT_SERIAL
-        printf("         - Writing BREG\n");
-    #endif /* DEBUG_CRYOSTAT_SERIAL */
-
-    if(serialAccess(CRYO_PARALLEL_WRITE(CRYO_BREG),
-                    &cryoRegisters.
-                      bReg.
-                       integer,
-                    CRYO_BREG_SIZE,
-                    CRYO_BREG_SHIFT_SIZE,
-                    CRYO_BREG_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        /* Restore BREG to its original saved value */
+        /* Update BREG. */
         cryoRegisters.
          bReg.
-          integer = tempBReg;
-        return ERROR;
-    }
+          bitField.
+           vacuumController=(enable==VACUUM_CONTROLLER_ENABLE)?VACUUM_CONTROLLER_HRDW_ENABLE:
+                                                               VACUUM_CONTROLLER_HRDW_DISABLE;
 
+        /* 1 - Parallel write BREG */
+        #ifdef DEBUG_CRYOSTAT_SERIAL
+            printf("         - Writing BREG\n");
+        #endif /* DEBUG_CRYOSTAT_SERIAL */
+
+        if(serialAccess(CRYO_PARALLEL_WRITE(CRYO_BREG),
+                        &cryoRegisters.
+                          bReg.
+                           integer,
+                        CRYO_BREG_SIZE,
+                        CRYO_BREG_SHIFT_SIZE,
+                        CRYO_BREG_SHIFT_DIR,
+                        SERIAL_WRITE)==ERROR){
+            /* Restore BREG to its original saved value */
+            cryoRegisters.
+             bReg.
+              integer = tempBReg;
+            return ERROR;
+        }
+    }
     /* Since there is no real hardware read back, if no error occurred the
        current state is updated to reflect the issued command. */
     frontend.
@@ -950,35 +962,36 @@ int setVacuumControllerEnable(unsigned char enable){
         - \ref ERROR    -> if something wrong happened */
 int getVacuumControllerState(void){
 
-    /* Read the status register, if an error occurs, notify the calling
-       function. */
-    if(serialAccess(CRYO_PARALLEL_READ,
-                    &cryoRegisters.
-                      statusReg.
-                       integer,
-                    CRYO_STATUS_REG_SIZE,
-                    CRYO_STATUS_REG_SHIFT_SIZE,
-                    CRYO_STATUS_REG_SHIFT_DIR,
-                    SERIAL_READ)==ERROR){
-        return ERROR;
+    if (frontend.mode != SIMULATION_MODE) {
+
+        /* Read the status register, if an error occurs, notify the calling
+           function. */
+        if(serialAccess(CRYO_PARALLEL_READ,
+                        &cryoRegisters.
+                          statusReg.
+                           integer,
+                        CRYO_STATUS_REG_SIZE,
+                        CRYO_STATUS_REG_SHIFT_SIZE,
+                        CRYO_STATUS_REG_SHIFT_DIR,
+                        SERIAL_READ)==ERROR){
+            return ERROR;
+        }
+
+        /* Store the vacuum controller state */
+        frontend.
+         cryostat.
+          vacuumController.
+           state=(cryoRegisters.
+                                  statusReg.
+                                   bitField.
+                                   vacuumControllerState==VACUUM_CONTROLLER_HRDW_OK?VACUUM_CONTROLLER_OK:
+                                                                                    VACUUM_CONTROLLER_ERROR);
+    } else {
+        //SIMULATION_MODE
+        frontend.cryostat.vacuumController.state = VACUUM_CONTROLLER_OK;
     }
-
-    /* Store the vacuum controller state */
-    frontend.
-     cryostat.
-      vacuumController.
-       state=(cryoRegisters.
-                              statusReg.
-                               bitField.
-                               vacuumControllerState==VACUUM_CONTROLLER_HRDW_OK?VACUUM_CONTROLLER_OK:
-                                                                                VACUUM_CONTROLLER_ERROR);
-
     return NO_ERROR;
 }
-
-
-
-
 
 /* Get cryostat temperature */
 /*! This function returns the temperature mesured by the currently addressed
@@ -1003,159 +1016,186 @@ int getCryostatTemp(void){
     /* Floats to help perform the temperature evaluation */
     float vin=0.0, resistance=0.0, temperature=0.0;
 
-    /* Clear the CRYO AREG */
-    cryoRegisters.
-     aReg.
-      integer=0x0000;
+    if (frontend.mode != SIMULATION_MODE) {
 
-    /* 1 - Select the desired monitor point
-           a - update AREG */
-    cryoRegisters.
-     aReg.
-      bitField.
-       monitorPoint=CRYO_AREG_TEMPERATURE(currentAsyncCryoTempModule);
+        /* Clear the CRYO AREG */
+        cryoRegisters.
+         aReg.
+          integer=0x0000;
 
-    /* 2->5 Call the getCryoAnalogMonitor function */
-    switch(getCryoAnalogMonitor()){
-        case NO_ERROR:
-            return NO_ERROR;
-            break;
-        case ERROR:
+        /* 1 - Select the desired monitor point
+               a - update AREG */
+        cryoRegisters.
+         aReg.
+          bitField.
+           monitorPoint=CRYO_AREG_TEMPERATURE(currentAsyncCryoTempModule);
+
+        /* 2->5 Call the getCryoAnalogMonitor function */
+        switch(getCryoAnalogMonitor()){
+            case NO_ERROR:
+                return NO_ERROR;
+                break;
+            case ERROR:
+                return ERROR;
+                break;
+            case ASYNC_DONE:
+                break;
+            default:
+                return ERROR;
+                break;
+        }
+
+        /* 6 - Scale the data */
+        /* Scale the input voltage to the right value: vin=10*(adcData/65536) */
+        vin=(CRYO_ADC_VOLTAGE_IN_SCALE*cryoRegisters.
+                                        adcData)/CRYO_ADC_RANGE;
+
+        switch(currentAsyncCryoTempModule){
+            case CRYOCOOLER_4K:
+            case PLATE_4K_NEAR_LINK1:
+            case PLATE_4K_NEAR_LINK2:
+            case PLATE_4K_FAR_SIDE1:
+            case PLATE_4K_FAR_SIDE2:
+            case CRYOCOOLER_12K:
+            case PLATE_12K_NEAR_LINK:
+            case PLATE_12K_FAR_SIDE:
+            case SHIELD_TOP_12K:
+                /* Find the sensor resistance */
+                /* Apply the correct scaling depending on the hardware revision */
+                switch(frontend.
+                        cryostat.
+                         hardwRevision){
+                    case CRYO_HRDW_REV0:
+                        resistance=TVO_GAIN_REV0*vin;
+                        break;
+                    case CRYO_HRDW_REV1:
+                        resistance=TVO_GAIN_REV1*vin;
+                        break;
+                    default:
+                        resistance=TVO_GAIN_REV1*vin;
+                        break;
+                }
+
+                /* Apply the interpolation */
+                resistance=TVO_RESISTOR_SCALE/resistance;
+                temperature=frontend.
+                             cryostat.
+                              cryostatTemp[currentAsyncCryoTempModule].
+                               coeff[TVO_COEFF_0]+
+                            frontend.
+                             cryostat.
+                              cryostatTemp[currentAsyncCryoTempModule].
+                               coeff[TVO_COEFF_1]*resistance+
+                            frontend.
+                             cryostat.
+                              cryostatTemp[currentAsyncCryoTempModule].
+                               coeff[TVO_COEFF_2]*pow(resistance,
+                                                      2.0)+
+                            frontend.
+                             cryostat.
+                              cryostatTemp[currentAsyncCryoTempModule].
+                               coeff[TVO_COEFF_3]*pow(resistance,
+                                                      3.0)+
+                            frontend.
+                             cryostat.
+                              cryostatTemp[currentAsyncCryoTempModule].
+                               coeff[TVO_COEFF_4]*pow(resistance,
+                                                      4.0)+
+                            frontend.
+                             cryostat.
+                              cryostatTemp[currentAsyncCryoTempModule].
+                               coeff[TVO_COEFF_5]*pow(resistance,
+                                                      5.0)+
+                            frontend.
+                             cryostat.
+                              cryostatTemp[currentAsyncCryoTempModule].
+                               coeff[TVO_COEFF_6]*pow(resistance,
+                                                      6.0);
+                break;
+            case CRYOCOOLER_90K:
+            case PLATE_90K_NEAR_LINK:
+            case PLATE_90K_FAR_SIDE:
+            case SHIELD_TOP_90K:
+                /* Find the sensor resistance */
+                resistance=PRT_GAIN*vin;
+                /* Apply the interpolation */
+                if(resistance>=PRT_A_SCALE){
+                    resistance=resistance/PRT_B_SCALE;
+                    temperature=PRT_B0+
+                                PRT_B1*resistance+
+                                PRT_B2*pow(resistance,
+                                           2.0)+
+                                PRT_B3*pow(resistance,
+                                           3.0)+
+                                PRT_B4*pow(resistance,
+                                           4.0)+
+                                PRT_B5*pow(resistance,
+                                           5.0)+
+                                PRT_B6*pow(resistance,
+                                           6.0);
+                } else {
+                    resistance=resistance/PRT_A_SCALE;
+                    temperature=PRT_A0+
+                                PRT_A1*resistance+
+                                PRT_A2*pow(resistance,
+                                           2.0)+
+                                PRT_A3*pow(resistance,
+                                           3.0)+
+                                PRT_A4*pow(resistance,
+                                           4.0)+
+                                PRT_A5*pow(resistance,
+                                           5.0)+
+                                PRT_A6*pow(resistance,
+                                           6.0);
+                }
+
+                break;
+            default:
+                break;
+        }
+
+        /* Check if a domain error occurred while evaluating the power.
+           If error, return a default value. */
+        if(errno==EDOM){
+            frontend.
+             cryostat.
+              cryostatTemp[currentAsyncCryoTempModule].
+               temp=CRYOSTAT_TEMP_CONV_ERR;
+
             return ERROR;
-            break;
-        case ASYNC_DONE:
-            break;
-        default:
-            return ERROR;
-            break;
-    }
+        }
 
-    /* 6 - Scale the data */
-    /* Scale the input voltage to the right value: vin=10*(adcData/65536) */
-    vin=(CRYO_ADC_VOLTAGE_IN_SCALE*cryoRegisters.
-                                    adcData)/CRYO_ADC_RANGE;
-
-    switch(currentAsyncCryoTempModule){
-        case CRYOCOOLER_4K:
-        case PLATE_4K_NEAR_LINK1:
-        case PLATE_4K_NEAR_LINK2:
-        case PLATE_4K_FAR_SIDE1:
-        case PLATE_4K_FAR_SIDE2:
-        case CRYOCOOLER_12K:
-        case PLATE_12K_NEAR_LINK:
-        case PLATE_12K_FAR_SIDE:
-        case SHIELD_TOP_12K:
-            /* Find the sensor resistance */
-            /* Apply the correct scaling depending on the hardware revision */
-            switch(frontend.
-                    cryostat.
-                     hardwRevision){
-                case CRYO_HRDW_REV0:
-                    resistance=TVO_GAIN_REV0*vin;
-                    break;
-                case CRYO_HRDW_REV1:
-                    resistance=TVO_GAIN_REV1*vin;
-                    break;
-                default:
-                    resistance=TVO_GAIN_REV1*vin;
-                    break;
-            }
-
-            /* Apply the interpolation */
-            resistance=TVO_RESISTOR_SCALE/resistance;
-            temperature=frontend.
-                         cryostat.
-                          cryostatTemp[currentAsyncCryoTempModule].
-                           coeff[TVO_COEFF_0]+
-                        frontend.
-                         cryostat.
-                          cryostatTemp[currentAsyncCryoTempModule].
-                           coeff[TVO_COEFF_1]*resistance+
-                        frontend.
-                         cryostat.
-                          cryostatTemp[currentAsyncCryoTempModule].
-                           coeff[TVO_COEFF_2]*pow(resistance,
-                                                  2.0)+
-                        frontend.
-                         cryostat.
-                          cryostatTemp[currentAsyncCryoTempModule].
-                           coeff[TVO_COEFF_3]*pow(resistance,
-                                                  3.0)+
-                        frontend.
-                         cryostat.
-                          cryostatTemp[currentAsyncCryoTempModule].
-                           coeff[TVO_COEFF_4]*pow(resistance,
-                                                  4.0)+
-                        frontend.
-                         cryostat.
-                          cryostatTemp[currentAsyncCryoTempModule].
-                           coeff[TVO_COEFF_5]*pow(resistance,
-                                                  5.0)+
-                        frontend.
-                         cryostat.
-                          cryostatTemp[currentAsyncCryoTempModule].
-                           coeff[TVO_COEFF_6]*pow(resistance,
-                                                  6.0);
-            break;
-        case CRYOCOOLER_90K:
-        case PLATE_90K_NEAR_LINK:
-        case PLATE_90K_FAR_SIDE:
-        case SHIELD_TOP_90K:
-            /* Find the sensor resistance */
-            resistance=PRT_GAIN*vin;
-            /* Apply the interpolation */
-            if(resistance>=PRT_A_SCALE){
-                resistance=resistance/PRT_B_SCALE;
-                temperature=PRT_B0+
-                            PRT_B1*resistance+
-                            PRT_B2*pow(resistance,
-                                       2.0)+
-                            PRT_B3*pow(resistance,
-                                       3.0)+
-                            PRT_B4*pow(resistance,
-                                       4.0)+
-                            PRT_B5*pow(resistance,
-                                       5.0)+
-                            PRT_B6*pow(resistance,
-                                       6.0);
-            } else {
-                resistance=resistance/PRT_A_SCALE;
-                temperature=PRT_A0+
-                            PRT_A1*resistance+
-                            PRT_A2*pow(resistance,
-                                       2.0)+
-                            PRT_A3*pow(resistance,
-                                       3.0)+
-                            PRT_A4*pow(resistance,
-                                       4.0)+
-                            PRT_A5*pow(resistance,
-                                       5.0)+
-                            PRT_A6*pow(resistance,
-                                       6.0);
-            }
-
-            break;
-        default:
-            break;
-    }
-
-    /* Check if a domain error occurred while evaluating the power.
-       If error, return a default value. */
-    if(errno==EDOM){
+        /* Store the data */
         frontend.
          cryostat.
           cryostatTemp[currentAsyncCryoTempModule].
-           temp=CRYOSTAT_TEMP_CONV_ERR;
-
-        return ERROR;
+           temp=temperature;
+    } else {
+        // SIMULATION_MODE
+        switch(currentAsyncCryoTempModule) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+                frontend.cryostat.cryostatTemp[currentAsyncCryoTempModule].temp = 4.0 + (float) currentAsyncCryoTempModule * 0.1;
+                break;
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+                frontend.cryostat.cryostatTemp[currentAsyncCryoTempModule].temp = 16.0 + (float) currentAsyncCryoTempModule * 0.1;
+                break;
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+                frontend.cryostat.cryostatTemp[currentAsyncCryoTempModule].temp = 111.0 + (float) currentAsyncCryoTempModule * 0.1;
+                break;
+            default:
+                break;
+        }
     }
-
-    /* Store the data */
-    frontend.
-     cryostat.
-      cryostatTemp[currentAsyncCryoTempModule].
-       temp=temperature;
-
     return ASYNC_DONE;
 }
 
@@ -1179,25 +1219,25 @@ int getCryoHardwRevision(void){
         printf("         - Reading hardware revision level\n");
     #endif /* DEBUG_CRYOSTAT_SERIAL */
 
-    /* If an error occurs, notify the calling function */
-    if(serialAccess(CRYO_HRDW_REV_READ,
-                    &cryoRegisters.
-                      hrdwRevReg.
-                       integer,
-                    CRYO_HRDW_REV_REG_SIZE,
-                    CRYO_HRDW_REV_REG_SHIFT_SIZE,
-                    CRYO_HRDW_REV_REG_SHIFT_DIR,
-                    SERIAL_READ)==ERROR){
-        return ERROR;
+    if (frontend.mode != SIMULATION_MODE) {
+
+        /* If an error occurs, notify the calling function */
+        if(serialAccess(CRYO_HRDW_REV_READ,
+                        &cryoRegisters.
+                          hrdwRevReg.
+                           integer,
+                        CRYO_HRDW_REV_REG_SIZE,
+                        CRYO_HRDW_REV_REG_SHIFT_SIZE,
+                        CRYO_HRDW_REV_REG_SHIFT_DIR,
+                        SERIAL_READ)==ERROR){
+            return ERROR;
+        }
+
+        /* If no error update frontend variable. */
+        frontend.cryostat.hardwRevision = cryoRegisters.hrdwRevReg.bitField.hardwRev;
+    } else {
+        //SIMULATION_MODE
+        frontend.cryostat.hardwRevision = 1;
     }
-
-    /* If no error update frontend variable. */
-    frontend.
-     cryostat.
-      hardwRevision=cryoRegisters.
-                     hrdwRevReg.
-                      bitField.
-                       hardwRev;
-
     return NO_ERROR;
 }

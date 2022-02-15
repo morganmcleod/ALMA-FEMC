@@ -186,29 +186,31 @@ int setIfTempServoEnable(unsigned char enable){
     int tempFReg=ifRegisters.
                   fReg;
 
-    /* Update FREG */
-    ifRegisters.
-     fReg=(enable==IF_TEMP_SERVO_ENABLE)?SET_IF_TEMP_SERVO_ENABLE(currentIfSwitchModule):
-                                         SET_IF_TEMP_SERVO_DISABLE(currentIfSwitchModule);
-
-    /* 2 - Parallel write FREG */
-    #ifdef DEBUG_IFSWITCH_SERIAL
-        printf("         - Writing FREG\n");
-    #endif /* DEBUG_IFSWITCH_SERIAL */
-
-    /* If there is a problem writing FREG, restore FREG and return the ERROR */
-    if(serialAccess(IF_PARALLEL_WRITE(IF_FREG),
-                    &ifRegisters.
-                      fReg,
-                    IF_FREG_SIZE,
-                    IF_FREG_SHIFT_SIZE,
-                    IF_FREG_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        /* Restore FREG to its original saved value */
+    if (frontend.mode != SIMULATION_MODE) {
+        /* Update FREG */
         ifRegisters.
-         fReg = tempFReg;
+         fReg=(enable==IF_TEMP_SERVO_ENABLE)?SET_IF_TEMP_SERVO_ENABLE(currentIfSwitchModule):
+                                             SET_IF_TEMP_SERVO_DISABLE(currentIfSwitchModule);
 
-        return ERROR;
+        /* 2 - Parallel write FREG */
+        #ifdef DEBUG_IFSWITCH_SERIAL
+            printf("         - Writing FREG\n");
+        #endif /* DEBUG_IFSWITCH_SERIAL */
+
+        /* If there is a problem writing FREG, restore FREG and return the ERROR */
+        if(serialAccess(IF_PARALLEL_WRITE(IF_FREG),
+                        &ifRegisters.
+                          fReg,
+                        IF_FREG_SIZE,
+                        IF_FREG_SHIFT_SIZE,
+                        IF_FREG_SHIFT_DIR,
+                        SERIAL_WRITE)==ERROR){
+            /* Restore FREG to its original saved value */
+            ifRegisters.
+             fReg = tempFReg;
+
+            return ERROR;
+        }
     }
 
     /* Since there is no real hardware read back, if no error occurred the
@@ -252,92 +254,91 @@ int getIfChannelTemp(void){
     /* Variables to store the temporary data */
     float v = 0.0, v1 = 0.0, v2 = 0.0, rTermistor=0.0, temperature=0.0;
 
-    /* Clear the IF switch GREG */
-    ifRegisters.
-     gReg=0x0000;
-
-    /* If the IF switch M&C module is the old hardware revision */
-    if(frontend.
-        ifSwitch.
-         hardwRevision==IF_SWITCH_HRDW_REV0){
-        /* 1 - Select the desired monitor point
-               a - update GREG */
+    if (frontend.mode != SIMULATION_MODE) {
+        /* Clear the IF switch GREG */
         ifRegisters.
-         gReg=IF_GREG_SELECT_TEMP_MONITOR_V1(currentIfSwitchModule);
+         gReg=0x0000;
 
-        /* 2 - Call the getIfAnalogMonitor function */
-        if(getIfAnalogMonitor()==ERROR){
-            return ERROR;
+        /* If the IF switch M&C module is the old hardware revision */
+        if(frontend.
+            ifSwitch.
+             hardwRevision==IF_SWITCH_HRDW_REV0){
+            /* 1 - Select the desired monitor point
+                   a - update GREG */
+            ifRegisters.
+             gReg=IF_GREG_SELECT_TEMP_MONITOR_V1(currentIfSwitchModule);
+
+            /* 2 - Call the getIfAnalogMonitor function */
+            if(getIfAnalogMonitor()==ERROR){
+                return ERROR;
+            }
+
+            /* 3 - Scale the first data and store in temporary variable */
+            v1=(IF_ADC_TEMP_V_SCALE*ifRegisters.
+                                     adcData)/IF_ADC_RANGE;
+
+            /* 4 - Repeat 1-3 for the next voltage */
+            /* Select the desired monitor point
+                   - update GREG */
+            ifRegisters.
+             gReg=IF_GREG_SELECT_TEMP_MONITOR_V2(currentIfSwitchModule);
+
+            /* Call the getIfAnalogMonitor function */
+            if(getIfAnalogMonitor()==ERROR){
+                return ERROR;
+            }
+
+            /* Scale the data and store in temporary variable */
+            v2=(IF_ADC_TEMP_V_SCALE*ifRegisters.
+                                     adcData)/IF_ADC_RANGE;
+
+            /* 5 - Scale the data */
+            /* Find the termistor resistance */
+            rTermistor = BRIDGE_RESISTOR*(v1+v2-2.0*VREF)/(VREF-v1);
+
+            /* Find the temperature in K */
+            temperature = BETA_NORDEN*298.15/(298.15*log(rTermistor/10000.0)+BETA_NORDEN);
+
+        } else { // If it is the new hardware
+
+            /* 1 - Select the desired monitor point
+                   a - update GREG */
+            ifRegisters.
+             gReg=IF_GREG_SELECT_TEMP_MONITOR_V_NEW_HARDW(currentIfSwitchModule);
+
+            /* 2 - Call the getIfAnalogMonitor function */
+            if(getIfAnalogMonitor()==ERROR){
+                return ERROR;
+            }
+
+            /* 3 - Scale the first data and store in temporary variable */
+            v=(IF_ADC_TEMP_V_SCALE*ifRegisters.
+                                    adcData)/IF_ADC_RANGE;
+
+            /* 4 - Scale the data */
+            /* Find the termistor resistance */
+            rTermistor = BRIDGE_RESISTOR_NEW_HARDW*(v/VREF_NEW_HARDW);
+
+            /* Find the temperature in K */
+            temperature = BETA_NORDEN*298.15/(298.15*log(rTermistor/10000.0)+BETA_NORDEN);
         }
 
-        /* 3 - Scale the first data and store in temporary variable */
-        v1=(IF_ADC_TEMP_V_SCALE*ifRegisters.
-                                 adcData)/IF_ADC_RANGE;
-
-        /* 4 - Repeat 1-3 for the next voltage */
-        /* Select the desired monitor point
-               - update GREG */
-        ifRegisters.
-         gReg=IF_GREG_SELECT_TEMP_MONITOR_V2(currentIfSwitchModule);
-
-        /* Call the getIfAnalogMonitor function */
-        if(getIfAnalogMonitor()==ERROR){
-            return ERROR;
+        /* Check if a domain error occurred while evaluating the log. */
+        if(errno==EDOM){
+            return HARDW_CON_ERR;
         }
 
-        /* Scale the data and store in temporary variable */
-        v2=(IF_ADC_TEMP_V_SCALE*ifRegisters.
-                                 adcData)/IF_ADC_RANGE;
-
-        /* 5 - Scale the data */
-        /* Find the termistor resistance */
-        rTermistor = BRIDGE_RESISTOR*(v1+v2-2.0*VREF)/(VREF-v1);
-
-        /* Find the temperature in K */
-        temperature = BETA_NORDEN*298.15/(298.15*log(rTermistor/10000.0)+BETA_NORDEN);
-
-
-
-
-    } else { // If it is the new hardware
-
-
-
-        /* 1 - Select the desired monitor point
-               a - update GREG */
-        ifRegisters.
-         gReg=IF_GREG_SELECT_TEMP_MONITOR_V_NEW_HARDW(currentIfSwitchModule);
-
-        /* 2 - Call the getIfAnalogMonitor function */
-        if(getIfAnalogMonitor()==ERROR){
-            return ERROR;
-        }
-
-        /* 3 - Scale the first data and store in temporary variable */
-        v=(IF_ADC_TEMP_V_SCALE*ifRegisters.
-                                adcData)/IF_ADC_RANGE;
-
-        /* 4 - Scale the data */
-        /* Find the termistor resistance */
-        rTermistor = BRIDGE_RESISTOR_NEW_HARDW*(v/VREF_NEW_HARDW);
-
-        /* Find the temperature in K */
-        temperature = BETA_NORDEN*298.15/(298.15*log(rTermistor/10000.0)+BETA_NORDEN);
+        /* If no error in evaluating the temperature, store the data */
+        frontend.
+         ifSwitch.
+          ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
+                   [currentIfChannelSideband[currentIfSwitchModule]].
+           assemblyTemp=temperature-TEMP_OFFSET;
+    } else {
+        //SIMULATION_MODE
+        frontend.ifSwitch.ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
+           [currentIfChannelSideband[currentIfSwitchModule]].assemblyTemp = 23.4;
     }
-
-    /* Check if a domain error occurred while evaluating the log. */
-    if(errno==EDOM){
-        return HARDW_CON_ERR;
-    }
-
-    /* If no error in evaulating the temperature, store the data */
-    frontend.
-     ifSwitch.
-      ifChannel[currentIfChannelPolarization[currentIfSwitchModule]]
-               [currentIfChannelSideband[currentIfSwitchModule]].
-       assemblyTemp=temperature-TEMP_OFFSET;
-
-
     return NO_ERROR;
 }
 
@@ -371,129 +372,131 @@ int setIfChannelAttenuation(void){
             - Update the selected register
             - Parallel write the new register and if everything goes fine
             - update the frontend variable. */
-    switch(currentIfSwitchModule){
-        case IF_CHANNEL0:
-            {
-                int tempBReg = ifRegisters.
-                                bReg;
+    if (frontend.mode != SIMULATION_MODE) {
+        switch(currentIfSwitchModule){
+            case IF_CHANNEL0:
+                {
+                    int tempBReg = ifRegisters.
+                                    bReg;
 
-                /* Update BREG */
-                ifRegisters.
-                 bReg = CAN_BYTE;
-
-                /* 2 - Parallel write BREG */
-                #ifdef DEBUG_IFSWITCH_SERIAL
-                    printf("         - Writing BREG\n");
-                #endif /* DEBUG_IFSWITCH_SERIAL */
-
-                /* If there is a problem writing BREG, restore BREG and return ERROR */
-                if(serialAccess(IF_PARALLEL_WRITE(IF_BREG),
-                                &ifRegisters.
-                                  bReg,
-                                IF_BREG_SIZE,
-                                IF_BREG_SHIFT_SIZE,
-                                IF_BREG_SHIFT_DIR,
-                                SERIAL_WRITE)==ERROR){
-                    /* Restore BREG to its original save value */
+                    /* Update BREG */
                     ifRegisters.
-                     bReg = tempBReg;
+                     bReg = CAN_BYTE;
 
-                    return ERROR;
+                    /* 2 - Parallel write BREG */
+                    #ifdef DEBUG_IFSWITCH_SERIAL
+                        printf("         - Writing BREG\n");
+                    #endif /* DEBUG_IFSWITCH_SERIAL */
+
+                    /* If there is a problem writing BREG, restore BREG and return ERROR */
+                    if(serialAccess(IF_PARALLEL_WRITE(IF_BREG),
+                                    &ifRegisters.
+                                      bReg,
+                                    IF_BREG_SIZE,
+                                    IF_BREG_SHIFT_SIZE,
+                                    IF_BREG_SHIFT_DIR,
+                                    SERIAL_WRITE)==ERROR){
+                        /* Restore BREG to its original save value */
+                        ifRegisters.
+                         bReg = tempBReg;
+
+                        return ERROR;
+                    }
                 }
-            }
-            break;
-        case IF_CHANNEL1:
-            {
-                int tempCReg = ifRegisters.
-                                cReg;
+                break;
+            case IF_CHANNEL1:
+                {
+                    int tempCReg = ifRegisters.
+                                    cReg;
 
-                /* Update CREG */
-                ifRegisters.
-                 cReg = CAN_BYTE;
-
-                /* 2 - Parallel write CREG */
-                #ifdef DEBUG_IFSWITCH_SERIAL
-                    printf("         - Writing CREG\n");
-                #endif /* DEBUG_IFSWITCH_SERIAL */
-
-                /* If there is a problem writing CREG, restore CREG and return ERROR */
-                if(serialAccess(IF_PARALLEL_WRITE(IF_CREG),
-                                &ifRegisters.
-                                  cReg,
-                                IF_CREG_SIZE,
-                                IF_CREG_SHIFT_SIZE,
-                                IF_CREG_SHIFT_DIR,
-                                SERIAL_WRITE)==ERROR){
-                    /* Restore CREG to its original save value */
+                    /* Update CREG */
                     ifRegisters.
-                     cReg = tempCReg;
+                     cReg = CAN_BYTE;
 
-                    return ERROR;
+                    /* 2 - Parallel write CREG */
+                    #ifdef DEBUG_IFSWITCH_SERIAL
+                        printf("         - Writing CREG\n");
+                    #endif /* DEBUG_IFSWITCH_SERIAL */
+
+                    /* If there is a problem writing CREG, restore CREG and return ERROR */
+                    if(serialAccess(IF_PARALLEL_WRITE(IF_CREG),
+                                    &ifRegisters.
+                                      cReg,
+                                    IF_CREG_SIZE,
+                                    IF_CREG_SHIFT_SIZE,
+                                    IF_CREG_SHIFT_DIR,
+                                    SERIAL_WRITE)==ERROR){
+                        /* Restore CREG to its original save value */
+                        ifRegisters.
+                         cReg = tempCReg;
+
+                        return ERROR;
+                    }
                 }
-            }
-            break;
-        case IF_CHANNEL2:
-            {
-                int tempDReg = ifRegisters.
-                                dReg;
+                break;
+            case IF_CHANNEL2:
+                {
+                    int tempDReg = ifRegisters.
+                                    dReg;
 
-                /* Update DREG */
-                ifRegisters.
-                 dReg = CAN_BYTE;
-
-                /* 2 - Parallel write DREG */
-                #ifdef DEBUG_IFSWITCH_SERIAL
-                    printf("         - Writing DREG\n");
-                #endif /* DEBUG_IFSWITCH_SERIAL */
-
-                /* If there is a problem writing DREG, restore DREG and return ERROR */
-                if(serialAccess(IF_PARALLEL_WRITE(IF_DREG),
-                                &ifRegisters.
-                                  dReg,
-                                IF_DREG_SIZE,
-                                IF_DREG_SHIFT_SIZE,
-                                IF_DREG_SHIFT_DIR,
-                                SERIAL_WRITE)==ERROR){
-                    /* Restore DREG to its original save value */
+                    /* Update DREG */
                     ifRegisters.
-                     dReg = tempDReg;
+                     dReg = CAN_BYTE;
 
-                    return ERROR;
+                    /* 2 - Parallel write DREG */
+                    #ifdef DEBUG_IFSWITCH_SERIAL
+                        printf("         - Writing DREG\n");
+                    #endif /* DEBUG_IFSWITCH_SERIAL */
+
+                    /* If there is a problem writing DREG, restore DREG and return ERROR */
+                    if(serialAccess(IF_PARALLEL_WRITE(IF_DREG),
+                                    &ifRegisters.
+                                      dReg,
+                                    IF_DREG_SIZE,
+                                    IF_DREG_SHIFT_SIZE,
+                                    IF_DREG_SHIFT_DIR,
+                                    SERIAL_WRITE)==ERROR){
+                        /* Restore DREG to its original save value */
+                        ifRegisters.
+                         dReg = tempDReg;
+
+                        return ERROR;
+                    }
                 }
-            }
-            break;
-        case IF_CHANNEL3:
-            {
-                int tempEReg = ifRegisters.
-                                eReg;
+                break;
+            case IF_CHANNEL3:
+                {
+                    int tempEReg = ifRegisters.
+                                    eReg;
 
-                /* Update EREG */
-                ifRegisters.
-                 eReg = CAN_BYTE;
-
-                /* 2 - Parallel write EREG */
-                #ifdef DEBUG_SWITCH_SERIAL
-                    printf("         - Writing EREG\n");
-                #endif /* DEBUG_FI_SWITCH_SERIAL */
-
-                /* If there is a problem writing EREG, restore EREG and return ERROR */
-                if(serialAccess(IF_PARALLEL_WRITE(IF_EREG),
-                                &ifRegisters.
-                                  eReg,
-                                IF_EREG_SIZE,
-                                IF_EREG_SHIFT_SIZE,
-                                IF_EREG_SHIFT_DIR,
-                                SERIAL_WRITE)==ERROR){
-                    /* Restore EREG to its original save value */
+                    /* Update EREG */
                     ifRegisters.
-                     eReg = tempEReg;
+                     eReg = CAN_BYTE;
 
-                    return ERROR;
+                    /* 2 - Parallel write EREG */
+                    #ifdef DEBUG_SWITCH_SERIAL
+                        printf("         - Writing EREG\n");
+                    #endif /* DEBUG_FI_SWITCH_SERIAL */
+
+                    /* If there is a problem writing EREG, restore EREG and return ERROR */
+                    if(serialAccess(IF_PARALLEL_WRITE(IF_EREG),
+                                    &ifRegisters.
+                                      eReg,
+                                    IF_EREG_SIZE,
+                                    IF_EREG_SHIFT_SIZE,
+                                    IF_EREG_SHIFT_DIR,
+                                    SERIAL_WRITE)==ERROR){
+                        /* Restore EREG to its original save value */
+                        ifRegisters.
+                         eReg = tempEReg;
+
+                        return ERROR;
+                    }
                 }
-            }
-            break;
-        default:
-            break;
+                break;
+            default:
+                break;
+        }
     }
 
     /* Since there is no real hardware read back, if no error
@@ -529,28 +532,30 @@ int setIfSwitchBandSelect(void){
     int tempAReg=ifRegisters.
                   aReg;
 
-    /* Update AREG */
-    ifRegisters.
-     aReg = IF_AREG_SELECT_WAY(CAN_BYTE);
-
-    /* 2 - Parallel write AREG */
-    #ifdef DEBUG_IFSWITCH_SERIAL
-        printf("         - Writing AREG\n");
-    #endif /* DEBUG_IFSWITCH_SERIAL */
-
-    /* If there is a problem writing AREG, restore AREG and return the ERROR */
-    if(serialAccess(IF_PARALLEL_WRITE(IF_AREG),
-                    &ifRegisters.
-                      aReg,
-                    IF_AREG_SIZE,
-                    IF_AREG_SHIFT_SIZE,
-                    IF_AREG_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        /* Restore AREG to its original saved value */
+    if (frontend.mode != SIMULATION_MODE) {
+        /* Update AREG */
         ifRegisters.
-         aReg = tempAReg;
+         aReg = IF_AREG_SELECT_WAY(CAN_BYTE);
 
-        return ERROR;
+        /* 2 - Parallel write AREG */
+        #ifdef DEBUG_IFSWITCH_SERIAL
+            printf("         - Writing AREG\n");
+        #endif /* DEBUG_IFSWITCH_SERIAL */
+
+        /* If there is a problem writing AREG, restore AREG and return the ERROR */
+        if(serialAccess(IF_PARALLEL_WRITE(IF_AREG),
+                        &ifRegisters.
+                          aReg,
+                        IF_AREG_SIZE,
+                        IF_AREG_SHIFT_SIZE,
+                        IF_AREG_SHIFT_DIR,
+                        SERIAL_WRITE)==ERROR){
+            /* Restore AREG to its original saved value */
+            ifRegisters.
+             aReg = tempAReg;
+
+            return ERROR;
+        }
     }
 
     /* Since there is no real hardware read back, if no error occurred the
@@ -582,25 +587,30 @@ int getIfSwitchHardwRevision(void){
         printf("         - Reading hardware revision level (parallel read)\n");
     #endif /* DEBUG_SWITCH_SERIAL */
 
-    /* If an error occurs, notify the calling function */
-    if(serialAccess(IF_PARALLEL_READ,
-                    &ifRegisters.
-                      statusReg.
-                       integer,
-                    IF_STATUS_REG_SIZE,
-                    IF_STATUS_REG_SHIFT_SIZE,
-                    IF_STATUS_REG_SHIFT_DIR,
-                    SERIAL_READ)==ERROR){
-        return ERROR;
-    }
+    if (frontend.mode != SIMULATION_MODE) {
+        /* If an error occurs, notify the calling function */
+        if(serialAccess(IF_PARALLEL_READ,
+                        &ifRegisters.
+                          statusReg.
+                           integer,
+                        IF_STATUS_REG_SIZE,
+                        IF_STATUS_REG_SHIFT_SIZE,
+                        IF_STATUS_REG_SHIFT_DIR,
+                        SERIAL_READ)==ERROR){
+            return ERROR;
+        }
 
-    /* If no error update frontend variable. */
-    frontend.
-     ifSwitch.
-      hardwRevision=ifRegisters.
-                     statusReg.
-                      bitField.
-                       hardwRev;
+        /* If no error update frontend variable. */
+        frontend.
+         ifSwitch.
+          hardwRevision=ifRegisters.
+                         statusReg.
+                          bitField.
+                           hardwRev;
+    } else {
+        //SIMULATION_MODE
+        frontend.ifSwitch.hardwRevision = 1;
+    }
 
     return NO_ERROR;
 }

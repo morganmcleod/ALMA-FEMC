@@ -130,8 +130,7 @@ static void standardRCAsHandler(void){
 
         /* Check if maintenance mode. If we are, then block all standard
            standard messages. */
-        if(frontend.
-            mode==MAINTENANCE_MODE){
+        if(frontend.mode == MAINTENANCE_MODE) {
             storeError(ERR_CAN, ERC_MAINT_MODE); // Front End in maintenance mode.
             CAN_STATUS = HARDW_BLKD_ERR;
 
@@ -167,8 +166,7 @@ static void standardRCAsHandler(void){
     /* If it is a control message... */
     /* Check if maintenance mode. If we are, then block all standard
        standard messages. */
-    if(frontend.
-        mode==MAINTENANCE_MODE){
+    if(frontend.mode == MAINTENANCE_MODE) {
         storeError(ERR_CAN, ERC_MAINT_MODE);    //Front End in maintenance mode.
         return;
     }
@@ -598,7 +596,7 @@ static void specialRCAsHandler(void){
                     }
                     frontend.mode = MAINTENANCE_MODE;
 
-                } else if (CAN_BYTE == OPERATIONAL_MODE || CAN_BYTE == TROUBLESHOOTING_MODE) {
+                } else if (CAN_BYTE == OPERATIONAL_MODE || CAN_BYTE == TROUBLESHOOTING_MODE || CAN_BYTE == SIMULATION_MODE) {
                     if (frontend.mode == MAINTENANCE_MODE) {
                         // leaving maintenance mode, stop the ftp service:
                         system("ftpd.exe /u\n");
