@@ -802,9 +802,10 @@ static void sendCANMessage(int appendStatusByte){
         printf("\n");
     #endif /* DEBUG_CAN */
 
-    memcpy(PPTxBuffer,
-           CAN_DATA_ADD,
-           CAN_SIZE);
+    // Zero the payload buffer:
+    memset(PPTxBuffer, 0, CAN_TX_MAX_PAYLOAD_SIZE);
+    // Copy in the payload bytes:
+    memcpy(PPTxBuffer, CAN_DATA_ADD, CAN_SIZE);
 
     #ifdef DEBUG_CAN_FAST
         printf("m");

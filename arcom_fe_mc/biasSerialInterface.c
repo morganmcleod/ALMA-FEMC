@@ -32,6 +32,12 @@
 /* Statics */
 BIAS_REGISTERS biasRegisters[CARTRIDGES_NUMBER];
 
+// Macro to busy-wait the specified number of MICROSECONDS
+// factor of 5 determined experimentally
+static unsigned long delayCounter;
+#define DELAY(MICROSECONDS) { \
+    for (delayCounter = MICROSECONDS * 5; delayCounter > 0; delayCounter--) { _asm { nop } } }
+
 /* A static variable to hold the temperature calibration curve. The cuvre is
    stored in couple of values: {Temperature, Voltage}.
    The first value of {0,1.64654} is added to allow the software to register an
@@ -159,41 +165,8 @@ static int getBiasAnalogMonitor(void){
         return ERROR;
     }
 
-
-/********* TEST FIX ****************/
-/*** Repeat the previous operation to add 40us */
-if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule, BIAS_AREG),
-                &biasRegisters[currentModule].aReg.integer,
-                BIAS_AREG_SIZE,
-                BIAS_AREG_SHIFT_SIZE,
-                BIAS_AREG_SHIFT_DIR,
-                SERIAL_WRITE)==ERROR){
-    return ERROR;
-}
-if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,BIAS_AREG),
-                &biasRegisters[currentModule].aReg.integer,
-                BIAS_AREG_SIZE,
-                BIAS_AREG_SHIFT_SIZE,
-                BIAS_AREG_SHIFT_DIR,
-                SERIAL_WRITE)==ERROR){
-    return ERROR;
-}
-if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,BIAS_AREG),
-                &biasRegisters[currentModule].aReg.integer,
-                BIAS_AREG_SIZE,
-                BIAS_AREG_SHIFT_SIZE,
-                BIAS_AREG_SHIFT_DIR,
-                SERIAL_WRITE)==ERROR){
-    return ERROR;
-}
-if(serialAccess(BIAS_PARALLEL_WRITE(currentBiasModule,BIAS_AREG),
-                &biasRegisters[currentModule].aReg.integer,
-                BIAS_AREG_SIZE,
-                BIAS_AREG_SHIFT_SIZE,
-                BIAS_AREG_SHIFT_DIR,
-                SERIAL_WRITE)==ERROR){
-    return ERROR;
-}
+    /* Do 40 us busy wait instead of four more calls to the hardware */
+    DELAY(40);
 
     /* Initiate ADC conversion
         - send ADC convert strobe command */
@@ -339,7 +312,7 @@ int getSisMixerBias(unsigned char current){
         switch(current) {
             case SIS_MIXER_BIAS_CURRENT:
                 frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].
-                                   sis.current = 9.0 + ((float) rand() / (float) RAND_MAX) * 2.0;
+                                    sis.current = 0.009 + ((float) rand() / (float) RAND_MAX) * 0.002;
                 break;
             case SIS_MIXER_BIAS_VOLTAGE:
                 frontend.cartridge[currentModule].polarization[currentBiasModule].sideband[currentPolarizationModule].

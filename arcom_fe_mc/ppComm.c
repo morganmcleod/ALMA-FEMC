@@ -30,8 +30,8 @@ static unsigned char PPPICMask; // Pic mask
 static unsigned char LD3PrimaryInterruptNo;
 static unsigned char LD3PrimaryInterruptVector;
 static unsigned int  SPPDataPort, SPPStatusPort, SPPControlPort, EPPDataPort;
-//! count EPP timeouts before and after reads and writes.  For display in console.
-static unsigned int TOPreRead, TOMonRead, TOCmdRead, TOPreWrite, TOMonWrite;
+//! count EPP timeouts after reads and writes.  For display in console.
+static unsigned int headerTimeout, payloadTimeout, writeTimeout;
 
 /* Externs */
 unsigned char PPRxBuffer[CAN_RX_MESSAGE_SIZE];
@@ -183,15 +183,8 @@ int PPClearTimeout() {
      * Axelson, J. (2001). Parallel Port Complete Programming, interfacing & using the PC's parallel printer port. Lakeview Research.
      *
      * IEEE 1284 doesn't specify it, but Status bit 0 usually is a timeout bit that indicates
-     * a failed EPP transfer. Unfortunately, the method for clearing the timeout bit varies
-     * with the controller chip. On SMC's '665 and '666 Super I/O controllers, you clear
-     * SO by writing 1 to it. Writing 0 to SO has no effect. On National Semiconductor's
-     * Super I/O, after reading 1 at bit 0, another read of the Status register clears the bit.
-     * If an application is going to run on many different systems, or if you're not sure of
-     * which method to use, you can do both: write 1 to the timeout bit, then read it
-     * again. You might also write 0 to the bit to attempt to clear it, in case any chips use
-     * the conventional method of clearing a bit! */
-    int timeout = 0;
+     * a failed EPP transfer. Unfortunately, the method for clearing the timeout bit varies */
+    int timeout;
     timeout = GETSTATUS(EPPS_TIMEOUT);
     if (timeout) {
         // determined experimentally for ARCOM - set a 1 to the timeout bit to clear it:
@@ -260,10 +253,7 @@ int PPClose(void) {
 /*! This function will transmit \p length bytes of data on the parallel port.
     \param  length  an unsigned char */
 void PPWrite(unsigned char length) {
-    unsigned char cnt;
-
-    if (PPClearTimeout())
-        TOPreWrite++;
+    unsigned char i;
 
     // Set direction to output:
     SETCONTROL(SPPC_DATADIR, 0)
@@ -272,55 +262,55 @@ void PPWrite(unsigned char length) {
     outp(EPPDataPort, length);
 
     // Write the data bytes:
-    for (cnt = 0; cnt < length; cnt++) {
-        outp(EPPDataPort, PPTxBuffer[cnt]);
+    for (i = 0; i < length; i++) {
+        outp(EPPDataPort, PPTxBuffer[i]);
     }
 
     // Set direction to input for next message:
     SETCONTROL(SPPC_DATADIR, 1)
 
+    // Detect and clear EPP timeout:
     if (PPClearTimeout())
-        TOMonWrite++;
+        writeTimeout++;
 }
 
 /* Interrupt function receives CAN_MESSAGE_SIZE bytes from the parallel port and stores them in message */
 static void interrupt far PPIntHandler(void) {
 
-    unsigned char cnt, cnt2, dump;
+    unsigned char i, payloadSize;
 
     #ifdef DEBUG_PPCOM
         printf("Interrupt Received!\n");
     #endif /* DEBUG_PPCOM */
 
-    if (PPClearTimeout())
-        TOPreRead++;
-
     /* Input the CAN header from the parallel port */
     #ifdef DEBUG_PPCOM
         printf("  CAN Header:\n");
     #endif /* DEBUG_PPCOM */
-    for (cnt = 0; cnt < CAN_RX_HEADER_SIZE; cnt++) {
-        PPRxBuffer[cnt] = inp(EPPDataPort);
+    for (i = 0; i < CAN_RX_HEADER_SIZE; i++) {
+        PPRxBuffer[i] = inp(EPPDataPort);
     }
 
     #ifdef DEBUG_PPCOM
-        for (cnt = 0; cnt < CAN_RX_HEADER_SIZE; cnt++) {
-            printf("    PPRxBuffer[%d]=0x%X\n", cnt, PPRxBuffer[cnt]);
+        for (i = 0; i < CAN_RX_HEADER_SIZE; i++) {
+            printf("    PPRxBuffer[%d]=0x%X\n", i, PPRxBuffer[i]);
         }
     #endif /* DEBUG_PPCOM */
 
-    cnt2 = PPRxBuffer[CAN_RX_HEADER_SIZE - 1];
+    // Detect and clear EPP timeout:
+    if (PPClearTimeout()) {
+        headerTimeout++;
+        return;
+    }
 
-    /* If the payload = 0 then is a monitor message */
-    if (cnt2 == CAN_MONITOR) {
+    payloadSize = PPRxBuffer[CAN_RX_HEADER_SIZE - 1];
+
+    /* If the payload size is 0 then it is a monitor message */
+    if (payloadSize == CAN_MONITOR) {
         #ifdef DEBUG_PPCOM
             printf("  Monitor message\n");
         #endif /* DEBUG_PPCOM */
         newCANMsg = 1; // Notify program of new message
-
-        /* Clear timeout bit after EPP operation: */
-        if (PPClearTimeout())
-            TOMonRead++;
 
         #ifdef DEBUG_PPCOM
             printf("Interrupt Serviced!\n");
@@ -329,45 +319,25 @@ static void interrupt far PPIntHandler(void) {
         return;
     }
 
-    /* Check the payload size against the limit: if it's too big, clear the
-       interrupt and exit. We read the data anyway to prevent the AMBSI from
-       getting stuck! */
-    if (cnt2 > CAN_RX_MAX_PAYLOAD_SIZE) {
-        #ifdef DEBUG_PPCOM
-            printf("  Too much data! dumping...");
-        #endif /* DEBUG_PPCOM */
-        for (cnt = 0; cnt < cnt2; cnt++) {
-            dump = inp(EPPDataPort);
-        }
-        PPClear();
-
-        /* Clear timeout bit after EPP operation: */
-        PPClearTimeout();
-
-        return;
+    /* If it's a control message, load the payload */
+    for (i = 0; i < payloadSize; i++) {
+        PPRxBuffer[CAN_RX_HEADER_SIZE + i] = inp(EPPDataPort);
     }
 
-    /* If it's a control message, load the payload */
     #ifdef DEBUG_PPCOM
         printf("  Control message\n");
         printf("    Payload:\n");
-    #endif /* DEBUG_PPCOM */
-    for (cnt = 0; cnt < cnt2; cnt++) {
-        PPRxBuffer[CAN_RX_HEADER_SIZE + cnt] = inp(EPPDataPort);
-    }
-
-    #ifdef DEBUG_PPCOM
-        for (cnt = 0; cnt < cnt2; cnt++) {
-            printf("      PPRxBuffer[%d]=0x%X\n", CAN_RX_HEADER_SIZE + cnt, PPRxBuffer[CAN_RX_HEADER_SIZE + cnt]);
+        for (i = 0; i < payloadSize; i++) {
+            printf("      PPRxBuffer[%d]=0x%X\n", CAN_RX_HEADER_SIZE + i, PPRxBuffer[CAN_RX_HEADER_SIZE + i]);
         }
     #endif /* DEBUG_PPCOM */
 
+    // Detect and clear EPP timeout:
+    if (PPClearTimeout())
+        payloadTimeout++;
+
     /* Notify program of new message */
     newCANMsg = 1;
-
-    /* Clear timeout bit after EPP operation: */
-    if (PPClearTimeout())
-        TOCmdRead++;
 
     #ifdef DEBUG_PPCOM
         printf("Interrupt Serviced!\n");
@@ -383,10 +353,10 @@ void PPClear(void) {
 
 /*! Print a port status report to the console */
 void PPStatusReport(void) {
-    unsigned char statusPort, controlPort, cnt;
+    unsigned char statusPort, controlPort, i;
 
     // Each message byte will be printed like '00 '
-    // CAN_RX_MESSAGE_SIZE is larger than CAN_TX_MAX_PAYLOAD_SIZE
+    // This buffer is safe because CAN_RX_MESSAGE_SIZE is larger than CAN_MAX_PAYLOAD_SIZE:
     char buf[3 * CAN_RX_MESSAGE_SIZE + 1];
 
     statusPort = inp(SPPStatusPort);
@@ -399,15 +369,15 @@ void PPStatusReport(void) {
     printf("Paper-out: %d         Init: %d\n", GETSTATUS(SPPS_PAPEROUT), GETCONTROL(SPPC_INIT));
     printf("Interrupt: %d      IRQ-ena: %d\n", GETSTATUS(EPPS_INTERRUPT), GETCONTROL(SPPC_IRQENA));
     printf("    nWait: %d     Data-dir: %d\n", GETSTATUS(EPPS_NWAIT), GETCONTROL(SPPC_DATADIR));
-    printf(" TO preRd: %u  monRd: %u  cmdRd: %u  preWrt: %u  monWrt: %u\n\n", TOPreRead, TOMonRead, TOCmdRead, TOPreWrite, TOMonWrite);
+    printf(" Timeouts: header: %u  payload: %u  write: %u\n\n", headerTimeout, payloadTimeout, writeTimeout);
 
-    for (cnt = 0; cnt < CAN_RX_MESSAGE_SIZE; cnt++) {
-        sprintf(buf + (3 * cnt), "%02X ", PPRxBuffer[cnt]);
+    for (i = 0; i < CAN_RX_MESSAGE_SIZE; i++) {
+        sprintf(buf + (3 * i), "%02X ", PPRxBuffer[i]);
     }
     printf("RxBuffer: %s\n", buf);
 
-    for (cnt = 0; cnt < CAN_TX_MAX_PAYLOAD_SIZE; cnt++) {
-        sprintf(buf + (3 * cnt), "%02X ", PPTxBuffer[cnt]);
+    for (i = 0; i < CAN_TX_MAX_PAYLOAD_SIZE; i++) {
+        sprintf(buf + (3 * i), "%02X ", PPTxBuffer[i]);
     }
     printf("TxBuffer: %s\n", buf);
 }

@@ -32,6 +32,12 @@
 /* Statics */
 LO_REGISTERS loRegisters[CARTRIDGES_NUMBER];
 
+// Macro to busy-wait the specified number of MICROSECONDS
+// factor of 5 determined experimentally
+static unsigned long delayCounter;
+#define DELAY(MICROSECONDS) { \
+    for (delayCounter = MICROSECONDS * 5; delayCounter > 0; delayCounter--) { _asm { nop } } }
+
 /* LO analog monitor request core.
    This function performs the core operations that are common to all the analog
    monitor requests for the LO module:
@@ -73,47 +79,8 @@ static int getLoAnalogMonitor(void){
         return ERROR;
     }
 
-
-
-/********* TEST FIX ****************/
-/** After testing, this fix became */
-/** permanent.                     */
-/***********************************/
-/*** Repeat the previous operation to add 40us */
-    if(serialAccess(LO_PARALLEL_WRITE(LO_BREG),
-                    &loRegisters[currentModule].
-                      bReg.
-                       integer,
-                    LO_BREG_SIZE,
-                    LO_BREG_SHIFT_SIZE,
-                    LO_BREG_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        return ERROR;
-    }
-    if(serialAccess(LO_PARALLEL_WRITE(LO_BREG),
-                    &loRegisters[currentModule].
-                      bReg.
-                       integer,
-                    LO_BREG_SIZE,
-                    LO_BREG_SHIFT_SIZE,
-                    LO_BREG_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        return ERROR;
-    }
-    if(serialAccess(LO_PARALLEL_WRITE(LO_BREG),
-                    &loRegisters[currentModule].
-                      bReg.
-                       integer,
-                    LO_BREG_SIZE,
-                    LO_BREG_SHIFT_SIZE,
-                    LO_BREG_SHIFT_DIR,
-                    SERIAL_WRITE)==ERROR){
-        return ERROR;
-    }
-/************* END TEST FIX ************/
-
-
-
+    /* Busy-wait delay 40 us instead of sending to the hardware four more times. */
+    DELAY(40);
 
     /* Initiate ADC conversion:
        - send ADC convert strobe command */
@@ -406,6 +373,8 @@ int getPhotomixer(unsigned char port){
             case PHOTOMIXER_BIAS_C:
                 frontend.cartridge[currentModule].lo.photomixer.current =
                         (float) frontend.cartridge[currentModule].lo.photomixer.enable * 0.8 + 0.01;
+                // absurdly long delay in SIMULATION_MODE:
+                DELAY(300);
                 break;
             default:
                 break;

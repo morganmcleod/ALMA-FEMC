@@ -10,6 +10,10 @@
 
     REVISION HISTORY
 
+    2022-03-04 3.6.3
+        Adds FEMode=3 Simulation mode.
+        Use 40 us busy wait delay in getLoAnalogMonitor, getBiasAnalogMonitor
+
     2022-01-19 3.6.1
         Clear parallel port EPP timeout between transactions
 
@@ -397,10 +401,14 @@
     /* Defines */
     #define VERSION_MAJOR   3
     #define VERSION_MINOR   6
-    #define VERSION_PATCH   1
+    #define VERSION_PATCH   3
 
-    #define VERSION_DATE    "2022-01-19"
-    #define VERSION_NOTES   "3.6.1: Boot into Operational Mode, no waiting for AMBSI1. Clear PP timeout between messages."
+    #define VERSION_DATE    "2022-03-04"
+    #define VERSION_NOTES   "3.6.3: Boots into Operational mode, no 'handshaking'.\n" \
+                            "Clears EPP timeout on boot and between transactions.\n" \
+                            "Use 40 us busy wait delay in getLoAnalogMonitor, getBiasAnalogMonitor.\n" \
+                            "Adds FEMode=3 Simulation mode.\n" \
+                            "Simplify timeout counters in ppComm."
 
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM"
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
