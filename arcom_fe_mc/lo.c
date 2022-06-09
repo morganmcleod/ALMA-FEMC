@@ -236,7 +236,8 @@ int loZeroYtoCoarseTuning(void) {
     \return
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
-int loStartup(void){
+int loStartup(void) {
+    CFG_STRUCT dataIn;
 
     #ifdef DEBUG_STARTUP
         printf(" LO %d configuration file: %s\n",
@@ -250,16 +251,25 @@ int loStartup(void){
         printf("  - PLL Loop Bandwidth...\n");
     #endif
 
-    frontend.cartridge[currentModule].lo.pll.
-        loopBandwidthSelect = loopBandwidthDefaults[currentModule];
+    frontend.cartridge[currentModule].lo.pll.loopBandwidthSelect = loopBandwidthDefaults[currentModule];
 
     #ifdef DEBUG_STARTUP
         printf("    - PLL loop bandwidth default value=%d\n", loopBandwidthDefaults[currentModule]);
         printf("    done!\n"); // PLL loop bandwidth
     #endif /* DEBUG_STARTUP */
     
-    /* Set the limits for control messages */
+    /* Read hasTeledynePA from configuration file. */
+    frontend.cartridge[currentModule].lo.hasTeledynePA = 0;
+    dataIn.Name = LO_PA_TELEDYNE_KEY;
+    dataIn.VarType = Cfg_Boolean;
+    dataIn.DataPtr = &frontend.cartridge[currentModule].lo.hasTeledynePA;
+    ReadCfg(frontend.cartridge[currentModule].lo.configFile, LO_PA_SECTION, &dataIn);
 
+    #ifdef DEBUG_STARTUP
+        printf("  - Teledyne PA=%d\n", frontend.cartridge[currentModule].lo.hasTeledynePA);
+    #endif /* DEBUG_STARTUP */
+
+    /* Set the limits for control messages */
     #ifdef DEBUG_STARTUP
         printf("  - Setting limits for control messages\n");
         printf("    - Loading max safe power limits\n");

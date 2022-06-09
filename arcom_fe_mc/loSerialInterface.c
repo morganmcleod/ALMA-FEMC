@@ -1284,58 +1284,38 @@ int getPa(unsigned char port){
 int getPaChannel(void){
     if (frontend.mode != SIMULATION_MODE) {
         /* Clear the LO BREG monitor selection bitfield */
-        loRegisters[currentModule].
-         bReg.
-          bitField.
-           monitorPoint = 0x00;
+        loRegisters[currentModule].bReg.bitField.monitorPoint = 0x00;
 
         /* 1 - Select the desired monitor point
                a - update BREG */
-        loRegisters[currentModule].
-         bReg.
-          bitField.
-           monitorPoint=LO_BREG_PA_CHANNEL(currentPaChannelModule);
+        loRegisters[currentModule].bReg.bitField.monitorPoint = LO_BREG_PA_CHANNEL(currentPaChannelModule);
 
-        /* 2->5 - Call the getLoAnalogMonitor function */
-        if(getLoAnalogMonitor()==ERROR){
+        /* 2 - Call the getLoAnalogMonitor function */
+        if (getLoAnalogMonitor() == ERROR) {
             return ERROR;
         }
 
-        /* 6 - Scale the data */
+        /* 3 - Scale the data */
         switch(currentPaChannelModule){
             /* The gate voltage is given by 10*(adcData/65536) */
             case PA_CHANNEL_GATE_VOLTAGE:
-                frontend.
-                 cartridge[currentModule].
-                  lo.
-                   pa.
-                    paChannel[currentPaChannel()].
-                     gateVoltage=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
-                                                                        adcData/LO_ADC_RANGE);
+                frontend.cartridge[currentModule].lo.pa.paChannel[currentPaChannel()].gateVoltage =
+                        (LO_GATE_DRAIN_V_SCALE * loRegisters[currentModule].adcData / LO_ADC_RANGE);
                 break;
             /* The drain voltage is given by 10*(adcData/65536) */
             case PA_CHANNEL_DRAIN_VOLTAGE:
-                frontend.
-                 cartridge[currentModule].
-                  lo.
-                   pa.
-                    paChannel[currentPaChannel()].
-                     drainVoltage=(LO_GATE_DRAIN_V_SCALE*loRegisters[currentModule].
-                                                                         adcData/LO_ADC_RANGE);
+                frontend.cartridge[currentModule].lo.pa.paChannel[currentPaChannel()].drainVoltage =
+                        (LO_GATE_DRAIN_V_SCALE * loRegisters[currentModule].adcData / LO_ADC_RANGE);
                 break;
             /* The drain current is given by 1000*(adcData/65536) */
             case PA_CHANNEL_DRAIN_CURRENT:
-                frontend.
-                 cartridge[currentModule].
-                  lo.
-                   pa.
-                    paChannel[currentPaChannel()].
-                     drainCurrent=(LO_DRAIN_C_SCALE*loRegisters[currentModule].
-                                                                    adcData/LO_ADC_RANGE);
+                frontend.cartridge[currentModule].lo.pa.paChannel[currentPaChannel()].drainCurrent =
+                        (LO_DRAIN_C_SCALE * loRegisters[currentModule].adcData / LO_ADC_RANGE);
                 break;
             default:
                 break;
         }
+
     } else {
         //SIMULATION_MODE
         switch(currentPaChannelModule){
@@ -1357,8 +1337,14 @@ int getPaChannel(void){
 
 
 /* Set PA channel */
-/*! This function allows the suer to set different values for gate and drain
+/*! This function allows the user to set different values for gate and drain
     voltage in the addressed PA_CHANNEL.
+
+    Added in 3.6.4:  Alternate handling for Teledyne PA chips where:
+        SET_CARTRIDGE[Ca]_LO_PA_POL[Po]_DRAIN_VOLTAGE_SCALE is mapped to the base voltage
+          via POT0 and POT2 which are normally for the gate voltage
+        and the collector voltage is set to either 0 or 255
+          via POT1 and POT3 which are normally for the drain voltage.
 
     The function performs the following operation:
         -# Scale the analog control parameter from float to raw data
@@ -1371,67 +1357,92 @@ int setPaChannel(void){
     /* A temporary variable to hold the scaled data before assigning it to the
        correct pot. */
     unsigned char scaledData;
+    unsigned char prevPaChannelModule;
 
     if (frontend.mode != SIMULATION_MODE) {
         /* 1 - Setup the POT message */
         /* Set the stack bits for the 4 pots. These are always 0 because of the
            hardware configuration. */
-        loRegisters[currentModule].
-         paPotReg.
-          bitField.
-           stackBit10=LO_PA_POT_STACK_BIT_0;
-        loRegisters[currentModule].
-         paPotReg.
-          bitField.
-           stackBit32=LO_PA_POT_STACK_BIT_0;
+        loRegisters[currentModule].paPotReg.bitField.stackBit10=LO_PA_POT_STACK_BIT_0;
+        loRegisters[currentModule].paPotReg.bitField.stackBit32=LO_PA_POT_STACK_BIT_0;
 
         /* 2 - Scale the data according to the selected pot. */
-        switch(currentPaChannelModule){
-            /* The gate voltage is given by: (v=CONV_FLOAT)
-               - 0 if v = 0.15
-               - round(51*(5*v+4.25-((5*v+4.25)^2-4*(v-0.15)*(3.75-25*v))^0.5)/(2*(v-0.15))) (otherwise) */
-            case PA_CHANNEL_GATE_VOLTAGE:
-                scaledData=LO_PA_POT_GATE_V_SCALE(CONV_FLOAT);
-                break;
-            /* The drain voltage is given by: (v=CONV_FLOAT)
-               - 102*v */
-            case PA_CHANNEL_DRAIN_VOLTAGE:
-                scaledData=LO_PA_POT_DRAIN_V_SCALE(CONV_FLOAT);
-                break;
-            default:
-                break;
-        }
 
-        /* Assign the scaled data to the correct pot. This is a mapping because
-           the assignment of channels 'A' and 'B' to polarizations '0' and '1' is
-           dependent on the selected cartridge. */
-        switch(LO_PA_CURRENT_POT(currentPaChannelModule)){
-            case POT0:
-                loRegisters[currentModule].
-                 paPotReg.
-                  bitField.
-                   pot0=scaledData;
-                break;
-            case POT1:
-                loRegisters[currentModule].
-                 paPotReg.
-                  bitField.
-                   pot1=scaledData;
-                break;
-            case POT2:
-                loRegisters[currentModule].
-                 paPotReg.
-                  bitField.
-                   pot2=scaledData;
-                break;
-            case POT3:
-                loRegisters[currentModule].
-                 paPotReg.
-                  bitField.
-                   pot3=scaledData;
-                break;
-            default:
-                break;
+        if (frontend.cartridge[currentModule].lo.hasTeledynePA) {
+            /* 2a - Alternate scaling and pot assignment for the Teledyne PA chip */
+
+            // save the current channel module so we can safely remap it:
+            prevPaChannelModule = currentPaChannelModule;
+
+            if (currentPaChannelModule == PA_CHANNEL_GATE_VOLTAGE) {
+                // roles of Gate and Drain are reversed.  Now they are actually Base and Collector
+                currentPaChannelModule = PA_CHANNEL_DRAIN_VOLTAGE;
+                // Ignore the data payload.  We will set the Collector voltage when the Drain (=Base) changes.
+            } else if (currentPaChannelModule == PA_CHANNEL_DRAIN_VOLTAGE) {
+                currentPaChannelModule = PA_CHANNEL_GATE_VOLTAGE;
+                // Alternate scaling for the payload:
+                scaledData = LO_PA_POT_TELEDNE_BASE_V_SCALE(CONV_FLOAT);
+            }
+
+            /* Assign the scaled data to the correct pot.
+               LO_PA_CURRENT_POT() maps polarizations 0 and 1 onto channels A and B depending on the cartridge band. */
+            switch (LO_PA_CURRENT_POT(currentPaChannelModule)) {
+                /* For Teledyne PA we assign the scaled power control value to POT0 or POT2
+                   and always set POT1 and POT3 to fully on or off.
+                 */
+                case POT0:
+                    // base voltage:
+                    loRegisters[currentModule].paPotReg.bitField.pot0 = scaledData;
+                    // collector voltage:
+                    loRegisters[currentModule].paPotReg.bitField.pot1 = (CONV_FLOAT > 0) ? 255 : 0;
+                    break;
+                case POT2:
+                    // base voltage:
+                    loRegisters[currentModule].paPotReg.bitField.pot2 = scaledData;
+                    // collector voltage:
+                    loRegisters[currentModule].paPotReg.bitField.pot3 = (CONV_FLOAT > 0) ? 255 : 0;
+                    break;
+                default:
+                    break;
+            }
+            // Set the currentPaChannelModule back to the previous value:
+            currentPaChannelModule = prevPaChannelModule;
+
+        } else {
+            /* 2b - Original scaling and pot assignment for the PA chips */
+            switch(currentPaChannelModule){
+                case PA_CHANNEL_GATE_VOLTAGE:
+                    scaledData = LO_PA_POT_GATE_V_SCALE(CONV_FLOAT);
+                    break;
+                case PA_CHANNEL_DRAIN_VOLTAGE:
+                    scaledData = LO_PA_POT_DRAIN_V_SCALE(CONV_FLOAT);
+                    break;
+                default:
+                    break;
+            }
+
+            /* Assign the scaled data to the correct pot.
+               LO_PA_CURRENT_POT() maps polarizations 0 and 1 onto channels A and B depending on the cartridge band. */
+            switch(LO_PA_CURRENT_POT(currentPaChannelModule)){
+                case POT0:
+                    // drain voltage:
+                    loRegisters[currentModule].paPotReg.bitField.pot0 = scaledData;
+                    break;
+                case POT1:
+                    // gate voltage:
+                    loRegisters[currentModule].paPotReg.bitField.pot1 = scaledData;
+                    break;
+                case POT2:
+                    // drain voltage:
+                    loRegisters[currentModule].paPotReg.bitField.pot2 = scaledData;
+                    break;
+                case POT3:
+                    // gate voltage
+                    loRegisters[currentModule].paPotReg.bitField.pot3 = scaledData;
+                    break;
+                default:
+                    break;
+            }
         }
 
         /* 3 - Write the data to the serial access fuction */
@@ -1440,15 +1451,13 @@ int setPaChannel(void){
         #endif /* DEBUG */
 
         /* If there is a problem writing POT, return it so that the value in the
-           frontend variable is not going to be updates. */
-        if(serialAccess(LO_PA_DATA_WRITE,
-                        loRegisters[currentModule].
-                         paPotReg.
-                          integer,
-                        LO_PA_POT_DATA_SIZE,
-                        LO_PA_POT_DATA_SHIFT_SIZE,
-                        LO_PA_POT_DATA_SHIFT_DIR,
-                        SERIAL_WRITE)==ERROR){
+           frontend variable is not going to be updated. */
+        if (serialAccess(LO_PA_DATA_WRITE,
+                         loRegisters[currentModule].paPotReg.integer,
+                         LO_PA_POT_DATA_SIZE,
+                         LO_PA_POT_DATA_SHIFT_SIZE,
+                         LO_PA_POT_DATA_SHIFT_DIR,
+                         SERIAL_WRITE)==ERROR) {
             return ERROR;
         }
     }

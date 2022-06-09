@@ -44,11 +44,12 @@
                                         //   This is checked on the 4K and 12K cryostat sensors.
 
     /* Submodules definitions */
-    #define PA_CHANNEL_MODULES_NUMBER      3       // See list below
+    #define PA_CHANNEL_MODULES_NUMBER      4       // See list below
     #define PA_CHANNEL_MODULES_RCA_MASK    0x00003 /* Mask to extract the submodule number:
                                                       0 -> gateVoltage
                                                       1 -> drainVoltage
-                                                      2 -> drainCurrent */
+                                                      2 -> drainCurrent
+                                                      3 -> hasTeledynePA */
 
     /* Typedefs */
     //! Current state of the PA channel
@@ -94,6 +95,7 @@
     static void gateVoltageHandler(void);
     static void drainVoltageHandler(void);
     static void drainCurrentHandler(void);
+    static void hasTeledynePaHandler(void);
     /* Externs */
     extern void paChannelHandler(void); //!< This function deals with the incoming can message
     extern int currentPaChannel(void); //!< This function returns the current PA channel

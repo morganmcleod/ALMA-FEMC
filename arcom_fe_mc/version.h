@@ -10,6 +10,11 @@
 
     REVISION HISTORY
 
+    2022-06-21 3.6.4
+        Load TELEDYNE key from [PA] section
+        Implement Teledyne PA algorithm
+        Add command to set Teledyne PA option
+
     2022-03-04 3.6.3
         Adds FEMode=3 Simulation mode.
         Use 40 us busy wait delay in getLoAnalogMonitor, getBiasAnalogMonitor
@@ -401,14 +406,10 @@
     /* Defines */
     #define VERSION_MAJOR   3
     #define VERSION_MINOR   6
-    #define VERSION_PATCH   3
+    #define VERSION_PATCH   4
 
-    #define VERSION_DATE    "2022-03-04"
-    #define VERSION_NOTES   "3.6.3: Boots into Operational mode, no 'handshaking'.\n" \
-                            "Clears EPP timeout on boot and between transactions.\n" \
-                            "Use 40 us busy wait delay in getLoAnalogMonitor, getBiasAnalogMonitor.\n" \
-                            "Adds FEMode=3 Simulation mode.\n" \
-                            "Simplify timeout counters in ppComm."
+    #define VERSION_DATE    "2022-06-21"
+    #define VERSION_NOTES   "3.6.4: Implement Teledyne PA control."
 
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM"
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"

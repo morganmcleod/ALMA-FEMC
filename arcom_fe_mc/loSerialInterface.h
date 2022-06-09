@@ -201,10 +201,10 @@
 
     /* --- Common POT definitions (64-bit) --- */
     #define LO_POT_WORD_SIZE                4   // 4 ints necessary to contain the POT message
-    #define POT0                            0
-    #define POT1                            1
-    #define POT2                            2
-    #define POT3                            3
+    #define POT0                            0   // gate voltage, (Band 7 Teledyne base voltage)
+    #define POT1                            1   // drain voltage, (Band 7 Teledyne collector voltage)
+    #define POT2                            2   // gate/base pol0
+    #define POT3                            3   // drain/collector pol1
 
 
     /* --- AMC POT definitions */
@@ -218,9 +218,11 @@
 
 
     /* --- PA POT definitions */
-    #define LO_PA_POT_STACK_BIT_0               0   // Stack bit configuration determineed by hardware design
+    #define LO_PA_POT_STACK_BIT_0               0   // Stack bit configuration determined by hardware design
     #define LO_PA_POT_GATE_V_SCALE(v)           (unsigned char)(0.5+(v==0.15?0.0:((127.5*(20.0*v+17.0-5.0*sqrt(80.0*v*v+8.0*v+13.0)))/(20.0*v-3.0)))) // Scale factor for PA_CHANNEL gate voltage
     #define LO_PA_POT_DRAIN_V_SCALE(v)          (unsigned char)(102.0*v) // Scale factor for PA_CHANNEL drain voltage
+    #define LO_PA_POT_TELEDNE_BASE_V_SCALE(v)   (255 - (unsigned char)(102.0*v)) // Scale factor for PA_CHANNEL base voltage
+                                                                                 // For Teledyne PA chips only!
     #define LO_PA_CURRENT_POT(Ch)               (2*currentPaChannel()+Ch)
     #define LO_PA_POT_DATA_SIZE                 35  // Write only: 34-bit + 1 for internal use
     #define LO_PA_POT_DATA_SHIFT_SIZE           1   // 1 extra bit to be sent

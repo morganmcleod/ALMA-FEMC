@@ -52,6 +52,8 @@
 
     /* Defines */
     /* Configuration data info */
+    #define LO_PA_SECTION               "PA"                // Section containing configuration for PA
+    #define LO_PA_TELEDYNE_KEY          "TELEDYNE"          // Key to specify using the Teledyne MMIC power control method
     #define LO_PA_LIMITS_SECTION        "PA_LIMITS"         // Section containing the PA max safe power limits
     #define LO_PA_LIMITS_ESN_KEY        "ESN"               // Key for the WCA ESN to which the table applies
     #define LO_PA_LIMITS_ESN_EXPECTED   1                   // Expected keys containting ESN
@@ -123,6 +125,9 @@
             information. */
         PA          pa;
 
+        //! If true, we use an alternate method for handling the PA VD commands
+        unsigned char hasTeledynePA;
+
         //! Photomixer current state
         /*! Please see the definition of the \ref PHOTOMIXER structure for more
             information. */
@@ -154,6 +159,8 @@
         /*! Table of max safe LO PA entries.  See definition above */
         MAX_SAFE_LO_PA_ENTRY *maxSafeLoPaTable;
 
+        //! Last control message: hasTeledynePA
+        LAST_CONTROL_MESSAGE lastHasTeledynePA;
     } LO;
 
     /* Globals */
