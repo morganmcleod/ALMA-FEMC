@@ -100,6 +100,7 @@ static unsigned long errorTotal=0;
         "FETIM Interlock Glitch",
         "FETIM External Temperature",
         "FETIM He2 Pressure"                    // 0x40
+        "Teledyne PA"
     };
 
 #endif // ERROR_REPORT

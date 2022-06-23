@@ -45,6 +45,11 @@
         #include "pa.h"
     #endif  /* _PA_H */
 
+    /* Power Amplifier (PA) */
+    #ifndef __TELEDYNEPA_HPA_H
+        #include "teledynePa.h"
+    #endif  /* _TELEDYNEPA_H */
+
     /* YIG Tuneable Oscillator (YTO) */
     #ifndef _YTO_H
         #include "yto.h"
@@ -54,6 +59,8 @@
     /* Configuration data info */
     #define LO_PA_SECTION               "PA"                // Section containing configuration for PA
     #define LO_PA_TELEDYNE_KEY          "TELEDYNE"          // Key to specify using the Teledyne MMIC power control method
+    #define LO_PA_TELEDYNE_COLL_POL0    "COLLECTORP0"       // Key for pol0 collector voltage to use with Teledyne PA
+    #define LO_PA_TELEDYNE_COLL_POL1    "COLLECTORP1"       // Key for pol1 collector voltage to use with Teledyne PA
     #define LO_PA_LIMITS_SECTION        "PA_LIMITS"         // Section containing the PA max safe power limits
     #define LO_PA_LIMITS_ESN_KEY        "ESN"               // Key for the WCA ESN to which the table applies
     #define LO_PA_LIMITS_ESN_EXPECTED   1                   // Expected keys containting ESN
@@ -63,13 +70,14 @@
     #define LO_PA_LIMITS_ENTRY_KEY      "ENTRY_%d"          // Key for individual PA limits entries
                                                             // Entries are formatted as <YTO count>,<PAVD0 limit>,<PAVD1 limit>
     /* Submodules definitions */
-    #define LO_MODULES_NUMBER       5       // See list below
+    #define LO_MODULES_NUMBER       6       // See list below
     #define LO_MODULES_RCA_MASK     0x00070 /* Mask to extract the submodule number:
                                                0 -> YTO
                                                1 -> Photomixer
                                                2 -> PLL
                                                3 -> AMC
-                                               4 -> PA */
+                                               4 -> PA
+                                               5 -> TeledynePA */
     #define LO_MODULES_MASK_SHIFT   4       // Bits right shift for the submodules mask
 
     /* Typedefs */
@@ -125,9 +133,6 @@
             information. */
         PA          pa;
 
-        //! If true, we use an alternate method for handling the PA VD commands
-        unsigned char hasTeledynePA;
-
         //! Photomixer current state
         /*! Please see the definition of the \ref PHOTOMIXER structure for more
             information. */
@@ -158,9 +163,6 @@
         //! Max safe LO PA entries table
         /*! Table of max safe LO PA entries.  See definition above */
         MAX_SAFE_LO_PA_ENTRY *maxSafeLoPaTable;
-
-        //! Last control message: hasTeledynePA
-        LAST_CONTROL_MESSAGE lastHasTeledynePA;
     } LO;
 
     /* Globals */

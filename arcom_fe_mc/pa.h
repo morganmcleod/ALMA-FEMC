@@ -39,21 +39,6 @@
 
     /* Typedefs */
     //! Current state of the PA
-    /*! This structure represent the current state of the Power Amplifier.
-        \ingroup    lo
-        \param      pllChannel[Po]      This contains the information about the
-                                        channels available for this power
-                                        amplifier. There can be up to \ref
-                                        PA_CHANNELS_NUMBER for each PA. Each
-                                        channel is assigned to a certain
-                                        polarization Po according to the
-                                        following:
-                                            - Po = 0 -> Polarization 0
-                                            - Po = 1 -> Polarization 1
-        \param      supplyVoltage3V     This contains the most recent read-back
-                                        value for the 3V supply voltage.
-        \param      supplyVoltage5V     This contains the most recent read-back
-                                        value for the 5V supply voltage. */
      typedef struct {
         //! A Channel current state
         /*! There is one power amplifier channel per polarization. */
@@ -64,6 +49,16 @@
         //! PA 5V supply voltage
         /*! This is the PA 5V supply voltage (in V). */
         float   supplyVoltage5V;
+
+        //! If true, we use an alternate method for handling the PA VD commands
+        unsigned char hasTeledynePa;
+
+        //! Control byte value to use for collector voltage control when Teledyne PA is operating
+        unsigned char teledyneCollectorByte[2];
+
+        //! Last control message: hasTeledynePA, teledyneCollectorByte:
+        LAST_CONTROL_MESSAGE lastHasTeledynePa;
+        LAST_CONTROL_MESSAGE lastTeledyneCollectorByte[2];
     } PA;
 
     /* Globals */

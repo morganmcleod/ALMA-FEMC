@@ -466,6 +466,12 @@ lenoidValve.c .AUTODEPEND
  *wcc solenoidValve.c -i="C:\WATCOM/h" -w4 -zq -od -d1 -5 -bt=dos -fo=.obj -&
 ml
 
+L:\C\ALMA-FEMC\arcom_fe_mc\teledynePa.obj : L:\C\ALMA-FEMC\arcom_fe_mc\teled&
+ynePa.c .AUTODEPEND
+ @L:
+ cd L:\C\ALMA-FEMC\arcom_fe_mc
+ *wcc teledynePa.c -i="C:\WATCOM/h" -w4 -zq -od -d1 -5 -bt=dos -fo=.obj -ml
+
 L:\C\ALMA-FEMC\arcom_fe_mc\timer.obj : L:\C\ALMA-FEMC\arcom_fe_mc\timer.c .A&
 UTODEPEND
  @L:
@@ -545,10 +551,10 @@ C\arcom_fe_mc\powerDistribution.obj L:\C\ALMA-FEMC\arcom_fe_mc\ppComm.obj L:&
 alMux.obj L:\C\ALMA-FEMC\arcom_fe_mc\sideband.obj L:\C\ALMA-FEMC\arcom_fe_mc&
 \sis.obj L:\C\ALMA-FEMC\arcom_fe_mc\sisHeater.obj L:\C\ALMA-FEMC\arcom_fe_mc&
 \sisMagnet.obj L:\C\ALMA-FEMC\arcom_fe_mc\solenoidValve.obj L:\C\ALMA-FEMC\a&
-rcom_fe_mc\timer.obj L:\C\ALMA-FEMC\arcom_fe_mc\turboPump.obj L:\C\ALMA-FEMC&
-\arcom_fe_mc\vacuumController.obj L:\C\ALMA-FEMC\arcom_fe_mc\vacuumSensor.ob&
-j L:\C\ALMA-FEMC\arcom_fe_mc\version.obj L:\C\ALMA-FEMC\arcom_fe_mc\yto.obj &
-.AUTODEPEND
+rcom_fe_mc\teledynePa.obj L:\C\ALMA-FEMC\arcom_fe_mc\timer.obj L:\C\ALMA-FEM&
+C\arcom_fe_mc\turboPump.obj L:\C\ALMA-FEMC\arcom_fe_mc\vacuumController.obj &
+L:\C\ALMA-FEMC\arcom_fe_mc\vacuumSensor.obj L:\C\ALMA-FEMC\arcom_fe_mc\versi&
+on.obj L:\C\ALMA-FEMC\arcom_fe_mc\yto.obj .AUTODEPEND
  @L:
  cd L:\C\ALMA-FEMC\arcom_fe_mc
  @%write fe_mc.lk1 FIL ini.obj,amc.obj,async.obj,backingPump.obj,biasSerialI&
@@ -565,8 +571,8 @@ bj,modulationInput.obj,opticalSwitch.obj,owb.obj,pa.obj,paChannel.obj,pdChan&
 nel.obj,pdModule.obj,pdSerialInterface.obj,pegasus.obj,photoDetector.obj,pho&
 tomixer.obj,pll.obj,polarization.obj,polDac.obj,polSpecialMsgs.obj,powerDist&
 ribution.obj,ppComm.obj,serialInterface.obj,serialMux.obj,sideband.obj,sis.o&
-bj,sisHeater.obj,sisMagnet.obj,solenoidValve.obj,timer.obj,turboPump.obj,vac&
-uumController.obj,vacuumSensor.obj,version.obj,yto.obj
+bj,sisHeater.obj,sisMagnet.obj,solenoidValve.obj,teledynePa.obj,timer.obj,tu&
+rboPump.obj,vacuumController.obj,vacuumSensor.obj,version.obj,yto.obj
  @%append fe_mc.lk1 
  *wlink name fe_mc d all sys dos libf sockets/lib/wcapil5.lib op maxe=25 op &
 q op symf op el @fe_mc.lk1

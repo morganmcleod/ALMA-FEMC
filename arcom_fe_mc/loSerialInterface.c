@@ -1368,7 +1368,7 @@ int setPaChannel(void){
 
         /* 2 - Scale the data according to the selected pot. */
 
-        if (frontend.cartridge[currentModule].lo.hasTeledynePA) {
+        if (frontend.cartridge[currentModule].lo.pa.hasTeledynePa) {
             /* 2a - Alternate scaling and pot assignment for the Teledyne PA chip */
 
             // save the current channel module so we can safely remap it:
@@ -1394,13 +1394,15 @@ int setPaChannel(void){
                     // base voltage:
                     loRegisters[currentModule].paPotReg.bitField.pot0 = scaledData;
                     // collector voltage:
-                    loRegisters[currentModule].paPotReg.bitField.pot1 = (CONV_FLOAT > 0) ? 255 : 0;
+                    loRegisters[currentModule].paPotReg.bitField.pot1 =
+                            (CONV_FLOAT > 0) ? frontend.cartridge[currentModule].lo.pa.teledyneCollectorByte[0] : 0;
                     break;
                 case POT2:
                     // base voltage:
                     loRegisters[currentModule].paPotReg.bitField.pot2 = scaledData;
                     // collector voltage:
-                    loRegisters[currentModule].paPotReg.bitField.pot3 = (CONV_FLOAT > 0) ? 255 : 0;
+                    loRegisters[currentModule].paPotReg.bitField.pot3 =
+                            (CONV_FLOAT > 0) ? frontend.cartridge[currentModule].lo.pa.teledyneCollectorByte[1] : 0;
                     break;
                 default:
                     break;

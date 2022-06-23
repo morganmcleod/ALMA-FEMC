@@ -22,11 +22,15 @@
 /* Externs */
 unsigned char   currentLoModule=0;
 /* Statics */
-static HANDLER  loModulesHandler[LO_MODULES_NUMBER]={ytoHandler,
-                                                     photomixerHandler,
-                                                     pllHandler,
-                                                     amcHandler,
-                                                     paHandler};
+static HANDLER  loModulesHandler[LO_MODULES_NUMBER] = {
+        ytoHandler,
+        photomixerHandler,
+        pllHandler,
+        amcHandler,
+        paHandler,
+        teledynePaHandler
+};
+
 /* Forward declarations */
 void loLoadPaLimitsTable(unsigned char band);
 
@@ -259,10 +263,22 @@ int loStartup(void) {
     #endif /* DEBUG_STARTUP */
     
     /* Read hasTeledynePA from configuration file. */
-    frontend.cartridge[currentModule].lo.hasTeledynePA = 0;
+    frontend.cartridge[currentModule].lo.pa.hasTeledynePa = 0;
     dataIn.Name = LO_PA_TELEDYNE_KEY;
     dataIn.VarType = Cfg_Boolean;
-    dataIn.DataPtr = &frontend.cartridge[currentModule].lo.hasTeledynePA;
+    dataIn.DataPtr = &frontend.cartridge[currentModule].lo.pa.hasTeledynePa;
+    ReadCfg(frontend.cartridge[currentModule].lo.configFile, LO_PA_SECTION, &dataIn);
+
+    frontend.cartridge[currentModule].lo.pa.teledyneCollectorByte[0] = 255;
+    dataIn.Name = LO_PA_TELEDYNE_COLL_POL0;
+    dataIn.VarType = Cfg_Byte;
+    dataIn.DataPtr = &frontend.cartridge[currentModule].lo.pa.teledyneCollectorByte[0];
+    ReadCfg(frontend.cartridge[currentModule].lo.configFile, LO_PA_SECTION, &dataIn);
+
+    frontend.cartridge[currentModule].lo.pa.teledyneCollectorByte[1] = 255;
+    dataIn.Name = LO_PA_TELEDYNE_COLL_POL1;
+    dataIn.VarType = Cfg_Byte;
+    dataIn.DataPtr = &frontend.cartridge[currentModule].lo.pa.teledyneCollectorByte[1];
     ReadCfg(frontend.cartridge[currentModule].lo.configFile, LO_PA_SECTION, &dataIn);
 
     #ifdef DEBUG_STARTUP

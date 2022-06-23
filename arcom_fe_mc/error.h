@@ -99,6 +99,7 @@
     #define ERR_INTRLK_GLITCH       0x3E //!< Error in the FETIM interlock glitch module
     #define ERR_FETIM_EXT_TEMP      0x3F //!< Error in the FETIM external temperature module
     #define ERR_COMP_HE2_PRESS      0x40 //!< Error in the FETIM compressor He2 pressure module
+    #define ERR_TELEDYNE_PA         0x41 //!< Error in the Teledyne PA configuration module
     /* Error codes - shared by all modules */
     #define ERC_NO_MEMORY           0x01 //!< Not enough memory
     #define ERC_02                  0x02 //!<

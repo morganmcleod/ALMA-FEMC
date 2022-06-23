@@ -19,10 +19,12 @@
 /* Externs */
 unsigned char   currentPaModule=0;
 /* Statics */
-static HANDLER  paModulesHandler[PA_MODULES_NUMBER]={paChannelHandler,
-                                                     paChannelHandler,
-                                                     supplyVoltage3VHandler,
-                                                     supplyVoltage5VHandler};
+static HANDLER  paModulesHandler[PA_MODULES_NUMBER] = {
+        paChannelHandler,
+        paChannelHandler,
+        supplyVoltage3VHandler,
+        supplyVoltage5VHandler
+};
 
 /* PA handler */
 /*! This function will be called by the CAN message handler when the received

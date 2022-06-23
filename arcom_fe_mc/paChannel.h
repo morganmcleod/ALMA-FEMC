@@ -1,20 +1,6 @@
 /*! \file       paChannel.h
-    \ingroup    pa
     \brief      PA channel header file
-
-    <b> File information: </b><br>
-    Created: 2004/10/20 15:39:19 by avaccari
-
-    This file contains all the information necessary to define the
-    characteristics and operate each PA channel. Every PA channel is connected
-    to one polarization and the amplification is controllable. */
-
-/*! \defgroup   paChannel   PA Channel
-    \ingroup    pa
-    \brief      PA Channel
-    \note       The \ref paChannel module doesn't include any submodule.
-
-    For more information on this module see \ref paChannel.h */
+*/
 
 #ifndef _PACHANNEL_H
     #define _PACHANNEL_H
@@ -44,28 +30,14 @@
                                         //   This is checked on the 4K and 12K cryostat sensors.
 
     /* Submodules definitions */
-    #define PA_CHANNEL_MODULES_NUMBER      4       // See list below
+    #define PA_CHANNEL_MODULES_NUMBER      3       // See list below
     #define PA_CHANNEL_MODULES_RCA_MASK    0x00003 /* Mask to extract the submodule number:
                                                       0 -> gateVoltage
                                                       1 -> drainVoltage
-                                                      2 -> drainCurrent
-                                                      3 -> hasTeledynePA */
+                                                      2 -> drainCurrent */
 
     /* Typedefs */
     //! Current state of the PA channel
-    /*! This structure represent the current state of the Power Amplifier
-        channel.
-        \ingroup    pa
-        \param      gateVoltage         This contains the most recent read-back
-                                        value for the gate voltage.
-        \param      drainVoltage        This contains the most recent read-back
-                                        value for the drain voltage.
-        \param      drainCurrent        This contains the most recent read-back
-                                        value for the drain current.
-        \param      lastGateVoltage     This contains a copy of the last issued
-                                        control message for the gate voltage.
-        \param      lastDrainVoltage    This contains a copy of the last issued
-                                        control message for the drain voltage. */
      typedef struct {
         //! A channel Gate Voltage
         /*! This is the PA channel gate voltage (in V). */
@@ -95,7 +67,6 @@
     static void gateVoltageHandler(void);
     static void drainVoltageHandler(void);
     static void drainCurrentHandler(void);
-    static void hasTeledynePaHandler(void);
     /* Externs */
     extern void paChannelHandler(void); //!< This function deals with the incoming can message
     extern int currentPaChannel(void); //!< This function returns the current PA channel

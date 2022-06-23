@@ -26,10 +26,11 @@ unsigned char   currentPaChannelModule=0;
 /* Statics */
 /* A static to deal with the mapping of the PA cahnnels. This global variable is
    used to indicate if the mapping is defined or not. */
-static HANDLER  paChannelModulesHandler[PA_CHANNEL_MODULES_NUMBER]={gateVoltageHandler,
-                                                                    drainVoltageHandler,
-                                                                    drainCurrentHandler,
-                                                                    hasTeledynePaHandler};
+static HANDLER  paChannelModulesHandler[PA_CHANNEL_MODULES_NUMBER] = {
+    gateVoltageHandler,
+    drainVoltageHandler,
+    drainCurrentHandler
+};
 
 /* PA Channel handler */
 /*! This function will be called by the CAN message handler when the received
@@ -276,38 +277,6 @@ static void drainCurrentHandler(void) {
     CAN_SIZE = CAN_FLOAT_SIZE;
 }
 
-static void hasTeledynePaHandler(void) {
-    if (CAN_SIZE) { // If control (size !=0)
-        // save the incoming message:
-        SAVE_LAST_CONTROL_MESSAGE(frontend.cartridge[currentModule].lo.lastHasTeledynePA)
-
-        // Check for other than band 7:
-        if (currentModule != 6) {
-            /* Store the HARDW_BLKD_ERR state in the last control message variable */
-            storeError(ERR_PA_CHANNEL, ERC_COMMAND_VAL);
-            frontend.cartridge[currentModule].lo.lastHasTeledynePA.status = HARDW_BLKD_ERR;
-            return;
-        }
-
-        // Save the setting:
-        frontend.cartridge[currentModule].lo.hasTeledynePA = CAN_BYTE ? TRUE : FALSE;
-
-        /* If everything went fine, it's a control message, we're done. */
-        return;
-    }
-
-    /* If monitor on control RCA */
-    if (currentClass == CONTROL_CLASS) {
-        // return the last control message and status
-        RETURN_LAST_CONTROL_MESSAGE(frontend.cartridge[currentModule].lo.lastHasTeledynePA)
-        return;
-    }
-
-    /* If monitor on a monitor RCA */
-    CAN_BYTE=frontend.cartridge[currentModule].lo.hasTeledynePA;
-    CAN_SIZE=CAN_BOOLEAN_SIZE;
-}
-
 /* Current PA channel */
 /*! This functions returns the current PA_CHANNEL as expressed by:
         - \ref PA_CHANNEL_A -> Current active PA_CHANNEL is channel A
@@ -331,9 +300,9 @@ int currentPaChannel(void) {
             break;
 
         case BAND1: // Band 1 preproduction.
-                    // TODO: Assign correctly for 2.8.x
+                    // TODO: Assign correctly for 3.6.x
         case BAND2: // Band 2 prototype.
-                    // TODO: Assign correctly for 2.8.x
+                    // TODO: Assign correctly for 3.6.x
         case BAND5:
         case BAND6:
         case BAND7:
