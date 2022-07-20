@@ -21,9 +21,9 @@ MCommand
 0
 5
 MCommand
-76
+40
 copy fe_mc.exe releases\3-6-4.exe /y
-copy fe_mc.exe releases\fe_mc.exe /y
+
 
 6
 MItem

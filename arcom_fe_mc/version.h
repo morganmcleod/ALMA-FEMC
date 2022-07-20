@@ -10,10 +10,10 @@
 
     REVISION HISTORY
 
-    2022-06-23 3.6.4
+    2022-07-20 3.6.4
         Load TELEDYNE, COLLECTORP0, COLLECTORP1 keys from [PA] section
         Implement Teledyne PA algorithm
-        Add command to set Teledyne PA options
+        Add messages set/get Teledyne PA options
 
     2022-03-04 3.6.3
         Adds FEMode=3 Simulation mode.
@@ -408,8 +408,8 @@
     #define VERSION_MINOR   6
     #define VERSION_PATCH   4
 
-    #define VERSION_DATE    "2022-06-23"
-    #define VERSION_NOTES   "3.6.4b3: Implement Teledyne PA control."
+    #define VERSION_DATE    "2022-07-20"
+    #define VERSION_NOTES   "3.6.4: Implement Teledyne PA control."
 
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM"
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"

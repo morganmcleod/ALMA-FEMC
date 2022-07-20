@@ -577,6 +577,6 @@ rboPump.obj,vacuumController.obj,vacuumSensor.obj,version.obj,yto.obj
  *wlink name fe_mc d all sys dos libf sockets/lib/wcapil5.lib op maxe=25 op &
 q op symf op el @fe_mc.lk1
  copy fe_mc.exe releases\3-6-4.exe /y
- copy fe_mc.exe releases\fe_mc.exe /y
+ 
  
 
