@@ -282,7 +282,7 @@ int loStartup(void) {
     ReadCfg(frontend.cartridge[currentModule].lo.configFile, LO_PA_SECTION, &dataIn);
 
     #ifdef DEBUG_STARTUP
-        printf("  - Teledyne PA=%d\n", frontend.cartridge[currentModule].lo.hasTeledynePA);
+        printf("  - Teledyne PA=%d\n", frontend.cartridge[currentModule].lo.pa.hasTeledynePA);
     #endif /* DEBUG_STARTUP */
 
     /* Set the limits for control messages */
