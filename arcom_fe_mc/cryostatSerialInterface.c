@@ -211,8 +211,10 @@ static int getCryoAnalogMonitor(void){
                 if(++retries>CRYO_ADC_MAX_RETRIES){
 
                     #ifndef NO_STOREERROR_CRYOSTAT
-                        // define this symbol in debug.h when debugging with no cryostat M&C module.
-                        storeError(ERR_CRYO_SERIAL, ERC_HARDWARE_TIMEOUT); //Too many retries waiting for ADC_READY
+                    // define this symbol in debug.h when debugging with no cryostat M&C module.
+                        if (frontend.mode != TROUBLESHOOTING_MODE) {
+                            storeError(ERR_CRYO_SERIAL, ERC_HARDWARE_TIMEOUT); //Too many retries waiting for ADC_READY
+                        }
                     #endif
                     retries=0;
 

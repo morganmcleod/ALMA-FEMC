@@ -10,6 +10,9 @@
 
     REVISION HISTORY
 
+    2022-12-22 3.6.5
+        Don't store cryostat timeout errors when in Troubleshooting mode
+
     2022-07-20 3.6.4
         Load TELEDYNE, COLLECTORP0, COLLECTORP1 keys from [PA] section
         Implement Teledyne PA algorithm
@@ -406,10 +409,11 @@
     /* Defines */
     #define VERSION_MAJOR   3
     #define VERSION_MINOR   6
-    #define VERSION_PATCH   4
+    #define VERSION_PATCH   5
 
-    #define VERSION_DATE    "2022-07-20"
-    #define VERSION_NOTES   "3.6.4: Implement Teledyne PA control."
+    #define VERSION_DATE    "2022-12-22"
+    #define VERSION_NOTES   "3.6.5: Implement Teledyne PA control.\n" \
+                            "Don't store cryostat timeout errors when in Troubleshooting mode"
 
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM"
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
