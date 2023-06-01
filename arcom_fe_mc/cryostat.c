@@ -134,22 +134,7 @@ int cryostatStartup(void) {
     char sensors[TVO_SENSORS_NUMBER+1][TVO_SEC_NAME_SIZE] = MACRO_TVO_SENSOR_NAMES;
 
     /* Cryostat availability */
-    #ifndef CHECK_HW_AVAIL
-        frontend.cryostat.available = TRUE;
-    #else
-        // get the [CRYO] available key:
-        dataIn.Name=CRYO_AVAIL_KEY;
-        dataIn.VarType=Cfg_Boolean;
-        dataIn.DataPtr=&frontend.cryostat.available;
-
-        if (ReadCfg(FRONTEND_CONF_FILE,
-                    CRYO_CONF_FILE_SECTION,
-                    &dataIn) != CRYO_AVAIL_EXPECTED) 
-        {
-            // not found.  Assume available for backward compat:
-            frontend.cryostat.available = AVAILABLE;
-        }
-    #endif // CHECK_HW_AVAIL
+    frontend.cryostat.available = TRUE;
 
     /* Set the currentModule variable to reflect the fact that the cryostat
        is selected. This is necessary because currentModule is the global

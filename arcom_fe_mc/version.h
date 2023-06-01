@@ -10,6 +10,10 @@
 
     REVISION HISTORY
 
+    2023-06-01 3.6.6
+        Add LPR2 option for BELO test set.
+        Enable with [LPR] LPR2=1 in FRONTEND.INI
+
     2022-12-22 3.6.5
         Don't store cryostat timeout errors when in Troubleshooting mode
 
@@ -409,11 +413,10 @@
     /* Defines */
     #define VERSION_MAJOR   3
     #define VERSION_MINOR   6
-    #define VERSION_PATCH   5
+    #define VERSION_PATCH   6
 
-    #define VERSION_DATE    "2022-12-22"
-    #define VERSION_NOTES   "3.6.5: Implement Teledyne PA control.\n" \
-                            "Don't store cryostat timeout errors when in Troubleshooting mode"
+    #define VERSION_DATE    "2023-06-01"
+    #define VERSION_NOTES   "3.6.6: Add support for LPR2 for BELO test set.\n"
 
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM"
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"

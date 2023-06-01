@@ -40,13 +40,9 @@
     #define FLOAT_ERROR     (-1.0)  //!< Global definition for a float value error
     #define FLOAT_UNINIT    (-2.0)  //!< Global definition for an uninitialized float
 
-    /* Disable "Hardware Availability" checks from INI files: */
-    #undef CHECK_HW_AVAIL
-
     /* Useful fast macros */
     /* Round a float to the closest int */
     #define FLT_TO_INT(float)       ((int)(float+0.5))
-
 
     /* Typedefs */
     //! Handler function

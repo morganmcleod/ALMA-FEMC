@@ -115,6 +115,11 @@ void CANMessageHandler(void){
 
 }
 
+void configureLPR2(void) {
+    /* For the BELO test set only, we substitue an LPR handler in place of the FETIM handler*/
+    modulesHandler[FETIM_MODULE] = lprHandler;
+}
+
 /* Standard message handler. */
 static void standardRCAsHandler(void){
     if (CAN_SIZE == CAN_MONITOR) { // If it is a monitor message

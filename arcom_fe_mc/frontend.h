@@ -139,6 +139,10 @@
         //! LPR current state
         /*! Please see \ref LPR for more information. */
         LPR                 lpr;
+        //! LPR2 current state.  For BELO test set only
+        /*! Please see \ref LPR for more information. */
+        LPR                 lpr2;
+        unsigned char       enableLpr2;
         //! FETIM current state
         /*! Please see \ref FETIM for more information. */
         FETIM               fetim;

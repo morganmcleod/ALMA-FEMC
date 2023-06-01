@@ -232,8 +232,8 @@
     /* Classes */
     static void standardRCAsHandler(void);
     static void specialRCAsHandler(void);
-    static void initHandler(void);
     /* Externs */
     extern void CANMessageHandler(void); //!< This function deals with the incoming can message
+    extern void configureLPR2(void);     //!< for BELO test set, there is a 2nd LPR instead of the FETIM
 
 #endif /* _CAN_H */

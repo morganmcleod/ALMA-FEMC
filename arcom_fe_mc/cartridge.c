@@ -244,214 +244,68 @@ int cartridgeStartup(void){
         printf(" Initializing Cartridge %d...\n", currentModule+1);                                                                         
     #endif
 
-    #ifndef CHECK_HW_AVAIL
+    /* Assign current sense resistor value */
+    switch(currentModule + 1) {
+        case 3:
+            resistor = 5.0;
+            break;
+        case 4:
+            resistor = 5.0;
+            break;
+        case 5:
+            resistor = 5.1;
+            break;
+        case 6:
+            resistor = 5.0;
+            break;
+        case 7:
+            resistor = 50.0;
+            break;
+        case 8:
+            resistor = 5.0;
+            break;
+        case 9:
+            resistor = 10.0;
+            break;
+        case 10:
+            resistor = 10.0;
+            break;
+        default:
+            resistor = 1.0;
+            break;
+    }
 
-        /* Assign current sense resistor value */
-        switch(currentModule + 1) {
-            case 3:
-                resistor = 5.0;
-                break;
-            case 4:
-                resistor = 5.0;
-                break;
-            case 5:
-                resistor = 5.1;
-                break;
-            case 6:
-                resistor = 5.0;
-                break;
-            case 7:
-                resistor = 50.0;
-                break;
-            case 8:
-                resistor = 5.0;
-                break;
-            case 9:
-                resistor = 10.0;
-                break;
-            case 10:
-                resistor = 10.0;
-                break;
-            default:
-                resistor = 1.0;
-                break;
-        }
-
-        /* Polarization Level */
-        for(currentBiasModule = 0; 
-            currentBiasModule < POLARIZATIONS_NUMBER; 
-            currentBiasModule++) 
+    /* Polarization Level */
+    for(currentBiasModule = 0; 
+        currentBiasModule < POLARIZATIONS_NUMBER; 
+        currentBiasModule++) 
+    {
+        /* Sideband Level */
+        for(currentPolarizationModule = 0;
+            currentPolarizationModule < SIDEBANDS_NUMBER;
+            currentPolarizationModule++)
         {
-            /* Sideband Level */
-            for(currentPolarizationModule = 0;
-                currentPolarizationModule < SIDEBANDS_NUMBER;
-                currentPolarizationModule++)
-            {
-                /* SIS availability for bands 3-10: */
-                frontend.cartridge[currentModule].polarization[currentBiasModule].
-                    sideband[currentPolarizationModule].sis.available
-                    = ((currentModule + 1) >= 3);
-
-                /* SIS current sense resistor */
-                frontend.cartridge[currentModule].polarization[currentBiasModule].
-                   sideband[currentPolarizationModule].
-                    sis.resistor = resistor;
-
-                /* SIS magnet availability for bands 5-10: */
-                /* Configure the read array for SIS magnet availability info */
-                frontend.cartridge[currentModule].polarization[currentBiasModule].
-                    sideband[currentPolarizationModule].sisMagnet.available
-                    = ((currentModule + 1) >= 5);
-            }
-            /* SIS heater availability for bands 3-10: */
+            /* SIS availability for bands 3-10: */
             frontend.cartridge[currentModule].polarization[currentBiasModule].
-                sisHeater.available = ((currentModule + 1) >= 3);;
+                sideband[currentPolarizationModule].sis.available
+                = ((currentModule + 1) >= 3);
+
+            /* SIS current sense resistor */
+            frontend.cartridge[currentModule].polarization[currentBiasModule].
+                sideband[currentPolarizationModule].
+                sis.resistor = resistor;
+
+            /* SIS magnet availability for bands 5-10: */
+            /* Configure the read array for SIS magnet availability info */
+            frontend.cartridge[currentModule].polarization[currentBiasModule].
+                sideband[currentPolarizationModule].sisMagnet.available
+                = ((currentModule + 1) >= 5);
         }
+        /* SIS heater availability for bands 3-10: */
+        frontend.cartridge[currentModule].polarization[currentBiasModule].
+            sisHeater.available = ((currentModule + 1) >= 3);;
+    }
 
-    #else // CHECK_HW_AVAIL
-
-        printf(" Cartridge %d configuration file: %s\n",
-               currentModule+1,
-               frontend.cartridge[currentModule].configFile);
-
-        /* Load the hardware availability information for the selected cartridge. */
-        printf("  - Hardware availability...\n");
-
-        /* Polarization Level */
-        for(currentBiasModule=0;
-            currentBiasModule<POLARIZATIONS_NUMBER;
-            currentBiasModule++)
-        {
-            /* Sideband Level */
-            for(currentPolarizationModule=0;
-                currentPolarizationModule<SIDEBANDS_NUMBER;
-                currentPolarizationModule++)
-            {
-                /* SIS availability */
-                /* Configure the read array for SIS availability info */
-                dataIn.Name=SIS_AVAIL_KEY;
-                dataIn.VarType=Cfg_Boolean;
-                dataIn.DataPtr=&frontend.cartridge[currentModule].polarization[currentBiasModule].
-                    sideband[currentPolarizationModule].sis.available;
-
-                /* Access configuration file, if error, then skip the configuration. */
-                if(myReadCfg(frontend.cartridge[currentModule].configFile,
-                             SIS_AVAIL_SECT(currentBiasModule, currentPolarizationModule),
-                             &dataIn,
-                             SIS_AVAIL_EXPECTED) != NO_ERROR)
-                {
-                    return NO_ERROR;
-                }
-
-                #ifdef DEBUG_STARTUP
-                    /* Print the availability info */
-                    printf("        - SIS available: %d\n",
-                            frontend.cartridge[currentModule].polarization[currentBiasModule].
-                                sideband[currentPolarizationModule].sis.available);
-                #endif /* DEBUG_STARTUP */
-
-                /* SIS magnet availability */
-                /* Configure the read array for SIS magnet availability info */
-                dataIn.Name=SIS_MAG_AVAIL_KEY;
-                dataIn.VarType=Cfg_Boolean;
-                dataIn.DataPtr=&frontend.cartridge[currentModule].polarization[currentBiasModule].
-                    sideband[currentPolarizationModule].sisMagnet.available;
-
-                /* Access configuration file, if error, then skip the configuration. */
-                if(myReadCfg(frontend.cartridge[currentModule].configFile,
-                             SIS_MAG_AVAIL_SECT(currentBiasModule, currentPolarizationModule),
-                             &dataIn,
-                             SIS_MAG_AVAIL_EXPECTED) != NO_ERROR)
-                {
-                    return NO_ERROR;
-                }
-
-                #ifdef DEBUG_STARTUP
-                    /* Print the availability info */
-                    printf("        - SIS magnet available: %d\n",
-                            frontend.cartridge[currentModule].polarization[currentBiasModule].
-                                sideband[currentPolarizationModule].sisMagnet.available);
-                #endif /* DEBUG_STARTUP */
-            }
-
-            /* SIS heater availability */
-            /* Configure the read array for SIS heater availability info */
-            dataIn.Name=SIS_HEATER_AVAIL_KEY;
-            dataIn.VarType=Cfg_Boolean;
-            dataIn.DataPtr=&frontend.cartridge[currentModule].polarization[currentBiasModule].
-                sisHeater.available;
-
-            /* Access configuration file, if error, then skip the configuration. */
-            if(myReadCfg(frontend.cartridge[currentModule].configFile,
-                         SIS_HEATER_AVAIL_SECT(currentBiasModule),
-                         &dataIn,
-                         SIS_HEATER_AVAIL_EXPECTED) != NO_ERROR)
-            {
-                return NO_ERROR;
-            }
-
-            #ifdef DEBUG_STARTUP
-                /* Print the availability info */
-                printf("      - SIS heater available: %d\n",
-                        frontend.cartridge[currentModule].polarization[currentBiasModule].
-                            sisHeater.available);
-            #endif /* DEBUG_STARTUP */
-        }
-        printf("    done!\n"); // Hardware availability
-
-        // Resistor value is expected for bands 3-10:
-        if ((currentModule + 1) >= 3) {
-
-            /* Load the SIS current sense resistor value. This assumes that all the
-               sidebands in all the polarizations have the same sense resistor. If this
-               is not the case then the software and the configuration files will have
-               to be update to allow for different values for different sidebands and
-               polarizations.
-               Also the availability of polarization and sideband should be checked
-               before this step. The check is skipped because no harm is done if the
-               value of the resistor is set for a not installed*/
-            printf("  - Sense resistor...\n");
-
-            /* Configure read array */
-            dataIn.Name=RESISTOR_VALUE_KEY;
-            dataIn.VarType=Cfg_Float;
-            dataIn.DataPtr=&resistor;
-
-            /* Access configuration file, if error, skip the configuration. */
-            if(myReadCfg(frontend.cartridge[currentModule].configFile,
-                         RESISTOR_VALUE_SECTION,
-                         &dataIn,
-                         RESISTOR_VALUE_EXPECTED) != NO_ERROR)
-            {
-                return NO_ERROR;
-            }
-        }
-
-        /* Store the value in all polarizations sidebands. */
-        for(currentBiasModule=0;
-            currentBiasModule<POLARIZATIONS_NUMBER;
-            currentBiasModule++)
-        {
-            for(currentPolarizationModule=0;
-                currentPolarizationModule<SIDEBANDS_NUMBER;
-                currentPolarizationModule++){
-
-                /* Store in the frontend variable */
-                frontend.cartridge[currentModule].polarization[currentBiasModule].
-                    sideband[currentPolarizationModule].sis.resistor=resistor;
-
-                #ifdef DEBUG_STARTUP
-                    printf("    - Polarization %d Sideband %d (%f ohm)...done!\n",
-                            currentBiasModule,
-                            currentPolarizationModule,
-                            frontend.cartridge[currentModule].polarization[currentBiasModule].
-                                sideband[currentPolarizationModule].sis.resistor);
-                #endif /* DEBUG_STARTUP */
-            }
-        }
-        printf("    done!\n"); // Sense resistor
-    #endif // CHECK_HW_AVAIL
-    
     #ifdef DEBUG_STARTUP    
         printf("  - Temperature sensor offsets!\n"); 
     #endif // DEBUG_STARTUP

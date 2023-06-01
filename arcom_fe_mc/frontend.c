@@ -58,9 +58,7 @@ int frontendStop(void){
         - \ref ERROR    -> if something wrong happened */
 int frontendInit(void){
 
-    #ifdef CHECK_HW_AVAIL
-        CFG_STRUCT dataIn;
-    #endif
+    CFG_STRUCT dataIn;
 
     #ifdef DEBUG_INIT
         printf("Initializing frontend...\n\n");
@@ -69,71 +67,15 @@ int frontendInit(void){
     // load the ipaddress from SOCKETS:
     frontendInitIPAddress();
 
-    #ifndef CHECK_HW_AVAIL
-
-        /* Cartridge availability and INI filenames */
-        for(currentModule = 0;
-            currentModule < CARTRIDGES_NUMBER;
-            currentModule++)
-        {   
-            frontend.cartridge[currentModule].available = TRUE;
-            sprintf(frontend.cartridge[currentModule].configFile, "CART%d.INI", currentModule + 1);
-            sprintf(frontend.cartridge[currentModule].lo.configFile, "WCA%d.INI", currentModule + 1);
-        }
-
-    #else
-
-        /* Search for available cartridges and initialize them */
-        for(currentModule = 0;
-            currentModule < CARTRIDGES_NUMBER;
-            currentModule++)
-        {
-
-            /* Load the configuration for the available cartridges */
-            dataIn.Name=BAND_AVAIL_KEY;
-            dataIn.VarType=Cfg_Boolean;
-            dataIn.DataPtr=&frontend.cartridge[currentModule].available;
-
-            /* Access configuration file, if error, return skip the configuration. */
-            if(myReadCfg(FRONTEND_CONF_FILE,
-                         BAND_AVAIL_SECTION(currentModule),
-                         &dataIn,
-                         BAND_AVAIL_EXPECTED)!=NO_ERROR){
-                return NO_ERROR;
-            }
-
-            if (frontend.cartridge[currentModule].available) {
-                /* If available, read the name of the CCA.INI file. */
-                dataIn.Name=CART_FILE_KEY;
-                dataIn.VarType=Cfg_String;
-                dataIn.DataPtr=frontend.cartridge[currentModule].configFile;
-
-                /* Access configuration file, if error, return skip the
-                   configuration. */
-                if(myReadCfg(FRONTEND_CONF_FILE,
-                             CART_FILE_SECTION(currentModule),
-                             &dataIn,
-                             CART_FILE_EXPECTED)!=NO_ERROR){
-                    return NO_ERROR;
-                }
-
-                /* If available, read the name of the WCA.INI file. */
-                dataIn.Name=WCA_FILE_KEY;
-                dataIn.VarType=Cfg_String;
-                dataIn.DataPtr=frontend.cartridge[currentModule].lo.configFile;
-
-                /* Access configuration file, if error, return skip the
-                   configuration. */
-                if(myReadCfg(FRONTEND_CONF_FILE,
-                             WCA_FILE_SECTION(currentModule),
-                             &dataIn,
-                             WCA_FILE_EXPECTED)!=NO_ERROR){
-                    return NO_ERROR;
-                }
-            }
-        }
-
-    #endif // CHECK_HW_AVAIL
+    /* Cartridge availability and INI filenames */
+    for(currentModule = 0;
+        currentModule < CARTRIDGES_NUMBER;
+        currentModule++)
+    {   
+        frontend.cartridge[currentModule].available = TRUE;
+        sprintf(frontend.cartridge[currentModule].configFile, "CART%d.INI", currentModule + 1);
+        sprintf(frontend.cartridge[currentModule].lo.configFile, "WCA%d.INI", currentModule + 1);
+    }
 
     /* Perform CCA and LO startup */
     for(currentModule = 0;
@@ -152,6 +94,16 @@ int frontendInit(void){
                 return ERROR;
             }
         }
+    }
+
+    dataIn.Name = LPR2_ENABLE_KEY;
+    dataIn.VarType = Cfg_Boolean;
+    dataIn.DataPtr = &frontend.enableLpr2;
+
+    frontend.enableLpr2 = FALSE;
+    myReadCfg(FRONTEND_CONF_FILE, LPR_CONF_FILE_SECTION, &dataIn, 0);
+    if (frontend.enableLpr2) {
+        configureLPR2();
     }
 
     /* Initialize the LPR */

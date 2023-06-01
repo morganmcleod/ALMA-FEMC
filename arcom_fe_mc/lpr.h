@@ -39,6 +39,8 @@
     #define LPR_CONF_FILE_SECTION   "LPR"   // Section containing the LPR configuration file info
     #define LPR_CONF_FILE_KEY       "FILE"  // Key containing the LPR configuration file info
     #define LPR_CONF_FILE_EXPECTED  1       // Expected keys containing the LPR configuration file info
+    #define LPR2_ENABLE_KEY         "LPR2"  // If true enable LPR2 for the BELO test set
+
 
     /* Submodule definitions */
     #define LPR_MODULES_NUMBER      4       // See list below

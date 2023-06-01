@@ -28,6 +28,7 @@ static HANDLER  lprModulesHandler[LPR_MODULES_NUMBER]={lprTempHandler,
                                                        lprTempHandler,
                                                        opticalSwitchHandler,
                                                        edfaHandler};
+static int lprCloseShutter();
 
 /* LPR handler */
 /*! This function will be called by the CAN message handler when the received
@@ -61,38 +62,14 @@ void lprHandler(void){
         - \ref ERROR    -> if something wrong happened */
 int lprStartup(void) {
 
-    /* A variable to keep track of the timer */
-    int timedOut;
-
-    #ifdef CHECK_HW_AVAIL
-        CFG_STRUCT  dataIn;
-    #endif
-
     /* Parse the FRONTEND.INI file to extract the name of the configuration
        file for the LPR. */
     #ifdef DEBUG_STARTUP
         printf(" LPR configuration file: ");
     #endif
 
-    #ifndef CHECK_HW_AVAIL
-        strcpy(frontend.lpr.configFile, "LPR.INI");
-    #else
-        /* Configure the read array */
-        dataIn.Name=LPR_CONF_FILE_KEY;
-        dataIn.VarType=Cfg_String;
-        dataIn.DataPtr=frontend.lpr.configFile;
-
-        /* Access configuration file, if error, return skip the configuration. */
-        if(myReadCfg(FRONTEND_CONF_FILE,
-                     LPR_CONF_FILE_SECTION,
-                     &dataIn,
-                     LPR_CONF_FILE_EXPECTED)!=NO_ERROR){
-            return NO_ERROR;
-        }
-
-        /* Print config file */
-        printf("%s\n", frontend.lpr.configFile);
-    #endif
+    strcpy(frontend.lpr.configFile, "LPR.INI");
+    strcpy(frontend.lpr2.configFile, "LPR.INI");
 
     #ifdef DEBUG_STARTUP
         /* Start the configuration */
@@ -105,6 +82,7 @@ int lprStartup(void) {
     
     // No longer loading from INI file:
     frontend.lpr.edfa.photoDetector.coeff = LPR_ADC_EDFA_PD_POWER_COEFF_DFLT;
+    frontend.lpr2.edfa.photoDetector.coeff = LPR_ADC_EDFA_PD_POWER_COEFF_DFLT;
 
     #ifdef DEBUG_STARTUP
         /* Print coefficient */
@@ -134,6 +112,22 @@ int lprStartup(void) {
     }
     frontend.lpr.ssi10MHzEnable=ENABLE;
 
+    if (frontend.enableLpr2) {
+        currentModule += 1;
+
+        if(serialAccess(LPR_10MHZ_MODE,
+            NULL,
+            LPR_10MHZ_MODE_SIZE,
+            LPR_10MHZ_MODE_SHIFT_SIZE,
+            LPR_10MHZ_MODE_SHIFT_DIR,
+            SERIAL_WRITE)==ERROR){
+            return ERROR;
+        }
+        frontend.lpr2.ssi10MHzEnable=ENABLE;
+
+        currentModule -= 1;
+    }
+
     #ifdef DEBUG_STARTUP
         printf("    done!\n"); // 10MHz communication
 
@@ -153,12 +147,47 @@ int lprStartup(void) {
         return ERROR;
     }
 
+    if (frontend.enableLpr2) {
+        currentModule += 1;
+        if(setModulationInputValue()==ERROR) {
+            return ERROR;
+        }
+        currentModule -= 1;
+    }
+
     #ifdef DEBUG_STARTUP
         printf("      done!\n"); // Modulation input to 0.0V
 
         /* Shutter the optical switch */
         printf("    - Set optical switch in shutter mode...\n");
     #endif
+
+    if (lprCloseShutter() == ERROR)
+        return ERROR;
+     
+     if (frontend.enableLpr2) {
+        currentModule += 1;
+        if (lprCloseShutter() == ERROR)
+            return ERROR;
+        currentModule -= 1;
+    }
+
+    /* If everyting went fine, update the optical switch port to reflect
+       the fact that the shutter is enabled. */
+    frontend.lpr.opticalSwitch.port=PORT_SHUTTERED;
+    frontend.lpr2.opticalSwitch.port=PORT_SHUTTERED;
+
+    #ifdef DEBUG_STARTUP
+        printf("      done!\n"); // Set shutter
+        printf("    done!\n"); // Optical Switch
+        printf(" done!\n\n"); // Initialization
+    #endif
+    return NO_ERROR;
+}
+
+static int lprCloseShutter() {
+    /* A variable to keep track of the timer */
+    int timedOut;
 
     /* Setup for 5 seconds and start the asynchornous timer */
     if(startAsyncTimer(TIMER_LPR_SWITCH_RDY,
@@ -202,19 +231,9 @@ int lprStartup(void) {
             return ERROR;
         }
     }
-
-
-    /* If everyting went fine, update the optical switch port to reflect
-       the fact that the shutter is enabled. */
-    frontend.lpr.opticalSwitch.port=PORT_SHUTTERED;
-
-    #ifdef DEBUG_STARTUP
-        printf("      done!\n"); // Set shutter
-        printf("    done!\n"); // Optical Switch
-        printf(" done!\n\n"); // Initialization
-    #endif
     return NO_ERROR;
 }
+
 
 /* LPR Stop */
 /*! This function performs the operations necessary to shutdown the LPR. This
@@ -302,6 +321,8 @@ int lprStop(void){
     /* If everyting went fine, update the optical switch port to reflect
        the fact that the shutter is enabled. */
     frontend.lpr.opticalSwitch.port=PORT_SHUTTERED;
+    frontend.lpr2.opticalSwitch.port=PORT_SHUTTERED;
+
 
     #ifdef DEBUG_STARTUP
         printf("    done!\n"); // Set shutter
