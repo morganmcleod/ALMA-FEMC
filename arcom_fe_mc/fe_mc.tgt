@@ -22,7 +22,7 @@ MCommand
 5
 MCommand
 40
-copy fe_mc.exe releases\3-6-5.exe /y
+copy fe_mc.exe releases\3-6-6.exe /y
 
 
 6
