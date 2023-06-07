@@ -23,6 +23,8 @@ static HANDLER  edfaModulesHandler[EDFA_MODULES_NUMBER]={laserHandler,
                                                          modulationInputHandler,
                                                          driverStateHandler};
 
+static LPR *currentLPR;
+
 /* EDFA handler */
 /*! This function will be called by the CAN message handling subroutine when the
     received message is pertinent to the EDFA. */
@@ -40,9 +42,11 @@ void edfaHandler(void){
     if(currentEdfaModule>=EDFA_MODULES_NUMBER){
         storeError(ERR_EDFA, ERC_MODULE_RANGE); //EDFA submodule out of range
         CAN_STATUS = HARDW_RNG_ERR; // Notify incoming CAN message of error
-
         return;
     }
+
+    /* select which LPR data structure to use */
+    currentLPR = (currentModule == LPR2_MODULE) ? &frontend.lpr2 : &frontend.lpr;
 
     /* Call the correct handler */
     (edfaModulesHandler[currentEdfaModule])();
@@ -79,40 +83,26 @@ static void driverStateHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CAN_BYTE=frontend.
-                  lpr.
-                   edfa.
-                    driverTempAlarm;
+        CAN_BYTE=currentLPR->edfa.driverTempAlarm;
     } else {
         /* If no error during monitor process, gather the stored data */
-        CAN_BYTE=frontend.
-                  lpr.
-                   edfa.
-                    driverTempAlarm;
+        CAN_BYTE=currentLPR->edfa.driverTempAlarm;
     }
 
     /* If the alarm is triggered, set the modulation input to 0.0 to prevent
        ON/OFF oscillations. */
-    if(CAN_BYTE){
+    if(CAN_BYTE) {
         CONV_FLOAT=0.0;
         if(setModulationInputValue()==ERROR){ // If error, notify the monitor message
             CAN_STATUS=ERROR;
         } else { // If no error, update the modulation input value for future monitor messages
-            frontend.
-             lpr.
-              edfa.
-               modulationInput.
-                value=CONV_FLOAT;
-
+            currentLPR->edfa.modulationInput.value=CONV_FLOAT;
             CAN_STATUS=MON_ERROR_ACT; // Notify control software that action was taken
         }
     }
 
     /* Load the CAN message payload with the returned value and set the size */
-    CAN_BYTE=frontend.
-              lpr.
-               edfa.
-                driverTempAlarm;
+    CAN_BYTE=currentLPR->edfa.driverTempAlarm;
     CAN_SIZE=CAN_BOOLEAN_SIZE;
 }
 

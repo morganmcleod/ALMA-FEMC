@@ -64,6 +64,7 @@
     #define IF_SWITCH_MODULE    0x0B
     #define CRYO_MODULE         0x0C
     #define LPR_MODULE          0x0D
+    #define LPR2_MODULE         0x0E    // When configured for 2 LPRs this masks the FETIM RCAs
     #define FETIM_MODULE        0x0E
     #define MODULES_RCA_MASK    0x0F000     /* Mask to extract the module number:
                                                0-9 -> Cartridge (10 modules -> 1 handler)

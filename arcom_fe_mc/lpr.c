@@ -243,9 +243,6 @@ static int lprCloseShutter() {
         - \ref ERROR    -> if something wrong happened */
 int lprStop(void){
 
-    /* A variable to keep track of the timer */
-    int timedOut;
-
     /* Set the currentModule variable to reflect the fact that the LPR is
        selected. This is necessary because currentModule is the global variable
        used to select the communication channel. This is only necessary if
@@ -267,6 +264,15 @@ int lprStop(void){
     if(setModulationInputValue()==ERROR){
         return ERROR;
     }
+
+    if (frontend.enableLpr2) {
+        currentModule += 1;
+        if(setModulationInputValue()==ERROR){
+            return ERROR;
+        }
+        currentModule -= 1;
+    }
+
     #ifdef DEBUG_STARTUP
         printf("    done!\n"); // Modulation input to 0.0V
 
@@ -274,49 +280,15 @@ int lprStop(void){
         printf("  - Set optical switch in shutter mode...\n");
     #endif
 
-    /* Setup for 5 seconds and start the asynchornous timer */
-    if(startAsyncTimer(TIMER_LPR_SWITCH_RDY,
-                       TIMER_LPR_TO_SWITCH_RDY,
-                       FALSE)==ERROR){
+    if (lprCloseShutter() == ERROR)
         return ERROR;
+     
+    if (frontend.enableLpr2) {
+        currentModule += 1;
+        if (lprCloseShutter() == ERROR)
+            return ERROR;
+        currentModule -= 1;
     }
-
-    /* Try standard shutter for 5 sec. The standard shutter waits for the
-       optical switch to be ready. */
-    do {
-        #ifdef DEBUG_STARTUP
-            printf("    - Trying standard shutter...\n");
-        #endif
-        timedOut=queryAsyncTimer(TIMER_LPR_SWITCH_RDY);
-        if(timedOut==ERROR){
-            return ERROR;
-        }
-    } while ((setOpticalSwitchShutter(STANDARD)==ERROR)&&(timedOut==TIMER_RUNNING));
-
-    #ifdef DEBUG_STARTUP
-        printf("      done!\n"); // Optical switch ready
-    #endif
-
-    /* If the timer has expired, signal the error and force the shutter */
-    if(timedOut==TIMER_EXPIRED){
-        storeError(ERR_OPTICAL_SWITCH, ERC_HARDWARE_TIMEOUT); //Time out while waiting for ready state during initialization
-
-        /* Force the shutter mode. If error, return error and abort
-           initialization. */
-        printf(" LPR  - Set optical switch: Forcing shutter mode...\n");
-        if(setOpticalSwitchShutter(FORCED)==ERROR){
-            return ERROR;
-        }
-        #ifdef DEBUG_STARTUP
-            printf("      done!\n"); // Force shutter
-        #endif
-    } else {
-        /* Stop the timer */
-        if(stopAsyncTimer(TIMER_LPR_SWITCH_RDY)==ERROR){
-            return ERROR;
-        }
-    }
-
 
     /* If everyting went fine, update the optical switch port to reflect
        the fact that the shutter is enabled. */

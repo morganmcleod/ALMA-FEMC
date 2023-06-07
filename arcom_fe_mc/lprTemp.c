@@ -21,6 +21,7 @@
 unsigned char   currentLprTempModule=0;
 /* Statics */
 static HANDLER lprTempModulesHandler[LPR_TEMP_MODULES_NUMBER]={tempHandler};
+static LPR *currentLPR;
 
 /* LPR temperature sensors handler */
 /*! This function will be called by the CAN message handling subroutine when the
@@ -32,12 +33,12 @@ void lprTempHandler(void){
                currentLprModule);
     #endif /* DEBUG_LPR */
 
-    /* Since the LPR is always outfitted with all the temperature sensors, no
-       hardware check is performed. */
-
     /* Since there is only one submodule in the LPR temperature sensor, the
        check to see if the desired submodule is in range is not needed and we
        can directly call the correct handler. */
+    
+    /* select which LPR data structure to use */
+    currentLPR = (currentModule == LPR2_MODULE) ? &frontend.lpr2 : &frontend.lpr;
 
     /* Call the correct handler */
     (lprTempModulesHandler[currentLprTempModule])();
@@ -72,20 +73,14 @@ static void tempHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CONV_FLOAT=frontend.
-                   lpr.
-                    lprTemp[currentLprModule].
-                     temp;
+        CONV_FLOAT=currentLPR->lprTemp[currentLprModule].temp;
 
         /* Check the result against the warning and error range. Right now this
            function is only printing out a warning/error message depending on
            the result but no actions are taken. */
     } else {
         /* If no error during monitor process, gather the stored data/ */
-        CONV_FLOAT=frontend.
-                   lpr.
-                    lprTemp[currentLprModule].
-                     temp;
+        CONV_FLOAT=currentLPR->lprTemp[currentLprModule].temp;
     }
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big enadian

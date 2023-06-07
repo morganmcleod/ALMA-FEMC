@@ -22,6 +22,7 @@ unsigned char   currentPhotoDetectorModule=0;
 static HANDLER  photoDetectorModulesHandler[PHOTO_DETECTOR_MODULES_NUMBER]={currentHandler,
                                                                             conversionCoeffHandler,
                                                                             powerHandler};
+static LPR *currentLPR;
 
 /* Photo Detector handler */
 /*! This function will be called by the CAN message handler when the received
@@ -42,6 +43,9 @@ void photoDetectorHandler(void){
         return;
     }
 
+    /* select which LPR data structure to use */
+    currentLPR = (currentModule == LPR2_MODULE) ? &frontend.lpr2 : &frontend.lpr;
+    
     /* Call the correct handler */
     (photoDetectorModulesHandler[currentPhotoDetectorModule])();
 }
@@ -75,10 +79,10 @@ static void currentHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CONV_FLOAT=frontend.lpr.edfa.photoDetector.current;
+        CONV_FLOAT=currentLPR->edfa.photoDetector.current;
     } else {
         /* If no error during the monitor process gather the stored data */
-        CONV_FLOAT=frontend.lpr.edfa.photoDetector.current;
+        CONV_FLOAT=currentLPR->edfa.photoDetector.current;
     }
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big endian
@@ -97,25 +101,25 @@ void conversionCoeffHandler(void) {
     /* If control (size !=0) */
     if(CAN_SIZE) {
         // save the incoming message:
-        SAVE_LAST_CONTROL_MESSAGE(frontend.lpr.edfa.photoDetector.lastCoeff)
+        SAVE_LAST_CONTROL_MESSAGE(currentLPR->edfa.photoDetector.lastCoeff)
 
         /* Extract the float from the can message. */
         changeEndian(CONV_CHR_ADD, CAN_DATA_ADD);
 
         // Save the new coefficient and return:
-        frontend.lpr.edfa.photoDetector.coeff = CONV_FLOAT;
+        currentLPR->edfa.photoDetector.coeff = CONV_FLOAT;
         return;
     }
 
     /* If monitor on a control RCA */
     if(currentClass==CONTROL_CLASS){
         // return the last control message and status
-        RETURN_LAST_CONTROL_MESSAGE(frontend.lpr.edfa.photoDetector.lastCoeff)
+        RETURN_LAST_CONTROL_MESSAGE(currentLPR->edfa.photoDetector.lastCoeff)
         return;
     }
     
     /* If monitor on a monitor RCA */
-    CONV_FLOAT = frontend.lpr.edfa.photoDetector.coeff;
+    CONV_FLOAT = currentLPR->edfa.photoDetector.coeff;
     changeEndian(CAN_DATA_ADD, CONV_CHR_ADD);
     CAN_SIZE=CAN_FLOAT_SIZE;
 }
@@ -148,10 +152,10 @@ static void powerHandler(void){
            CAN message state. */
         CAN_STATUS = ERROR;
         /* Store the last known value in the outgoing message */
-        CONV_FLOAT=frontend.lpr.edfa.photoDetector.power;
+        CONV_FLOAT=currentLPR->edfa.photoDetector.power;
     } else {
         /* If no error during the monitor process gather the stored data */
-        CONV_FLOAT=frontend.lpr.edfa.photoDetector.power;
+        CONV_FLOAT=currentLPR->edfa.photoDetector.power;
     }
     /* Load the CAN message payload with the returned value and set the size.
        The value has to be converted from little endian (Intel) to big endian

@@ -178,13 +178,15 @@ static int getLprAnalogMonitor(void){
         -# Execute the core set of funtions common to all the analog monitor
            requests for the LPR module.
         -# Scale the raw binary data with the correct unit and store the result
-           in the \ref frontend variable
+           in the \ref frontend variablecurrentLPR->
 
     \return
         - \ref NO_ERROR         -> if no error occurred
         - \ref ERROR            -> if something wrong happened */
 int getLprTemp(void){
-
+    /* select which LPR data structure to use */
+    LPR *currentLPR = (currentModule == LPR2_MODULE) ? &frontend.lpr2 : &frontend.lpr;
+    
     if (frontend.mode != SIMULATION_MODE) {
         /* Clear the LPR BREG */
         lprRegisters.
@@ -205,14 +207,10 @@ int getLprTemp(void){
 
         /* 6 - Scale the data */
         /* The temperature is given by: 5.0e+6*(adcData/65536)/5110 */
-        frontend.
-         lpr.
-          lprTemp[currentLprModule].
-           temp=(LPR_ADC_TEMP_SCALE*lprRegisters.
-                                                    adcData)/LPR_ADC_RANGE;
+        currentLPR->lprTemp[currentLprModule].temp=(LPR_ADC_TEMP_SCALE * lprRegisters.adcData) / LPR_ADC_RANGE;
     } else {
         //SIMULATION_MODE
-        frontend.lpr.lprTemp[currentLprModule].temp = 221.1;
+        currentLPR->lprTemp[currentLprModule].temp = 221.0 + (float) currentLprModule + ((float) (currentModule - LPR_MODULE) / 10.0);
     }
     return NO_ERROR;
 }
@@ -231,6 +229,9 @@ int getLprTemp(void){
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
 int setOpticalSwitchPort(void){
+    /* select which LPR data structure to use */
+    LPR *currentLPR = (currentModule == LPR2_MODULE) ? &frontend.lpr2 : &frontend.lpr;
+
     /* Store the current value of the optical switch port in a temporary
        variable. We use a temporary variable so that if any error occurs during
        the update of the hardware state, we don't end up with an AREG describing
@@ -252,12 +253,9 @@ int setOpticalSwitchPort(void){
         }
 
         /* If no error check the idle state. If busy, return error. */
-        if(frontend.
-            lpr.
-             opticalSwitch.
-              state==OPTICAL_SWITCH_BUSY){
-                storeError(ERR_LPR_SERIAL, ERC_HARDWARE_WAIT); //Optical switch busy
-                return ERROR;
+        if(currentLPR->opticalSwitch.state==OPTICAL_SWITCH_BUSY) {
+            storeError(ERR_LPR_SERIAL, ERC_HARDWARE_WAIT); //Optical switch busy
+            return ERROR;
         }
 
         /* 1 - Parallel write AREG */
@@ -297,10 +295,7 @@ int setOpticalSwitchPort(void){
     }
     /* Since there is no real hardware read back, if no error occurred the
        current state is updated to reflect the issued command. */
-    frontend.
-     lpr.
-      opticalSwitch.
-       port=CAN_BYTE;
+    currentLPR->opticalSwitch.port=CAN_BYTE;
 
     return NO_ERROR;
 }
@@ -326,6 +321,9 @@ int setOpticalSwitchPort(void){
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
 int setOpticalSwitchShutter(unsigned char mode){
+    /* select which LPR data structure to use */
+    LPR *currentLPR = (currentModule == LPR2_MODULE) ? &frontend.lpr2 : &frontend.lpr;
+
     /* Store the current value of the optical switch port in a temporary
        variable. We use a temporary variable so that if any error occurs during
        the update of the hardware state, we don't end up with an AREG describing
@@ -349,12 +347,9 @@ int setOpticalSwitchShutter(unsigned char mode){
             }
 
             /* If no error check the idle state. If busy, return error. */
-            if(frontend.
-                lpr.
-                 opticalSwitch.
-                  state==OPTICAL_SWITCH_BUSY){
-                    storeError(ERR_LPR_SERIAL, ERC_HARDWARE_WAIT); //Optical switch busy
-                    return ERROR;
+            if(currentLPR->opticalSwitch.state==OPTICAL_SWITCH_BUSY) {
+                storeError(ERR_LPR_SERIAL, ERC_HARDWARE_WAIT); //Optical switch busy
+                return ERROR;
             }
         }
 
@@ -395,11 +390,7 @@ int setOpticalSwitchShutter(unsigned char mode){
     }
     /* Since there is no real hardware read back, if no error occurred the
        current state is updated to reflect the issued command. */
-    frontend.
-     lpr.
-      opticalSwitch.
-       shutter=SHUTTER_ENABLE;
-
+    currentLPR->opticalSwitch.shutter=SHUTTER_ENABLE;
     return NO_ERROR;
 }
 
@@ -420,6 +411,9 @@ int setOpticalSwitchShutter(unsigned char mode){
         - \ref NO_ERROR         -> if no error occurred
         - \ref ERROR            -> if something wrong happened */
 int getLaserDriveCurrent(void){
+    /* select which LPR data structure to use */
+    LPR *currentLPR = (currentModule == LPR2_MODULE) ? &frontend.lpr2 : &frontend.lpr;
+
     if (frontend.mode != SIMULATION_MODE) {
         /* Clear the LPR BREG */
         lprRegisters.
@@ -440,21 +434,13 @@ int getLaserDriveCurrent(void){
 
         /* 6 - Scale the data */
         /* The laser drive current is given by: 800*(adcData/65536) */
-        frontend.
-         lpr.
-          edfa.
-           laser.
-            driveCurrent=(LPR_ADC_DRIVE_CURRENT_SCALE*lprRegisters.
-                                                                      adcData/LPR_ADC_RANGE);
+        currentLPR->edfa.laser.driveCurrent=(LPR_ADC_DRIVE_CURRENT_SCALE * lprRegisters.adcData / LPR_ADC_RANGE);
     } else {
         //SIMULATION_MODE
-        frontend.lpr.edfa.laser.driveCurrent = 53.1;
+        currentLPR->edfa.laser.driveCurrent = 50.0 + ((float) (currentModule - LPR_MODULE) / 10.0);
     }
     return NO_ERROR;
 }
-
-
-
 
 /* Get laser photo detector current */
 /*! This function returns the current of the laser photo detector. The resulting
@@ -472,6 +458,9 @@ int getLaserDriveCurrent(void){
         - \ref NO_ERROR         -> if no error occurred
         - \ref ERROR            -> if something wrong happened */
 int getLaserPhotoDetectCurrent(void){
+    /* select which LPR data structure to use */
+    LPR *currentLPR = (currentModule == LPR2_MODULE) ? &frontend.lpr2 : &frontend.lpr;
+
     if (frontend.mode != SIMULATION_MODE) {
         /* Clear the LPR BREG */
         lprRegisters.
@@ -492,14 +481,10 @@ int getLaserPhotoDetectCurrent(void){
 
         /* 6 - Scale the data */
         /* The laser drive current is given by: 10*[2.5-5.0*(adcData/65536)] */
-        frontend.
-         lpr.
-          edfa.
-           laser.
-            photoDetectCurrent=LPR_ADC_LASER_PD_CURRRENT_OFFSET-(LPR_ADC_LASER_PD_CURRENT_SCALE*lprRegisters.adcData)/LPR_ADC_RANGE;
+        currentLPR->edfa.laser.photoDetectCurrent=LPR_ADC_LASER_PD_CURRRENT_OFFSET - (LPR_ADC_LASER_PD_CURRENT_SCALE * lprRegisters.adcData) / LPR_ADC_RANGE;
     } else {
         //SIMULATION_MODE
-        frontend.lpr.edfa.laser.photoDetectCurrent = 3.3;
+        currentLPR->edfa.laser.photoDetectCurrent = 3.0 + ((float) (currentModule - LPR_MODULE) / 10.0);
     }
     return NO_ERROR;
 }
@@ -521,6 +506,9 @@ int getLaserPhotoDetectCurrent(void){
         - \ref NO_ERROR         -> if no error occurred
         - \ref ERROR            -> if something wrong happened */
 int getPhotoDetectorCurrent(void){
+    /* select which LPR data structure to use */
+    LPR *currentLPR = (currentModule == LPR2_MODULE) ? &frontend.lpr2 : &frontend.lpr;
+
     if (frontend.mode != SIMULATION_MODE) {
         /* Clear the LPR BREG */
         lprRegisters.
@@ -541,15 +529,10 @@ int getPhotoDetectorCurrent(void){
 
         /* 6 - Scale the data */
         /* The laser drive current is given by: 500.0*(adcData/65536) */
-        frontend.
-         lpr.
-          edfa.
-           photoDetector.
-            current=(LPR_ADC_EDFA_PD_CURRENT_SCALE*lprRegisters.
-                                                                   adcData)/LPR_ADC_RANGE;
+        currentLPR->edfa.photoDetector.current=(LPR_ADC_EDFA_PD_CURRENT_SCALE * lprRegisters.adcData) / LPR_ADC_RANGE;
     } else {
         //SIMULATION_MODE
-        frontend.lpr.edfa.photoDetector.current = 65.4;
+        currentLPR->edfa.photoDetector.current = 65.0 + ((float) (currentModule - LPR_MODULE) / 10.0);
     }
     return NO_ERROR;
 }
@@ -588,7 +571,6 @@ int setLprDacStrobe(void){
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
 int setModulationInputValue(void){
-
     if (frontend.mode != SIMULATION_MODE) {
         /* Setup the DAC2 message */
         /* Select the register to address */
@@ -643,6 +625,9 @@ int setModulationInputValue(void){
         - \ref ERROR            -> if something wrong happened */
 
 int getPhotoDetectorPower(void){
+    /* select which LPR data structure to use */
+    LPR *currentLPR = (currentModule == LPR2_MODULE) ? &frontend.lpr2 : &frontend.lpr;
+
     if (frontend.mode != SIMULATION_MODE) {
         /* Clear the LPR BREG */
         lprRegisters.
@@ -665,11 +650,10 @@ int getPhotoDetectorPower(void){
         /* The laser drive current is given by: coeff*(adcData/65536)
            The coefficient is stored in the configuration database and loaded at
            initialization time. */
-        frontend.lpr.edfa.photoDetector.power =
-            (frontend.lpr.edfa.photoDetector.coeff*lprRegisters.adcData/LPR_ADC_RANGE);
+        currentLPR->edfa.photoDetector.power = (currentLPR->edfa.photoDetector.coeff * lprRegisters.adcData / LPR_ADC_RANGE);
     } else {
         //SIMULATION_MODE
-        frontend.lpr.edfa.photoDetector.power = 4.3;
+        currentLPR->edfa.photoDetector.power = 4.0 + ((float) (currentModule - LPR_MODULE) / 10.0);
     }
     return NO_ERROR;
 }
@@ -691,6 +675,8 @@ int getPhotoDetectorPower(void){
         - \ref NO_ERROR         -> if no error occurred
         - \ref ERROR            -> if something wrong happened */
 int getLaserPumpTemperature(void){
+    /* select which LPR data structure to use */
+    LPR *currentLPR = (currentModule == LPR2_MODULE) ? &frontend.lpr2 : &frontend.lpr;
 
     /* Float to help perform the temperature evaluation */
     float vin=0.0, temperature=0.0;
@@ -737,14 +723,10 @@ int getLaserPumpTemperature(void){
         }
 
         /* Store the data */
-        frontend.
-         lpr.
-          edfa.
-           laser.
-            pumpTemp=temperature;
+        currentLPR->edfa.laser.pumpTemp=temperature;
     } else {
         //SIMULATION_MODE
-        frontend.lpr.edfa.laser.pumpTemp = 234.5;
+        currentLPR->edfa.laser.pumpTemp = 234.0 + ((float) (currentModule - LPR_MODULE) / 10.0);
     }
     return NO_ERROR;
 }
@@ -758,6 +740,8 @@ int getLaserPumpTemperature(void){
         - \ref NO_ERROR -> if no error occurred
         - \ref ERROR    -> if something wrong happened */
 int getLprStates(void){
+    /* select which LPR data structure to use */
+    LPR *currentLPR = (currentModule == LPR2_MODULE) ? &frontend.lpr2 : &frontend.lpr;
 
     if (frontend.mode != SIMULATION_MODE) {
         /* Read the status register, if an error occurs, notify the calling
@@ -774,36 +758,18 @@ int getLprStates(void){
         }
 
         /* Store the optical switch error */
-        frontend.
-         lpr.
-          opticalSwitch.
-           state=lprRegisters.
-                                 statusReg.
-                                  bitField.
-                                   opticalSwitchError;
+        currentLPR->opticalSwitch.state=lprRegisters.statusReg.bitField.opticalSwitchError;
 
         /* Store the optical switch busy state */
-        frontend.
-         lpr.
-          opticalSwitch.
-           busy=lprRegisters.
-                                statusReg.
-                                 bitField.
-                                  opticalSwitchState;
+        currentLPR->opticalSwitch.busy=lprRegisters.statusReg.bitField.opticalSwitchState;
 
         /* Store the EDFA driver state */
-        frontend.
-         lpr.
-          edfa.
-           driverTempAlarm=lprRegisters.
-                                           statusReg.
-                                            bitField.
-                                             edfaDriverState;
+        currentLPR->edfa.driverTempAlarm=lprRegisters.statusReg.bitField.edfaDriverState;
     } else {
         //SIMULATION_MODE
-        frontend.lpr.opticalSwitch.state = 0;
-        frontend.lpr.opticalSwitch.busy = 0;
-        frontend.lpr.edfa.driverTempAlarm = 0;
+        currentLPR->opticalSwitch.state = 0;
+        currentLPR->opticalSwitch.busy = 0;
+        currentLPR->edfa.driverTempAlarm = 0;
     }
     return NO_ERROR;
 }
