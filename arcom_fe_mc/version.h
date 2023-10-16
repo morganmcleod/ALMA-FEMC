@@ -9,6 +9,16 @@
     software and its revision history.
 
     REVISION HISTORY
+    
+    2023-10-16 3.6.7  Based on 3.6.4.  Contains no changes from 3.6.5 and 3.6.6
+        Start/stop the socket service on enter/exit maintenance mode (in addition to the ftp service)
+    
+    2023-06-01 3.6.6
+        Add LPR2 option for BELO test set.
+        Enable with [LPR] LPR2=1 in FRONTEND.INI
+
+    2022-12-22 3.6.5
+        Don't store cryostat timeout errors when in Troubleshooting mode
 
     2022-07-20 3.6.4
         Load TELEDYNE, COLLECTORP0, COLLECTORP1 keys from [PA] section
@@ -406,10 +416,10 @@
     /* Defines */
     #define VERSION_MAJOR   3
     #define VERSION_MINOR   6
-    #define VERSION_PATCH   4
+    #define VERSION_PATCH   7
 
-    #define VERSION_DATE    "2022-07-20"
-    #define VERSION_NOTES   "3.6.4: Implement Teledyne PA control."
+    #define VERSION_DATE    "2023-10-16"
+    #define VERSION_NOTES   "3.6.7: Start/stop the socket service on enter/exit maintenance mode."
 
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM"
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"
