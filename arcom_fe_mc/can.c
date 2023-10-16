@@ -601,7 +601,7 @@ static void specialRCAsHandler(void){
                     if (frontend.mode == MAINTENANCE_MODE) {
                         // leaving maintenance mode, stop the ftp service and socket service:
                         system("ftpd.exe /u\n");
-                        system("socketp.exe /u\n")
+                        system("socketp.exe /u\n");
                         #ifdef DEBUG_CAN
                             printf("system() returned %d\n", ret);
                         #endif // DEBUG_CAN
