@@ -588,7 +588,8 @@ static void specialRCAsHandler(void){
                 #endif // DEBUG_CAN
                 if (CAN_BYTE == MAINTENANCE_MODE) {
                     if (frontend.mode != MAINTENANCE_MODE) {
-                        // entering maintenance mode, start the ftp service:
+                        // entering maintenance mode, start the socket service and ftp service:
+                        ret = system("socketp.exe /m=40000\n");                        
                         ret = system("ftpd.exe /r\n");
                         #ifdef DEBUG_CAN
                             printf("system() returned %d\n", ret);
@@ -598,8 +599,9 @@ static void specialRCAsHandler(void){
 
                 } else if (CAN_BYTE == OPERATIONAL_MODE || CAN_BYTE == TROUBLESHOOTING_MODE || CAN_BYTE == SIMULATION_MODE) {
                     if (frontend.mode == MAINTENANCE_MODE) {
-                        // leaving maintenance mode, stop the ftp service:
+                        // leaving maintenance mode, stop the ftp service and socket service:
                         system("ftpd.exe /u\n");
+                        system("socketp.exe /u\n")
                         #ifdef DEBUG_CAN
                             printf("system() returned %d\n", ret);
                         #endif // DEBUG_CAN
