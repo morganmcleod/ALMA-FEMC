@@ -10,6 +10,9 @@
 
     REVISION HISTORY
     
+    2024-02-23 3.6.8  Based on 3.6.7.  Contains no changes from 3.6.5 and 3.6.6
+        PPComm:  add guard for payload size > 8 before receive payload.
+
     2023-10-16 3.6.7  Based on 3.6.4.  Contains no changes from 3.6.5 and 3.6.6
         Start/stop the socket service on enter/exit maintenance mode (in addition to the ftp service)
     
@@ -416,10 +419,11 @@
     /* Defines */
     #define VERSION_MAJOR   3
     #define VERSION_MINOR   6
-    #define VERSION_PATCH   7
+    #define VERSION_PATCH   8
 
-    #define VERSION_DATE    "2023-10-16"
-    #define VERSION_NOTES   "3.6.7: Start/stop the socket service on enter/exit maintenance mode."
+    #define VERSION_DATE    "2024-02-23"
+    #define VERSION_NOTES   "3.6.7: Start/stop the socket service on enter/exit maintenance mode.\n"\
+                            "3.6.8: PPComm add guard for payload size > 8 before receive payload."
 
     #define PRODUCT_TREE    "FEND-40.04.03.03-011-A-FRM"
     #define AUTHOR          "Morgan McLeod - NRAO (mmcleod@nrao.edu)"

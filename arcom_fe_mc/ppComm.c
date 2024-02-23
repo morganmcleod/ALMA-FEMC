@@ -319,6 +319,10 @@ static void interrupt far PPIntHandler(void) {
         return;
     }
 
+    if (payloadSize > CAN_MESSAGE_PAYLOAD_SIZE) {
+        payloadSize = CAN_MESSAGE_PAYLOAD_SIZE;
+    }
+
     /* If it's a control message, load the payload */
     for (i = 0; i < payloadSize; i++) {
         PPRxBuffer[CAN_RX_HEADER_SIZE + i] = inp(EPPDataPort);
