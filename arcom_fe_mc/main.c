@@ -50,6 +50,7 @@ int main(void) {
 
         /* Do whatever is that you do when you don't have anything to do */
         while (!newCANMsg && !stop) {
+            PPClear();
             /* Call the console handling. Make sure this doesn't affect performance. */
             if(consoleEnable) {
                 console();
